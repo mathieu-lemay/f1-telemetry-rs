@@ -37,6 +37,10 @@ impl TryFrom<u8> for PacketID {
     }
 }
 
+enum Packet {
+    Session(PacketSessionData),
+}
+
 /// The header for each of the UDP telemetry packets.
 ///
 /// ## Specification
@@ -143,7 +147,7 @@ struct PacketSessionData {
     network_game: u8,
 }
 
-fn parse_packet(size: usize, packet: &[u8; 2048]) -> Result<PacketSessionData, UnpackError> {
+fn parse_packet(size: usize, packet: &[u8; 2048]) -> Result<Packet, UnpackError> {
     let header_size = mem::size_of::<PacketHeader>();
 
     if size < header_size {
@@ -162,7 +166,7 @@ fn parse_packet(size: usize, packet: &[u8; 2048]) -> Result<PacketSessionData, U
         PacketID::Session => {
             let packet: PacketSessionData = bincode::deserialize(&packet[..]).unwrap();
 
-            return Ok(packet);
+            return Ok(Packet::Session(packet));
         }
         //PacketID::LapData => {}
         //PacketID::Event => {}
@@ -186,12 +190,12 @@ fn main() {
     for _ in 0..20 {
         match socket.recv(&mut buf) {
             Ok(len) => match parse_packet(len, &buf) {
-                Ok(p) => {
-                    println!(
-                        "[SESSION]: PacketID: {}, SessionTimeLeft: {}, SessionDuration: {}",
-                        p.header.packet_id, p.session_time_left, p.session_duration
-                    );
-                }
+                Ok(p) => match p {
+                    Packet::Session(s) => println!(
+                        "[Session] SessionTimeLeft: {}, SessionDuration: {}",
+                        s.session_time_left, s.session_duration
+                    ),
+                },
                 Err(e) => println!("{:?}", e),
             },
             Err(e) => println!("Error: {:?}", e),
