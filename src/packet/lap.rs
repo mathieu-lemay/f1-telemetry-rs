@@ -1,6 +1,7 @@
 use super::header::PacketHeader;
 use crate::packet::UnpackError;
 use byteorder::{LittleEndian, ReadBytesExt};
+use getset::Getters;
 use std::convert::TryFrom;
 use std::io::BufRead;
 
@@ -114,25 +115,42 @@ impl TryFrom<u8> for ResultStatus {
 ///                      6 = retired
 /// ```
 /// [`PacketLapData`]: ./struct.PacketLapData.html
-#[derive(Debug)]
+#[derive(Debug, Getters)]
 pub struct LapData {
-    pub last_lap_time: f32,
-    pub current_lap_time: f32,
-    pub best_lap_time: f32,
-    pub sector_1_time: f32,
-    pub sector_2_time: f32,
-    pub lap_distance: f32,
-    pub total_distance: f32,
-    pub safety_car_delta: f32,
-    pub car_position: u8,
-    pub current_lap_num: u8,
-    pub pit_status: PitStatus,
-    pub sector: u8,
-    pub current_lap_invalid: u8,
-    pub penalties: u8,
-    pub grid_position: u8,
-    pub driver_status: DriverStatus,
-    pub result_status: ResultStatus,
+    #[getset(get = "pub")]
+    last_lap_time: f32,
+    #[getset(get = "pub")]
+    current_lap_time: f32,
+    #[getset(get = "pub")]
+    best_lap_time: f32,
+    #[getset(get = "pub")]
+    sector_1_time: f32,
+    #[getset(get = "pub")]
+    sector_2_time: f32,
+    #[getset(get = "pub")]
+    lap_distance: f32,
+    #[getset(get = "pub")]
+    total_distance: f32,
+    #[getset(get = "pub")]
+    safety_car_delta: f32,
+    #[getset(get = "pub")]
+    car_position: u8,
+    #[getset(get = "pub")]
+    current_lap_num: u8,
+    #[getset(get = "pub")]
+    pit_status: PitStatus,
+    #[getset(get = "pub")]
+    sector: u8,
+    #[getset(get = "pub")]
+    current_lap_invalid: u8,
+    #[getset(get = "pub")]
+    penalties: u8,
+    #[getset(get = "pub")]
+    grid_position: u8,
+    #[getset(get = "pub")]
+    driver_status: DriverStatus,
+    #[getset(get = "pub")]
+    result_status: ResultStatus,
 }
 
 impl LapData {
@@ -190,10 +208,12 @@ impl LapData {
 /// header:   Header
 /// lap_data: Lap data for all cars on track
 /// ```
-#[derive(Debug)]
+#[derive(Debug, Getters)]
 pub struct PacketLapData {
-    pub header: PacketHeader,
-    pub lap_data: Vec<LapData>,
+    #[getset(get = "pub")]
+    header: PacketHeader,
+    #[getset(get = "pub")]
+    lap_data: Vec<LapData>,
 }
 
 impl PacketLapData {

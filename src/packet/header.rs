@@ -1,4 +1,5 @@
 use byteorder::{LittleEndian, ReadBytesExt};
+use getset::Getters;
 use std::io::BufRead;
 
 /// The header for each of the UDP telemetry packets.
@@ -19,17 +20,26 @@ use std::io::BufRead;
 /// Possible `packet_id` values: [`PacketID`].
 ///
 /// [`PacketID`]: ../enum.PacketID.html
-#[derive(Debug)]
+#[derive(Debug, Getters)]
 pub struct PacketHeader {
-    pub packet_format: u16,
-    pub game_major_version: u8,
-    pub game_minor_version: u8,
-    pub packet_version: u8,
-    pub packet_id: u8,
-    pub session_uid: u64,
-    pub session_time: f32,
-    pub frame_identifier: u32,
-    pub player_car_index: u8,
+    #[getset(get = "pub")]
+    packet_format: u16,
+    #[getset(get = "pub")]
+    game_major_version: u8,
+    #[getset(get = "pub")]
+    game_minor_version: u8,
+    #[getset(get = "pub")]
+    packet_version: u8,
+    #[getset(get = "pub")]
+    packet_id: u8,
+    #[getset(get = "pub")]
+    session_uid: u64,
+    #[getset(get = "pub")]
+    session_time: f32,
+    #[getset(get = "pub")]
+    frame_identifier: u32,
+    #[getset(get = "pub")]
+    player_car_index: u8,
 }
 
 impl PacketHeader {

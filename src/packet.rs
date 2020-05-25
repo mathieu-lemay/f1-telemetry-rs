@@ -64,7 +64,7 @@ pub fn parse_packet(size: usize, packet: &[u8]) -> Result<Packet, UnpackError> {
     let mut cursor = Cursor::new(packet);
     let header = PacketHeader::new(&mut cursor);
 
-    let packet_id: PacketID = PacketID::try_from(header.packet_id)?;
+    let packet_id: PacketID = PacketID::try_from(*header.packet_id())?;
 
     match packet_id {
         //PacketID::Motion => {}

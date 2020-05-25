@@ -1,6 +1,7 @@
 use super::header::PacketHeader;
 use crate::packet::UnpackError;
 use byteorder::{LittleEndian, ReadBytesExt};
+use getset::Getters;
 use std::convert::TryFrom;
 use std::io::BufRead;
 
@@ -42,10 +43,12 @@ impl TryFrom<i8> for Flag {
 /// zone_flag:  -1 = invalid/unknown, 0 = none, 1 = green, 2 = blue, 3 = yellow, 4 = red
 /// ```
 /// [`PacketSessionData`]: ./struct.PacketSessionData.html
-#[derive(Debug)]
+#[derive(Debug, Getters)]
 pub struct MarshalZone {
-    pub zone_start: f32,
-    pub zone_flag: Flag,
+    #[getset(get = "pub")]
+    zone_start: f32,
+    #[getset(get = "pub")]
+    zone_flag: Flag,
 }
 
 impl MarshalZone {
@@ -204,28 +207,48 @@ impl TryFrom<u8> for SafetyCar {
 ///                         2 = virtual safety car
 /// network_game:           0 = offline, 1 = online
 /// ```
-#[derive(Debug)]
+#[derive(Debug, Getters)]
 pub struct PacketSessionData {
-    pub header: PacketHeader,
-    pub weather: Weather,
-    pub track_temperature: i8,
-    pub air_temperature: i8,
-    pub total_laps: u8,
-    pub track_length: u16,
-    pub session_type: SessionType,
-    pub track_id: i8,
-    pub formula: Formula,
-    pub session_time_left: u16,
-    pub session_duration: u16,
-    pub pit_speed_limit: u8,
-    pub game_paused: u8,
-    pub is_spectating: u8,
-    pub spectator_car_index: u8,
-    pub sli_pro_native_support: bool,
-    pub num_marshal_zones: u8,
-    pub marshal_zones: Vec<MarshalZone>,
-    pub safety_car_status: SafetyCar,
-    pub network_game: bool,
+    #[getset(get = "pub")]
+    header: PacketHeader,
+    #[getset(get = "pub")]
+    weather: Weather,
+    #[getset(get = "pub")]
+    track_temperature: i8,
+    #[getset(get = "pub")]
+    air_temperature: i8,
+    #[getset(get = "pub")]
+    total_laps: u8,
+    #[getset(get = "pub")]
+    track_length: u16,
+    #[getset(get = "pub")]
+    session_type: SessionType,
+    #[getset(get = "pub")]
+    track_id: i8,
+    #[getset(get = "pub")]
+    formula: Formula,
+    #[getset(get = "pub")]
+    session_time_left: u16,
+    #[getset(get = "pub")]
+    session_duration: u16,
+    #[getset(get = "pub")]
+    pit_speed_limit: u8,
+    #[getset(get = "pub")]
+    game_paused: u8,
+    #[getset(get = "pub")]
+    is_spectating: u8,
+    #[getset(get = "pub")]
+    spectator_car_index: u8,
+    #[getset(get = "pub")]
+    sli_pro_native_support: bool,
+    #[getset(get = "pub")]
+    num_marshal_zones: u8,
+    #[getset(get = "pub")]
+    marshal_zones: Vec<MarshalZone>,
+    #[getset(get = "pub")]
+    safety_car_status: SafetyCar,
+    #[getset(get = "pub")]
+    network_game: bool,
 }
 
 impl PacketSessionData {

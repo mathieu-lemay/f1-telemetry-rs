@@ -1,6 +1,7 @@
 use super::header::PacketHeader;
 use crate::packet::UnpackError;
 use byteorder::ReadBytesExt;
+use getset::Getters;
 use std::convert::TryFrom;
 use std::io::BufRead;
 
@@ -515,15 +516,22 @@ impl TryFrom<u8> for Telemetry {
 /// ```
 ///
 /// [`PacketParticipantsData`]: ./struct.PacketParticipantsData.html
-#[derive(Debug)]
+#[derive(Debug, Getters)]
 pub struct ParticipantData {
-    pub ai_controlled: bool,
-    pub driver: Driver,
-    pub team: Team,
-    pub race_number: u8,
-    pub nationality: Nationality,
-    pub name: String,
-    pub telemetry: Telemetry,
+    #[getset(get = "pub")]
+    ai_controlled: bool,
+    #[getset(get = "pub")]
+    driver: Driver,
+    #[getset(get = "pub")]
+    team: Team,
+    #[getset(get = "pub")]
+    race_number: u8,
+    #[getset(get = "pub")]
+    nationality: Nationality,
+    #[getset(get = "pub")]
+    name: String,
+    #[getset(get = "pub")]
+    telemetry: Telemetry,
 }
 
 impl ParticipantData {
@@ -568,11 +576,14 @@ impl ParticipantData {
 ///                  cars on HUD
 /// participants:    List of participants, max 20.
 /// ```
-#[derive(Debug)]
+#[derive(Debug, Getters)]
 pub struct PacketParticipantsData {
-    pub header: PacketHeader,
-    pub num_active_cars: u8,
-    pub participants: Vec<ParticipantData>,
+    #[getset(get = "pub")]
+    header: PacketHeader,
+    #[getset(get = "pub")]
+    num_active_cars: u8,
+    #[getset(get = "pub")]
+    participants: Vec<ParticipantData>,
 }
 
 impl PacketParticipantsData {
