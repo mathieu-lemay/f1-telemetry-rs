@@ -1,5 +1,6 @@
 use header::PacketHeader;
 use lap::PacketLapData;
+use participants::PacketParticipantsData;
 use session::PacketSessionData;
 use std::convert::TryFrom;
 use std::io::Cursor;
@@ -7,6 +8,7 @@ use std::mem;
 
 pub mod header;
 pub mod lap;
+pub mod participants;
 pub mod session;
 
 //struct UnpackError(&'static str);
@@ -16,6 +18,7 @@ pub struct UnpackError(pub String);
 pub enum Packet {
     Session(PacketSessionData),
     LapData(PacketLapData),
+    ParticipantsData(PacketParticipantsData),
 }
 
 #[derive(Debug)]
@@ -76,7 +79,11 @@ pub fn parse_packet(size: usize, packet: &[u8]) -> Result<Packet, UnpackError> {
             Ok(Packet::LapData(packet))
         }
         //PacketID::Event => {}
-        //PacketID::Participants => {}
+        PacketID::Participants => {
+            let packet = PacketParticipantsData::new(&mut cursor, header)?;
+
+            Ok(Packet::ParticipantsData(packet))
+        }
         //PacketID::CarSetups => {}
         //PacketID::CarTelemetry => {}
         //PacketID::CarStatus => {}

@@ -51,6 +51,7 @@ fn main() {
                     match p {
                         Packet::Session(s) => println!("{:?}", s),
                         Packet::LapData(l) => println!("{:?}", l),
+                        Packet::ParticipantsData(p) => println!("{:?}", p),
                     };
                 }
                 None => sleep(Duration::from_millis(5)),

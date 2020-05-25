@@ -30,7 +30,7 @@ impl TryFrom<i8> for Flag {
     }
 }
 
-/// This type is used for the 21-element `marshal_zones` array of the [`PacketSessionData`] type, defined below.
+/// This type is used for the 21-element `marshal_zones` array of the [`PacketSessionData`] type.
 ///
 /// Size: 5 bytes
 ///
