@@ -1,9 +1,10 @@
 use byteorder::{LittleEndian, ReadBytesExt};
 use std::convert::TryFrom;
-use std::io::{BufRead, Cursor};
+use std::io::{BufRead, Cursor, ErrorKind};
 use std::mem;
-use std::net::ToSocketAddrs;
-use std::net::UdpSocket;
+use std::net::{ToSocketAddrs, UdpSocket};
+use std::thread::sleep;
+use std::time::Duration;
 
 //struct UnpackError(&'static str);
 #[derive(Debug)]
@@ -666,16 +667,26 @@ struct Stream {
 impl Stream {
     fn new<T: ToSocketAddrs>(addr: T) -> std::io::Result<Stream> {
         let socket = UdpSocket::bind(addr)?;
+        socket.set_nonblocking(true)?;
 
         Ok(Stream { socket })
     }
 
-    fn next(&self) -> Result<Packet, UnpackError> {
+    fn next(&self) -> Result<Option<Packet>, UnpackError> {
         let mut buf = [0; 2048]; // All packets fit in 2048 bytes
 
         match self.socket.recv(&mut buf) {
-            Ok(len) => parse_packet(len, &buf),
-            Err(e) => Err(UnpackError(format!("Error reading from socket: {:?}", e))),
+            Ok(len) => match parse_packet(len, &buf) {
+                Ok(p) => Ok(Some(p)),
+                Err(e) => Err(e),
+            },
+            Err(e) => {
+                if e.kind() == ErrorKind::WouldBlock {
+                    Ok(None)
+                } else {
+                    Err(UnpackError(format!("Error reading from socket: {:?}", e)))
+                }
+            }
         }
     }
 }
@@ -684,11 +695,19 @@ fn main() {
     let stream = Stream::new("0.0.0.0:20777").expect("Unable to bind socket");
     println!("Listening on {}", stream.socket.local_addr().unwrap());
 
-    for _ in 0..20 {
+    let mut c = 0;
+
+    while c < 20 {
         match stream.next() {
             Ok(p) => match p {
-                Packet::Session(s) => println!("{:?}", s),
-                Packet::LapData(l) => println!("{:?}", l),
+                Some(p) => {
+                    c += 1;
+                    match p {
+                        Packet::Session(s) => println!("{:?}", s),
+                        Packet::LapData(l) => println!("{:?}", l),
+                    };
+                }
+                None => sleep(Duration::from_millis(5)),
             },
             Err(e) => println!("{:?}", e),
         }
