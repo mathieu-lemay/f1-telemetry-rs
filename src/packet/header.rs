@@ -17,9 +17,9 @@ use std::io::BufRead;
 /// player_car_index:   index of player's car in the array
 /// ```
 ///
-/// Possible `packet_id` values: [`PacketID`].
+/// Possible `packet_id` values: [`PacketType`].
 ///
-/// [`PacketID`]: ../enum.PacketID.html
+/// [`PacketType`]: ../enum.PacketType.html
 #[derive(Debug, Getters)]
 pub struct PacketHeader {
     #[getset(get = "pub")]
