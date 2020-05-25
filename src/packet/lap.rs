@@ -193,7 +193,7 @@ impl LapData {
 #[derive(Debug)]
 pub struct PacketLapData {
     pub header: PacketHeader,
-    pub lap_data: [LapData; 20],
+    pub lap_data: Vec<LapData>,
 }
 
 impl PacketLapData {
@@ -201,29 +201,12 @@ impl PacketLapData {
         mut reader: &mut T,
         header: PacketHeader,
     ) -> Result<PacketLapData, UnpackError> {
-        // Ugly but avoids double initialization
-        let lap_data = [
-            LapData::new(&mut reader)?,
-            LapData::new(&mut reader)?,
-            LapData::new(&mut reader)?,
-            LapData::new(&mut reader)?,
-            LapData::new(&mut reader)?,
-            LapData::new(&mut reader)?,
-            LapData::new(&mut reader)?,
-            LapData::new(&mut reader)?,
-            LapData::new(&mut reader)?,
-            LapData::new(&mut reader)?,
-            LapData::new(&mut reader)?,
-            LapData::new(&mut reader)?,
-            LapData::new(&mut reader)?,
-            LapData::new(&mut reader)?,
-            LapData::new(&mut reader)?,
-            LapData::new(&mut reader)?,
-            LapData::new(&mut reader)?,
-            LapData::new(&mut reader)?,
-            LapData::new(&mut reader)?,
-            LapData::new(&mut reader)?,
-        ];
+        let mut lap_data = Vec::with_capacity(20);
+
+        for _ in 0..20 {
+            let ld = LapData::new(&mut reader)?;
+            lap_data.push(ld);
+        }
 
         Ok(PacketLapData { header, lap_data })
     }

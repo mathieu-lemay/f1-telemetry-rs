@@ -572,7 +572,7 @@ impl ParticipantData {
 pub struct PacketParticipantsData {
     pub header: PacketHeader,
     pub num_active_cars: u8,
-    pub participants: [ParticipantData; 20],
+    pub participants: Vec<ParticipantData>,
 }
 
 impl PacketParticipantsData {
@@ -582,28 +582,11 @@ impl PacketParticipantsData {
     ) -> Result<PacketParticipantsData, UnpackError> {
         let num_active_cars = reader.read_u8().unwrap();
 
-        let participants = [
-            ParticipantData::new(&mut reader)?,
-            ParticipantData::new(&mut reader)?,
-            ParticipantData::new(&mut reader)?,
-            ParticipantData::new(&mut reader)?,
-            ParticipantData::new(&mut reader)?,
-            ParticipantData::new(&mut reader)?,
-            ParticipantData::new(&mut reader)?,
-            ParticipantData::new(&mut reader)?,
-            ParticipantData::new(&mut reader)?,
-            ParticipantData::new(&mut reader)?,
-            ParticipantData::new(&mut reader)?,
-            ParticipantData::new(&mut reader)?,
-            ParticipantData::new(&mut reader)?,
-            ParticipantData::new(&mut reader)?,
-            ParticipantData::new(&mut reader)?,
-            ParticipantData::new(&mut reader)?,
-            ParticipantData::new(&mut reader)?,
-            ParticipantData::new(&mut reader)?,
-            ParticipantData::new(&mut reader)?,
-            ParticipantData::new(&mut reader)?,
-        ];
+        let mut participants = Vec::with_capacity(20);
+        for _ in 0..20 {
+            let p = ParticipantData::new(&mut reader)?;
+            participants.push(p);
+        }
 
         Ok(PacketParticipantsData {
             header,

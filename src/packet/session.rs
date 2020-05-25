@@ -223,7 +223,7 @@ pub struct PacketSessionData {
     pub spectator_car_index: u8,
     pub sli_pro_native_support: bool,
     pub num_marshal_zones: u8,
-    pub marshal_zones: [MarshalZone; 21],
+    pub marshal_zones: Vec<MarshalZone>,
     pub safety_car_status: SafetyCar,
     pub network_game: bool,
 }
@@ -250,30 +250,11 @@ impl PacketSessionData {
         let sli_pro_native_support = reader.read_u8().unwrap() == 1;
         let num_marshal_zones = reader.read_u8().unwrap();
 
-        // Ugly but avoids double initialization
-        let marshal_zones = [
-            MarshalZone::new(&mut reader)?,
-            MarshalZone::new(&mut reader)?,
-            MarshalZone::new(&mut reader)?,
-            MarshalZone::new(&mut reader)?,
-            MarshalZone::new(&mut reader)?,
-            MarshalZone::new(&mut reader)?,
-            MarshalZone::new(&mut reader)?,
-            MarshalZone::new(&mut reader)?,
-            MarshalZone::new(&mut reader)?,
-            MarshalZone::new(&mut reader)?,
-            MarshalZone::new(&mut reader)?,
-            MarshalZone::new(&mut reader)?,
-            MarshalZone::new(&mut reader)?,
-            MarshalZone::new(&mut reader)?,
-            MarshalZone::new(&mut reader)?,
-            MarshalZone::new(&mut reader)?,
-            MarshalZone::new(&mut reader)?,
-            MarshalZone::new(&mut reader)?,
-            MarshalZone::new(&mut reader)?,
-            MarshalZone::new(&mut reader)?,
-            MarshalZone::new(&mut reader)?,
-        ];
+        let mut marshal_zones = Vec::with_capacity(21);
+        for _ in 0..21 {
+            let mz = MarshalZone::new(&mut reader)?;
+            marshal_zones.push(mz);
+        }
 
         let safety_car_status = SafetyCar::try_from(reader.read_u8().unwrap())?;
         let network_game = reader.read_u8().unwrap() == 1;
