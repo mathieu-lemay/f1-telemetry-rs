@@ -50,9 +50,10 @@ fn main() {
                     c += 1;
                     match p {
                         Packet::Session(s) => println!("{:?}", s),
-                        Packet::LapData(l) => println!("{:?}", l),
+                        Packet::Lap(l) => println!("{:?}", l),
                         Packet::Event(e) => println!("{:?}", e),
-                        Packet::ParticipantsData(p) => println!("{:?}", p),
+                        Packet::Participants(p) => println!("{:?}", p),
+                        Packet::CarStatus(c) => println!("{:?}", c),
                     };
                 }
                 None => sleep(Duration::from_millis(5)),

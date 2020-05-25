@@ -1,35 +1,10 @@
 use super::header::PacketHeader;
+use crate::packet::generic::Flag;
 use crate::packet::UnpackError;
 use byteorder::{LittleEndian, ReadBytesExt};
 use getset::Getters;
 use std::convert::TryFrom;
 use std::io::BufRead;
-
-#[derive(Debug)]
-pub enum Flag {
-    None,
-    Green,
-    Blue,
-    Yellow,
-    Red,
-    Invalid,
-}
-
-impl TryFrom<i8> for Flag {
-    type Error = UnpackError;
-
-    fn try_from(value: i8) -> Result<Self, Self::Error> {
-        match value {
-            0 => Ok(Flag::None),
-            1 => Ok(Flag::Green),
-            2 => Ok(Flag::Blue),
-            3 => Ok(Flag::Yellow),
-            4 => Ok(Flag::Red),
-            -1 => Ok(Flag::Invalid),
-            _ => Err(UnpackError(format!("Invalid Flag value: {}", value))),
-        }
-    }
-}
 
 /// This type is used for the 21-element `marshal_zones` array of the [`PacketSessionData`] type.
 ///
@@ -201,7 +176,7 @@ impl TryFrom<u8> for SafetyCar {
 /// is_spectating:          Whether the player is spectating
 /// spectator_car_index:    Index of the car being spectated
 /// sli_pro_native_support: SLI Pro support, 0 = inactive, 1 = active
-/// numMarshal_zones:       Number of marshal zones to follow
+/// num_marshal_zones:      Number of marshal zones to follow
 /// marshal_zones:          List of marshal zones – max 21
 /// safety_car_status:      0 = no safety car, 1 = full safety car
 ///                         2 = virtual safety car

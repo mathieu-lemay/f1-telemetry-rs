@@ -1,3 +1,4 @@
+use car_status::PacketCarStatusData;
 use event::PacketEventData;
 use header::PacketHeader;
 use lap::PacketLapData;
@@ -7,7 +8,9 @@ use std::convert::TryFrom;
 use std::io::Cursor;
 use std::mem;
 
+pub mod car_status;
 pub mod event;
+pub mod generic;
 pub mod header;
 pub mod lap;
 pub mod participants;
@@ -19,9 +22,10 @@ pub struct UnpackError(pub String);
 
 pub enum Packet {
     Session(PacketSessionData),
-    LapData(PacketLapData),
+    Lap(PacketLapData),
     Event(PacketEventData),
-    ParticipantsData(PacketParticipantsData),
+    Participants(PacketParticipantsData),
+    CarStatus(PacketCarStatusData),
 }
 
 #[derive(Debug)]
@@ -70,7 +74,8 @@ pub fn parse_packet(size: usize, packet: &[u8]) -> Result<Packet, UnpackError> {
     let packet_id: PacketType = PacketType::try_from(*header.packet_id())?;
 
     match packet_id {
-        //PacketType::Motion => {}
+        //PacketType::Motion => {
+        //}
         PacketType::Session => {
             let packet = PacketSessionData::new(&mut cursor, header)?;
 
@@ -79,7 +84,7 @@ pub fn parse_packet(size: usize, packet: &[u8]) -> Result<Packet, UnpackError> {
         PacketType::LapData => {
             let packet = PacketLapData::new(&mut cursor, header)?;
 
-            Ok(Packet::LapData(packet))
+            Ok(Packet::Lap(packet))
         }
         PacketType::Event => {
             let packet = PacketEventData::new(&mut cursor, header)?;
@@ -89,11 +94,17 @@ pub fn parse_packet(size: usize, packet: &[u8]) -> Result<Packet, UnpackError> {
         PacketType::Participants => {
             let packet = PacketParticipantsData::new(&mut cursor, header)?;
 
-            Ok(Packet::ParticipantsData(packet))
+            Ok(Packet::Participants(packet))
         }
-        //PacketType::CarSetups => {}
-        //PacketType::CarTelemetry => {}
-        //PacketType::CarStatus => {}
+        //PacketType::CarSetups => {
+        //}
+        //PacketType::CarTelemetry => {
+        //}
+        PacketType::CarStatus => {
+            let packet = PacketCarStatusData::new(&mut cursor, header)?;
+
+            Ok(Packet::CarStatus(packet))
+        }
         _ => Err(UnpackError(format!(
             "Unpacking not implemented for {:?}",
             packet_id
