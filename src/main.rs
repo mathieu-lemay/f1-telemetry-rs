@@ -2,6 +2,7 @@ use byteorder::{LittleEndian, ReadBytesExt};
 use std::convert::TryFrom;
 use std::io::{BufRead, Cursor};
 use std::mem;
+use std::net::ToSocketAddrs;
 use std::net::UdpSocket;
 
 //struct UnpackError(&'static str);
@@ -658,22 +659,38 @@ fn parse_packet(size: usize, packet: &[u8]) -> Result<Packet, UnpackError> {
     }
 }
 
-fn main() {
-    let socket = UdpSocket::bind("0.0.0.0:20777").expect("Unable to bind socket");
-    println!("Listening on {}", socket.local_addr().unwrap());
+struct Stream {
+    socket: UdpSocket,
+}
 
-    let mut buf = [0; 2048]; // All packets fit in 2048 bytes
+impl Stream {
+    fn new<T: ToSocketAddrs>(addr: T) -> std::io::Result<Stream> {
+        let socket = UdpSocket::bind(addr)?;
+
+        Ok(Stream { socket })
+    }
+
+    fn next(&self) -> Result<Packet, UnpackError> {
+        let mut buf = [0; 2048]; // All packets fit in 2048 bytes
+
+        match self.socket.recv(&mut buf) {
+            Ok(len) => parse_packet(len, &buf),
+            Err(e) => Err(UnpackError(format!("Error reading from socket: {:?}", e))),
+        }
+    }
+}
+
+fn main() {
+    let stream = Stream::new("0.0.0.0:20777").expect("Unable to bind socket");
+    println!("Listening on {}", stream.socket.local_addr().unwrap());
 
     for _ in 0..20 {
-        match socket.recv(&mut buf) {
-            Ok(len) => match parse_packet(len, &buf) {
-                Ok(p) => match p {
-                    Packet::Session(s) => println!("{:?}", s),
-                    Packet::LapData(l) => println!("{:?}", l),
-                },
-                Err(e) => println!("{:?}", e),
+        match stream.next() {
+            Ok(p) => match p {
+                Packet::Session(s) => println!("{:?}", s),
+                Packet::LapData(l) => println!("{:?}", l),
             },
-            Err(e) => println!("Error: {:?}", e),
+            Err(e) => println!("{:?}", e),
         }
     }
 }
