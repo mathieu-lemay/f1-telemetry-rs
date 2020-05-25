@@ -1,3 +1,4 @@
+use event::PacketEventData;
 use header::PacketHeader;
 use lap::PacketLapData;
 use participants::PacketParticipantsData;
@@ -6,6 +7,7 @@ use std::convert::TryFrom;
 use std::io::Cursor;
 use std::mem;
 
+pub mod event;
 pub mod header;
 pub mod lap;
 pub mod participants;
@@ -18,6 +20,7 @@ pub struct UnpackError(pub String);
 pub enum Packet {
     Session(PacketSessionData),
     LapData(PacketLapData),
+    Event(PacketEventData),
     ParticipantsData(PacketParticipantsData),
 }
 
@@ -78,7 +81,11 @@ pub fn parse_packet(size: usize, packet: &[u8]) -> Result<Packet, UnpackError> {
 
             Ok(Packet::LapData(packet))
         }
-        //PacketType::Event => {}
+        PacketType::Event => {
+            let packet = PacketEventData::new(&mut cursor, header)?;
+
+            Ok(Packet::Event(packet))
+        }
         PacketType::Participants => {
             let packet = PacketParticipantsData::new(&mut cursor, header)?;
 
