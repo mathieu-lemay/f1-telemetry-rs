@@ -104,6 +104,72 @@ impl TryFrom<u8> for SessionType {
 }
 
 #[derive(Debug)]
+pub enum Track {
+    Melbourne,
+    PaulRicard,
+    Shanghai,
+    Sakhir,
+    Catalunya,
+    Monaco,
+    Montreal,
+    Silverstone,
+    Hockenheim,
+    Hungaroring,
+    Spa,
+    Monza,
+    Singapore,
+    Suzuka,
+    AbuDhabi,
+    Texas,
+    Brazil,
+    Austria,
+    Sochi,
+    Mexico,
+    Baku,
+    SakhirShort,
+    SilverstoneShort,
+    TexasShort,
+    SuzukaShort,
+    Unknown,
+}
+
+impl TryFrom<i8> for Track {
+    type Error = UnpackError;
+
+    fn try_from(value: i8) -> Result<Self, Self::Error> {
+        match value {
+            0 => Ok(Track::Melbourne),
+            1 => Ok(Track::PaulRicard),
+            2 => Ok(Track::Shanghai),
+            3 => Ok(Track::Sakhir),
+            4 => Ok(Track::Catalunya),
+            5 => Ok(Track::Monaco),
+            6 => Ok(Track::Montreal),
+            7 => Ok(Track::Silverstone),
+            8 => Ok(Track::Hockenheim),
+            9 => Ok(Track::Hungaroring),
+            10 => Ok(Track::Spa),
+            11 => Ok(Track::Monza),
+            12 => Ok(Track::Singapore),
+            13 => Ok(Track::Suzuka),
+            14 => Ok(Track::AbuDhabi),
+            15 => Ok(Track::Texas),
+            16 => Ok(Track::Brazil),
+            17 => Ok(Track::Austria),
+            18 => Ok(Track::Sochi),
+            19 => Ok(Track::Mexico),
+            20 => Ok(Track::Baku),
+            21 => Ok(Track::SakhirShort),
+            22 => Ok(Track::SilverstoneShort),
+            23 => Ok(Track::TexasShort),
+            24 => Ok(Track::SuzukaShort),
+            -1 => Ok(Track::Unknown),
+            _ => Err(UnpackError(format!("Invalid Track value: {}", value))),
+        }
+    }
+}
+
+#[derive(Debug)]
 pub enum Formula {
     F1Modern,
     F1Classic,
@@ -191,7 +257,7 @@ pub struct PacketSessionData {
     total_laps: u8,
     track_length: u16,
     session_type: SessionType,
-    track_id: i8,
+    track: Track,
     formula: Formula,
     session_time_left: u16,
     session_duration: u16,
@@ -217,7 +283,7 @@ impl PacketSessionData {
         let total_laps = reader.read_u8().unwrap();
         let track_length = reader.read_u16::<LittleEndian>().unwrap();
         let session_type = SessionType::try_from(reader.read_u8().unwrap())?;
-        let track_id = reader.read_i8().unwrap();
+        let track = Track::try_from(reader.read_i8().unwrap())?;
         let formula = Formula::try_from(reader.read_u8().unwrap())?;
         let session_time_left = reader.read_u16::<LittleEndian>().unwrap();
         let session_duration = reader.read_u16::<LittleEndian>().unwrap();
@@ -245,7 +311,7 @@ impl PacketSessionData {
             total_laps,
             track_length,
             session_type,
-            track_id,
+            track,
             formula,
             session_time_left,
             session_duration,
