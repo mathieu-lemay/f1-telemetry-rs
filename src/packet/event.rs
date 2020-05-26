@@ -85,22 +85,18 @@ impl PacketEventData {
     ) -> Result<PacketEventData, UnpackError> {
         let event = read_event(reader)?;
 
+        let vehicle_idx = reader.read_u8().unwrap();
         let vehicle_idx = match event {
             Event::FastestLap | Event::Retirement | Event::TeamMateInPits | Event::RaceWinner => {
-                Some(reader.read_u8().unwrap())
+                Some(vehicle_idx)
             }
-            _ => {
-                let _ = reader.read_u8();
-                None
-            }
+            _ => None,
         };
 
+        let lap_time = reader.read_f32::<LittleEndian>().unwrap();
         let lap_time = match event {
-            Event::FastestLap => Some(reader.read_f32::<LittleEndian>().unwrap()),
-            _ => {
-                let _ = reader.read_f32::<LittleEndian>();
-                None
-            }
+            Event::FastestLap => Some(lap_time),
+            _ => None,
         };
 
         Ok(PacketEventData {
