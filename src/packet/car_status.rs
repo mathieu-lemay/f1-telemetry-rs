@@ -227,6 +227,7 @@ pub struct TyresStatus {
 ///     ersHarvestedThisLapMGUH
 ///
 /// ## Specification
+/// ```text
 /// traction_control:            0 (off) - 2 (high)
 /// anti_lock_brakes:            0 (off) - 1 (on)
 /// fuel_mix:                    fuel mix - 0 = lean, 1 = standard, 2 = rich, 3 = max
@@ -263,6 +264,7 @@ pub struct TyresStatus {
 /// ers_harvested_this_lap_mguk: ERS energy harvested this lap by MGU-k
 /// ers_harvested_this_lap_mguh: ERS energy harvested this lap by MGU-h
 /// ers_deployed_this_lap:       ERS energy deployed this lap
+/// ```
 ///
 /// [`PacketCarStatusData`]: ./struct.CarStatusData.html
 #[derive(Debug, Getters)]

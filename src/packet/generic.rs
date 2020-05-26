@@ -1,3 +1,4 @@
+use getset::Getters;
 use std::convert::TryFrom;
 
 use crate::packet::UnpackError;
@@ -24,6 +25,26 @@ impl TryFrom<i8> for Flag {
             4 => Ok(Flag::Red),
             -1 => Ok(Flag::Invalid),
             _ => Err(UnpackError(format!("Invalid Flag value: {}", value))),
+        }
+    }
+}
+
+#[derive(Debug, Getters)]
+#[getset(get = "pub")]
+pub struct WheelData<T> {
+    rear_left: T,
+    rear_right: T,
+    front_left: T,
+    front_right: T,
+}
+
+impl<T> WheelData<T> {
+    pub fn new(rear_left: T, rear_right: T, front_left: T, front_right: T) -> WheelData<T> {
+        WheelData {
+            rear_left,
+            rear_right,
+            front_left,
+            front_right,
         }
     }
 }

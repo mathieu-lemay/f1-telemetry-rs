@@ -8,6 +8,7 @@ use car_telemetry::PacketCarTelemetryData;
 use event::PacketEventData;
 use header::PacketHeader;
 use lap::PacketLapData;
+use motion::PacketMotionData;
 use participants::PacketParticipantsData;
 use session::PacketSessionData;
 
@@ -18,6 +19,7 @@ pub mod event;
 pub mod generic;
 pub mod header;
 pub mod lap;
+pub mod motion;
 pub mod participants;
 pub mod session;
 
@@ -26,11 +28,12 @@ pub mod session;
 pub struct UnpackError(pub String);
 
 pub enum Packet {
+    Motion(PacketMotionData),
     Session(PacketSessionData),
     Lap(PacketLapData),
     Event(PacketEventData),
     Participants(PacketParticipantsData),
-    CarSetup(PacketCarSetupData),
+    CarSetups(PacketCarSetupData),
     CarTelemetry(PacketCarTelemetryData),
     CarStatus(PacketCarStatusData),
 }
@@ -81,8 +84,11 @@ pub fn parse_packet(size: usize, packet: &[u8]) -> Result<Packet, UnpackError> {
     let packet_id: PacketType = PacketType::try_from(*header.packet_id())?;
 
     match packet_id {
-        //PacketType::Motion => {
-        //}
+        PacketType::Motion => {
+            let packet = PacketMotionData::new(&mut cursor, header)?;
+
+            Ok(Packet::Motion(packet))
+        }
         PacketType::Session => {
             let packet = PacketSessionData::new(&mut cursor, header)?;
 
@@ -106,7 +112,7 @@ pub fn parse_packet(size: usize, packet: &[u8]) -> Result<Packet, UnpackError> {
         PacketType::CarSetups => {
             let packet = PacketCarSetupData::new(&mut cursor, header)?;
 
-            Ok(Packet::CarSetup(packet))
+            Ok(Packet::CarSetups(packet))
         }
         PacketType::CarTelemetry => {
             let packet = PacketCarTelemetryData::new(&mut cursor, header)?;
@@ -118,9 +124,5 @@ pub fn parse_packet(size: usize, packet: &[u8]) -> Result<Packet, UnpackError> {
 
             Ok(Packet::CarStatus(packet))
         }
-        _ => Err(UnpackError(format!(
-            "Unpacking not implemented for {:?}",
-            packet_id
-        ))),
     }
 }
