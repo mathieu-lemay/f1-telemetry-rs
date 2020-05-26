@@ -270,60 +270,34 @@ impl TryFrom<u8> for ERSDeployMode {
 /// ers_deployed_this_lap:       ERS energy deployed this lap
 /// [`PacketCarStatusData`]: ./struct.CarStatusData.html
 #[derive(Debug, Getters)]
+#[getset(get = "pub")]
 pub struct CarStatusData {
-    #[getset(get = "pub")]
     traction_control: TractionControl,
-    #[getset(get = "pub")]
     anti_lock_brakes: bool,
-    #[getset(get = "pub")]
     fuel_mix: FuelMix,
-    #[getset(get = "pub")]
     front_brake_bias: u8,
-    #[getset(get = "pub")]
     pit_limiter: bool,
-    #[getset(get = "pub")]
     fuel_in_tank: f32,
-    #[getset(get = "pub")]
     fuel_capacity: f32,
-    #[getset(get = "pub")]
     fuel_remaining_laps: f32,
-    #[getset(get = "pub")]
     max_rpm: u16,
-    #[getset(get = "pub")]
     idle_rpm: u16,
-    #[getset(get = "pub")]
     max_gears: u8,
-    #[getset(get = "pub")]
     drs_allowed: DRS,
-    #[getset(get = "pub")]
     tyres_wear: [u8; 4],
-    #[getset(get = "pub")]
     actual_tyre_compound: TyreCompound,
-    #[getset(get = "pub")]
     visual_tyre_compound: TyreCompoundVisual,
-    #[getset(get = "pub")]
     tyres_damage: [u8; 4],
-    #[getset(get = "pub")]
     front_left_wing_damage: u8,
-    #[getset(get = "pub")]
     front_right_wing_damage: u8,
-    #[getset(get = "pub")]
     rear_wing_damage: u8,
-    #[getset(get = "pub")]
     engine_damage: u8,
-    #[getset(get = "pub")]
     gear_box_damage: u8,
-    #[getset(get = "pub")]
     vehicle_fia_flags: Flag,
-    #[getset(get = "pub")]
     ers_store_energy: f32,
-    #[getset(get = "pub")]
     ers_deploy_mode: ERSDeployMode,
-    #[getset(get = "pub")]
     ers_harvested_this_lap_mguk: f32,
-    #[getset(get = "pub")]
     ers_harvested_this_lap_mguh: f32,
-    #[getset(get = "pub")]
     ers_deployed_this_lap: f32,
 }
 
@@ -413,10 +387,9 @@ impl CarStatusData {
 /// car_status_data: List of cars (20)
 /// ```
 #[derive(Debug, Getters)]
+#[getset(get = "pub")]
 pub struct PacketCarStatusData {
-    #[getset(get = "pub")]
     header: PacketHeader,
-    #[getset(get = "pub")]
     car_status_data: Vec<CarStatusData>,
 }
 

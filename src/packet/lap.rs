@@ -116,40 +116,24 @@ impl TryFrom<u8> for ResultStatus {
 /// ```
 /// [`PacketLapData`]: ./struct.PacketLapData.html
 #[derive(Debug, Getters)]
+#[getset(get = "pub")]
 pub struct LapData {
-    #[getset(get = "pub")]
     last_lap_time: f32,
-    #[getset(get = "pub")]
     current_lap_time: f32,
-    #[getset(get = "pub")]
     best_lap_time: f32,
-    #[getset(get = "pub")]
     sector_1_time: f32,
-    #[getset(get = "pub")]
     sector_2_time: f32,
-    #[getset(get = "pub")]
     lap_distance: f32,
-    #[getset(get = "pub")]
     total_distance: f32,
-    #[getset(get = "pub")]
     safety_car_delta: f32,
-    #[getset(get = "pub")]
     car_position: u8,
-    #[getset(get = "pub")]
     current_lap_num: u8,
-    #[getset(get = "pub")]
     pit_status: PitStatus,
-    #[getset(get = "pub")]
     sector: u8,
-    #[getset(get = "pub")]
     current_lap_invalid: u8,
-    #[getset(get = "pub")]
     penalties: u8,
-    #[getset(get = "pub")]
     grid_position: u8,
-    #[getset(get = "pub")]
     driver_status: DriverStatus,
-    #[getset(get = "pub")]
     result_status: ResultStatus,
 }
 
@@ -209,10 +193,9 @@ impl LapData {
 /// lap_data: Lap data for all cars on track
 /// ```
 #[derive(Debug, Getters)]
+#[getset(get = "pub")]
 pub struct PacketLapData {
-    #[getset(get = "pub")]
     header: PacketHeader,
-    #[getset(get = "pub")]
     lap_data: Vec<LapData>,
 }
 

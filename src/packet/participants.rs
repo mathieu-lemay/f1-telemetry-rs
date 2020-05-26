@@ -517,20 +517,14 @@ impl TryFrom<u8> for Telemetry {
 ///
 /// [`PacketParticipantsData`]: ./struct.PacketParticipantsData.html
 #[derive(Debug, Getters)]
+#[getset(get = "pub")]
 pub struct ParticipantData {
-    #[getset(get = "pub")]
     ai_controlled: bool,
-    #[getset(get = "pub")]
     driver: Driver,
-    #[getset(get = "pub")]
     team: Team,
-    #[getset(get = "pub")]
     race_number: u8,
-    #[getset(get = "pub")]
     nationality: Nationality,
-    #[getset(get = "pub")]
     name: String,
-    #[getset(get = "pub")]
     telemetry: Telemetry,
 }
 
@@ -577,12 +571,10 @@ impl ParticipantData {
 /// participants:    List of participants, max 20.
 /// ```
 #[derive(Debug, Getters)]
+#[getset(get = "pub")]
 pub struct PacketParticipantsData {
-    #[getset(get = "pub")]
     header: PacketHeader,
-    #[getset(get = "pub")]
     num_active_cars: u8,
-    #[getset(get = "pub")]
     participants: Vec<ParticipantData>,
 }
 

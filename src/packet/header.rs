@@ -21,24 +21,16 @@ use std::io::BufRead;
 ///
 /// [`PacketType`]: ../enum.PacketType.html
 #[derive(Debug, Getters)]
+#[getset(get = "pub")]
 pub struct PacketHeader {
-    #[getset(get = "pub")]
     packet_format: u16,
-    #[getset(get = "pub")]
     game_major_version: u8,
-    #[getset(get = "pub")]
     game_minor_version: u8,
-    #[getset(get = "pub")]
     packet_version: u8,
-    #[getset(get = "pub")]
     packet_id: u8,
-    #[getset(get = "pub")]
     session_uid: u64,
-    #[getset(get = "pub")]
     session_time: f32,
-    #[getset(get = "pub")]
     frame_identifier: u32,
-    #[getset(get = "pub")]
     player_car_index: u8,
 }
 

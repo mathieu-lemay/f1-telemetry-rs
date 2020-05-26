@@ -19,10 +19,9 @@ use std::io::BufRead;
 /// ```
 /// [`PacketSessionData`]: ./struct.PacketSessionData.html
 #[derive(Debug, Getters)]
+#[getset(get = "pub")]
 pub struct MarshalZone {
-    #[getset(get = "pub")]
     zone_start: f32,
-    #[getset(get = "pub")]
     zone_flag: Flag,
 }
 
@@ -183,46 +182,27 @@ impl TryFrom<u8> for SafetyCar {
 /// network_game:           0 = offline, 1 = online
 /// ```
 #[derive(Debug, Getters)]
+#[getset(get = "pub")]
 pub struct PacketSessionData {
-    #[getset(get = "pub")]
     header: PacketHeader,
-    #[getset(get = "pub")]
     weather: Weather,
-    #[getset(get = "pub")]
     track_temperature: i8,
-    #[getset(get = "pub")]
     air_temperature: i8,
-    #[getset(get = "pub")]
     total_laps: u8,
-    #[getset(get = "pub")]
     track_length: u16,
-    #[getset(get = "pub")]
     session_type: SessionType,
-    #[getset(get = "pub")]
     track_id: i8,
-    #[getset(get = "pub")]
     formula: Formula,
-    #[getset(get = "pub")]
     session_time_left: u16,
-    #[getset(get = "pub")]
     session_duration: u16,
-    #[getset(get = "pub")]
     pit_speed_limit: u8,
-    #[getset(get = "pub")]
     game_paused: u8,
-    #[getset(get = "pub")]
     is_spectating: u8,
-    #[getset(get = "pub")]
     spectator_car_index: u8,
-    #[getset(get = "pub")]
     sli_pro_native_support: bool,
-    #[getset(get = "pub")]
     num_marshal_zones: u8,
-    #[getset(get = "pub")]
     marshal_zones: Vec<MarshalZone>,
-    #[getset(get = "pub")]
     safety_car_status: SafetyCar,
-    #[getset(get = "pub")]
     network_game: bool,
 }
 

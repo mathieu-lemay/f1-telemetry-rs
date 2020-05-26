@@ -69,14 +69,11 @@ impl TryFrom<&str> for Event {
 /// lapTime:         Lap time is in seconds (valid for events: FTLP)
 /// ```
 #[derive(Debug, Getters)]
+#[getset(get = "pub")]
 pub struct PacketEventData {
-    #[getset(get = "pub")]
     header: PacketHeader,
-    #[getset(get = "pub")]
     event: Event,
-    #[getset(get = "pub")]
     vehicle_idx: Option<u8>,
-    #[getset(get = "pub")]
     lap_time: Option<f32>,
 }
 
