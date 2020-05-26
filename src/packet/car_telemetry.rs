@@ -240,4 +240,57 @@ impl PacketCarTelemetryData {
             button_status,
         })
     }
+
+    pub fn get_pressed_buttons(&self) -> Vec<ButtonFlag> {
+        let mask = self.button_status;
+        let mut buttons = Vec::new();
+
+        if mask & (ButtonFlag::Cross as u32) > 0 {
+            buttons.push(ButtonFlag::Cross);
+        }
+        if mask & (ButtonFlag::Triangle as u32) > 0 {
+            buttons.push(ButtonFlag::Triangle);
+        }
+        if mask & (ButtonFlag::Circle as u32) > 0 {
+            buttons.push(ButtonFlag::Circle);
+        }
+        if mask & (ButtonFlag::Square as u32) > 0 {
+            buttons.push(ButtonFlag::Square);
+        }
+        if mask & (ButtonFlag::DPadLeft as u32) > 0 {
+            buttons.push(ButtonFlag::DPadLeft);
+        }
+        if mask & (ButtonFlag::DPadRight as u32) > 0 {
+            buttons.push(ButtonFlag::DPadRight);
+        }
+        if mask & (ButtonFlag::DPadUp as u32) > 0 {
+            buttons.push(ButtonFlag::DPadUp);
+        }
+        if mask & (ButtonFlag::DPadDown as u32) > 0 {
+            buttons.push(ButtonFlag::DPadDown);
+        }
+        if mask & (ButtonFlag::Options as u32) > 0 {
+            buttons.push(ButtonFlag::Options);
+        }
+        if mask & (ButtonFlag::L1 as u32) > 0 {
+            buttons.push(ButtonFlag::L1);
+        }
+        if mask & (ButtonFlag::R1 as u32) > 0 {
+            buttons.push(ButtonFlag::R1);
+        }
+        if mask & (ButtonFlag::L2 as u32) > 0 {
+            buttons.push(ButtonFlag::L2);
+        }
+        if mask & (ButtonFlag::R2 as u32) > 0 {
+            buttons.push(ButtonFlag::R2);
+        }
+        if mask & (ButtonFlag::LeftStickClick as u32) > 0 {
+            buttons.push(ButtonFlag::LeftStickClick);
+        }
+        if mask & (ButtonFlag::RightStickClick as u32) > 0 {
+            buttons.push(ButtonFlag::RightStickClick);
+        }
+
+        buttons
+    }
 }

@@ -81,15 +81,17 @@ fn main() {
                             Packet::Participants(p) => participants = Some(p),
                             Packet::CarTelemetry(t) => {
                                 let car_idx = *t.header().player_car_index() as usize;
-                                let t = &t.car_telemetry_data()[car_idx];
+                                let c = &t.car_telemetry_data()[car_idx];
 
                                 println!(
-                                    "Telemetry<Speed={}km/h, RPM={}, Gear={}, Throttle={}%, Brake={}%>",
-                                    t.speed(),
-                                    t.engine_rpm(),
-                                    t.gear(),
-                                    (t.throttle() * 100.0) as u32,
-                                    (t.brake() * 100.0) as u32
+                                    "Telemetry<Speed={}km/h, RPM={}, Gear={}, Throttle={}%, Brake={}%, Steer={:.02}, Buttons={:?}>",
+                                    c.speed(),
+                                    c.engine_rpm(),
+                                    c.gear(),
+                                    (c.throttle() * 100.0) as u32,
+                                    (c.brake() * 100.0) as u32,
+                                    c.steer(),
+                                    t.get_pressed_buttons(),
                                 );
                             }
                             //Packet::CarStatus(s) => println!("{:?}", s),
