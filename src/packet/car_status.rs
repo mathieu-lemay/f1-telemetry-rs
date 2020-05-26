@@ -187,7 +187,7 @@ impl TryFrom<u8> for ERSDeployMode {
     }
 }
 
-/// This type is used for the 20-element 'car_status_data' array of the [`PacketCarStatusData`] type.
+/// This type is used for the 20-element `car_status_data` array of the [`PacketCarStatusData`] type.
 ///
 /// There is some data in the Car Status packets that you may not want other players seeing if you are in a multiplayer game.
 /// This is controlled by the "Your Telemetry" setting in the Telemetry options. The options are:

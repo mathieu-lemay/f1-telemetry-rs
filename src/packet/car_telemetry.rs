@@ -45,7 +45,7 @@ impl TryFrom<u8> for SurfaceType {
     }
 }
 
-/// This type is used for the 20-element 'car_telemetry_data' array of the [`PacketCarTelemetryData`] type.
+/// This type is used for the 20-element `car_telemetry_data` array of the [`PacketCarTelemetryData`] type.
 ///
 /// ## Specification
 /// speed                     Speed of car in kilometres per hour
@@ -148,7 +148,7 @@ impl CarTelemetryData {
     }
 }
 
-/// Bit-mask values for the 'button_status' field in [`PacketCarTelemetryDataCar`]
+/// Bit-mask values for the `button_status` field in [`PacketCarTelemetryData`]
 ///
 /// [`PacketCarTelemetryData`]: ./struct.CarTelemetryData.html
 #[derive(Debug)]

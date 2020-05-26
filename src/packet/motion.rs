@@ -6,7 +6,7 @@ use super::header::PacketHeader;
 use crate::packet::generic::WheelData;
 use crate::packet::UnpackError;
 
-/// This type is used for the 20-element 'motion_data' array of the [`PacketMotionData`] type.
+/// This type is used for the 20-element `motion_data` array of the [`PacketMotionData`] type.
 ///
 /// ## Specification
 /// ```text
