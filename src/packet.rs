@@ -23,10 +23,10 @@ pub mod motion;
 pub mod participants;
 pub mod session;
 
-//struct UnpackError(&'static str);
 #[derive(Debug)]
 pub struct UnpackError(pub String);
 
+#[derive(Debug)]
 pub enum Packet {
     Motion(PacketMotionData),
     Session(PacketSessionData),
@@ -68,7 +68,7 @@ impl TryFrom<u8> for PacketType {
     }
 }
 
-pub fn parse_packet(size: usize, packet: &[u8]) -> Result<Packet, UnpackError> {
+pub(crate) fn parse_packet(size: usize, packet: &[u8]) -> Result<Packet, UnpackError> {
     let header_size = mem::size_of::<PacketHeader>();
 
     if size < header_size {
