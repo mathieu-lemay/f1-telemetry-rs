@@ -2,6 +2,7 @@ use std::convert::TryFrom;
 use std::io::Cursor;
 use std::mem;
 
+use car_setup::PacketCarSetupData;
 use car_status::PacketCarStatusData;
 use car_telemetry::PacketCarTelemetryData;
 use event::PacketEventData;
@@ -10,6 +11,7 @@ use lap::PacketLapData;
 use participants::PacketParticipantsData;
 use session::PacketSessionData;
 
+pub mod car_setup;
 pub mod car_status;
 pub mod car_telemetry;
 pub mod event;
@@ -28,6 +30,7 @@ pub enum Packet {
     Lap(PacketLapData),
     Event(PacketEventData),
     Participants(PacketParticipantsData),
+    CarSetup(PacketCarSetupData),
     CarTelemetry(PacketCarTelemetryData),
     CarStatus(PacketCarStatusData),
 }
@@ -100,8 +103,11 @@ pub fn parse_packet(size: usize, packet: &[u8]) -> Result<Packet, UnpackError> {
 
             Ok(Packet::Participants(packet))
         }
-        //PacketType::CarSetups => {
-        //}
+        PacketType::CarSetups => {
+            let packet = PacketCarSetupData::new(&mut cursor, header)?;
+
+            Ok(Packet::CarSetup(packet))
+        }
         PacketType::CarTelemetry => {
             let packet = PacketCarTelemetryData::new(&mut cursor, header)?;
 
