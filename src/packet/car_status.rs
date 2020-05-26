@@ -4,7 +4,7 @@ use std::convert::TryFrom;
 use std::io::BufRead;
 
 use super::header::PacketHeader;
-use crate::packet::generic::Flag;
+use crate::packet::generic::{Flag, WheelData};
 use crate::packet::UnpackError;
 
 #[derive(Debug)]
@@ -187,15 +187,6 @@ impl TryFrom<u8> for ERSDeployMode {
     }
 }
 
-#[derive(Debug, Getters)]
-#[getset(get = "pub")]
-pub struct TyresStatus {
-    rear_left: u8,
-    rear_right: u8,
-    front_left: u8,
-    front_right: u8,
-}
-
 /// This type is used for the 20-element 'car_status_data' array of the [`PacketCarStatusData`] type.
 ///
 /// There is some data in the Car Status packets that you may not want other players seeing if you are in a multiplayer game.
@@ -282,10 +273,10 @@ pub struct CarStatusData {
     idle_rpm: u16,
     max_gears: u8,
     drs_allowed: DRS,
-    tyres_wear: TyresStatus,
+    tyres_wear: WheelData<u8>,
     actual_tyre_compound: TyreCompound,
     visual_tyre_compound: TyreCompoundVisual,
-    tyres_damage: TyresStatus,
+    tyres_damage: WheelData<u8>,
     front_left_wing_damage: u8,
     front_right_wing_damage: u8,
     rear_wing_damage: u8,
@@ -313,20 +304,20 @@ impl CarStatusData {
         let idle_rpm = reader.read_u16::<LittleEndian>().unwrap();
         let max_gears = reader.read_u8().unwrap();
         let drs_allowed = DRS::try_from(reader.read_i8().unwrap())?;
-        let tyres_wear = TyresStatus {
-            rear_left: reader.read_u8().unwrap(),
-            rear_right: reader.read_u8().unwrap(),
-            front_left: reader.read_u8().unwrap(),
-            front_right: reader.read_u8().unwrap(),
-        };
+        let tyres_wear = WheelData::new(
+            reader.read_u8().unwrap(),
+            reader.read_u8().unwrap(),
+            reader.read_u8().unwrap(),
+            reader.read_u8().unwrap(),
+        );
         let actual_tyre_compound = TyreCompound::try_from(reader.read_u8().unwrap())?;
         let visual_tyre_compound = TyreCompoundVisual::try_from(reader.read_u8().unwrap())?;
-        let tyres_damage = TyresStatus {
-            rear_left: reader.read_u8().unwrap(),
-            rear_right: reader.read_u8().unwrap(),
-            front_left: reader.read_u8().unwrap(),
-            front_right: reader.read_u8().unwrap(),
-        };
+        let tyres_damage = WheelData::new(
+            reader.read_u8().unwrap(),
+            reader.read_u8().unwrap(),
+            reader.read_u8().unwrap(),
+            reader.read_u8().unwrap(),
+        );
         let front_left_wing_damage = reader.read_u8().unwrap();
         let front_right_wing_damage = reader.read_u8().unwrap();
         let rear_wing_damage = reader.read_u8().unwrap();

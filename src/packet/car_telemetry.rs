@@ -4,6 +4,7 @@ use std::convert::TryFrom;
 use std::io::BufRead;
 
 use super::header::PacketHeader;
+use crate::packet::generic::WheelData;
 use crate::packet::UnpackError;
 
 #[derive(Debug)]
@@ -44,33 +45,6 @@ impl TryFrom<u8> for SurfaceType {
     }
 }
 
-#[derive(Debug, Getters)]
-#[getset(get = "pub")]
-pub struct Temperatures {
-    rear_left: u16,
-    rear_right: u16,
-    front_left: u16,
-    front_right: u16,
-}
-
-#[derive(Debug, Getters)]
-#[getset(get = "pub")]
-pub struct TyrePressures {
-    rear_left: f32,
-    rear_right: f32,
-    front_left: f32,
-    front_right: f32,
-}
-
-#[derive(Debug, Getters)]
-#[getset(get = "pub")]
-pub struct SurfaceTypes {
-    rear_left: SurfaceType,
-    rear_right: SurfaceType,
-    front_left: SurfaceType,
-    front_right: SurfaceType,
-}
-
 /// This type is used for the 20-element 'car_telemetry_data' array of the [`PacketCarTelemetryData`] type.
 ///
 /// ## Specification
@@ -103,12 +77,12 @@ pub struct CarTelemetryData {
     engine_rpm: u16,
     drs: bool,
     rev_lights_percent: u8,
-    brakes_temperature: Temperatures,
-    tyres_surface_temperature: Temperatures,
-    tyres_inner_temperature: Temperatures,
+    brakes_temperature: WheelData<u16>,
+    tyres_surface_temperature: WheelData<u16>,
+    tyres_inner_temperature: WheelData<u16>,
     engine_temperature: u16,
-    tyre_pressures: TyrePressures,
-    surface_types: SurfaceTypes,
+    tyre_pressures: WheelData<f32>,
+    surface_types: WheelData<SurfaceType>,
 }
 
 impl CarTelemetryData {
@@ -122,37 +96,37 @@ impl CarTelemetryData {
         let engine_rpm = reader.read_u16::<LittleEndian>().unwrap();
         let drs = reader.read_u8().unwrap() == 1;
         let rev_lights_percent = reader.read_u8().unwrap();
-        let brakes_temperature = Temperatures {
-            rear_left: reader.read_u16::<LittleEndian>().unwrap(),
-            rear_right: reader.read_u16::<LittleEndian>().unwrap(),
-            front_left: reader.read_u16::<LittleEndian>().unwrap(),
-            front_right: reader.read_u16::<LittleEndian>().unwrap(),
-        };
-        let tyres_surface_temperature = Temperatures {
-            rear_left: reader.read_u16::<LittleEndian>().unwrap(),
-            rear_right: reader.read_u16::<LittleEndian>().unwrap(),
-            front_left: reader.read_u16::<LittleEndian>().unwrap(),
-            front_right: reader.read_u16::<LittleEndian>().unwrap(),
-        };
-        let tyres_inner_temperature = Temperatures {
-            rear_left: reader.read_u16::<LittleEndian>().unwrap(),
-            rear_right: reader.read_u16::<LittleEndian>().unwrap(),
-            front_left: reader.read_u16::<LittleEndian>().unwrap(),
-            front_right: reader.read_u16::<LittleEndian>().unwrap(),
-        };
+        let brakes_temperature = WheelData::new(
+            reader.read_u16::<LittleEndian>().unwrap(),
+            reader.read_u16::<LittleEndian>().unwrap(),
+            reader.read_u16::<LittleEndian>().unwrap(),
+            reader.read_u16::<LittleEndian>().unwrap(),
+        );
+        let tyres_surface_temperature = WheelData::new(
+            reader.read_u16::<LittleEndian>().unwrap(),
+            reader.read_u16::<LittleEndian>().unwrap(),
+            reader.read_u16::<LittleEndian>().unwrap(),
+            reader.read_u16::<LittleEndian>().unwrap(),
+        );
+        let tyres_inner_temperature = WheelData::new(
+            reader.read_u16::<LittleEndian>().unwrap(),
+            reader.read_u16::<LittleEndian>().unwrap(),
+            reader.read_u16::<LittleEndian>().unwrap(),
+            reader.read_u16::<LittleEndian>().unwrap(),
+        );
         let engine_temperature = reader.read_u16::<LittleEndian>().unwrap();
-        let tyre_pressures = TyrePressures {
-            rear_left: reader.read_f32::<LittleEndian>().unwrap(),
-            rear_right: reader.read_f32::<LittleEndian>().unwrap(),
-            front_left: reader.read_f32::<LittleEndian>().unwrap(),
-            front_right: reader.read_f32::<LittleEndian>().unwrap(),
-        };
-        let surface_types = SurfaceTypes {
-            rear_left: SurfaceType::try_from(reader.read_u8().unwrap())?,
-            rear_right: SurfaceType::try_from(reader.read_u8().unwrap())?,
-            front_left: SurfaceType::try_from(reader.read_u8().unwrap())?,
-            front_right: SurfaceType::try_from(reader.read_u8().unwrap())?,
-        };
+        let tyre_pressures = WheelData::new(
+            reader.read_f32::<LittleEndian>().unwrap(),
+            reader.read_f32::<LittleEndian>().unwrap(),
+            reader.read_f32::<LittleEndian>().unwrap(),
+            reader.read_f32::<LittleEndian>().unwrap(),
+        );
+        let surface_types = WheelData::new(
+            SurfaceType::try_from(reader.read_u8().unwrap())?,
+            SurfaceType::try_from(reader.read_u8().unwrap())?,
+            SurfaceType::try_from(reader.read_u8().unwrap())?,
+            SurfaceType::try_from(reader.read_u8().unwrap())?,
+        );
 
         Ok(CarTelemetryData {
             speed,
