@@ -284,10 +284,10 @@ pub struct CarStatusData {
     idle_rpm: u16,
     max_gears: u8,
     drs_allowed: DRS,
-    tyres_wear: [u8; 4],
+    tyres_wear: [u8; 4], // TODO: Use Struct [RL, RR, FL, FR]
     actual_tyre_compound: TyreCompound,
     visual_tyre_compound: TyreCompoundVisual,
-    tyres_damage: [u8; 4],
+    tyres_damage: [u8; 4], // TODO: Use Struct [RL, RR, FL, FR]
     front_left_wing_damage: u8,
     front_right_wing_damage: u8,
     rear_wing_damage: u8,

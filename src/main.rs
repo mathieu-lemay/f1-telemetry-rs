@@ -1,3 +1,4 @@
+use packet::participants::PacketParticipantsData;
 use packet::{parse_packet, Packet, UnpackError};
 use std::io::ErrorKind;
 use std::net::{ToSocketAddrs, UdpSocket};
@@ -41,24 +42,51 @@ fn main() {
     let stream = Stream::new("0.0.0.0:20777").expect("Unable to bind socket");
     println!("Listening on {}", stream.socket.local_addr().unwrap());
 
-    let mut c = 0;
+    let mut participants: Option<PacketParticipantsData> = None;
 
-    while c < 20 {
+    loop {
         match stream.next() {
             Ok(p) => match p {
                 Some(p) => {
-                    c += 1;
                     match p {
-                        Packet::Session(s) => println!("{:?}", s),
-                        Packet::Lap(l) => println!("{:?}", l),
-                        Packet::Event(e) => println!("{:?}", e),
-                        Packet::Participants(p) => println!("{:?}", p),
-                        Packet::CarStatus(c) => println!("{:?}", c),
-                    };
+                        Packet::Session(s) => println!(
+                            "Session<Type={:?}, Track={:?}, Elapsed={}>",
+                            s.session_type(),
+                            s.track(),
+                            s.session_duration() - s.session_time_left()
+                        ),
+                        //Packet::Lap(l) => println!("{:?}", l),
+                        Packet::Event(e) => {
+                            let driver;
+
+                            if let Some(v) = e.vehicle_idx() {
+                                if let Some(p) = &participants {
+                                    driver = Some(p.participants()[*v as usize].name());
+                                } else {
+                                    driver = None;
+                                }
+                            } else {
+                                driver = None;
+                            }
+
+                            println!(
+                                "Event<Type={:?}, Vehicle={:?} ({:?}), LapTime={:?}>",
+                                e.event(),
+                                driver,
+                                e.vehicle_idx(),
+                                e.lap_time()
+                            );
+                        }
+                        Packet::Participants(p) => participants = Some(p),
+                        //Packet::CarStatus(c) => println!("{:?}", c),
+                        _ => {}
+                    }
                 }
                 None => sleep(Duration::from_millis(5)),
             },
-            Err(e) => println!("{:?}", e),
+            Err(_e) => {
+                //println!("{:?}", _e);
+            }
         }
     }
 }
