@@ -46,44 +46,59 @@ fn main() {
 
     loop {
         match stream.next() {
-            Ok(p) => match p {
-                Some(p) => {
-                    match p {
-                        Packet::Session(s) => println!(
-                            "Session<Type={:?}, Track={:?}, Elapsed={}>",
-                            s.session_type(),
-                            s.track(),
-                            s.session_duration() - s.session_time_left()
-                        ),
-                        //Packet::Lap(l) => println!("{:?}", l),
-                        Packet::Event(e) => {
-                            let driver;
+            Ok(p) => {
+                match p {
+                    Some(p) => {
+                        match p {
+                            Packet::Session(s) => println!(
+                                "Session<Type={:?}, Track={:?}, Elapsed={}>",
+                                s.session_type(),
+                                s.track(),
+                                s.session_duration() - s.session_time_left()
+                            ),
+                            //Packet::Lap(l) => println!("{:?}", l),
+                            Packet::Event(e) => {
+                                let driver;
 
-                            if let Some(v) = e.vehicle_idx() {
-                                if let Some(p) = &participants {
-                                    driver = Some(p.participants()[*v as usize].name());
+                                if let Some(v) = e.vehicle_idx() {
+                                    if let Some(p) = &participants {
+                                        driver = Some(p.participants()[*v as usize].name());
+                                    } else {
+                                        driver = None;
+                                    }
                                 } else {
                                     driver = None;
                                 }
-                            } else {
-                                driver = None;
-                            }
 
-                            println!(
-                                "Event<Type={:?}, Vehicle={:?} ({:?}), LapTime={:?}>",
-                                e.event(),
-                                driver,
-                                e.vehicle_idx(),
-                                e.lap_time()
-                            );
+                                println!(
+                                    "Event<Type={:?}, Vehicle={:?} ({:?}), LapTime={:?}>",
+                                    e.event(),
+                                    driver,
+                                    e.vehicle_idx(),
+                                    e.lap_time()
+                                );
+                            }
+                            Packet::Participants(p) => participants = Some(p),
+                            Packet::CarTelemetry(t) => {
+                                let car_idx = *t.header().player_car_index() as usize;
+                                let t = &t.car_telemetry_data()[car_idx];
+
+                                println!(
+                                    "Telemetry<Speed={}km/h, RPM={}, Gear={}, Throttle={}%, Brake={}%>",
+                                    t.speed(),
+                                    t.engine_rpm(),
+                                    t.gear(),
+                                    (t.throttle() * 100.0) as u32,
+                                    (t.brake() * 100.0) as u32
+                                );
+                            }
+                            //Packet::CarStatus(s) => println!("{:?}", s),
+                            _ => {}
                         }
-                        Packet::Participants(p) => participants = Some(p),
-                        //Packet::CarStatus(c) => println!("{:?}", c),
-                        _ => {}
                     }
+                    None => sleep(Duration::from_millis(5)),
                 }
-                None => sleep(Duration::from_millis(5)),
-            },
+            }
             Err(_e) => {
                 //println!("{:?}", _e);
             }

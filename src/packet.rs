@@ -1,14 +1,17 @@
+use std::convert::TryFrom;
+use std::io::Cursor;
+use std::mem;
+
 use car_status::PacketCarStatusData;
+use car_telemetry::PacketCarTelemetryData;
 use event::PacketEventData;
 use header::PacketHeader;
 use lap::PacketLapData;
 use participants::PacketParticipantsData;
 use session::PacketSessionData;
-use std::convert::TryFrom;
-use std::io::Cursor;
-use std::mem;
 
 pub mod car_status;
+pub mod car_telemetry;
 pub mod event;
 pub mod generic;
 pub mod header;
@@ -25,6 +28,7 @@ pub enum Packet {
     Lap(PacketLapData),
     Event(PacketEventData),
     Participants(PacketParticipantsData),
+    CarTelemetry(PacketCarTelemetryData),
     CarStatus(PacketCarStatusData),
 }
 
@@ -98,8 +102,11 @@ pub fn parse_packet(size: usize, packet: &[u8]) -> Result<Packet, UnpackError> {
         }
         //PacketType::CarSetups => {
         //}
-        //PacketType::CarTelemetry => {
-        //}
+        PacketType::CarTelemetry => {
+            let packet = PacketCarTelemetryData::new(&mut cursor, header)?;
+
+            Ok(Packet::CarTelemetry(packet))
+        }
         PacketType::CarStatus => {
             let packet = PacketCarStatusData::new(&mut cursor, header)?;
 
