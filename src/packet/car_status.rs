@@ -1,25 +1,11 @@
-use super::header::PacketHeader;
-use crate::packet::generic::Flag;
-use crate::packet::UnpackError;
 use byteorder::{LittleEndian, ReadBytesExt};
 use getset::Getters;
 use std::convert::TryFrom;
 use std::io::BufRead;
 
-//#[derive(Debug)]
-//pub enum Event {
-//}
-
-//impl TryFrom<u8> for Event {
-//type Error = UnpackError;
-
-//fn try_from(value: u8) -> Result<Self, Self::Error> {
-//match value {
-//0 => Ok(Event::X),
-//_ => Err(UnpackError(format!("Invalid Event value: {}", value))),
-//}
-//}
-//}
+use super::header::PacketHeader;
+use crate::packet::generic::Flag;
+use crate::packet::UnpackError;
 
 #[derive(Debug)]
 pub enum TractionControl {

@@ -1,5 +1,6 @@
-use crate::packet::UnpackError;
 use std::convert::TryFrom;
+
+use crate::packet::UnpackError;
 
 #[derive(Debug)]
 pub enum Flag {

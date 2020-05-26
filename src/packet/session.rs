@@ -1,10 +1,11 @@
-use super::header::PacketHeader;
-use crate::packet::generic::Flag;
-use crate::packet::UnpackError;
 use byteorder::{LittleEndian, ReadBytesExt};
 use getset::Getters;
 use std::convert::TryFrom;
 use std::io::BufRead;
+
+use super::header::PacketHeader;
+use crate::packet::generic::Flag;
+use crate::packet::UnpackError;
 
 /// This type is used for the 21-element `marshal_zones` array of the [`PacketSessionData`] type.
 ///
