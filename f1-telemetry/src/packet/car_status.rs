@@ -1,5 +1,5 @@
 use byteorder::{LittleEndian, ReadBytesExt};
-use getset::Getters;
+use getset::{CopyGetters, Getters};
 use std::convert::TryFrom;
 use std::io::BufRead;
 
@@ -7,7 +7,7 @@ use super::header::PacketHeader;
 use crate::packet::generic::{Flag, WheelData};
 use crate::packet::UnpackError;
 
-#[derive(Debug)]
+#[derive(Debug, Clone, Copy)]
 pub enum TractionControl {
     Off,
     Low,
@@ -30,7 +30,7 @@ impl TryFrom<u8> for TractionControl {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone, Copy)]
 pub enum FuelMix {
     Lean,
     Standard,
@@ -52,7 +52,7 @@ impl TryFrom<u8> for FuelMix {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone, Copy)]
 pub enum DRS {
     NotAllowed,
     Allowed,
@@ -72,7 +72,7 @@ impl TryFrom<i8> for DRS {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone, Copy)]
 pub enum TyreCompound {
     C5,
     C4,
@@ -117,7 +117,7 @@ impl TryFrom<u8> for TyreCompound {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone, Copy)]
 pub enum TyreCompoundVisual {
     Soft,
     Medium,
@@ -158,7 +158,7 @@ impl TryFrom<u8> for TyreCompoundVisual {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone, Copy)]
 pub enum ERSDeployMode {
     None,
     Low,
@@ -258,8 +258,8 @@ impl TryFrom<u8> for ERSDeployMode {
 /// ```
 ///
 /// [`PacketCarStatusData`]: ./struct.CarStatusData.html
-#[derive(Debug, Getters)]
-#[getset(get = "pub")]
+#[derive(Debug, CopyGetters)]
+#[getset(get_copy = "pub")]
 pub struct CarStatusData {
     traction_control: TractionControl,
     anti_lock_brakes: bool,

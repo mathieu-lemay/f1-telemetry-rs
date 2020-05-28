@@ -1,9 +1,9 @@
-use getset::Getters;
+use getset::CopyGetters;
 use std::convert::TryFrom;
 
 use crate::packet::UnpackError;
 
-#[derive(Debug)]
+#[derive(Debug, Clone, Copy)]
 pub enum Flag {
     None,
     Green,
@@ -29,16 +29,22 @@ impl TryFrom<i8> for Flag {
     }
 }
 
-#[derive(Debug, Getters)]
-#[getset(get = "pub")]
-pub struct WheelData<T> {
+#[derive(Debug, Clone, Copy, CopyGetters)]
+#[getset(get_copy = "pub")]
+pub struct WheelData<T>
+where
+    T: Clone + Copy,
+{
     rear_left: T,
     rear_right: T,
     front_left: T,
     front_right: T,
 }
 
-impl<T> WheelData<T> {
+impl<T> WheelData<T>
+where
+    T: Clone + Copy,
+{
     pub fn new(rear_left: T, rear_right: T, front_left: T, front_right: T) -> WheelData<T> {
         WheelData {
             rear_left,

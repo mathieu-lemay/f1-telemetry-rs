@@ -1,5 +1,5 @@
 use byteorder::{LittleEndian, ReadBytesExt};
-use getset::Getters;
+use getset::{CopyGetters, Getters};
 use std::io::BufRead;
 
 use super::header::PacketHeader;
@@ -31,8 +31,8 @@ use crate::packet::UnpackError;
 /// ```
 ///
 /// [`PacketMotionData`]: ./struct.MotionData.html
-#[derive(Debug, Getters)]
-#[getset(get = "pub")]
+#[derive(Debug, CopyGetters)]
+#[getset(get_copy = "pub")]
 pub struct MotionData {
     world_position_x: f32,
     world_position_y: f32,
@@ -133,27 +133,43 @@ impl MotionData {
 /// angular_acceleration_z:  Angular acceleration z-component
 /// front_wheels_angle:      Current front wheels angle in radians
 /// ```
-#[derive(Debug, Getters)]
-#[getset(get = "pub")]
+#[derive(Debug, CopyGetters, Getters)]
 pub struct PacketMotionData {
+    #[getset(get = "pub")]
     header: PacketHeader,
+    #[getset(get = "pub")]
     motion_data: Vec<MotionData>,
 
     // Extra player car ONLY data
+    #[getset(get_copy = "pub")]
     suspension_position: WheelData<f32>,
+    #[getset(get_copy = "pub")]
     suspension_velocity: WheelData<f32>,
+    #[getset(get_copy = "pub")]
     suspension_acceleration: WheelData<f32>,
+    #[getset(get_copy = "pub")]
     wheel_speed: WheelData<f32>,
+    #[getset(get_copy = "pub")]
     wheel_slip: WheelData<f32>,
+    #[getset(get_copy = "pub")]
     local_velocity_x: f32,
+    #[getset(get_copy = "pub")]
     local_velocity_y: f32,
+    #[getset(get_copy = "pub")]
     local_velocity_z: f32,
+    #[getset(get_copy = "pub")]
     angular_velocity_x: f32,
+    #[getset(get_copy = "pub")]
     angular_velocity_y: f32,
+    #[getset(get_copy = "pub")]
     angular_velocity_z: f32,
+    #[getset(get_copy = "pub")]
     angular_acceleration_x: f32,
+    #[getset(get_copy = "pub")]
     angular_acceleration_y: f32,
+    #[getset(get_copy = "pub")]
     angular_acceleration_z: f32,
+    #[getset(get_copy = "pub")]
     front_wheels_angle: f32,
 }
 

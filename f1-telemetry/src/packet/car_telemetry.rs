@@ -1,5 +1,5 @@
 use byteorder::{LittleEndian, ReadBytesExt};
-use getset::Getters;
+use getset::{CopyGetters, Getters};
 use std::convert::TryFrom;
 use std::io::BufRead;
 
@@ -7,7 +7,7 @@ use super::header::PacketHeader;
 use crate::packet::generic::WheelData;
 use crate::packet::UnpackError;
 
-#[derive(Debug)]
+#[derive(Debug, Clone, Copy)]
 pub enum SurfaceType {
     Tarmac,
     RumbleStrip,
@@ -65,8 +65,8 @@ impl TryFrom<u8> for SurfaceType {
 /// surface_type              Driving surface, see appendices
 ///
 /// [`PacketCarTelemetryData`]: ./struct.CarTelemetryData.html
-#[derive(Debug, Getters)]
-#[getset(get = "pub")]
+#[derive(Debug, CopyGetters)]
+#[getset(get_copy = "pub")]
 pub struct CarTelemetryData {
     speed: u16,
     throttle: f32,
@@ -151,7 +151,7 @@ impl CarTelemetryData {
 /// Bit-mask values for the `button_status` field in [`PacketCarTelemetryData`]
 ///
 /// [`PacketCarTelemetryData`]: ./struct.CarTelemetryData.html
-#[derive(Debug)]
+#[derive(Debug, Clone, Copy)]
 pub enum ButtonFlag {
     Cross = 0x0001,
     Triangle = 0x0002,
@@ -187,11 +187,13 @@ pub enum ButtonFlag {
 /// button_status:      Bit flags specifying which buttons are being
 ///                     pressed currently - see appendices
 /// ```
-#[derive(Debug, Getters)]
-#[getset(get = "pub")]
+#[derive(Debug, CopyGetters, Getters)]
 pub struct PacketCarTelemetryData {
+    #[getset(get = "pub")]
     header: PacketHeader,
+    #[getset(get = "pub")]
     car_telemetry_data: Vec<CarTelemetryData>,
+    #[getset(get_copy = "pub")]
     button_status: u32,
 }
 

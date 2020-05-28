@@ -1,5 +1,5 @@
 use byteorder::{LittleEndian, ReadBytesExt};
-use getset::Getters;
+use getset::{CopyGetters, Getters};
 use std::convert::TryFrom;
 use std::io::BufRead;
 
@@ -19,8 +19,8 @@ use crate::packet::UnpackError;
 /// zone_flag:  -1 = invalid/unknown, 0 = none, 1 = green, 2 = blue, 3 = yellow, 4 = red
 /// ```
 /// [`PacketSessionData`]: ./struct.PacketSessionData.html
-#[derive(Debug, Getters)]
-#[getset(get = "pub")]
+#[derive(Debug, Clone, Copy, CopyGetters)]
+#[getset(get_copy = "pub")]
 pub struct MarshalZone {
     zone_start: f32,
     zone_flag: Flag,
@@ -38,7 +38,7 @@ impl MarshalZone {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone, Copy)]
 pub enum Weather {
     Clear,
     LightCloud,
@@ -64,7 +64,7 @@ impl TryFrom<u8> for Weather {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone, Copy)]
 pub enum SessionType {
     Unknown,
     Practice1,
@@ -104,7 +104,7 @@ impl TryFrom<u8> for SessionType {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone, Copy)]
 pub enum Track {
     Melbourne,
     PaulRicard,
@@ -170,7 +170,7 @@ impl TryFrom<i8> for Track {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone, Copy)]
 pub enum Formula {
     F1Modern,
     F1Classic,
@@ -192,7 +192,7 @@ impl TryFrom<u8> for Formula {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone, Copy)]
 pub enum SafetyCar {
     None,
     Full,
@@ -248,28 +248,47 @@ impl TryFrom<u8> for SafetyCar {
 ///                         2 = virtual safety car
 /// network_game:           0 = offline, 1 = online
 /// ```
-#[derive(Debug, Getters)]
-#[getset(get = "pub")]
+#[derive(Debug, CopyGetters, Getters)]
 pub struct PacketSessionData {
+    #[getset(get = "pub")]
     header: PacketHeader,
+    #[getset(get_copy = "pub")]
     weather: Weather,
+    #[getset(get_copy = "pub")]
     track_temperature: i8,
+    #[getset(get_copy = "pub")]
     air_temperature: i8,
+    #[getset(get_copy = "pub")]
     total_laps: u8,
+    #[getset(get_copy = "pub")]
     track_length: u16,
+    #[getset(get_copy = "pub")]
     session_type: SessionType,
+    #[getset(get_copy = "pub")]
     track: Track,
+    #[getset(get_copy = "pub")]
     formula: Formula,
+    #[getset(get_copy = "pub")]
     session_time_left: u16,
+    #[getset(get_copy = "pub")]
     session_duration: u16,
+    #[getset(get_copy = "pub")]
     pit_speed_limit: u8,
+    #[getset(get_copy = "pub")]
     game_paused: u8,
+    #[getset(get_copy = "pub")]
     is_spectating: bool,
+    #[getset(get_copy = "pub")]
     spectator_car_index: u8,
+    #[getset(get_copy = "pub")]
     sli_pro_native_support: bool,
+    #[getset(get_copy = "pub")]
     num_marshal_zones: u8,
+    #[getset(get = "pub")]
     marshal_zones: Vec<MarshalZone>,
+    #[getset(get_copy = "pub")]
     safety_car_status: SafetyCar,
+    #[getset(get_copy = "pub")]
     network_game: bool,
 }
 

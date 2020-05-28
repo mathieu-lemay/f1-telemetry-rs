@@ -1,12 +1,12 @@
 use byteorder::{LittleEndian, ReadBytesExt};
-use getset::Getters;
+use getset::{CopyGetters, Getters};
 use std::convert::TryFrom;
 use std::io::BufRead;
 
 use super::header::PacketHeader;
 use crate::packet::UnpackError;
 
-#[derive(Debug)]
+#[derive(Debug, Clone, Copy)]
 pub enum TractionControl {
     Off,
     Low,
@@ -54,8 +54,8 @@ impl TryFrom<u8> for TractionControl {
 /// fuel_load               Fuel load
 ///
 /// [`PacketCarSetupData`]: ./struct.CarSetupData.html
-#[derive(Debug, Getters)]
-#[getset(get = "pub")]
+#[derive(Debug, CopyGetters)]
+#[getset(get_copy = "pub")]
 pub struct CarSetupData {
     front_wing: u8,
     rear_wing: u8,

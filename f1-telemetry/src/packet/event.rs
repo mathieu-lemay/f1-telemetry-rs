@@ -1,5 +1,5 @@
 use byteorder::{LittleEndian, ReadBytesExt};
-use getset::Getters;
+use getset::{CopyGetters, Getters};
 use std::convert::TryFrom;
 use std::io::BufRead;
 
@@ -20,7 +20,7 @@ use crate::packet::UnpackError;
 /// ChequeredFlag:  The chequered flag has been waved
 /// RaceWinner:     The race winner is announced
 /// ```
-#[derive(Debug)]
+#[derive(Debug, Clone, Copy)]
 pub enum Event {
     SessionStarted,
     SessionEnded,
@@ -69,12 +69,15 @@ impl TryFrom<&str> for Event {
 /// vehicle_idx:       Vehicle index of car (valid for events: FTLP, RTMT, TMPT, RCWN)
 /// lap_time:          Lap time is in seconds (valid for events: FTLP)
 /// ```
-#[derive(Debug, Getters)]
-#[getset(get = "pub")]
+#[derive(Debug, CopyGetters, Getters)]
 pub struct PacketEventData {
+    #[getset(get = "pub")]
     header: PacketHeader,
+    #[getset(get_copy = "pub")]
     event: Event,
+    #[getset(get_copy = "pub")]
     vehicle_idx: Option<u8>,
+    #[getset(get_copy = "pub")]
     lap_time: Option<f32>,
 }
 

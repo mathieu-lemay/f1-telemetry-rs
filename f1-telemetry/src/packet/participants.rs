@@ -1,12 +1,12 @@
 use byteorder::ReadBytesExt;
-use getset::Getters;
+use getset::{CopyGetters, Getters};
 use std::convert::TryFrom;
 use std::io::BufRead;
 
 use super::header::PacketHeader;
 use crate::packet::UnpackError;
 
-#[derive(Debug)]
+#[derive(Debug, Clone, Copy)]
 pub enum Driver {
     CarlosSainz,
     DaniilKvyat,
@@ -174,7 +174,7 @@ impl TryFrom<u8> for Driver {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone, Copy)]
 pub enum Team {
     Mercedes,
     Ferrari,
@@ -294,7 +294,7 @@ impl TryFrom<u8> for Team {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone, Copy)]
 pub enum Nationality {
     American,
     Argentinean,
@@ -480,7 +480,7 @@ impl TryFrom<u8> for Nationality {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone, Copy)]
 pub enum Telemetry {
     Restricted,
     Public,
@@ -517,15 +517,20 @@ impl TryFrom<u8> for Telemetry {
 /// ```
 ///
 /// [`PacketParticipantsData`]: ./struct.PacketParticipantsData.html
-#[derive(Debug, Getters)]
-#[getset(get = "pub")]
+#[derive(Debug, CopyGetters, Getters)]
 pub struct ParticipantData {
     ai_controlled: bool,
+    #[getset(get_copy = "pub")]
     driver: Driver,
+    #[getset(get_copy = "pub")]
     team: Team,
+    #[getset(get_copy = "pub")]
     race_number: u8,
+    #[getset(get_copy = "pub")]
     nationality: Nationality,
+    #[getset(get = "pub")]
     name: String,
+    #[getset(get_copy = "pub")]
     telemetry: Telemetry,
 }
 
@@ -571,11 +576,13 @@ impl ParticipantData {
 ///                  cars on HUD
 /// participants:    List of participants, max 20.
 /// ```
-#[derive(Debug, Getters)]
-#[getset(get = "pub")]
+#[derive(Debug, Getters, CopyGetters)]
 pub struct PacketParticipantsData {
+    #[getset(get = "pub")]
     header: PacketHeader,
+    #[getset(get_copy = "pub")]
     num_active_cars: u8,
+    #[getset(get = "pub")]
     participants: Vec<ParticipantData>,
 }
 

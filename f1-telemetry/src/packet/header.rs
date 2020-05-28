@@ -1,5 +1,5 @@
 use byteorder::{LittleEndian, ReadBytesExt};
-use getset::Getters;
+use getset::CopyGetters;
 use std::io::BufRead;
 
 /// The header for each of the UDP telemetry packets.
@@ -20,8 +20,8 @@ use std::io::BufRead;
 /// Possible `packet_id` values: [`PacketType`].
 ///
 /// [`PacketType`]: ../enum.PacketType.html
-#[derive(Debug, Getters)]
-#[getset(get = "pub")]
+#[derive(Debug, CopyGetters)]
+#[getset(get_copy = "pub")]
 pub struct PacketHeader {
     packet_format: u16,
     game_major_version: u8,

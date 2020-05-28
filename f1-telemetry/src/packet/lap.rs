@@ -1,12 +1,12 @@
 use byteorder::{LittleEndian, ReadBytesExt};
-use getset::Getters;
+use getset::{CopyGetters, Getters};
 use std::convert::TryFrom;
 use std::io::BufRead;
 
 use super::header::PacketHeader;
 use crate::packet::UnpackError;
 
-#[derive(Debug)]
+#[derive(Debug, Clone, Copy)]
 pub enum PitStatus {
     None,
     Pitting,
@@ -26,7 +26,7 @@ impl TryFrom<u8> for PitStatus {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone, Copy)]
 pub enum DriverStatus {
     Garage,
     FlyingLap,
@@ -53,7 +53,7 @@ impl TryFrom<u8> for DriverStatus {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone, Copy)]
 pub enum ResultStatus {
     Invalid,
     Inactive,
@@ -116,8 +116,8 @@ impl TryFrom<u8> for ResultStatus {
 ///                      6 = retired
 /// ```
 /// [`PacketLapData`]: ./struct.PacketLapData.html
-#[derive(Debug, Getters)]
-#[getset(get = "pub")]
+#[derive(Debug, CopyGetters)]
+#[getset(get_copy = "pub")]
 pub struct LapData {
     last_lap_time: f32,
     current_lap_time: f32,
