@@ -62,12 +62,12 @@ impl TryFrom<&str> for Event {
 ///
 /// ## Specification
 /// ```text
-/// header:          Header
-/// eventStringCode: Event string code
+/// header:            Header
+/// event_string_code: Event string code
 ///
 /// # Event details - should be interpreted differently for each type
-/// vehicleIdx:      Vehicle index of car (valid for events: FTLP, RTMT, TMPT, RCWN)
-/// lapTime:         Lap time is in seconds (valid for events: FTLP)
+/// vehicle_idx:       Vehicle index of car (valid for events: FTLP, RTMT, TMPT, RCWN)
+/// lap_time:          Lap time is in seconds (valid for events: FTLP)
 /// ```
 #[derive(Debug, Getters)]
 #[getset(get = "pub")]
