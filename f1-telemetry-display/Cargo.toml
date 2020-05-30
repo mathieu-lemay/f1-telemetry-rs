@@ -6,3 +6,4 @@ edition = "2018"
 
 [dependencies]
 f1-telemetry = { path = "../f1-telemetry" }
+ncurses = "^5.99.0"
