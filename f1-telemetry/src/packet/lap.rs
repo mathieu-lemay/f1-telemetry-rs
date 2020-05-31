@@ -131,7 +131,7 @@ pub struct LapData {
     current_lap_num: u8,
     pit_status: PitStatus,
     sector: u8,
-    current_lap_invalid: u8,
+    current_lap_invalid: bool,
     penalties: u8,
     grid_position: u8,
     driver_status: DriverStatus,
@@ -152,7 +152,7 @@ impl LapData {
         let current_lap_num = reader.read_u8().unwrap();
         let pit_status = PitStatus::try_from(reader.read_u8().unwrap())?;
         let sector = reader.read_u8().unwrap();
-        let current_lap_invalid = reader.read_u8().unwrap();
+        let current_lap_invalid = reader.read_u8().unwrap() == 1;
         let penalties = reader.read_u8().unwrap();
         let grid_position = reader.read_u8().unwrap();
         let driver_status = DriverStatus::try_from(reader.read_u8().unwrap())?;
