@@ -20,4 +20,5 @@ pub struct LapInfo<'a> {
     pub status: ResultStatus,
     pub in_pit: bool,
     pub lap_invalid: bool,
+    pub penalties: u8,
 }

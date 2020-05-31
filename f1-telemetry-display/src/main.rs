@@ -101,6 +101,7 @@ fn parse_lap_data<'a>(
             status: ld.result_status(),
             in_pit: ld.pit_status() != PitStatus::None,
             lap_invalid: ld.current_lap_invalid(),
+            penalties: ld.penalties(),
         };
 
         lap_info.push(li);

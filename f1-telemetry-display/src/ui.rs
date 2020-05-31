@@ -52,13 +52,13 @@ impl Ui {
     }
 
     pub fn print_lap_info(&self, lap_info: &[LapInfo]) {
+        fmt::set_bold();
+
         mvaddstr(
             LAP_DATA_HEADER_Y_OFFSET,
             2,
             "  P. NAME                 | CURRENT LAP  | LAST LAP     | BEST LAP     | STATUS",
         );
-
-        fmt::set_bold();
 
         for li in lap_info {
             let pos = match li.status {
@@ -69,9 +69,14 @@ impl Ui {
             };
             let name = li.name;
             let team = li.team;
+            let penalties = if li.penalties > 0 {
+                format!("+{:2}s", li.penalties)
+            } else {
+                "    ".to_string()
+            };
 
             let s = format!(
-                "{}. {:20} | {} | {} | {} | {}{}     ",
+                "{}. {:20} | {} | {} | {} | {}{}{} ",
                 pos,
                 name,
                 fmt::format_time_ms(li.current_lap_time),
@@ -79,6 +84,7 @@ impl Ui {
                 fmt::format_time_ms(li.best_lap_time),
                 if li.in_pit { "P" } else { " " },
                 if li.lap_invalid { "!" } else { " " },
+                penalties,
             );
 
             fmt::set_team_color(team);
