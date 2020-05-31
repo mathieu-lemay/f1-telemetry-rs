@@ -154,6 +154,39 @@ pub enum Track {
     Unknown,
 }
 
+impl Track {
+    pub fn name<'a>(self) -> &'a str {
+        match self {
+            Track::Melbourne => "Melbourne Grand Prix Circuit",
+            Track::PaulRicard => "Circuit Paul Ricard",
+            Track::Shanghai => "Shanghai International Circuit",
+            Track::Sakhir => "Bahrain International Circuit",
+            Track::Catalunya => "Circuit de Barcelona-Catalunya",
+            Track::Monaco => "Circuit de Monaco",
+            Track::Montreal => "Circuit Gilles Villeneuve",
+            Track::Silverstone => "Silverstone Circuit",
+            Track::Hockenheim => "Hockenheimring",
+            Track::Hungaroring => "Hungaroring",
+            Track::Spa => "Circuit de Spa-Francorchamps",
+            Track::Monza => "Autodromo Nazionale Monza",
+            Track::Singapore => "Marina Bay Street Circuit",
+            Track::Suzuka => "Suzuka International Racing Course",
+            Track::AbuDhabi => "Yas Marina Circuit",
+            Track::Texas => "Circuit of the Americas",
+            Track::Brazil => "Autódromo José Carlos Pace",
+            Track::Austria => "Red Bull Ring",
+            Track::Sochi => "Sochi Autodrom",
+            Track::Mexico => "Autódromo Hermanos Rodríguez",
+            Track::Baku => "Baku City Circuit",
+            Track::SakhirShort => "Bahrain International Circuit (Short)",
+            Track::SilverstoneShort => "Silverstone Circuit (Short)",
+            Track::TexasShort => "Circuit of the Americas (Short)",
+            Track::SuzukaShort => "Suzuka International Racing Course (Short)",
+            Track::Unknown => "[UNKNOWN]",
+        }
+    }
+}
+
 impl TryFrom<i8> for Track {
     type Error = UnpackError;
 
