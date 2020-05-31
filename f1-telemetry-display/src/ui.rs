@@ -1,6 +1,5 @@
-use f1_telemetry::packet::lap::PacketLapData;
-use f1_telemetry::packet::participants::PacketParticipantsData;
-use f1_telemetry::packet::session::PacketSessionData;
+use crate::models::{LapInfo, SessionInfo};
+use f1_telemetry::packet::lap::ResultStatus;
 use ncurses::*;
 
 mod fmt;
@@ -38,69 +37,61 @@ impl Ui {
         ncurses::endwin();
     }
 
-    pub fn print_session_info(&self, session: &PacketSessionData) {
-        let session_name = session.session_type().name();
-
-        let track_name = session.track().name();
-
-        let session_elapsed =
-            fmt::format_time(session.session_duration() - session.session_time_left());
-        let session_duration = fmt::format_time(session.session_duration());
-        let session_time = &format!("{} / {}", session_elapsed, session_duration);
-
-        mv(SESSION_Y_OFFSET, 0);
-        clrtoeol();
-        mvaddstr(
-            SESSION_Y_OFFSET,
-            fmt::center(self.hwnd, session_name),
-            session_name,
+    pub fn print_session_info(&self, sinfo: &SessionInfo) {
+        let session_name = &format!("{} - {}", sinfo.session_name, sinfo.track_name);
+        let lap_info = &format!("Lap {} of {}", sinfo.current_lap, sinfo.number_of_laps);
+        let session_time = &format!(
+            "{} / {}",
+            fmt::format_time(sinfo.elapsed_time),
+            fmt::format_time(sinfo.duration)
         );
 
-        mv(SESSION_Y_OFFSET + 1, 0);
-        clrtoeol();
-        mvaddstr(
-            SESSION_Y_OFFSET + 1,
-            fmt::center(self.hwnd, track_name),
-            track_name,
-        );
-
-        mv(SESSION_Y_OFFSET + 2, 0);
-        clrtoeol();
-        mvaddstr(
-            SESSION_Y_OFFSET + 2,
-            fmt::center(self.hwnd, session_time),
-            session_time,
-        );
+        addstr_center(self.hwnd, SESSION_Y_OFFSET, session_name);
+        addstr_center(self.hwnd, SESSION_Y_OFFSET + 1, lap_info);
+        addstr_center(self.hwnd, SESSION_Y_OFFSET + 2, session_time);
     }
 
-    pub fn print_lap_data(&self, lap_data: &PacketLapData, participants: &PacketParticipantsData) {
+    pub fn print_lap_info(&self, lap_info: &[LapInfo]) {
         mvaddstr(
             LAP_DATA_HEADER_Y_OFFSET,
             2,
-            " P. NAME                 | CURRENT LAP  | LAST LAP     | BEST LAP",
+            "  P. NAME                 | CURRENT LAP  | LAST LAP     | BEST LAP     | STATUS",
         );
 
         fmt::set_bold();
 
-        for (i, ld) in lap_data.lap_data().iter().enumerate() {
-            let pos = ld.car_position();
-            let name = participants.participants()[i].name();
-            let team = participants.participants()[i].team();
+        for li in lap_info {
+            let pos = match li.status {
+                ResultStatus::Retired => String::from("RET"),
+                ResultStatus::NotClassified => String::from("N/C"),
+                ResultStatus::Disqualified => String::from("DSQ"),
+                _ => format!("{:3}", li.position),
+            };
+            let name = li.name;
+            let team = li.team;
 
             let s = format!(
-                "{:2}. {:20} | {} | {} | {}",
+                "{}. {:20} | {} | {} | {} | {}{}     ",
                 pos,
                 name,
-                fmt::format_time_ms(ld.current_lap_time()),
-                fmt::format_time_ms(ld.last_lap_time()),
-                fmt::format_time_ms(ld.best_lap_time()),
+                fmt::format_time_ms(li.current_lap_time),
+                fmt::format_time_ms(li.last_lap_time),
+                fmt::format_time_ms(li.best_lap_time),
+                if li.in_pit { "P" } else { " " },
+                if li.lap_invalid { "!" } else { " " },
             );
 
             fmt::set_team_color(team);
-            mvaddstr(LAP_DATA_Y_OFFSET + pos as i32 - 1, 2, s.as_str());
+            mvaddstr(LAP_DATA_Y_OFFSET + li.position as i32 - 1, 2, s.as_str());
             clrtoeol();
         }
 
         fmt::reset();
     }
+}
+
+fn addstr_center(w: WINDOW, y: i32, str_: &str) {
+    mv(y, 0);
+    clrtoeol();
+    mvaddstr(y, fmt::center(w, str_), str_);
 }
