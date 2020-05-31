@@ -4,6 +4,7 @@ use ncurses::*;
 
 mod fmt;
 
+const WIDTH: i32 = 84;
 const SESSION_Y_OFFSET: i32 = 0;
 const LAP_DATA_HEADER_Y_OFFSET: i32 = 4;
 const LAP_DATA_Y_OFFSET: i32 = 6;
@@ -19,6 +20,12 @@ impl Ui {
         setlocale(ncurses::LcCategory::all, "");
 
         let hwnd = initscr();
+
+        if ncurses::getmaxx(hwnd) < WIDTH {
+            panic!("Terminal too narrow");
+        }
+
+        wresize(hwnd, getmaxy(hwnd), WIDTH);
 
         curs_set(CURSOR_VISIBILITY::CURSOR_INVISIBLE);
         cbreak();
