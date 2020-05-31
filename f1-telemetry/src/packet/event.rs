@@ -33,6 +33,22 @@ pub enum Event {
     RaceWinner,
 }
 
+impl Event {
+    pub fn description<'a>(self) -> &'a str {
+        match self {
+            Event::SessionStarted => "Session Started",
+            Event::SessionEnded => "Session Ended",
+            Event::FastestLap => "Fastest Lap",
+            Event::Retirement => "Retirement",
+            Event::DRSEnabled => "DRS Enabled",
+            Event::DRSDisabled => "DRS Disabled",
+            Event::TeamMateInPits => "Teammate In Pits",
+            Event::ChequeredFlag => "Chequered Flag",
+            Event::RaceWinner => "Race Winner",
+        }
+    }
+}
+
 impl TryFrom<&str> for Event {
     type Error = UnpackError;
 

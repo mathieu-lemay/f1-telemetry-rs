@@ -1,4 +1,4 @@
-use crate::models::{LapInfo, SessionInfo};
+use crate::models::{EventInfo, LapInfo, SessionInfo};
 use f1_telemetry::packet::lap::ResultStatus;
 use ncurses::*;
 
@@ -98,6 +98,29 @@ impl Ui {
             mvaddstr(LAP_DATA_Y_OFFSET + li.position as i32 - 1, 2, s.as_str());
             clrtoeol();
         }
+
+        fmt::reset();
+    }
+
+    pub fn print_event_info(&self, event_info: &EventInfo) {
+        fmt::set_bold();
+
+        let mut msg = format!(
+            "{}: {}",
+            fmt::format_time_ms(event_info.timestamp),
+            event_info.description
+        );
+
+        if let Some(driver) = event_info.driver_name {
+            msg += &format!(": {}", driver);
+        }
+
+        if let Some(lap_time) = event_info.lap_time {
+            msg += &format!(" ({})", fmt::format_time_ms(lap_time));
+        }
+
+        mvaddstr(getmaxy(self.hwnd) - 1, 2, &msg);
+        clrtoeol();
 
         fmt::reset();
     }

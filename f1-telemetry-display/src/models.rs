@@ -1,13 +1,11 @@
 use f1_telemetry::packet::lap::ResultStatus;
 use f1_telemetry::packet::participants::Team;
 
-pub struct SessionInfo<'a> {
-    pub session_name: &'a str,
-    pub track_name: &'a str,
-    pub elapsed_time: u16,
-    pub duration: u16,
-    pub current_lap: u8,
-    pub number_of_laps: u8,
+pub struct EventInfo<'a> {
+    pub timestamp: f32,
+    pub description: &'a str,
+    pub driver_name: Option<&'a str>,
+    pub lap_time: Option<f32>,
 }
 
 pub struct LapInfo<'a> {
@@ -21,4 +19,13 @@ pub struct LapInfo<'a> {
     pub in_pit: bool,
     pub lap_invalid: bool,
     pub penalties: u8,
+}
+
+pub struct SessionInfo<'a> {
+    pub session_name: &'a str,
+    pub track_name: &'a str,
+    pub elapsed_time: u16,
+    pub duration: u16,
+    pub current_lap: u8,
+    pub number_of_laps: u8,
 }

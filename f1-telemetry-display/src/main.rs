@@ -1,9 +1,10 @@
+use f1_telemetry::packet::event::PacketEventData;
 use f1_telemetry::packet::lap::{PacketLapData, PitStatus};
 use f1_telemetry::packet::participants::PacketParticipantsData;
 use f1_telemetry::packet::session::PacketSessionData;
 use f1_telemetry::packet::Packet;
 use f1_telemetry::Stream;
-use models::{LapInfo, SessionInfo};
+use models::{EventInfo, LapInfo, SessionInfo};
 use std::thread::sleep;
 use std::time::Duration;
 use ui::Ui;
@@ -32,6 +33,11 @@ fn main() {
                         current_lap = get_current_lap(&ld);
                         if let Some(lap_info) = parse_lap_data(&ld, &participants) {
                             ui.print_lap_info(&lap_info);
+                        }
+                    }
+                    Packet::Event(evt) => {
+                        if let Some(evt_info) = parse_event_data(&evt, &participants) {
+                            ui.print_event_info(&evt_info);
                         }
                     }
                     Packet::Participants(p) => participants = Some(p),
@@ -108,6 +114,31 @@ fn parse_lap_data<'a>(
     }
 
     Some(lap_info)
+}
+
+fn parse_event_data<'a>(
+    event_data: &'a PacketEventData,
+    participants: &'a Option<PacketParticipantsData>,
+) -> Option<EventInfo<'a>> {
+    if event_data.vehicle_idx().is_some() && participants.is_none() {
+        return None;
+    }
+
+    let description = event_data.event().description();
+    let driver_name = match event_data.vehicle_idx() {
+        Some(idx) => {
+            let name = participants.as_ref().unwrap().participants()[idx as usize].name();
+            Some(name.as_str())
+        }
+        None => None,
+    };
+
+    Some(EventInfo {
+        timestamp: event_data.header().session_time(),
+        description,
+        driver_name,
+        lap_time: event_data.lap_time(),
+    })
 }
 
 fn get_current_lap(lap_data: &PacketLapData) -> u8 {
