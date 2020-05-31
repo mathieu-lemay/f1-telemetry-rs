@@ -1,12 +1,22 @@
 const TEAM_COLOUR_OFFSET: i16 = 100;
+const STATUS_COLOUR_OFFSET: i16 = 200;
 
 use f1_telemetry::packet::participants::Team;
 use ncurses::*;
 
+#[derive(Debug, Clone, Copy, Eq, PartialEq)]
+pub enum Status {
+    OK = (STATUS_COLOUR_OFFSET + 1) as isize,
+    CAUTION = (STATUS_COLOUR_OFFSET + 2) as isize,
+    WARNING = (STATUS_COLOUR_OFFSET + 3) as isize,
+    DANGER = (STATUS_COLOUR_OFFSET + 4) as isize,
+}
+
 pub fn init_colors() {
     start_color();
 
-    init_team_colors()
+    init_team_colors();
+    init_status_colors()
 }
 
 fn init_team_colors() {
@@ -25,6 +35,19 @@ fn init_team_colors() {
         let idx = TEAM_COLOUR_OFFSET + t.id() as i16;
         init_color(idx, c.0, c.1, c.2);
         init_pair(idx, COLOR_WHITE, idx);
+    }
+}
+
+fn init_status_colors() {
+    let color_orange = TEAM_COLOUR_OFFSET + Team::McLaren.id() as i16;
+
+    for (status, c) in &[
+        (Status::OK, COLOR_GREEN),
+        (Status::CAUTION, COLOR_YELLOW),
+        (Status::WARNING, color_orange),
+        (Status::DANGER, COLOR_RED),
+    ] {
+        init_pair(*status as i16, *c, COLOR_BLACK);
     }
 }
 
