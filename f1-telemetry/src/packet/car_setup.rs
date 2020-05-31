@@ -6,7 +6,7 @@ use std::io::BufRead;
 use super::header::PacketHeader;
 use crate::packet::UnpackError;
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, Eq, PartialEq)]
 pub enum TractionControl {
     Off,
     Low,

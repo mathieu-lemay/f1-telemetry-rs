@@ -3,7 +3,7 @@ use std::convert::TryFrom;
 
 use crate::packet::UnpackError;
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, Eq, PartialEq)]
 pub enum Flag {
     None,
     Green,

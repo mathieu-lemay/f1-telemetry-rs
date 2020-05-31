@@ -7,7 +7,7 @@ use super::header::PacketHeader;
 use crate::packet::generic::WheelData;
 use crate::packet::UnpackError;
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, Eq, PartialEq)]
 pub enum SurfaceType {
     Tarmac,
     RumbleStrip,
@@ -151,7 +151,7 @@ impl CarTelemetryData {
 /// Bit-mask values for the `button_status` field in [`PacketCarTelemetryData`]
 ///
 /// [`PacketCarTelemetryData`]: ./struct.CarTelemetryData.html
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, Eq, PartialEq)]
 pub enum ButtonFlag {
     Cross = 0x0001,
     Triangle = 0x0002,

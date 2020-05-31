@@ -6,7 +6,7 @@ use std::io::BufRead;
 use super::header::PacketHeader;
 use crate::packet::UnpackError;
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, Eq, PartialEq)]
 pub enum PitStatus {
     None,
     Pitting,
@@ -26,7 +26,7 @@ impl TryFrom<u8> for PitStatus {
     }
 }
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, Eq, PartialEq)]
 pub enum DriverStatus {
     Garage,
     FlyingLap,
@@ -53,7 +53,7 @@ impl TryFrom<u8> for DriverStatus {
     }
 }
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, Eq, PartialEq)]
 pub enum ResultStatus {
     Invalid,
     Inactive,

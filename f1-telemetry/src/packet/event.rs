@@ -20,7 +20,7 @@ use crate::packet::UnpackError;
 /// ChequeredFlag:  The chequered flag has been waved
 /// RaceWinner:     The race winner is announced
 /// ```
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, Eq, PartialEq)]
 pub enum Event {
     SessionStarted,
     SessionEnded,

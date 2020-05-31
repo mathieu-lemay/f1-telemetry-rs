@@ -38,7 +38,7 @@ impl MarshalZone {
     }
 }
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, Eq, PartialEq)]
 pub enum Weather {
     Clear,
     LightCloud,
@@ -64,7 +64,7 @@ impl TryFrom<u8> for Weather {
     }
 }
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, Eq, PartialEq)]
 pub enum SessionType {
     Unknown,
     Practice1,
@@ -124,7 +124,7 @@ impl TryFrom<u8> for SessionType {
     }
 }
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, Eq, PartialEq)]
 pub enum Track {
     Melbourne,
     PaulRicard,
@@ -223,7 +223,7 @@ impl TryFrom<i8> for Track {
     }
 }
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, Eq, PartialEq)]
 pub enum Formula {
     F1Modern,
     F1Classic,
@@ -245,7 +245,7 @@ impl TryFrom<u8> for Formula {
     }
 }
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, Eq, PartialEq)]
 pub enum SafetyCar {
     None,
     Full,

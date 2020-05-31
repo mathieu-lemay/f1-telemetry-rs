@@ -7,7 +7,7 @@ use super::header::PacketHeader;
 use crate::packet::generic::{Flag, WheelData};
 use crate::packet::UnpackError;
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, Eq, PartialEq)]
 pub enum TractionControl {
     Off,
     Low,
@@ -30,7 +30,7 @@ impl TryFrom<u8> for TractionControl {
     }
 }
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, Eq, PartialEq)]
 pub enum FuelMix {
     Lean,
     Standard,
@@ -52,7 +52,7 @@ impl TryFrom<u8> for FuelMix {
     }
 }
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, Eq, PartialEq)]
 pub enum DRS {
     NotAllowed,
     Allowed,
@@ -72,7 +72,7 @@ impl TryFrom<i8> for DRS {
     }
 }
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, Eq, PartialEq)]
 pub enum TyreCompound {
     C5,
     C4,
@@ -117,7 +117,7 @@ impl TryFrom<u8> for TyreCompound {
     }
 }
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, Eq, PartialEq)]
 pub enum TyreCompoundVisual {
     Soft,
     Medium,
@@ -158,7 +158,7 @@ impl TryFrom<u8> for TyreCompoundVisual {
     }
 }
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, Eq, PartialEq)]
 pub enum ERSDeployMode {
     None,
     Low,

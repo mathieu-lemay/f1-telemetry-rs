@@ -6,7 +6,7 @@ use std::io::BufRead;
 use super::header::PacketHeader;
 use crate::packet::UnpackError;
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, Eq, PartialEq)]
 pub enum Driver {
     CarlosSainz,
     DaniilKvyat,
@@ -174,7 +174,7 @@ impl TryFrom<u8> for Driver {
     }
 }
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, Eq, PartialEq)]
 pub enum Team {
     Mercedes,
     Ferrari,
@@ -354,7 +354,7 @@ impl TryFrom<u8> for Team {
     }
 }
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, Eq, PartialEq)]
 pub enum Nationality {
     American,
     Argentinean,
@@ -540,7 +540,7 @@ impl TryFrom<u8> for Nationality {
     }
 }
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, Eq, PartialEq)]
 pub enum Telemetry {
     Restricted,
     Public,
