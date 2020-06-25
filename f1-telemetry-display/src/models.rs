@@ -1,5 +1,5 @@
 use f1_telemetry::packet::lap::ResultStatus;
-use f1_telemetry::packet::participants::Team;
+use f1_telemetry::packet::participants::{Driver, Team};
 
 pub struct EventInfo<'a> {
     pub timestamp: f32,
@@ -11,6 +11,7 @@ pub struct EventInfo<'a> {
 pub struct LapInfo<'a> {
     pub position: u8,
     pub name: &'a str,
+    pub driver: Driver,
     pub team: Team,
     pub current_lap_time: f32,
     pub last_lap_time: f32,

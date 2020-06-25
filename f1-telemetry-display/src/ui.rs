@@ -74,8 +74,6 @@ impl Ui {
                 ResultStatus::Disqualified => String::from("DSQ"),
                 _ => format!("{:3}", li.position),
             };
-            let name = li.name;
-            let team = li.team;
             let penalties = if li.penalties > 0 {
                 format!("+{:2}s", li.penalties)
             } else {
@@ -85,7 +83,7 @@ impl Ui {
             let s = format!(
                 "{}. {:20} | {} | {} | {} | {}{}{} ",
                 pos,
-                name,
+                fmt::format_driver_name(li.name, li.driver),
                 fmt::format_time_ms(li.current_lap_time),
                 fmt::format_time_ms(li.last_lap_time),
                 fmt::format_time_ms(li.best_lap_time),
@@ -94,7 +92,7 @@ impl Ui {
                 penalties,
             );
 
-            fmt::set_team_color(team);
+            fmt::set_team_color(li.team);
             mvaddstr(LAP_DATA_Y_OFFSET + li.position as i32 - 1, 2, s.as_str());
             clrtoeol();
         }

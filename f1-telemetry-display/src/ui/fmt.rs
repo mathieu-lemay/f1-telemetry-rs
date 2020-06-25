@@ -1,8 +1,8 @@
+use f1_telemetry::packet::participants::{Driver, Team};
+use ncurses::*;
+
 const TEAM_COLOUR_OFFSET: i16 = 100;
 const STATUS_COLOUR_OFFSET: i16 = 200;
-
-use f1_telemetry::packet::participants::Team;
-use ncurses::*;
 
 #[derive(Debug, Clone, Copy, Eq, PartialEq)]
 pub enum Status {
@@ -61,6 +61,21 @@ pub fn set_team_color(team: Team) {
 
 pub fn reset() {
     attrset(0);
+}
+
+pub fn format_driver_name(name: &str, driver: Driver) -> String {
+    match driver {
+        Driver::Player => capitalize_name(name),
+        _ => name.to_string(),
+    }
+}
+
+fn capitalize_name(name: &str) -> String {
+    let n: Vec<&str> = name.split_ascii_whitespace().collect();
+    let first = n[0].chars().next().unwrap().to_ascii_uppercase();
+    let last = n[1].to_ascii_uppercase();
+
+    format!("{}. {}", first, last)
 }
 
 pub fn format_time(ts: u16) -> String {

@@ -94,13 +94,11 @@ fn parse_lap_data<'a>(
     let mut lap_info = Vec::with_capacity(lap_data.lap_data().len());
 
     for (i, ld) in lap_data.lap_data().iter().enumerate() {
-        let name = participants[i].name();
-        let team = participants[i].team();
-
         let li = LapInfo {
             position: ld.car_position(),
-            name,
-            team,
+            name: participants[i].name(),
+            driver: participants[i].driver(),
+            team: participants[i].team(),
             current_lap_time: ld.current_lap_time(),
             last_lap_time: ld.last_lap_time(),
             best_lap_time: ld.best_lap_time(),
