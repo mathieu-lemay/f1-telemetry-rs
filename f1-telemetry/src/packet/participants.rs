@@ -631,8 +631,7 @@ fn split_name<'a>(player_name: String) -> String {
     let first = n[0].chars().next().unwrap().to_string();
     let last = n[1].to_string();
     let new_name_vec = vec![first, ". ".to_string(), last];
-    let new_name: String = new_name_vec.concat().to_ascii_uppercase();
-    new_name
+    new_name_vec.concat().to_ascii_uppercase()
 }
 
 /// This is a list of participants in the race.
