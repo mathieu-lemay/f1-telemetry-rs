@@ -85,6 +85,7 @@ pub enum Driver {
     AnthoineHubert,
     GuilianoAlesi,
     RalphBoschung,
+    Player,
 }
 
 impl TryFrom<u8> for Driver {
@@ -169,6 +170,7 @@ impl TryFrom<u8> for Driver {
             87 => Ok(Driver::AnthoineHubert),
             88 => Ok(Driver::GuilianoAlesi),
             89 => Ok(Driver::RalphBoschung),
+            100 => Ok(Driver::Player),
             _ => Err(UnpackError(format!("Invalid Driver value: {}", value))),
         }
     }
@@ -601,7 +603,8 @@ impl ParticipantData {
         let team = Team::try_from(reader.read_u8().unwrap())?;
         let race_number = reader.read_u8().unwrap();
         let nationality = Nationality::try_from(reader.read_u8().unwrap())?;
-        let name = read_name(reader)?;
+        let tmp_name = read_name(reader)?;
+        let name = parse_temp_name(tmp_name, driver);
         let telemetry = Telemetry::try_from(reader.read_u8().unwrap())?;
 
         Ok(ParticipantData {
@@ -614,6 +617,22 @@ impl ParticipantData {
             telemetry,
         })
     }
+}
+
+fn parse_temp_name(tmp_name: String, driver: Driver) -> String {
+    match driver {
+        Driver::Player => split_name(tmp_name),
+        _ => tmp_name,
+    }
+}
+
+fn split_name<'a>(player_name: String) -> String {
+    let n: Vec<&str> = player_name.split_ascii_whitespace().collect();
+    let first = n[0].chars().next().unwrap().to_string();
+    let last = n[1].to_string();
+    let new_name_vec = vec![first, ". ".to_string(), last];
+    let new_name: String = new_name_vec.concat().to_ascii_uppercase();
+    new_name
 }
 
 /// This is a list of participants in the race.
