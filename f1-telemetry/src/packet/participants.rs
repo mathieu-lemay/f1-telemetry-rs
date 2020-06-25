@@ -85,6 +85,9 @@ pub enum Driver {
     AnthoineHubert,
     GuilianoAlesi,
     RalphBoschung,
+    DevonButler,
+    LukasWebber,
+    Player,
 }
 
 impl TryFrom<u8> for Driver {
@@ -155,6 +158,8 @@ impl TryFrom<u8> for Driver {
             69 => Ok(Driver::RubenMeijer),
             70 => Ok(Driver::RashidNair),
             71 => Ok(Driver::JackTremblay),
+            72 => Ok(Driver::DevonButler),
+            73 => Ok(Driver::LukasWebber),
             74 => Ok(Driver::AntonioGiovinazzi),
             75 => Ok(Driver::RobertKubica),
             78 => Ok(Driver::NobuharuMatsushita),
@@ -169,6 +174,7 @@ impl TryFrom<u8> for Driver {
             87 => Ok(Driver::AnthoineHubert),
             88 => Ok(Driver::GuilianoAlesi),
             89 => Ok(Driver::RalphBoschung),
+            d if d >= 100 => Ok(Driver::Player),
             _ => Err(UnpackError(format!("Invalid Driver value: {}", value))),
         }
     }
