@@ -9,7 +9,7 @@ use f1_telemetry::Stream;
 use models::{EventInfo, LapInfo, SessionInfo};
 use std::thread::sleep;
 use std::time::Duration;
-use ui::Ui;
+use ui::{Ui, Window};
 
 mod models;
 mod ui;
@@ -21,7 +21,7 @@ fn main() {
     let mut participants: Option<PacketParticipantsData> = None;
     let mut current_lap: u8 = 0;
 
-    let ui = Ui::init();
+    let mut ui = Ui::init();
 
     loop {
         match stream.next() {
@@ -60,16 +60,26 @@ fn main() {
         let ch = ncurses::get_wch();
         if let Some(ch) = ch {
             match ch {
+                ncurses::WchResult::Char(49) => {
+                    // 1
+                    ui.switch_window(Window::Lap);
+                }
+                ncurses::WchResult::Char(50) => {
+                    // 2
+                    ui.switch_window(Window::Car);
+                }
                 ncurses::WchResult::Char(113) => {
+                    // q
                     break;
                 }
-                _ => {} // ncurses::WchResult::Char(c) => {
-                        //     ncurses::mvaddstr(23, 0, format!("Pressed Char: {}", c).as_str());
-                        // },
-                        // ncurses::WchResult::KeyCode(c) => {
-                        //     ncurses::mvaddstr(23, 0, format!("Pressed Key: {}", c).as_str());
-                        //     ncurses::clrtoeol();
-                        // }
+                // ncurses::WchResult::Char(c) => {
+                //     ncurses::mvaddstr(0, 0, format!("Pressed Char: {}", c).as_str());
+                // }
+                // ncurses::WchResult::KeyCode(c) => {
+                //     ncurses::mvaddstr(0, 0, format!("Pressed Key: {}", c).as_str());
+                //     ncurses::clrtoeol();
+                // }
+                _ => {}
             }
         }
     }

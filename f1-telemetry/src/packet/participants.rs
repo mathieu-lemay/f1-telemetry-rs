@@ -607,8 +607,7 @@ impl ParticipantData {
         let team = Team::try_from(reader.read_u8().unwrap())?;
         let race_number = reader.read_u8().unwrap();
         let nationality = Nationality::try_from(reader.read_u8().unwrap())?;
-        let tmp_name = read_name(reader)?;
-        let name = parse_temp_name(tmp_name, driver);
+        let name = read_name(reader)?;
         let telemetry = Telemetry::try_from(reader.read_u8().unwrap())?;
 
         Ok(ParticipantData {
@@ -621,21 +620,6 @@ impl ParticipantData {
             telemetry,
         })
     }
-}
-
-fn parse_temp_name(tmp_name: String, driver: Driver) -> String {
-    match driver {
-        Driver::Player => split_name(tmp_name),
-        _ => tmp_name,
-    }
-}
-
-fn split_name<'a>(player_name: String) -> String {
-    let n: Vec<&str> = player_name.split_ascii_whitespace().collect();
-    let first = n[0].chars().next().unwrap().to_string();
-    let last = n[1].to_string();
-    let new_name_vec = vec![first, ". ".to_string(), last];
-    new_name_vec.concat().to_ascii_uppercase()
 }
 
 /// This is a list of participants in the race.

@@ -4,45 +4,96 @@ use ncurses::*;
 
 mod fmt;
 
-const WIDTH: i32 = 84;
-const SESSION_Y_OFFSET: i32 = 0;
-const LAP_DATA_HEADER_Y_OFFSET: i32 = 4;
-const LAP_DATA_Y_OFFSET: i32 = 6;
+const MIN_WIDTH: i32 = 84;
+const SESSION_Y_OFFSET: i32 = 1;
+const WINDOW_Y_OFFSET: i32 = 5;
 const LEFT_BORDER_X_OFFSET: i32 = 2;
-const CURRENT_CAR_DATA_Y_OFFSET: i32 = 27;
-// const CAR_X_OFFSET: i32 = 80;
+const CURRENT_CAR_DATA_Y_OFFSET: i32 = 24;
+
+pub enum Window {
+    Lap,
+    Car,
+}
 
 pub struct Ui {
-    hwnd: WINDOW,
+    mwnd: WINDOW,
+    lap_wnd: WINDOW,
+    car_wnd: WINDOW,
+    active_wnd: WINDOW,
 }
 
 impl Ui {
     pub fn init() -> Ui {
         setlocale(ncurses::LcCategory::all, "");
 
-        let hwnd = initscr();
+        let mwnd = initscr();
 
-        if ncurses::getmaxx(hwnd) < WIDTH {
+        let w = getmaxx(mwnd);
+        let h = getmaxy(mwnd);
+
+        if w < MIN_WIDTH {
             panic!("Terminal too narrow");
         }
-
-        wresize(hwnd, getmaxy(hwnd), WIDTH);
 
         curs_set(CURSOR_VISIBILITY::CURSOR_INVISIBLE);
         cbreak();
         noecho();
-        keypad(hwnd, true);
+        keypad(mwnd, true);
         timeout(0);
-
         fmt::init_colors();
 
         refresh();
 
-        Ui { hwnd }
+        let win_w = w - 2;
+        let win_h = h - WINDOW_Y_OFFSET - 2;
+
+        let lap_wnd = Ui::create_win(win_h, win_w, WINDOW_Y_OFFSET, 1, Some("Lap Info"));
+        let car_wnd = Ui::create_win(win_h, win_w, WINDOW_Y_OFFSET, 1, Some("Car Status"));
+
+        let active_wnd = lap_wnd;
+        wrefresh(active_wnd);
+
+        Ui {
+            mwnd,
+            lap_wnd,
+            car_wnd,
+            active_wnd,
+        }
     }
 
     pub fn destroy(&self) {
-        ncurses::endwin();
+        endwin();
+    }
+
+    pub fn switch_window(&mut self, window: Window) {
+        let neww = match window {
+            Window::Lap => self.lap_wnd,
+            Window::Car => self.car_wnd,
+        };
+
+        if neww == self.active_wnd {
+            return;
+        }
+
+        redrawwin(neww);
+
+        self.active_wnd = neww;
+        self.refresh();
+    }
+
+    fn refresh(&self) {
+        wrefresh(self.active_wnd);
+    }
+
+    fn create_win(h: i32, w: i32, y: i32, x: i32, title: Option<&str>) -> WINDOW {
+        let wnd = newwin(h, w, y, x);
+        box_(wnd, 0, 0);
+
+        if let Some(title) = title {
+            mvwaddstr(wnd, 0, 2, &format!(" {} ", title));
+        };
+
+        wnd
     }
 
     pub fn print_session_info(&self, sinfo: &SessionInfo) {
@@ -54,19 +105,21 @@ impl Ui {
             fmt::format_time(sinfo.duration)
         );
 
-        addstr_center(self.hwnd, SESSION_Y_OFFSET, session_name);
-        addstr_center(self.hwnd, SESSION_Y_OFFSET + 1, lap_info);
-        addstr_center(self.hwnd, SESSION_Y_OFFSET + 2, session_time);
+        addstr_center(self.mwnd, SESSION_Y_OFFSET, session_name);
+        addstr_center(self.mwnd, SESSION_Y_OFFSET + 1, lap_info);
+        addstr_center(self.mwnd, SESSION_Y_OFFSET + 2, session_time);
     }
 
     pub fn print_lap_info(&self, lap_info: &[LapInfo]) {
-        fmt::set_bold();
+        let wnd = self.lap_wnd;
 
-        mvaddstr(
-            LAP_DATA_HEADER_Y_OFFSET,
-            LEFT_BORDER_X_OFFSET,
-            "  P. NAME                 | CURRENT LAP  | LAST LAP     | BEST LAP     | STATUS",
-        );
+        fmt::wset_bold(wnd);
+
+        let header =
+            "  P. NAME                 | CURRENT LAP  | LAST LAP     | BEST LAP     | STATUS";
+        let x_offset = (getmaxx(wnd) - header.len() as i32) / 2;
+
+        mvwaddstr(wnd, 1, x_offset, header);
 
         for li in lap_info {
             let pos = match li.status {
@@ -93,16 +146,14 @@ impl Ui {
                 penalties,
             );
 
-            fmt::set_team_color(li.team);
-            mvaddstr(
-                LAP_DATA_Y_OFFSET + li.position as i32 - 1,
-                LEFT_BORDER_X_OFFSET,
-                s.as_str(),
-            );
+            fmt::set_team_color(wnd, li.team);
+            mvwaddstr(wnd, 2 + li.position as i32, x_offset, s.as_str());
             clrtoeol();
         }
 
-        fmt::reset();
+        fmt::wreset(wnd);
+
+        self.refresh()
     }
 
     pub fn print_event_info(&self, event_info: &EventInfo) {
@@ -122,59 +173,65 @@ impl Ui {
             msg += &format!(" ({})", fmt::format_time_ms(lap_time));
         }
 
-        mvaddstr(getmaxy(self.hwnd) - 1, LEFT_BORDER_X_OFFSET, &msg);
+        mvaddstr(getmaxy(self.mwnd) - 1, LEFT_BORDER_X_OFFSET, &msg);
         clrtoeol();
 
         fmt::reset();
     }
 
     pub fn print_telemetry_info(&self, telemetry_info: &TelemetryInfo) {
+        let wnd = self.lap_wnd;
+
         fmt::set_bold();
 
         let gear_msg = format!("Gear     : {}", fmt::format_gear(telemetry_info.gear));
-        mvaddstr(CURRENT_CAR_DATA_Y_OFFSET, LEFT_BORDER_X_OFFSET, &gear_msg);
-        clrtoeol();
+        mvwaddstr(
+            wnd,
+            CURRENT_CAR_DATA_Y_OFFSET,
+            LEFT_BORDER_X_OFFSET,
+            &gear_msg,
+        );
 
-        let throttle_msg = format!("Throttle : ");
-        mvaddstr(
+        mvwaddstr(
+            wnd,
             CURRENT_CAR_DATA_Y_OFFSET + 1,
             LEFT_BORDER_X_OFFSET,
-            &throttle_msg,
+            "Throttle : ",
         );
-        clrtoeol();
 
-        let brake_msg = format!("Brake    : ");
-        mvaddstr(
+        mvwaddstr(
+            wnd,
             CURRENT_CAR_DATA_Y_OFFSET + 2,
             LEFT_BORDER_X_OFFSET,
-            &brake_msg,
+            "Brake    : ",
         );
-        clrtoeol();
 
-        let throttle_bar = format!("{}", fmt::format_perc_bar(telemetry_info.throttle));
-        fmt::set_green();
-        mvaddstr(
+        let offset = getcurx(wnd);
+
+        let throttle_bar = fmt::format_perc_bar(telemetry_info.throttle);
+        fmt::wset_green(wnd);
+        mvwaddstr(
+            wnd,
             CURRENT_CAR_DATA_Y_OFFSET + 1,
-            LEFT_BORDER_X_OFFSET + throttle_msg.len() as i32,
-            &throttle_bar,
+            offset,
+            &(throttle_bar + "                    "),
         );
-        clrtoeol();
 
-        let brake_bar = format!("{}", fmt::format_perc_bar(telemetry_info.brake));
-        fmt::set_red();
-        mvaddstr(
+        let brake_bar = fmt::format_perc_bar(telemetry_info.brake);
+        fmt::wset_red(wnd);
+        mvwaddstr(
+            wnd,
             CURRENT_CAR_DATA_Y_OFFSET + 2,
-            LEFT_BORDER_X_OFFSET + brake_msg.len() as i32,
-            &brake_bar,
+            offset,
+            &(brake_bar + "                    "),
         );
-        clrtoeol();
 
-        fmt::reset();
+        fmt::wreset(wnd);
     }
 }
 
 fn addstr_center(w: WINDOW, y: i32, str_: &str) {
     mv(y, 0);
     clrtoeol();
-    mvaddstr(y, fmt::center(w, str_), str_);
+    mvwaddstr(w, y, fmt::center(w, str_), str_);
 }
