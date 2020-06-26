@@ -18,7 +18,7 @@ pub enum Window {
 
 pub struct Ui {
     mwnd: WINDOW,
-    lap_wnd: WINDOW,
+    dashboard_wnd: WINDOW,
     car_wnd: WINDOW,
     active_wnd: WINDOW,
 }
@@ -51,15 +51,15 @@ impl Ui {
         let win_w = w - 2;
         let win_h = h - WINDOW_Y_OFFSET - 2;
 
-        let lap_wnd = Ui::create_win(win_h, win_w, WINDOW_Y_OFFSET, 1, Some("Lap Info"));
+        let dashboard_wnd = Ui::create_win(win_h, win_w, WINDOW_Y_OFFSET, 1, Some("Dashboard"));
         let car_wnd = Ui::create_win(win_h, win_w, WINDOW_Y_OFFSET, 1, Some("Car Status"));
 
-        let active_wnd = lap_wnd;
+        let active_wnd = dashboard_wnd;
         wrefresh(active_wnd);
 
         Ui {
             mwnd,
-            lap_wnd,
+            dashboard_wnd,
             car_wnd,
             active_wnd,
         }
@@ -71,7 +71,7 @@ impl Ui {
 
     pub fn switch_window(&mut self, window: Window) {
         let neww = match window {
-            Window::Lap => self.lap_wnd,
+            Window::Lap => self.dashboard_wnd,
             Window::Car => self.car_wnd,
         };
 
@@ -115,15 +115,14 @@ impl Ui {
     }
 
     pub fn print_lap_info(&self, lap_info: &[LapInfo]) {
-        let wnd = self.lap_wnd;
+        let wnd = self.dashboard_wnd;
 
         fmt::wset_bold(wnd);
 
         let header =
             "  P. NAME                 | CURRENT LAP  | LAST LAP     | BEST LAP     | STATUS";
-        let x_offset = (getmaxx(wnd) - header.len() as i32) / 2;
 
-        mvwaddstr(wnd, 1, x_offset, header);
+        mvwaddstr(wnd, 1, LEFT_BORDER_X_OFFSET, header);
 
         for li in lap_info {
             let pos = match li.status {
@@ -151,7 +150,12 @@ impl Ui {
             );
 
             fmt::set_team_color(wnd, li.team);
-            mvwaddstr(wnd, 2 + li.position as i32, x_offset, s.as_str());
+            mvwaddstr(
+                wnd,
+                2 + li.position as i32,
+                LEFT_BORDER_X_OFFSET,
+                s.as_str(),
+            );
             clrtoeol();
         }
 
@@ -184,7 +188,7 @@ impl Ui {
     }
 
     pub fn print_telemetry_info(&self, telemetry_info: &TelemetryInfo) {
-        let wnd = self.lap_wnd;
+        let wnd = self.dashboard_wnd;
 
         fmt::set_bold();
 
