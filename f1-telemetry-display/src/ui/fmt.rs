@@ -1,5 +1,6 @@
 use f1_telemetry::packet::participants::{Driver, Team};
 use ncurses::*;
+use std::borrow::Cow;
 
 const TEAM_COLOUR_OFFSET: i16 = 100;
 const STATUS_COLOUR_OFFSET: i16 = 200;
@@ -63,10 +64,10 @@ pub fn reset() {
     attrset(0);
 }
 
-pub fn format_driver_name(name: &str, driver: Driver) -> String {
+pub fn format_driver_name(name: &str, driver: Driver) -> Cow<str> {
     match driver {
-        Driver::Player => capitalize_name(name),
-        _ => name.to_string(),
+        Driver::Player => Cow::Owned(capitalize_name(name)),
+        _ => Cow::Borrowed(name),
     }
 }
 
