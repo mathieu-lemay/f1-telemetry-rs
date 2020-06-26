@@ -155,7 +155,7 @@ impl Ui {
         fmt::set_green();
         mvaddstr(
             CURRENT_CAR_DATA_Y_OFFSET + 1,
-            LEFT_BORDER_X_OFFSET + 11,
+            LEFT_BORDER_X_OFFSET + throttle_msg.len() as i32,
             &throttle_bar,
         );
         clrtoeol();
@@ -164,7 +164,7 @@ impl Ui {
         fmt::set_red();
         mvaddstr(
             CURRENT_CAR_DATA_Y_OFFSET + 2,
-            LEFT_BORDER_X_OFFSET + 11,
+            LEFT_BORDER_X_OFFSET + brake_msg.len() as i32,
             &brake_bar,
         );
         clrtoeol();
