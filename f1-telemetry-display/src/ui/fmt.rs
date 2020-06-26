@@ -56,12 +56,20 @@ pub fn set_bold() {
     attron(A_BOLD());
 }
 
-pub fn set_team_color(team: Team) {
-    color_set(TEAM_COLOUR_OFFSET + team.id() as i16);
+pub fn wset_bold(w: WINDOW) {
+    wattron(w, A_BOLD());
+}
+
+pub fn set_team_color(w: WINDOW, team: Team) {
+    wcolor_set(w, TEAM_COLOUR_OFFSET + team.id() as i16);
 }
 
 pub fn reset() {
     attrset(0);
+}
+
+pub fn wreset(w: WINDOW) {
+    wattrset(w, 0);
 }
 
 pub fn format_driver_name(name: &str, driver: Driver) -> Cow<str> {
