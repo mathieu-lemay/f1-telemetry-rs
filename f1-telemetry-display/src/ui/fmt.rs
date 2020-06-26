@@ -4,6 +4,7 @@ use std::borrow::Cow;
 
 const TEAM_COLOUR_OFFSET: i16 = 100;
 const STATUS_COLOUR_OFFSET: i16 = 200;
+const PERCENTAGE_BAR_SLICES: i8 = 20;
 
 #[derive(Debug, Clone, Copy, Eq, PartialEq)]
 pub enum Status {
@@ -64,6 +65,14 @@ pub fn set_team_color(w: WINDOW, team: Team) {
     wcolor_set(w, TEAM_COLOUR_OFFSET + team.id() as i16);
 }
 
+pub fn wset_green(w: WINDOW) {
+    wcolor_set(w, (STATUS_COLOUR_OFFSET + 1) as i16);
+}
+
+pub fn wset_red(w: WINDOW) {
+    wcolor_set(w, (STATUS_COLOUR_OFFSET + 4) as i16);
+}
+
 pub fn reset() {
     attrset(0);
 }
@@ -104,6 +113,20 @@ pub fn format_time_ms(ts: f32) -> String {
     let seconds = seconds % 60;
 
     format!("{:02}:{:02}:{:02}.{:03}", hours, minutes, seconds, millis)
+}
+
+pub fn format_gear(gear: i8) -> String {
+    match gear {
+        -1 => format!("R"),
+        0 => format!("N"),
+        _ => format!("{}", gear),
+    }
+}
+
+pub fn format_perc_bar(perc_value: f32) -> String {
+    let bars = 100 / PERCENTAGE_BAR_SLICES;
+    let used_bars = (perc_value * 100.0) as i8 / bars;
+    (0..used_bars).map(|_| "|").collect::<String>()
 }
 
 pub fn center(hwnd: WINDOW, s: &str) -> i32 {

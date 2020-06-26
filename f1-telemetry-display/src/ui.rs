@@ -1,4 +1,4 @@
-use crate::models::{EventInfo, LapInfo, SessionInfo};
+use crate::models::{EventInfo, LapInfo, SessionInfo, TelemetryInfo};
 use f1_telemetry::packet::lap::ResultStatus;
 use ncurses::*;
 
@@ -7,6 +7,8 @@ mod fmt;
 const MIN_WIDTH: i32 = 84;
 const SESSION_Y_OFFSET: i32 = 1;
 const WINDOW_Y_OFFSET: i32 = 5;
+const LEFT_BORDER_X_OFFSET: i32 = 2;
+const CURRENT_CAR_DATA_Y_OFFSET: i32 = 24;
 
 pub enum Window {
     Lap,
@@ -171,10 +173,60 @@ impl Ui {
             msg += &format!(" ({})", fmt::format_time_ms(lap_time));
         }
 
-        mvaddstr(getmaxy(self.mwnd) - 1, 2, &msg);
+        mvaddstr(getmaxy(self.mwnd) - 1, LEFT_BORDER_X_OFFSET, &msg);
         clrtoeol();
 
         fmt::reset();
+    }
+
+    pub fn print_telemetry_info(&self, telemetry_info: &TelemetryInfo) {
+        let wnd = self.lap_wnd;
+
+        fmt::set_bold();
+
+        let gear_msg = format!("Gear     : {}", fmt::format_gear(telemetry_info.gear));
+        mvwaddstr(
+            wnd,
+            CURRENT_CAR_DATA_Y_OFFSET,
+            LEFT_BORDER_X_OFFSET,
+            &gear_msg,
+        );
+
+        mvwaddstr(
+            wnd,
+            CURRENT_CAR_DATA_Y_OFFSET + 1,
+            LEFT_BORDER_X_OFFSET,
+            "Throttle : ",
+        );
+
+        mvwaddstr(
+            wnd,
+            CURRENT_CAR_DATA_Y_OFFSET + 2,
+            LEFT_BORDER_X_OFFSET,
+            "Brake    : ",
+        );
+
+        let offset = getcurx(wnd);
+
+        let throttle_bar = fmt::format_perc_bar(telemetry_info.throttle);
+        fmt::wset_green(wnd);
+        mvwaddstr(
+            wnd,
+            CURRENT_CAR_DATA_Y_OFFSET + 1,
+            offset,
+            &(throttle_bar + "                    "),
+        );
+
+        let brake_bar = fmt::format_perc_bar(telemetry_info.brake);
+        fmt::wset_red(wnd);
+        mvwaddstr(
+            wnd,
+            CURRENT_CAR_DATA_Y_OFFSET + 2,
+            offset,
+            &(brake_bar + "                    "),
+        );
+
+        fmt::wreset(wnd);
     }
 }
 

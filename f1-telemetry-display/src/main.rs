@@ -1,3 +1,5 @@
+use crate::models::TelemetryInfo;
+use f1_telemetry::packet::car_telemetry::PacketCarTelemetryData;
 use f1_telemetry::packet::event::PacketEventData;
 use f1_telemetry::packet::lap::{PacketLapData, PitStatus};
 use f1_telemetry::packet::participants::PacketParticipantsData;
@@ -41,6 +43,11 @@ fn main() {
                         }
                     }
                     Packet::Participants(p) => participants = Some(p),
+                    Packet::CarTelemetry(td) => {
+                        if let Some(telemetry_info) = parse_telemetry_data(&td) {
+                            ui.print_telemetry_info(&telemetry_info)
+                        }
+                    }
                     _ => {}
                 },
                 None => sleep(Duration::from_millis(5)),
@@ -146,6 +153,22 @@ fn parse_event_data<'a>(
         description,
         driver_name,
         lap_time: event_data.lap_time(),
+    })
+}
+
+fn parse_telemetry_data(telemetry_data: &PacketCarTelemetryData) -> Option<TelemetryInfo> {
+    let player_index = telemetry_data.header().player_car_index();
+    let telemetry_data = &telemetry_data.car_telemetry_data()[player_index as usize];
+
+    Some(TelemetryInfo {
+        speed: telemetry_data.speed(),
+        throttle: telemetry_data.throttle(),
+        brake: telemetry_data.brake(),
+        gear: telemetry_data.gear(),
+        engine_rpm: telemetry_data.engine_rpm(),
+        drs: telemetry_data.drs(),
+        rev_lights_percent: telemetry_data.rev_lights_percent(),
+        engine_temperature: telemetry_data.engine_temperature(),
     })
 }
 
