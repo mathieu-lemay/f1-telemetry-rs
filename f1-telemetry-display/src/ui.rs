@@ -4,7 +4,8 @@ use ncurses::*;
 
 mod fmt;
 
-const MIN_WIDTH: i32 = 84;
+const MIN_WIDTH: i32 = 96;
+const MIN_HEIGHT: i32 = 36;
 const SESSION_Y_OFFSET: i32 = 1;
 const WINDOW_Y_OFFSET: i32 = 5;
 const LEFT_BORDER_X_OFFSET: i32 = 2;
@@ -31,8 +32,11 @@ impl Ui {
         let w = getmaxx(mwnd);
         let h = getmaxy(mwnd);
 
-        if w < MIN_WIDTH {
-            panic!("Terminal too narrow");
+        if w < MIN_WIDTH || h < MIN_HEIGHT {
+            panic!(format!(
+                "Terminal must be at least {}x{}. Current size: {}x{}",
+                MIN_WIDTH, MIN_HEIGHT, w, h
+            ));
         }
 
         curs_set(CURSOR_VISIBILITY::CURSOR_INVISIBLE);
