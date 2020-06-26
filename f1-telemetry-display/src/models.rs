@@ -30,3 +30,14 @@ pub struct SessionInfo<'a> {
     pub current_lap: u8,
     pub number_of_laps: u8,
 }
+
+pub struct TelemetryInfo {
+    pub speed: u16,
+    pub throttle: f32,
+    pub brake: f32,
+    pub gear: i8,
+    pub engine_rpm: u16,
+    pub drs: bool,
+    pub rev_lights_percent: u8,
+    pub engine_temperature: u16,
+}

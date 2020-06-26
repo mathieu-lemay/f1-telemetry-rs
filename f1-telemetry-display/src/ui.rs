@@ -1,4 +1,4 @@
-use crate::models::{EventInfo, LapInfo, SessionInfo};
+use crate::models::{EventInfo, LapInfo, SessionInfo, TelemetryInfo};
 use f1_telemetry::packet::lap::ResultStatus;
 use ncurses::*;
 
@@ -8,7 +8,8 @@ const WIDTH: i32 = 84;
 const SESSION_Y_OFFSET: i32 = 0;
 const LAP_DATA_HEADER_Y_OFFSET: i32 = 4;
 const LAP_DATA_Y_OFFSET: i32 = 6;
-// const CURRENT_CAR_DATA_Y_OFFSET: i32 = 26;
+const LEFT_BORDER_X_OFFSET: i32 = 2;
+const CURRENT_CAR_DATA_Y_OFFSET: i32 = 27;
 // const CAR_X_OFFSET: i32 = 80;
 
 pub struct Ui {
@@ -63,7 +64,7 @@ impl Ui {
 
         mvaddstr(
             LAP_DATA_HEADER_Y_OFFSET,
-            2,
+            LEFT_BORDER_X_OFFSET,
             "  P. NAME                 | CURRENT LAP  | LAST LAP     | BEST LAP     | STATUS",
         );
 
@@ -93,7 +94,11 @@ impl Ui {
             );
 
             fmt::set_team_color(li.team);
-            mvaddstr(LAP_DATA_Y_OFFSET + li.position as i32 - 1, 2, s.as_str());
+            mvaddstr(
+                LAP_DATA_Y_OFFSET + li.position as i32 - 1,
+                LEFT_BORDER_X_OFFSET,
+                s.as_str(),
+            );
             clrtoeol();
         }
 
@@ -117,7 +122,51 @@ impl Ui {
             msg += &format!(" ({})", fmt::format_time_ms(lap_time));
         }
 
-        mvaddstr(getmaxy(self.hwnd) - 1, 2, &msg);
+        mvaddstr(getmaxy(self.hwnd) - 1, LEFT_BORDER_X_OFFSET, &msg);
+        clrtoeol();
+
+        fmt::reset();
+    }
+
+    pub fn print_telemetry_info(&self, telemetry_info: &TelemetryInfo) {
+        fmt::set_bold();
+
+        let gear_msg = format!("Gear     : {}", fmt::format_gear(telemetry_info.gear));
+        mvaddstr(CURRENT_CAR_DATA_Y_OFFSET, LEFT_BORDER_X_OFFSET, &gear_msg);
+        clrtoeol();
+
+        let throttle_msg = format!("Throttle : ");
+        mvaddstr(
+            CURRENT_CAR_DATA_Y_OFFSET + 1,
+            LEFT_BORDER_X_OFFSET,
+            &throttle_msg,
+        );
+        clrtoeol();
+
+        let brake_msg = format!("Brake    : ");
+        mvaddstr(
+            CURRENT_CAR_DATA_Y_OFFSET + 2,
+            LEFT_BORDER_X_OFFSET,
+            &brake_msg,
+        );
+        clrtoeol();
+
+        let throttle_bar = format!("{}", fmt::format_perc_bar(telemetry_info.throttle));
+        fmt::set_green();
+        mvaddstr(
+            CURRENT_CAR_DATA_Y_OFFSET + 1,
+            LEFT_BORDER_X_OFFSET + 11,
+            &throttle_bar,
+        );
+        clrtoeol();
+
+        let brake_bar = format!("{}", fmt::format_perc_bar(telemetry_info.brake));
+        fmt::set_red();
+        mvaddstr(
+            CURRENT_CAR_DATA_Y_OFFSET + 2,
+            LEFT_BORDER_X_OFFSET + 11,
+            &brake_bar,
+        );
         clrtoeol();
 
         fmt::reset();
