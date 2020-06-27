@@ -1,6 +1,9 @@
 use crate::models::{EventInfo, LapInfo, SessionInfo, TelemetryInfo};
 use f1_telemetry::packet::lap::ResultStatus;
+use f1_telemetry::packet::participants::Team;
 use ncurses::*;
+use std::collections::{BTreeMap, HashMap};
+use std::f32::INFINITY;
 
 mod fmt;
 
@@ -165,6 +168,45 @@ impl Ui {
         }
 
         fmt::wreset(wnd);
+        //RENDER SECOND WINDOW
+
+        let wnd2 = self.track_wnd;
+
+        fmt::wset_bold(wnd2);
+
+        let header = (0..80).map(|_| "-").collect::<String>();
+
+        mvwaddstr(wnd2, 1, LEFT_BORDER_X_OFFSET, &header);
+
+        let mut positions_by_team: BTreeMap<u8, Vec<f32>> = BTreeMap::new();
+        let mut max = -INFINITY;
+        let mut min = INFINITY;
+        for li in lap_info {
+            if li.lap_distance > max {
+                max = li.lap_distance;
+            }
+            if li.lap_distance < min {
+                min = li.lap_distance
+            }
+            positions_by_team
+                .entry(li.team.id())
+                .or_insert(Vec::new())
+                .push(li.lap_distance)
+        }
+        let scale = max - min;
+        let slice = scale / 80.0;
+        let mut r = 1;
+        for (team, positions) in positions_by_team {
+            let mut row = (0..81).map(|_| " ").collect::<Vec<&str>>();
+            for p in &positions {
+                let place = ((*p - min) / slice) as usize;
+                row[place] = "X"
+            }
+            let s = row.into_iter().collect::<String>();
+            mvwaddstr(wnd2, 1 + r, LEFT_BORDER_X_OFFSET, &s);
+            r += 1
+        }
+        fmt::wreset(wnd2);
 
         self.refresh()
     }

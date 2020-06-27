@@ -20,6 +20,7 @@ pub struct LapInfo<'a> {
     pub in_pit: bool,
     pub lap_invalid: bool,
     pub penalties: u8,
+    pub lap_distance: f32,
 }
 
 pub struct SessionInfo<'a> {
