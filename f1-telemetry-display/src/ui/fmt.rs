@@ -117,8 +117,8 @@ pub fn format_time_ms(ts: f32) -> String {
 
 pub fn format_gear(gear: i8) -> String {
     match gear {
-        -1 => format!("R"),
-        0 => format!("N"),
+        -1 => "R".to_string(),
+        0 => "N".to_string(),
         _ => format!("{}", gear),
     }
 }
@@ -127,6 +127,10 @@ pub fn format_perc_bar(perc_value: f32) -> String {
     let bars = 100 / PERCENTAGE_BAR_SLICES;
     let used_bars = (perc_value * 100.0) as i8 / bars;
     (0..used_bars).map(|_| "|").collect::<String>()
+}
+
+pub fn format_speed(speed: u16) -> String {
+    format!("{:03}", speed)
 }
 
 pub fn center(hwnd: WINDOW, s: &str) -> i32 {

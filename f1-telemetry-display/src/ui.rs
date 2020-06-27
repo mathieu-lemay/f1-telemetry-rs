@@ -4,8 +4,8 @@ use ncurses::*;
 
 mod fmt;
 
-const MIN_WIDTH: i32 = 96;
-const MIN_HEIGHT: i32 = 36;
+const MIN_WIDTH: i32 = 132;
+const MIN_HEIGHT: i32 = 35;
 const SESSION_Y_OFFSET: i32 = 1;
 const WINDOW_Y_OFFSET: i32 = 5;
 const LEFT_BORDER_X_OFFSET: i32 = 2;
@@ -192,7 +192,11 @@ impl Ui {
 
         fmt::set_bold();
 
-        let gear_msg = format!("Gear     : {}", fmt::format_gear(telemetry_info.gear));
+        let gear_msg = format!(
+            "Gear     : {}    Speed : {} KPH",
+            fmt::format_gear(telemetry_info.gear),
+            fmt::format_speed(telemetry_info.speed)
+        );
         mvwaddstr(
             wnd,
             CURRENT_CAR_DATA_Y_OFFSET,
