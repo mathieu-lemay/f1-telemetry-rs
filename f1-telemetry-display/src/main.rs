@@ -34,7 +34,8 @@ fn main() {
                     Packet::Lap(ld) => {
                         current_lap = get_current_lap(&ld);
                         if let Some(lap_info) = parse_lap_data(&ld, &participants) {
-                            ui.print_lap_info(&lap_info);
+                            ui.print_dashboard_lap_info(&lap_info);
+                            ui.print_track_status_lap_info(&lap_info);
                         }
                     }
                     Packet::Event(evt) => {

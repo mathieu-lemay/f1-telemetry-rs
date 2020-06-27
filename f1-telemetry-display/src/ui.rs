@@ -122,7 +122,7 @@ impl Ui {
         addstr_center(self.mwnd, SESSION_Y_OFFSET + 2, session_time);
     }
 
-    pub fn print_lap_info(&self, lap_info: &[LapInfo]) {
+    pub fn print_dashboard_lap_info(&self, lap_info: &[LapInfo]) {
         let wnd = self.dashboard_wnd;
 
         fmt::wset_bold(wnd);
@@ -170,7 +170,12 @@ impl Ui {
         fmt::wreset(wnd);
         //RENDER SECOND WINDOW
 
-        let wnd2 = self.track_wnd;
+
+        self.refresh()
+    }
+
+    pub fn print_track_status_lap_info(&self, lap_info: &[LapInfo]){
+                let wnd2 = self.track_wnd;
 
         fmt::wset_bold(wnd2);
 
@@ -188,7 +193,7 @@ impl Ui {
         let mut min = INFINITY;
         for li in lap_info {
             if li.status != ResultStatus::Active {
-                continue
+                continue;
             }
             if li.total_distance > max {
                 max = li.total_distance;
@@ -217,7 +222,6 @@ impl Ui {
         }
         fmt::wreset(wnd2);
 
-        self.refresh()
     }
 
     pub fn print_event_info(&self, event_info: &EventInfo) {
