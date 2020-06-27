@@ -68,6 +68,10 @@ fn main() {
                     // 2
                     ui.switch_window(Window::Car);
                 }
+                ncurses::WchResult::Char(51) => {
+                    // 3
+                    ui.switch_window(Window::Track);
+                }
                 ncurses::WchResult::Char(113) => {
                     // q
                     break;

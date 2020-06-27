@@ -14,12 +14,14 @@ const CURRENT_CAR_DATA_Y_OFFSET: i32 = 24;
 pub enum Window {
     Lap,
     Car,
+    Track,
 }
 
 pub struct Ui {
     mwnd: WINDOW,
     dashboard_wnd: WINDOW,
     car_wnd: WINDOW,
+    track_wnd: WINDOW,
     active_wnd: WINDOW,
 }
 
@@ -53,6 +55,7 @@ impl Ui {
 
         let dashboard_wnd = Ui::create_win(win_h, win_w, WINDOW_Y_OFFSET, 1, Some("Dashboard"));
         let car_wnd = Ui::create_win(win_h, win_w, WINDOW_Y_OFFSET, 1, Some("Car Status"));
+        let track_wnd = Ui::create_win(win_h, win_w, WINDOW_Y_OFFSET, 1, Some("Track Status"));
 
         let active_wnd = dashboard_wnd;
         wrefresh(active_wnd);
@@ -61,6 +64,7 @@ impl Ui {
             mwnd,
             dashboard_wnd,
             car_wnd,
+            track_wnd,
             active_wnd,
         }
     }
@@ -73,6 +77,7 @@ impl Ui {
         let neww = match window {
             Window::Lap => self.dashboard_wnd,
             Window::Car => self.car_wnd,
+            Window::Track => self.track_wnd,
         };
 
         if neww == self.active_wnd {
@@ -210,7 +215,6 @@ impl Ui {
             LEFT_BORDER_X_OFFSET,
             "Throttle : ",
         );
-
         mvwaddstr(
             wnd,
             CURRENT_CAR_DATA_Y_OFFSET + 2,
