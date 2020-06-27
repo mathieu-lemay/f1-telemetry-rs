@@ -187,6 +187,9 @@ impl Ui {
         let mut max = -INFINITY;
         let mut min = INFINITY;
         for li in lap_info {
+            if li.status != ResultStatus::Active {
+                continue
+            }
             if li.total_distance > max {
                 max = li.total_distance;
             }
