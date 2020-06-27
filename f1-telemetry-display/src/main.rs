@@ -128,6 +128,7 @@ fn parse_lap_data<'a>(
             lap_invalid: ld.current_lap_invalid(),
             penalties: ld.penalties(),
             lap_distance: ld.lap_distance(),
+            total_distance: ld.total_distance(),
         };
 
         lap_info.push(li);

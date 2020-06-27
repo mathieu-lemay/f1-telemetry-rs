@@ -21,6 +21,7 @@ pub struct LapInfo<'a> {
     pub lap_invalid: bool,
     pub penalties: u8,
     pub lap_distance: f32,
+    pub total_distance: f32,
 }
 
 pub struct SessionInfo<'a> {

@@ -2,7 +2,7 @@ use crate::models::{EventInfo, LapInfo, SessionInfo, TelemetryInfo};
 use f1_telemetry::packet::lap::ResultStatus;
 use f1_telemetry::packet::participants::Team;
 use ncurses::*;
-use std::collections::{BTreeMap, HashMap};
+use std::collections::BTreeMap;
 use std::f32::INFINITY;
 
 mod fmt;
@@ -174,28 +174,31 @@ impl Ui {
 
         fmt::wset_bold(wnd2);
 
-        let header = (0..80).map(|_| "-").collect::<String>();
+        let title = "Relative Positions";
+        let header = (0..81).map(|_| "-").collect::<String>();
 
-        mvwaddstr(wnd2, 1, LEFT_BORDER_X_OFFSET, &header);
+        mvwaddstr(wnd2, 2, LEFT_BORDER_X_OFFSET, &title);
 
-        let mut positions_by_team: BTreeMap<u8, Vec<f32>> = BTreeMap::new();
+        mvwaddstr(wnd2, 3, LEFT_BORDER_X_OFFSET, &header);
+
+        let mut positions_by_team: BTreeMap<Team, Vec<f32>> = BTreeMap::new();
         let mut max = -INFINITY;
         let mut min = INFINITY;
         for li in lap_info {
-            if li.lap_distance > max {
-                max = li.lap_distance;
+            if li.total_distance > max {
+                max = li.total_distance;
             }
-            if li.lap_distance < min {
-                min = li.lap_distance
+            if li.total_distance < min {
+                min = li.total_distance
             }
             positions_by_team
-                .entry(li.team.id())
-                .or_insert(Vec::new())
-                .push(li.lap_distance)
+                .entry(li.team)
+                .or_insert_with(Vec::new)
+                .push(li.total_distance)
         }
         let scale = max - min;
         let slice = scale / 80.0;
-        let mut r = 1;
+        let mut r = 3;
         for (team, positions) in positions_by_team {
             let mut row = (0..81).map(|_| " ").collect::<Vec<&str>>();
             for p in &positions {
@@ -203,6 +206,7 @@ impl Ui {
                 row[place] = "X"
             }
             let s = row.into_iter().collect::<String>();
+            fmt::set_team_color(wnd2, team);
             mvwaddstr(wnd2, 1 + r, LEFT_BORDER_X_OFFSET, &s);
             r += 1
         }
