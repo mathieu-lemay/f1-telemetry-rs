@@ -175,7 +175,9 @@ impl Ui {
         fmt::wset_bold(wnd2);
 
         let title = "Relative Positions";
-        let header = (0..81).map(|_| "-").collect::<String>();
+        let mut header = "Last ".to_string();
+        header += (0..35).map(|_| "->").collect::<String>().as_str();
+        header += " First";
 
         mvwaddstr(wnd2, 2, LEFT_BORDER_X_OFFSET, &title);
 
