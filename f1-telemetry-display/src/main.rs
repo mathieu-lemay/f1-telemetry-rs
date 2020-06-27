@@ -110,16 +110,18 @@ fn parse_lap_data<'a>(
         return None;
     }
 
-    let participants = participants.as_ref().unwrap().participants();
+    let participants = participants.as_ref().unwrap();
 
-    let mut lap_info = Vec::with_capacity(lap_data.lap_data().len());
+    let mut lap_info = Vec::with_capacity(participants.num_active_cars() as usize);
 
-    for (i, ld) in lap_data.lap_data().iter().enumerate() {
+    for (i, p) in participants.participants().iter().enumerate() {
+        let ld = &lap_data.lap_data()[i];
+
         let li = LapInfo {
             position: ld.car_position(),
-            name: participants[i].name(),
-            driver: participants[i].driver(),
-            team: participants[i].team(),
+            name: p.name(),
+            driver: p.driver(),
+            team: p.team(),
             current_lap_time: ld.current_lap_time(),
             last_lap_time: ld.last_lap_time(),
             best_lap_time: ld.best_lap_time(),

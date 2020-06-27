@@ -88,6 +88,7 @@ pub enum TyreCompound {
     F2Medium,
     F2Hard,
     F2Wet,
+    Unknown,
 }
 
 impl TryFrom<u8> for TyreCompound {
@@ -109,6 +110,7 @@ impl TryFrom<u8> for TyreCompound {
             13 => Ok(TyreCompound::F2Medium),
             14 => Ok(TyreCompound::F2Hard),
             15 => Ok(TyreCompound::F2Wet),
+            0 | 255 => Ok(TyreCompound::Unknown),
             _ => Err(UnpackError(format!(
                 "Invalid TyreCompound value: {}",
                 value
@@ -131,6 +133,7 @@ pub enum TyreCompoundVisual {
     F2Medium,
     F2Hard,
     F2Wet,
+    Unknown,
 }
 
 impl TryFrom<u8> for TyreCompoundVisual {
@@ -150,6 +153,7 @@ impl TryFrom<u8> for TyreCompoundVisual {
             13 => Ok(TyreCompoundVisual::F2Medium),
             14 => Ok(TyreCompoundVisual::F2Hard),
             15 => Ok(TyreCompoundVisual::F2Wet),
+            0 => Ok(TyreCompoundVisual::Unknown),
             _ => Err(UnpackError(format!(
                 "Invalid TyreCompoundVisual value: {}",
                 value

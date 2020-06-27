@@ -659,8 +659,8 @@ impl PacketParticipantsData {
     ) -> Result<PacketParticipantsData, UnpackError> {
         let num_active_cars = reader.read_u8().unwrap();
 
-        let mut participants = Vec::with_capacity(20);
-        for _ in 0..20 {
+        let mut participants = Vec::with_capacity(num_active_cars as usize);
+        for _ in 0..num_active_cars {
             let p = ParticipantData::new(&mut reader)?;
             participants.push(p);
         }
