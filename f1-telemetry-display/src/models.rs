@@ -1,3 +1,4 @@
+use f1_telemetry::packet::car_status::TyreCompoundVisual;
 use f1_telemetry::packet::generic::WheelData;
 use f1_telemetry::packet::lap::ResultStatus;
 use f1_telemetry::packet::participants::{Driver, Team};
@@ -52,4 +53,7 @@ pub struct CarStatus {
     pub rear_wing_damage: u8,
     pub engine_damage: u8,
     pub gearbox_damage: u8,
+    pub fuel_in_tank: f32,
+    pub fuel_remaining_laps: f32,
+    pub tyre_compound: TyreCompoundVisual,
 }

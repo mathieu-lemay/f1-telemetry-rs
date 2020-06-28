@@ -207,7 +207,7 @@ impl Ui {
         fmt::set_bold();
 
         let gear_msg = format!(
-            "Gear     : {}    Speed : {} KPH",
+            "Gear     : {}    Speed : {}",
             fmt::format_gear(telemetry_info.gear),
             fmt::format_speed(telemetry_info.speed)
         );
@@ -248,6 +248,22 @@ impl Ui {
         let wnd = self.dashboard_wnd;
 
         car::render_car(wnd, car_status, 2, 90);
+
+        mvwaddstr(
+            wnd,
+            24,
+            90,
+            &format!("Tyre Compound: {: <15}", car_status.tyre_compound.name()),
+        );
+        mvwaddstr(
+            wnd,
+            25,
+            90,
+            &format!(
+                "Fuel Remaining: {:3.2}kg ({:2.1} laps)",
+                car_status.fuel_in_tank, car_status.fuel_remaining_laps
+            ),
+        );
 
         self.refresh()
     }

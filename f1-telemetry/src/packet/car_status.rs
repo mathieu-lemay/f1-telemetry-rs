@@ -136,6 +136,26 @@ pub enum TyreCompoundVisual {
     Unknown,
 }
 
+impl TyreCompoundVisual {
+    pub fn name<'a>(self) -> &'a str {
+        match self {
+            TyreCompoundVisual::Soft => "Soft",
+            TyreCompoundVisual::Medium => "Medium",
+            TyreCompoundVisual::Hard => "Hard",
+            TyreCompoundVisual::Inter => "Intermediate",
+            TyreCompoundVisual::Wet => "Wet",
+            TyreCompoundVisual::ClassicDry => "ClassicDry",
+            TyreCompoundVisual::ClassicWet => "ClassicWet",
+            TyreCompoundVisual::F2SuperSoft => "Super Soft (F2)",
+            TyreCompoundVisual::F2Soft => "Soft (F2)",
+            TyreCompoundVisual::F2Medium => "Medium (F2)",
+            TyreCompoundVisual::F2Hard => "Hard (F2)",
+            TyreCompoundVisual::F2Wet => "Wet (F2)",
+            TyreCompoundVisual::Unknown => "Unknown",
+        }
+    }
+}
+
 impl TryFrom<u8> for TyreCompoundVisual {
     type Error = UnpackError;
 

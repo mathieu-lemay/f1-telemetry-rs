@@ -194,6 +194,9 @@ fn parse_car_status_data(car_status_data: &PacketCarStatusData) -> CarStatus {
         rear_wing_damage: csd.rear_wing_damage(),
         engine_damage: csd.engine_damage(),
         gearbox_damage: csd.gear_box_damage(),
+        fuel_in_tank: csd.fuel_in_tank(),
+        fuel_remaining_laps: csd.fuel_remaining_laps(),
+        tyre_compound: csd.visual_tyre_compound(),
     }
 }
 

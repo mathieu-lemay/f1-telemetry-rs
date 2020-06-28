@@ -137,11 +137,11 @@ pub fn format_time_ms(ts: f32) -> String {
     format!("{:02}:{:02}:{:02}.{:03}", hours, minutes, seconds, millis)
 }
 
-pub fn format_gear(gear: i8) -> String {
+pub fn format_gear(gear: i8) -> Cow<'static, str> {
     match gear {
-        -1 => "R".to_string(),
-        0 => "N".to_string(),
-        _ => format!("{}", gear),
+        -1 => "R".into(),
+        0 => "N".into(),
+        _ => format!("{}", gear).into(),
     }
 }
 
@@ -152,7 +152,7 @@ pub fn format_perc_bar(perc_value: f32) -> String {
 }
 
 pub fn format_speed(speed: u16) -> String {
-    format!("{:03}", speed)
+    format!("{:3} km/h", speed)
 }
 
 pub fn center(hwnd: WINDOW, s: &str) -> i32 {
