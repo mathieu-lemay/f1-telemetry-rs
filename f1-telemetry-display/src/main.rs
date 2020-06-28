@@ -2,7 +2,6 @@ use crate::models::TelemetryInfo;
 use f1_telemetry::packet::car_status::PacketCarStatusData;
 use f1_telemetry::packet::car_telemetry::PacketCarTelemetryData;
 use f1_telemetry::packet::event::PacketEventData;
-use f1_telemetry::packet::generic::WheelData;
 use f1_telemetry::packet::lap::{PacketLapData, PitStatus};
 use f1_telemetry::packet::participants::PacketParticipantsData;
 use f1_telemetry::packet::session::PacketSessionData;

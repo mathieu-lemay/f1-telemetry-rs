@@ -8,10 +8,10 @@ const PERCENTAGE_BAR_SLICES: i8 = 20;
 
 #[derive(Debug, Clone, Copy, Eq, PartialEq)]
 pub enum Status {
-    OK = (STATUS_COLOUR_OFFSET + 1) as isize,
-    CAUTION = (STATUS_COLOUR_OFFSET + 2) as isize,
-    WARNING = (STATUS_COLOUR_OFFSET + 3) as isize,
-    DANGER = (STATUS_COLOUR_OFFSET + 4) as isize,
+    Ok = (STATUS_COLOUR_OFFSET + 1) as isize,
+    Caution = (STATUS_COLOUR_OFFSET + 2) as isize,
+    Warning = (STATUS_COLOUR_OFFSET + 3) as isize,
+    Danger = (STATUS_COLOUR_OFFSET + 4) as isize,
 }
 
 pub fn init_colors() {
@@ -53,13 +53,13 @@ fn init_team_colors() {
 }
 
 fn init_status_colors() {
-    let color_orange = TEAM_COLOUR_OFFSET + Team::McLaren.id() as i16;
+    init_color(Status::Warning as i16, 1000, 812, 686);
 
     for (status, c) in &[
-        (Status::OK, COLOR_GREEN),
-        (Status::CAUTION, COLOR_YELLOW),
-        (Status::WARNING, color_orange),
-        (Status::DANGER, COLOR_RED),
+        (Status::Ok, COLOR_GREEN),
+        (Status::Caution, COLOR_YELLOW),
+        (Status::Warning, Status::Warning as i16),
+        (Status::Danger, COLOR_RED),
     ] {
         init_pair(*status as i16, *c, COLOR_BLACK);
     }
@@ -86,13 +86,13 @@ pub fn set_color(w: Option<WINDOW>, c: i16) {
 
 pub fn set_damage_color(w: Option<WINDOW>, damage_pct: u8) {
     let c = match damage_pct {
-        d if d <= 15 => STATUS_COLOUR_OFFSET + 1,
-        d if d <= 40 => STATUS_COLOUR_OFFSET + 2,
-        d if d <= 60 => STATUS_COLOUR_OFFSET + 3,
-        _ => STATUS_COLOUR_OFFSET + 4,
+        d if d <= 15 => Status::Ok,
+        d if d <= 40 => Status::Caution,
+        d if d <= 60 => Status::Warning,
+        _ => Status::Danger,
     };
 
-    set_color(w, c);
+    set_color(w, c as i16);
 }
 
 pub fn reset() {
