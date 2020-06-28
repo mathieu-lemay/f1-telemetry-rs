@@ -48,10 +48,12 @@ impl Ui {
         timeout(0);
         fmt::init_colors();
 
+        wresize(mwnd, MIN_HEIGHT, MIN_WIDTH);
+
         refresh();
 
-        let win_w = w - 2;
-        let win_h = h - WINDOW_Y_OFFSET - 2;
+        let win_w = MIN_WIDTH - 2;
+        let win_h = MIN_HEIGHT - WINDOW_Y_OFFSET - 2;
 
         let dashboard_wnd = Ui::create_win(win_h, win_w, WINDOW_Y_OFFSET, 1, Some("Dashboard"));
         let car_wnd = Ui::create_win(win_h, win_w, WINDOW_Y_OFFSET, 1, Some("Car Status"));
