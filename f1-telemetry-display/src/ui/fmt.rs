@@ -73,6 +73,15 @@ pub fn wset_red(w: WINDOW) {
     wcolor_set(w, (STATUS_COLOUR_OFFSET + 4) as i16);
 }
 
+pub fn set_yellow(w: Option<WINDOW>) {
+    let c = (STATUS_COLOUR_OFFSET + 2) as i16;
+
+    match w {
+        Some(w) => wcolor_set(w, c),
+        None => color_set(c),
+    };
+}
+
 pub fn reset() {
     attrset(0);
 }
@@ -126,7 +135,7 @@ pub fn format_gear(gear: i8) -> String {
 pub fn format_perc_bar(perc_value: f32) -> String {
     let bars = 100 / PERCENTAGE_BAR_SLICES;
     let used_bars = (perc_value * 100.0) as i8 / bars;
-    (0..used_bars).map(|_| "|").collect::<String>()
+    format!("{: <20}", (0..used_bars).map(|_| "|").collect::<String>())
 }
 
 pub fn format_speed(speed: u16) -> String {

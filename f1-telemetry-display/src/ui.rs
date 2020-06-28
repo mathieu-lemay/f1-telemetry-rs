@@ -1,5 +1,6 @@
 use crate::models::{EventInfo, LapInfo, SessionInfo, TelemetryInfo};
 use f1_telemetry::packet::lap::ResultStatus;
+use f1_telemetry::packet::session::SafetyCar;
 use ncurses::*;
 
 mod fmt;
@@ -119,6 +120,16 @@ impl Ui {
         addstr_center(self.mwnd, SESSION_Y_OFFSET, session_name);
         addstr_center(self.mwnd, SESSION_Y_OFFSET + 1, lap_info);
         addstr_center(self.mwnd, SESSION_Y_OFFSET + 2, session_time);
+
+        if sinfo.safety_car == SafetyCar::Virtual || sinfo.safety_car == SafetyCar::Full {
+            fmt::set_yellow(None);
+            mvaddstr(
+                getmaxy(self.mwnd) - 1,
+                getmaxx(self.mwnd) - 21,
+                &format!("{: >18}", sinfo.safety_car.name()),
+            );
+            fmt::reset();
+        }
     }
 
     pub fn print_lap_info(&self, lap_info: &[LapInfo]) {
@@ -188,8 +199,9 @@ impl Ui {
             msg += &format!(" ({})", fmt::format_time_ms(lap_time));
         }
 
+        msg = format!("{: <100}", msg);
+
         mvaddstr(getmaxy(self.mwnd) - 1, LEFT_BORDER_X_OFFSET, &msg);
-        clrtoeol();
 
         fmt::reset();
     }
@@ -228,21 +240,11 @@ impl Ui {
 
         let throttle_bar = fmt::format_perc_bar(telemetry_info.throttle);
         fmt::wset_green(wnd);
-        mvwaddstr(
-            wnd,
-            CURRENT_CAR_DATA_Y_OFFSET + 1,
-            offset,
-            &(throttle_bar + "                    "),
-        );
+        mvwaddstr(wnd, CURRENT_CAR_DATA_Y_OFFSET + 1, offset, &throttle_bar);
 
         let brake_bar = fmt::format_perc_bar(telemetry_info.brake);
         fmt::wset_red(wnd);
-        mvwaddstr(
-            wnd,
-            CURRENT_CAR_DATA_Y_OFFSET + 2,
-            offset,
-            &(brake_bar + "                    "),
-        );
+        mvwaddstr(wnd, CURRENT_CAR_DATA_Y_OFFSET + 2, offset, &brake_bar);
 
         fmt::wreset(wnd);
     }

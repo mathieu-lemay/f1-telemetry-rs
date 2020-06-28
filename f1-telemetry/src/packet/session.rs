@@ -252,6 +252,16 @@ pub enum SafetyCar {
     Virtual,
 }
 
+impl SafetyCar {
+    pub fn name<'a>(self) -> &'a str {
+        match self {
+            SafetyCar::None => "No Safety Car",
+            SafetyCar::Virtual => "Virtual Safety Car",
+            SafetyCar::Full => "Safety Car",
+        }
+    }
+}
+
 impl TryFrom<u8> for SafetyCar {
     type Error = UnpackError;
 

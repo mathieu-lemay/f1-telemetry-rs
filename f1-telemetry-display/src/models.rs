@@ -1,5 +1,6 @@
 use f1_telemetry::packet::lap::ResultStatus;
 use f1_telemetry::packet::participants::{Driver, Team};
+use f1_telemetry::packet::session::SafetyCar;
 
 pub struct EventInfo<'a> {
     pub timestamp: f32,
@@ -29,6 +30,7 @@ pub struct SessionInfo<'a> {
     pub duration: u16,
     pub current_lap: u8,
     pub number_of_laps: u8,
+    pub safety_car: SafetyCar,
 }
 
 pub struct TelemetryInfo {

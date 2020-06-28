@@ -99,6 +99,7 @@ fn parse_session_data(session: &PacketSessionData, current_lap: u8) -> SessionIn
         duration: session.session_duration(),
         current_lap,
         number_of_laps: session.total_laps(),
+        safety_car: session.safety_car_status(),
     }
 }
 
