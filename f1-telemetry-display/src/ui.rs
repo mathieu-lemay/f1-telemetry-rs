@@ -140,6 +140,10 @@ impl Ui {
         mvwaddstr(wnd, 1, LEFT_BORDER_X_OFFSET, header);
 
         for li in lap_info {
+            if let ResultStatus::Invalid = li.status {
+                continue;
+            }
+
             let pos = match li.status {
                 ResultStatus::Retired => String::from("RET"),
                 ResultStatus::NotClassified => String::from("N/C"),
@@ -167,7 +171,7 @@ impl Ui {
             fmt::set_team_color(wnd, li.team);
             mvwaddstr(
                 wnd,
-                2 + li.position as i32,
+                li.position as i32 + 2,
                 LEFT_BORDER_X_OFFSET,
                 s.as_str(),
             );

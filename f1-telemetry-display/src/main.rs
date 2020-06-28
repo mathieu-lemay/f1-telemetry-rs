@@ -115,11 +115,11 @@ fn parse_lap_data<'a>(
         return None;
     }
 
-    let participants = participants.as_ref().unwrap();
+    let participants = participants.as_ref().unwrap().participants();
 
-    let mut lap_info = Vec::with_capacity(participants.num_active_cars() as usize);
+    let mut lap_info = Vec::with_capacity(participants.len());
 
-    for (i, p) in participants.participants().iter().enumerate() {
+    for (i, p) in participants.iter().enumerate() {
         let ld = &lap_data.lap_data()[i];
 
         let li = LapInfo {

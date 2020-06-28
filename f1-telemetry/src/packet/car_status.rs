@@ -88,7 +88,7 @@ pub enum TyreCompound {
     F2Medium,
     F2Hard,
     F2Wet,
-    Unknown,
+    Invalid,
 }
 
 impl TryFrom<u8> for TyreCompound {
@@ -110,7 +110,7 @@ impl TryFrom<u8> for TyreCompound {
             13 => Ok(TyreCompound::F2Medium),
             14 => Ok(TyreCompound::F2Hard),
             15 => Ok(TyreCompound::F2Wet),
-            0 | 255 => Ok(TyreCompound::Unknown),
+            0 | 255 => Ok(TyreCompound::Invalid),
             _ => Err(UnpackError(format!(
                 "Invalid TyreCompound value: {}",
                 value
@@ -133,7 +133,7 @@ pub enum TyreCompoundVisual {
     F2Medium,
     F2Hard,
     F2Wet,
-    Unknown,
+    Invalid,
 }
 
 impl TyreCompoundVisual {
@@ -144,14 +144,14 @@ impl TyreCompoundVisual {
             TyreCompoundVisual::Hard => "Hard",
             TyreCompoundVisual::Inter => "Intermediate",
             TyreCompoundVisual::Wet => "Wet",
-            TyreCompoundVisual::ClassicDry => "ClassicDry",
-            TyreCompoundVisual::ClassicWet => "ClassicWet",
+            TyreCompoundVisual::ClassicDry => "Dry (Classic)",
+            TyreCompoundVisual::ClassicWet => "Wet (Classic)",
             TyreCompoundVisual::F2SuperSoft => "Super Soft (F2)",
             TyreCompoundVisual::F2Soft => "Soft (F2)",
             TyreCompoundVisual::F2Medium => "Medium (F2)",
             TyreCompoundVisual::F2Hard => "Hard (F2)",
             TyreCompoundVisual::F2Wet => "Wet (F2)",
-            TyreCompoundVisual::Unknown => "Unknown",
+            TyreCompoundVisual::Invalid => "Invalid",
         }
     }
 }
@@ -173,7 +173,7 @@ impl TryFrom<u8> for TyreCompoundVisual {
             13 => Ok(TyreCompoundVisual::F2Medium),
             14 => Ok(TyreCompoundVisual::F2Hard),
             15 => Ok(TyreCompoundVisual::F2Wet),
-            0 => Ok(TyreCompoundVisual::Unknown),
+            0 => Ok(TyreCompoundVisual::Invalid),
             _ => Err(UnpackError(format!(
                 "Invalid TyreCompoundVisual value: {}",
                 value
