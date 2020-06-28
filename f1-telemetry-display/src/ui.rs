@@ -1,8 +1,9 @@
-use crate::models::{EventInfo, LapInfo, SessionInfo, TelemetryInfo};
+use crate::models::{CarStatus, EventInfo, LapInfo, SessionInfo, TelemetryInfo};
 use f1_telemetry::packet::lap::ResultStatus;
 use f1_telemetry::packet::session::SafetyCar;
 use ncurses::*;
 
+mod car;
 mod fmt;
 
 const MIN_WIDTH: i32 = 132;
@@ -241,6 +242,14 @@ impl Ui {
         mvwaddstr(wnd, CURRENT_CAR_DATA_Y_OFFSET + 2, offset, &brake_bar);
 
         fmt::wreset(wnd);
+    }
+
+    pub fn print_car_status(&self, car_status: &CarStatus) {
+        let wnd = self.dashboard_wnd;
+
+        car::render_car(wnd, car_status, 2, 90);
+
+        self.refresh()
     }
 }
 

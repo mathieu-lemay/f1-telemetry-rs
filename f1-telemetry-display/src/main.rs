@@ -1,12 +1,14 @@
 use crate::models::TelemetryInfo;
+use f1_telemetry::packet::car_status::PacketCarStatusData;
 use f1_telemetry::packet::car_telemetry::PacketCarTelemetryData;
 use f1_telemetry::packet::event::PacketEventData;
+use f1_telemetry::packet::generic::WheelData;
 use f1_telemetry::packet::lap::{PacketLapData, PitStatus};
 use f1_telemetry::packet::participants::PacketParticipantsData;
 use f1_telemetry::packet::session::PacketSessionData;
 use f1_telemetry::packet::Packet;
 use f1_telemetry::Stream;
-use models::{EventInfo, LapInfo, SessionInfo};
+use models::{CarStatus, EventInfo, LapInfo, SessionInfo};
 use std::thread::sleep;
 use std::time::Duration;
 use ui::{Ui, Window};
@@ -47,6 +49,10 @@ fn main() {
                         if let Some(telemetry_info) = parse_telemetry_data(&td) {
                             ui.print_telemetry_info(&telemetry_info)
                         }
+                    }
+                    Packet::CarStatus(cs) => {
+                        let csd = parse_car_status_data(&cs);
+                        ui.print_car_status(&csd)
                     }
                     _ => {}
                 },
@@ -177,6 +183,20 @@ fn parse_telemetry_data(telemetry_data: &PacketCarTelemetryData) -> Option<Telem
         rev_lights_percent: telemetry_data.rev_lights_percent(),
         engine_temperature: telemetry_data.engine_temperature(),
     })
+}
+
+fn parse_car_status_data(car_status_data: &PacketCarStatusData) -> CarStatus {
+    let player_index = car_status_data.header().player_car_index();
+    let csd = &car_status_data.car_status_data()[player_index as usize];
+
+    CarStatus {
+        tyres_damage: csd.tyres_damage(),
+        left_front_wing_damage: csd.front_left_wing_damage(),
+        right_front_wing_damage: csd.front_right_wing_damage(),
+        rear_wing_damage: csd.rear_wing_damage(),
+        engine_damage: csd.engine_damage(),
+        gearbox_damage: csd.gear_box_damage(),
+    }
 }
 
 fn get_current_lap(lap_data: &PacketLapData) -> u8 {

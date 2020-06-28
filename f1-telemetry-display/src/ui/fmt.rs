@@ -84,6 +84,17 @@ pub fn set_color(w: Option<WINDOW>, c: i16) {
     };
 }
 
+pub fn set_damage_color(w: Option<WINDOW>, damage_pct: u8) {
+    let c = match damage_pct {
+        d if d <= 15 => STATUS_COLOUR_OFFSET + 1,
+        d if d <= 40 => STATUS_COLOUR_OFFSET + 2,
+        d if d <= 60 => STATUS_COLOUR_OFFSET + 3,
+        _ => STATUS_COLOUR_OFFSET + 4,
+    };
+
+    set_color(w, c);
+}
+
 pub fn reset() {
     attrset(0);
 }
