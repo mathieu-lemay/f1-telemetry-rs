@@ -17,8 +17,20 @@ pub enum Status {
 pub fn init_colors() {
     start_color();
 
+    init_base_color_pairs();
     init_team_colors();
     init_status_colors()
+}
+
+fn init_base_color_pairs() {
+    init_pair(COLOR_BLACK, COLOR_BLACK, COLOR_BLACK);
+    init_pair(COLOR_RED, COLOR_RED, COLOR_BLACK);
+    init_pair(COLOR_GREEN, COLOR_GREEN, COLOR_BLACK);
+    init_pair(COLOR_YELLOW, COLOR_YELLOW, COLOR_BLACK);
+    init_pair(COLOR_BLUE, COLOR_BLUE, COLOR_BLACK);
+    init_pair(COLOR_MAGENTA, COLOR_MAGENTA, COLOR_BLACK);
+    init_pair(COLOR_CYAN, COLOR_CYAN, COLOR_BLACK);
+    init_pair(COLOR_WHITE, COLOR_WHITE, COLOR_BLACK);
 }
 
 fn init_team_colors() {
@@ -65,17 +77,7 @@ pub fn set_team_color(w: WINDOW, team: Team) {
     wcolor_set(w, TEAM_COLOUR_OFFSET + team.id() as i16);
 }
 
-pub fn wset_green(w: WINDOW) {
-    wcolor_set(w, (STATUS_COLOUR_OFFSET + 1) as i16);
-}
-
-pub fn wset_red(w: WINDOW) {
-    wcolor_set(w, (STATUS_COLOUR_OFFSET + 4) as i16);
-}
-
-pub fn set_yellow(w: Option<WINDOW>) {
-    let c = (STATUS_COLOUR_OFFSET + 2) as i16;
-
+pub fn set_color(w: Option<WINDOW>, c: i16) {
     match w {
         Some(w) => wcolor_set(w, c),
         None => color_set(c),

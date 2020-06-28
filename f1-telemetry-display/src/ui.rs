@@ -122,7 +122,7 @@ impl Ui {
         addstr_center(self.mwnd, SESSION_Y_OFFSET + 2, session_time);
 
         if sinfo.safety_car == SafetyCar::Virtual || sinfo.safety_car == SafetyCar::Full {
-            fmt::set_yellow(None);
+            fmt::set_color(None, COLOR_YELLOW);
             mvaddstr(
                 getmaxy(self.mwnd) - 1,
                 getmaxx(self.mwnd) - 21,
@@ -239,11 +239,11 @@ impl Ui {
         let offset = getcurx(wnd);
 
         let throttle_bar = fmt::format_perc_bar(telemetry_info.throttle);
-        fmt::wset_green(wnd);
+        fmt::set_color(Some(wnd), COLOR_GREEN);
         mvwaddstr(wnd, CURRENT_CAR_DATA_Y_OFFSET + 1, offset, &throttle_bar);
 
         let brake_bar = fmt::format_perc_bar(telemetry_info.brake);
-        fmt::wset_red(wnd);
+        fmt::set_color(Some(wnd), COLOR_RED);
         mvwaddstr(wnd, CURRENT_CAR_DATA_Y_OFFSET + 2, offset, &brake_bar);
 
         fmt::wreset(wnd);
