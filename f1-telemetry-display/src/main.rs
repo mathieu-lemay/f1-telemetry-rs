@@ -46,9 +46,8 @@ fn main() {
                     }
                     Packet::Participants(p) => participants = Some(p),
                     Packet::CarTelemetry(td) => {
-                        if let Some(telemetry_info) = parse_telemetry_data(&td) {
-                            ui.print_telemetry_info(&telemetry_info)
-                        }
+                        let telemetry_info = parse_telemetry_data(&td);
+                        ui.print_telemetry_info(&telemetry_info);
                     }
                     Packet::CarStatus(cs) => {
                         let csd = parse_car_status_data(&cs);
@@ -169,11 +168,11 @@ fn parse_event_data<'a>(
     })
 }
 
-fn parse_telemetry_data(telemetry_data: &PacketCarTelemetryData) -> Option<TelemetryInfo> {
+fn parse_telemetry_data(telemetry_data: &PacketCarTelemetryData) -> TelemetryInfo {
     let player_index = telemetry_data.header().player_car_index();
     let telemetry_data = &telemetry_data.car_telemetry_data()[player_index as usize];
 
-    Some(TelemetryInfo {
+    TelemetryInfo {
         speed: telemetry_data.speed(),
         throttle: telemetry_data.throttle(),
         brake: telemetry_data.brake(),
@@ -182,7 +181,7 @@ fn parse_telemetry_data(telemetry_data: &PacketCarTelemetryData) -> Option<Telem
         drs: telemetry_data.drs(),
         rev_lights_percent: telemetry_data.rev_lights_percent(),
         engine_temperature: telemetry_data.engine_temperature(),
-    })
+    }
 }
 
 fn parse_car_status_data(car_status_data: &PacketCarStatusData) -> CarStatus {
