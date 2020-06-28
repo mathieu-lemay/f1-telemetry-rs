@@ -1,10 +1,10 @@
 use crate::models::TelemetryInfo;
+use crate::render::{CarRenderer, LapRenderer, MainRenderer, Renderer, TrackRenderer};
 use f1_telemetry::packet::car_telemetry::PacketCarTelemetryData;
 use f1_telemetry::packet::event::PacketEventData;
 use f1_telemetry::packet::lap::{PacketLapData, PitStatus};
 use f1_telemetry::packet::participants::PacketParticipantsData;
 use f1_telemetry::packet::session::PacketSessionData;
-use f1_telemetry::packet::Packet;
 use f1_telemetry::Stream;
 use models::{EventInfo, LapInfo, SessionInfo};
 use std::thread::sleep;
@@ -12,45 +12,37 @@ use std::time::Duration;
 use ui::{Ui, Window};
 
 mod models;
+mod render;
 mod ui;
 
 fn main() {
     let stream = Stream::new("0.0.0.0:20777").expect("Unable to bind socket");
     println!("Listening on {}", stream.socket().local_addr().unwrap());
 
-    let mut participants: Option<PacketParticipantsData> = None;
-    let mut current_lap: u8 = 0;
-
     let mut ui = Ui::init();
 
     loop {
         match stream.next() {
             Ok(p) => match p {
-                Some(p) => match p {
-                    Packet::Session(s) => {
-                        let sinfo = parse_session_data(&s, current_lap);
-                        ui.print_session_info(&sinfo);
-                    }
-                    Packet::Lap(ld) => {
-                        current_lap = get_current_lap(&ld);
-                        if let Some(lap_info) = parse_lap_data(&ld, &participants) {
-                            ui.print_dashboard_lap_info(&lap_info);
-                            ui.print_track_status_lap_info(&lap_info);
+                Some(p) => {
+                    let mr: MainRenderer = Renderer::new();
+                    mr.render(&mut ui, &p);
+
+                    match ui.active_window {
+                        Window::Lap => {
+                            let r: LapRenderer = Renderer::new();
+                            r.render(&mut ui, &p)
                         }
-                    }
-                    Packet::Event(evt) => {
-                        if let Some(evt_info) = parse_event_data(&evt, &participants) {
-                            ui.print_event_info(&evt_info);
+                        Window::Track => {
+                            let r: TrackRenderer = Renderer::new();
+                            r.render(&mut ui, &p)
                         }
-                    }
-                    Packet::Participants(p) => participants = Some(p),
-                    Packet::CarTelemetry(td) => {
-                        if let Some(telemetry_info) = parse_telemetry_data(&td) {
-                            ui.print_telemetry_info(&telemetry_info)
+                        Window::Car => {
+                            let r: CarRenderer = Renderer::new();
+                            r.render(&mut ui, &p)
                         }
-                    }
-                    _ => {}
-                },
+                    };
+                }
                 None => sleep(Duration::from_millis(5)),
             },
             Err(_e) => {

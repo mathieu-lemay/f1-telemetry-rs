@@ -1,6 +1,6 @@
 use crate::models::{EventInfo, LapInfo, SessionInfo, TelemetryInfo};
 use f1_telemetry::packet::lap::ResultStatus;
-use f1_telemetry::packet::participants::Team;
+use f1_telemetry::packet::participants::{PacketParticipantsData, Team};
 use ncurses::*;
 use std::collections::BTreeMap;
 use std::f32::INFINITY;
@@ -25,7 +25,10 @@ pub struct Ui {
     dashboard_wnd: WINDOW,
     car_wnd: WINDOW,
     track_wnd: WINDOW,
-    active_wnd: WINDOW,
+    pub active_wnd: WINDOW,
+    pub active_window: Window,
+    pub current_lap: u8,
+    pub participants: Option<PacketParticipantsData>,
 }
 
 impl Ui {
@@ -61,6 +64,7 @@ impl Ui {
         let track_wnd = Ui::create_win(win_h, win_w, WINDOW_Y_OFFSET, 1, Some("Track Status"));
 
         let active_wnd = dashboard_wnd;
+        let active_window = Window::Lap;
         wrefresh(active_wnd);
 
         Ui {
@@ -69,6 +73,9 @@ impl Ui {
             car_wnd,
             track_wnd,
             active_wnd,
+            active_window,
+            current_lap: 0,
+            participants: None,
         }
     }
 
@@ -90,6 +97,7 @@ impl Ui {
         redrawwin(neww);
 
         self.active_wnd = neww;
+        self.active_window = window;
         self.refresh();
     }
 
@@ -170,12 +178,11 @@ impl Ui {
         fmt::wreset(wnd);
         //RENDER SECOND WINDOW
 
-
         self.refresh()
     }
 
-    pub fn print_track_status_lap_info(&self, lap_info: &[LapInfo]){
-                let wnd2 = self.track_wnd;
+    pub fn print_track_status_lap_info(&self, lap_info: &[LapInfo]) {
+        let wnd2 = self.track_wnd;
 
         fmt::wset_bold(wnd2);
 
@@ -222,6 +229,7 @@ impl Ui {
         }
         fmt::wreset(wnd2);
 
+        self.refresh()
     }
 
     pub fn print_event_info(&self, event_info: &EventInfo) {
