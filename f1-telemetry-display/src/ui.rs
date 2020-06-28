@@ -123,11 +123,7 @@ impl Ui {
 
         if sinfo.safety_car == SafetyCar::Virtual || sinfo.safety_car == SafetyCar::Full {
             fmt::set_color(None, COLOR_YELLOW);
-            mvaddstr(
-                getmaxy(self.mwnd) - 1,
-                getmaxx(self.mwnd) - 21,
-                &format!("{: >18}", sinfo.safety_car.name()),
-            );
+            addstr_center(self.mwnd, SESSION_Y_OFFSET + 3, sinfo.safety_car.name());
             fmt::reset();
         }
     }
@@ -174,7 +170,6 @@ impl Ui {
                 LEFT_BORDER_X_OFFSET,
                 s.as_str(),
             );
-            clrtoeol();
         }
 
         fmt::wreset(wnd);
@@ -199,9 +194,8 @@ impl Ui {
             msg += &format!(" ({})", fmt::format_time_ms(lap_time));
         }
 
-        msg = format!("{: <100}", msg);
-
         mvaddstr(getmaxy(self.mwnd) - 1, LEFT_BORDER_X_OFFSET, &msg);
+        clrtoeol();
 
         fmt::reset();
     }
