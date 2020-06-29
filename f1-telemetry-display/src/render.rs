@@ -1,6 +1,7 @@
 use crate::ui::Ui;
 use crate::{
-    get_current_lap, parse_event_data, parse_lap_data, parse_session_data, parse_telemetry_data,
+    get_current_lap, parse_car_status_data, parse_event_data, parse_lap_data, parse_session_data,
+    parse_telemetry_data,
 };
 use f1_telemetry::packet::Packet;
 
@@ -38,7 +39,6 @@ impl Renderer for MainRenderer {
                 ui.current_lap = get_current_lap(&ld);
             }
             Packet::Participants(p) => ui.participants = Some(p.clone()),
-
             _ => {}
         }
     }
@@ -81,10 +81,14 @@ impl Renderer for LapRenderer {
                 }
             }
             Packet::CarTelemetry(td) => {
-                if let Some(telemetry_info) = parse_telemetry_data(&td) {
-                    ui.print_telemetry_info(&telemetry_info)
-                }
+                let telemetry_info = parse_telemetry_data(&td);
+                ui.print_telemetry_info(&telemetry_info)
             }
+            Packet::CarStatus(cs) => {
+                let csd = parse_car_status_data(&cs);
+                ui.print_car_status(&csd)
+            }
+
             _ => {}
         }
     }

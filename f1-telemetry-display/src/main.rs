@@ -1,5 +1,6 @@
 use crate::models::TelemetryInfo;
 use crate::render::{CarRenderer, LapRenderer, MainRenderer, Renderer, TrackRenderer};
+use f1_telemetry::packet::car_status::PacketCarStatusData;
 use f1_telemetry::packet::car_telemetry::PacketCarTelemetryData;
 use f1_telemetry::packet::event::PacketEventData;
 use f1_telemetry::packet::lap::{PacketLapData, PitStatus};
