@@ -2,16 +2,56 @@ use f1_telemetry::packet::participants::{Driver, Team};
 use ncurses::*;
 use std::borrow::Cow;
 
-const TEAM_COLOUR_OFFSET: i16 = 100;
-const STATUS_COLOUR_OFFSET: i16 = 200;
 const PERCENTAGE_BAR_SLICES: i8 = 20;
 
-#[derive(Debug, Clone, Copy, Eq, PartialEq)]
-pub enum Status {
-    Ok = (STATUS_COLOUR_OFFSET + 1) as isize,
-    Caution = (STATUS_COLOUR_OFFSET + 2) as isize,
-    Warning = (STATUS_COLOUR_OFFSET + 3) as isize,
-    Danger = (STATUS_COLOUR_OFFSET + 4) as isize,
+#[allow(dead_code)]
+pub enum Color {
+    Black = COLOR_BLACK as isize,
+    Red = COLOR_RED as isize,
+    Green = COLOR_GREEN as isize,
+    Yellow = COLOR_YELLOW as isize,
+    Blue = COLOR_BLUE as isize,
+    Magenta = COLOR_MAGENTA as isize,
+    Cyan = COLOR_CYAN as isize,
+    White = COLOR_WHITE as isize,
+
+    Mercedes = 100,
+    Ferrari,
+    RedBullRacing,
+    Williams,
+    RacingPoint,
+    Renault,
+    ToroRosso,
+    Haas,
+    McLaren,
+    AlfaRomeo,
+
+    StatusOk = 200,
+    StatusCaution,
+    StatusWarning,
+    StatusDanger,
+}
+
+trait ToColor {
+    fn get_color(&self) -> Color;
+}
+
+impl ToColor for Team {
+    fn get_color(&self) -> Color {
+        match self {
+            Team::Mercedes => Color::Mercedes,
+            Team::Ferrari => Color::Ferrari,
+            Team::RedBullRacing => Color::RedBullRacing,
+            Team::Williams => Color::Williams,
+            Team::RacingPoint => Color::RacingPoint,
+            Team::Renault => Color::Renault,
+            Team::ToroRosso => Color::ToroRosso,
+            Team::Haas => Color::Haas,
+            Team::McLaren => Color::McLaren,
+            Team::AlfaRomeo => Color::AlfaRomeo,
+            _ => Color::Black,
+        }
+    }
 }
 
 pub fn init_colors() {
@@ -34,34 +74,34 @@ fn init_base_color_pairs() {
 }
 
 fn init_team_colors() {
-    for (t, c) in &[
-        (Team::Mercedes, (0, 210, 190)),
-        (Team::Ferrari, (220, 0, 0)),
-        (Team::RedBullRacing, (30, 65, 255)),
-        (Team::Williams, (255, 255, 255)),
-        (Team::RacingPoint, (245, 150, 200)),
-        (Team::Renault, (255, 245, 0)),
-        (Team::ToroRosso, (70, 155, 255)),
-        (Team::Haas, (240, 215, 135)),
-        (Team::McLaren, (255, 135, 0)),
-        (Team::AlfaRomeo, (155, 0, 0)),
+    for (t, c) in vec![
+        (Color::Mercedes, (0, 210, 190)),
+        (Color::Ferrari, (220, 0, 0)),
+        (Color::RedBullRacing, (30, 65, 255)),
+        (Color::Williams, (255, 255, 255)),
+        (Color::RacingPoint, (245, 150, 200)),
+        (Color::Renault, (255, 245, 0)),
+        (Color::ToroRosso, (70, 155, 255)),
+        (Color::Haas, (240, 215, 135)),
+        (Color::McLaren, (255, 135, 0)),
+        (Color::AlfaRomeo, (155, 0, 0)),
     ] {
-        let idx = TEAM_COLOUR_OFFSET + t.id() as i16;
+        let idx = t as i16;
         init_color(idx, c.0, c.1, c.2);
         init_pair(idx, COLOR_WHITE, idx);
     }
 }
 
 fn init_status_colors() {
-    init_color(Status::Warning as i16, 1000, 812, 686);
+    init_color(Color::StatusWarning as i16, 1000, 812, 686);
 
-    for (status, c) in &[
-        (Status::Ok, COLOR_GREEN),
-        (Status::Caution, COLOR_YELLOW),
-        (Status::Warning, Status::Warning as i16),
-        (Status::Danger, COLOR_RED),
+    for (status, c) in vec![
+        (Color::StatusOk, Color::Green),
+        (Color::StatusCaution, Color::Yellow),
+        (Color::StatusWarning, Color::StatusWarning),
+        (Color::StatusDanger, Color::Red),
     ] {
-        init_pair(*status as i16, *c, COLOR_BLACK);
+        init_pair(status as i16, c as i16, COLOR_BLACK);
     }
 }
 
@@ -74,7 +114,7 @@ pub fn wset_bold(w: WINDOW) {
 }
 
 pub fn set_team_color(w: WINDOW, team: Team) {
-    wcolor_set(w, TEAM_COLOUR_OFFSET + team.id() as i16);
+    wcolor_set(w, team.get_color() as i16);
 }
 
 pub fn set_color(w: Option<WINDOW>, c: i16) {
@@ -86,10 +126,10 @@ pub fn set_color(w: Option<WINDOW>, c: i16) {
 
 pub fn set_damage_color(w: Option<WINDOW>, damage_pct: u8) {
     let c = match damage_pct {
-        d if d <= 15 => Status::Ok,
-        d if d <= 40 => Status::Caution,
-        d if d <= 60 => Status::Warning,
-        _ => Status::Danger,
+        d if d <= 15 => Color::StatusOk,
+        d if d <= 40 => Color::StatusCaution,
+        d if d <= 60 => Color::StatusWarning,
+        _ => Color::StatusDanger,
     };
 
     set_color(w, c as i16);
