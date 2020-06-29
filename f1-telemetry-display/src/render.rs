@@ -16,7 +16,7 @@ use crate::ui::Ui;
 #[derive(Eq, PartialEq)]
 pub enum View {
     Dashboard,
-    Positions,
+    TrackOverview,
 }
 
 pub struct Renderer {
@@ -98,7 +98,7 @@ impl Renderer {
     }
 
     fn render_track_view(&self, packet: &Packet) {
-        if !self.should_render(View::Positions) {
+        if !self.should_render(View::TrackOverview) {
             return;
         }
 

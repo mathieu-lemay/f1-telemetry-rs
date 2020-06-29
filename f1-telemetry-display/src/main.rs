@@ -37,7 +37,7 @@ fn main() {
                 }
                 ncurses::WchResult::Char(50) => {
                     // 2
-                    renderer.switch_view(View::Positions);
+                    renderer.switch_view(View::TrackOverview);
                 }
                 ncurses::WchResult::Char(113) => {
                     // q

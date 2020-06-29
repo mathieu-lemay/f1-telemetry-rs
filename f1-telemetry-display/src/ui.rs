@@ -75,7 +75,7 @@ impl Ui {
     pub fn switch_window(&mut self, view: &View) {
         let neww = match view {
             View::Dashboard => self.dashboard_wnd,
-            View::Positions => self.track_wnd,
+            View::TrackOverview => self.track_wnd,
         };
 
         if neww == self.active_wnd {
