@@ -180,7 +180,7 @@ impl TryFrom<u8> for Driver {
     }
 }
 
-#[derive(Debug, Clone, Copy, Eq, PartialEq)]
+#[derive(Debug, Clone, Copy, Eq, PartialEq, Hash, Ord, PartialOrd)]
 pub enum Team {
     Mercedes,
     Ferrari,
@@ -585,7 +585,7 @@ impl TryFrom<u8> for Telemetry {
 /// ```
 ///
 /// [`PacketParticipantsData`]: ./struct.PacketParticipantsData.html
-#[derive(Debug, CopyGetters, Getters)]
+#[derive(Debug, CopyGetters, Getters, Clone)]
 pub struct ParticipantData {
     ai_controlled: bool,
     #[getset(get_copy = "pub")]
@@ -644,7 +644,7 @@ impl ParticipantData {
 ///                  cars on HUD
 /// participants:    List of participants, max 20.
 /// ```
-#[derive(Debug, Getters, CopyGetters)]
+#[derive(Debug, Getters, CopyGetters, Clone)]
 pub struct PacketParticipantsData {
     #[getset(get = "pub")]
     header: PacketHeader,

@@ -1,7 +1,10 @@
-use crate::models::{CarStatus, EventInfo, LapInfo, SessionInfo, TelemetryInfo};
+use ncurses::*;
+
 use f1_telemetry::packet::lap::ResultStatus;
 use f1_telemetry::packet::session::SafetyCar;
-use ncurses::*;
+
+use crate::models::{CarStatus, EventInfo, LapInfo, RelativePositions, SessionInfo, TelemetryInfo};
+use crate::render::View;
 
 mod car;
 mod fmt;
@@ -13,18 +16,11 @@ const WINDOW_Y_OFFSET: i32 = 5;
 const LEFT_BORDER_X_OFFSET: i32 = 2;
 const CURRENT_CAR_DATA_Y_OFFSET: i32 = 24;
 
-pub enum Window {
-    Lap,
-    Car,
-    Track,
-}
-
 pub struct Ui {
     mwnd: WINDOW,
-    dashboard_wnd: WINDOW,
-    car_wnd: WINDOW,
-    track_wnd: WINDOW,
     active_wnd: WINDOW,
+    dashboard_wnd: WINDOW,
+    track_wnd: WINDOW,
 }
 
 impl Ui {
@@ -58,18 +54,17 @@ impl Ui {
         let win_h = MIN_HEIGHT - WINDOW_Y_OFFSET - 2;
 
         let dashboard_wnd = Ui::create_win(win_h, win_w, WINDOW_Y_OFFSET, 1, Some("Dashboard"));
-        let car_wnd = Ui::create_win(win_h, win_w, WINDOW_Y_OFFSET, 1, Some("Car Status"));
-        let track_wnd = Ui::create_win(win_h, win_w, WINDOW_Y_OFFSET, 1, Some("Track Status"));
+        let track_wnd =
+            Ui::create_win(win_h, win_w, WINDOW_Y_OFFSET, 1, Some("Relative Positions"));
 
         let active_wnd = dashboard_wnd;
         wrefresh(active_wnd);
 
         Ui {
             mwnd,
-            dashboard_wnd,
-            car_wnd,
-            track_wnd,
             active_wnd,
+            dashboard_wnd,
+            track_wnd,
         }
     }
 
@@ -77,11 +72,10 @@ impl Ui {
         endwin();
     }
 
-    pub fn switch_window(&mut self, window: Window) {
-        let neww = match window {
-            Window::Lap => self.dashboard_wnd,
-            Window::Car => self.car_wnd,
-            Window::Track => self.track_wnd,
+    pub fn switch_window(&mut self, view: &View) {
+        let neww = match view {
+            View::Dashboard => self.dashboard_wnd,
+            View::Positions => self.track_wnd,
         };
 
         if neww == self.active_wnd {
@@ -129,7 +123,7 @@ impl Ui {
         }
     }
 
-    pub fn print_lap_info(&self, lap_info: &[LapInfo]) {
+    pub fn print_dashboard_lap_info(&self, lap_info: &[LapInfo]) {
         let wnd = self.dashboard_wnd;
 
         fmt::wset_bold(wnd);
@@ -175,6 +169,37 @@ impl Ui {
                 LEFT_BORDER_X_OFFSET,
                 s.as_str(),
             );
+        }
+
+        fmt::wreset(wnd);
+
+        self.refresh()
+    }
+
+    pub fn print_track_status_lap_info(&self, relative_positions: &RelativePositions) {
+        let wnd = self.track_wnd;
+
+        fmt::wset_bold(wnd);
+
+        let mut header = "Last ".to_string();
+        header += (0..35).map(|_| "->").collect::<String>().as_str();
+        header += " First";
+
+        mvwaddstr(wnd, 2, LEFT_BORDER_X_OFFSET, "Relative Positions");
+        mvwaddstr(wnd, 3, LEFT_BORDER_X_OFFSET, &header);
+
+        let scale = relative_positions.max - relative_positions.min;
+        let slice = scale / 80.0;
+
+        for (idx, (team, positions)) in relative_positions.positions.iter().enumerate() {
+            let mut row = (0..81).map(|_| " ").collect::<Vec<&str>>();
+            for p in positions {
+                let place = ((*p - relative_positions.min) / slice) as usize;
+                row[place] = "X"
+            }
+            let s = row.into_iter().collect::<String>();
+            fmt::set_team_color(wnd, *team);
+            mvwaddstr(wnd, idx as i32 + 4, LEFT_BORDER_X_OFFSET, &s);
         }
 
         fmt::wreset(wnd);

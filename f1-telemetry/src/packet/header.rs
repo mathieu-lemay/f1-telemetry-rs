@@ -20,7 +20,7 @@ use std::io::BufRead;
 /// Possible `packet_id` values: [`PacketType`].
 ///
 /// [`PacketType`]: ../enum.PacketType.html
-#[derive(Debug, CopyGetters)]
+#[derive(Debug, CopyGetters, Clone)]
 #[getset(get_copy = "pub")]
 pub struct PacketHeader {
     packet_format: u16,

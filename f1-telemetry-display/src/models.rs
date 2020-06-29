@@ -1,3 +1,5 @@
+use std::collections::BTreeMap;
+
 use f1_telemetry::packet::car_status::TyreCompoundVisual;
 use f1_telemetry::packet::generic::WheelData;
 use f1_telemetry::packet::lap::ResultStatus;
@@ -23,6 +25,8 @@ pub struct LapInfo<'a> {
     pub in_pit: bool,
     pub lap_invalid: bool,
     pub penalties: u8,
+    pub lap_distance: f32,
+    pub total_distance: f32,
 }
 
 pub struct SessionInfo<'a> {
@@ -56,4 +60,10 @@ pub struct CarStatus {
     pub fuel_in_tank: f32,
     pub fuel_remaining_laps: f32,
     pub tyre_compound: TyreCompoundVisual,
+}
+
+pub struct RelativePositions {
+    pub positions: BTreeMap<Team, Vec<f32>>,
+    pub min: f32,
+    pub max: f32,
 }

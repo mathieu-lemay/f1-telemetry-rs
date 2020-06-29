@@ -79,7 +79,7 @@ pub fn render_car(w: WINDOW, car_status: &CarStatus, y: i32, x: i32) {
 fn render_component(w: WINDOW, component: &str, damage: u8, y: i32, x: i32) {
     fmt::set_damage_color(Some(w), damage);
 
-    for (i, l) in component.split("\n").enumerate() {
+    for (i, l) in component.split('\n').enumerate() {
         mvwaddstr(w, y + i as i32, x, l);
     }
 
