@@ -88,6 +88,7 @@ pub enum TyreCompound {
     F2Medium,
     F2Hard,
     F2Wet,
+    Invalid,
 }
 
 impl TryFrom<u8> for TyreCompound {
@@ -109,6 +110,7 @@ impl TryFrom<u8> for TyreCompound {
             13 => Ok(TyreCompound::F2Medium),
             14 => Ok(TyreCompound::F2Hard),
             15 => Ok(TyreCompound::F2Wet),
+            0 | 255 => Ok(TyreCompound::Invalid),
             _ => Err(UnpackError(format!(
                 "Invalid TyreCompound value: {}",
                 value
@@ -131,6 +133,27 @@ pub enum TyreCompoundVisual {
     F2Medium,
     F2Hard,
     F2Wet,
+    Invalid,
+}
+
+impl TyreCompoundVisual {
+    pub fn name<'a>(self) -> &'a str {
+        match self {
+            TyreCompoundVisual::Soft => "Soft",
+            TyreCompoundVisual::Medium => "Medium",
+            TyreCompoundVisual::Hard => "Hard",
+            TyreCompoundVisual::Inter => "Intermediate",
+            TyreCompoundVisual::Wet => "Wet",
+            TyreCompoundVisual::ClassicDry => "Dry (Classic)",
+            TyreCompoundVisual::ClassicWet => "Wet (Classic)",
+            TyreCompoundVisual::F2SuperSoft => "Super Soft (F2)",
+            TyreCompoundVisual::F2Soft => "Soft (F2)",
+            TyreCompoundVisual::F2Medium => "Medium (F2)",
+            TyreCompoundVisual::F2Hard => "Hard (F2)",
+            TyreCompoundVisual::F2Wet => "Wet (F2)",
+            TyreCompoundVisual::Invalid => "Invalid",
+        }
+    }
 }
 
 impl TryFrom<u8> for TyreCompoundVisual {
@@ -150,6 +173,7 @@ impl TryFrom<u8> for TyreCompoundVisual {
             13 => Ok(TyreCompoundVisual::F2Medium),
             14 => Ok(TyreCompoundVisual::F2Hard),
             15 => Ok(TyreCompoundVisual::F2Wet),
+            0 => Ok(TyreCompoundVisual::Invalid),
             _ => Err(UnpackError(format!(
                 "Invalid TyreCompoundVisual value: {}",
                 value

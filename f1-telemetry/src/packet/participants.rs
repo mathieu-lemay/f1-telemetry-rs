@@ -448,6 +448,7 @@ pub enum Nationality {
     Ukrainian,
     Venezuelan,
     Welsh,
+    Invalid,
 }
 
 impl TryFrom<u8> for Nationality {
@@ -541,6 +542,7 @@ impl TryFrom<u8> for Nationality {
             84 => Ok(Nationality::Ukrainian),
             85 => Ok(Nationality::Venezuelan),
             86 => Ok(Nationality::Welsh),
+            0 => Ok(Nationality::Invalid),
             _ => Err(UnpackError(format!("Invalid Nationality value: {}", value))),
         }
     }

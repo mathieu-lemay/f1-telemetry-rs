@@ -1,10 +1,12 @@
-use crate::models::{EventInfo, LapInfo, SessionInfo, TelemetryInfo};
+use crate::models::{CarStatus, EventInfo, LapInfo, SessionInfo, TelemetryInfo};
 use f1_telemetry::packet::lap::ResultStatus;
 use f1_telemetry::packet::participants::{PacketParticipantsData, Team};
+use f1_telemetry::packet::session::SafetyCar;
 use ncurses::*;
 use std::collections::BTreeMap;
 use std::f32::INFINITY;
 
+mod car;
 mod fmt;
 
 const MIN_WIDTH: i32 = 132;
@@ -54,10 +56,12 @@ impl Ui {
         timeout(0);
         fmt::init_colors();
 
+        wresize(mwnd, MIN_HEIGHT, MIN_WIDTH);
+
         refresh();
 
-        let win_w = w - 2;
-        let win_h = h - WINDOW_Y_OFFSET - 2;
+        let win_w = MIN_WIDTH - 2;
+        let win_h = MIN_HEIGHT - WINDOW_Y_OFFSET - 2;
 
         let dashboard_wnd = Ui::create_win(win_h, win_w, WINDOW_Y_OFFSET, 1, Some("Dashboard"));
         let car_wnd = Ui::create_win(win_h, win_w, WINDOW_Y_OFFSET, 1, Some("Car Status"));
@@ -128,6 +132,12 @@ impl Ui {
         addstr_center(self.mwnd, SESSION_Y_OFFSET, session_name);
         addstr_center(self.mwnd, SESSION_Y_OFFSET + 1, lap_info);
         addstr_center(self.mwnd, SESSION_Y_OFFSET + 2, session_time);
+
+        if sinfo.safety_car == SafetyCar::Virtual || sinfo.safety_car == SafetyCar::Full {
+            fmt::set_color(None, COLOR_YELLOW);
+            addstr_center(self.mwnd, SESSION_Y_OFFSET + 3, sinfo.safety_car.name());
+            fmt::reset();
+        }
     }
 
     pub fn print_dashboard_lap_info(&self, lap_info: &[LapInfo]) {
@@ -141,6 +151,10 @@ impl Ui {
         mvwaddstr(wnd, 1, LEFT_BORDER_X_OFFSET, header);
 
         for li in lap_info {
+            if let ResultStatus::Invalid = li.status {
+                continue;
+            }
+
             let pos = match li.status {
                 ResultStatus::Retired => String::from("RET"),
                 ResultStatus::NotClassified => String::from("N/C"),
@@ -168,11 +182,10 @@ impl Ui {
             fmt::set_team_color(wnd, li.team);
             mvwaddstr(
                 wnd,
-                2 + li.position as i32,
+                li.position as i32 + 2,
                 LEFT_BORDER_X_OFFSET,
                 s.as_str(),
             );
-            clrtoeol();
         }
 
         fmt::wreset(wnd);
@@ -261,7 +274,7 @@ impl Ui {
         fmt::set_bold();
 
         let gear_msg = format!(
-            "Gear     : {}    Speed : {} KPH",
+            "Gear     : {}    Speed : {}",
             fmt::format_gear(telemetry_info.gear),
             fmt::format_speed(telemetry_info.speed)
         );
@@ -288,24 +301,45 @@ impl Ui {
         let offset = getcurx(wnd);
 
         let throttle_bar = fmt::format_perc_bar(telemetry_info.throttle);
-        fmt::wset_green(wnd);
-        mvwaddstr(
-            wnd,
-            CURRENT_CAR_DATA_Y_OFFSET + 1,
-            offset,
-            &(throttle_bar + "                    "),
-        );
+        fmt::set_color(Some(wnd), COLOR_GREEN);
+        mvwaddstr(wnd, CURRENT_CAR_DATA_Y_OFFSET + 1, offset, &throttle_bar);
 
         let brake_bar = fmt::format_perc_bar(telemetry_info.brake);
-        fmt::wset_red(wnd);
-        mvwaddstr(
-            wnd,
-            CURRENT_CAR_DATA_Y_OFFSET + 2,
-            offset,
-            &(brake_bar + "                    "),
-        );
+        fmt::set_color(Some(wnd), COLOR_RED);
+        mvwaddstr(wnd, CURRENT_CAR_DATA_Y_OFFSET + 2, offset, &brake_bar);
 
         fmt::wreset(wnd);
+    }
+
+    pub fn print_car_status(&self, car_status: &CarStatus) {
+        let wnd = self.dashboard_wnd;
+
+        car::render_car(wnd, car_status, 2, 90);
+
+        mvwaddstr(
+            wnd,
+            24,
+            90,
+            &format!("Tyre Compound: {: <15}", car_status.tyre_compound.name()),
+        );
+
+        let symbol = if car_status.fuel_remaining_laps >= 0.0 {
+            "+"
+        } else {
+            "-"
+        };
+
+        mvwaddstr(
+            wnd,
+            25,
+            90,
+            &format!(
+                "Fuel Remaining: {:3.2}kg ({}{:2.1} laps)",
+                car_status.fuel_in_tank, symbol, car_status.fuel_remaining_laps
+            ),
+        );
+
+        self.refresh()
     }
 }
 

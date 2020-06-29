@@ -8,17 +8,29 @@ const PERCENTAGE_BAR_SLICES: i8 = 20;
 
 #[derive(Debug, Clone, Copy, Eq, PartialEq)]
 pub enum Status {
-    OK = (STATUS_COLOUR_OFFSET + 1) as isize,
-    CAUTION = (STATUS_COLOUR_OFFSET + 2) as isize,
-    WARNING = (STATUS_COLOUR_OFFSET + 3) as isize,
-    DANGER = (STATUS_COLOUR_OFFSET + 4) as isize,
+    Ok = (STATUS_COLOUR_OFFSET + 1) as isize,
+    Caution = (STATUS_COLOUR_OFFSET + 2) as isize,
+    Warning = (STATUS_COLOUR_OFFSET + 3) as isize,
+    Danger = (STATUS_COLOUR_OFFSET + 4) as isize,
 }
 
 pub fn init_colors() {
     start_color();
 
+    init_base_color_pairs();
     init_team_colors();
     init_status_colors()
+}
+
+fn init_base_color_pairs() {
+    init_pair(COLOR_BLACK, COLOR_BLACK, COLOR_BLACK);
+    init_pair(COLOR_RED, COLOR_RED, COLOR_BLACK);
+    init_pair(COLOR_GREEN, COLOR_GREEN, COLOR_BLACK);
+    init_pair(COLOR_YELLOW, COLOR_YELLOW, COLOR_BLACK);
+    init_pair(COLOR_BLUE, COLOR_BLUE, COLOR_BLACK);
+    init_pair(COLOR_MAGENTA, COLOR_MAGENTA, COLOR_BLACK);
+    init_pair(COLOR_CYAN, COLOR_CYAN, COLOR_BLACK);
+    init_pair(COLOR_WHITE, COLOR_WHITE, COLOR_BLACK);
 }
 
 fn init_team_colors() {
@@ -41,13 +53,13 @@ fn init_team_colors() {
 }
 
 fn init_status_colors() {
-    let color_orange = TEAM_COLOUR_OFFSET + Team::McLaren.id() as i16;
+    init_color(Status::Warning as i16, 1000, 812, 686);
 
     for (status, c) in &[
-        (Status::OK, COLOR_GREEN),
-        (Status::CAUTION, COLOR_YELLOW),
-        (Status::WARNING, color_orange),
-        (Status::DANGER, COLOR_RED),
+        (Status::Ok, COLOR_GREEN),
+        (Status::Caution, COLOR_YELLOW),
+        (Status::Warning, Status::Warning as i16),
+        (Status::Danger, COLOR_RED),
     ] {
         init_pair(*status as i16, *c, COLOR_BLACK);
     }
@@ -65,12 +77,22 @@ pub fn set_team_color(w: WINDOW, team: Team) {
     wcolor_set(w, TEAM_COLOUR_OFFSET + team.id() as i16);
 }
 
-pub fn wset_green(w: WINDOW) {
-    wcolor_set(w, (STATUS_COLOUR_OFFSET + 1) as i16);
+pub fn set_color(w: Option<WINDOW>, c: i16) {
+    match w {
+        Some(w) => wcolor_set(w, c),
+        None => color_set(c),
+    };
 }
 
-pub fn wset_red(w: WINDOW) {
-    wcolor_set(w, (STATUS_COLOUR_OFFSET + 4) as i16);
+pub fn set_damage_color(w: Option<WINDOW>, damage_pct: u8) {
+    let c = match damage_pct {
+        d if d <= 15 => Status::Ok,
+        d if d <= 40 => Status::Caution,
+        d if d <= 60 => Status::Warning,
+        _ => Status::Danger,
+    };
+
+    set_color(w, c as i16);
 }
 
 pub fn reset() {
@@ -115,22 +137,22 @@ pub fn format_time_ms(ts: f32) -> String {
     format!("{:02}:{:02}:{:02}.{:03}", hours, minutes, seconds, millis)
 }
 
-pub fn format_gear(gear: i8) -> String {
+pub fn format_gear(gear: i8) -> Cow<'static, str> {
     match gear {
-        -1 => "R".to_string(),
-        0 => "N".to_string(),
-        _ => format!("{}", gear),
+        -1 => "R".into(),
+        0 => "N".into(),
+        _ => format!("{}", gear).into(),
     }
 }
 
 pub fn format_perc_bar(perc_value: f32) -> String {
     let bars = 100 / PERCENTAGE_BAR_SLICES;
     let used_bars = (perc_value * 100.0) as i8 / bars;
-    (0..used_bars).map(|_| "|").collect::<String>()
+    format!("{: <20}", (0..used_bars).map(|_| "|").collect::<String>())
 }
 
 pub fn format_speed(speed: u16) -> String {
-    format!("{:03}", speed)
+    format!("{:3} km/h", speed)
 }
 
 pub fn center(hwnd: WINDOW, s: &str) -> i32 {

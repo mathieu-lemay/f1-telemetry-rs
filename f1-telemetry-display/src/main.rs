@@ -6,7 +6,7 @@ use f1_telemetry::packet::lap::{PacketLapData, PitStatus};
 use f1_telemetry::packet::participants::PacketParticipantsData;
 use f1_telemetry::packet::session::PacketSessionData;
 use f1_telemetry::Stream;
-use models::{EventInfo, LapInfo, SessionInfo};
+use models::{CarStatus, EventInfo, LapInfo, SessionInfo};
 use std::thread::sleep;
 use std::time::Duration;
 use ui::{Ui, Window};
@@ -92,6 +92,7 @@ fn parse_session_data(session: &PacketSessionData, current_lap: u8) -> SessionIn
         duration: session.session_duration(),
         current_lap,
         number_of_laps: session.total_laps(),
+        safety_car: session.safety_car_status(),
     }
 }
 
@@ -105,14 +106,16 @@ fn parse_lap_data<'a>(
 
     let participants = participants.as_ref().unwrap().participants();
 
-    let mut lap_info = Vec::with_capacity(lap_data.lap_data().len());
+    let mut lap_info = Vec::with_capacity(participants.len());
 
-    for (i, ld) in lap_data.lap_data().iter().enumerate() {
+    for (i, p) in participants.iter().enumerate() {
+        let ld = &lap_data.lap_data()[i];
+
         let li = LapInfo {
             position: ld.car_position(),
-            name: participants[i].name(),
-            driver: participants[i].driver(),
-            team: participants[i].team(),
+            name: p.name(),
+            driver: p.driver(),
+            team: p.team(),
             current_lap_time: ld.current_lap_time(),
             last_lap_time: ld.last_lap_time(),
             best_lap_time: ld.best_lap_time(),
@@ -155,11 +158,11 @@ fn parse_event_data<'a>(
     })
 }
 
-fn parse_telemetry_data(telemetry_data: &PacketCarTelemetryData) -> Option<TelemetryInfo> {
+fn parse_telemetry_data(telemetry_data: &PacketCarTelemetryData) -> TelemetryInfo {
     let player_index = telemetry_data.header().player_car_index();
     let telemetry_data = &telemetry_data.car_telemetry_data()[player_index as usize];
 
-    Some(TelemetryInfo {
+    TelemetryInfo {
         speed: telemetry_data.speed(),
         throttle: telemetry_data.throttle(),
         brake: telemetry_data.brake(),
@@ -168,7 +171,24 @@ fn parse_telemetry_data(telemetry_data: &PacketCarTelemetryData) -> Option<Telem
         drs: telemetry_data.drs(),
         rev_lights_percent: telemetry_data.rev_lights_percent(),
         engine_temperature: telemetry_data.engine_temperature(),
-    })
+    }
+}
+
+fn parse_car_status_data(car_status_data: &PacketCarStatusData) -> CarStatus {
+    let player_index = car_status_data.header().player_car_index();
+    let csd = &car_status_data.car_status_data()[player_index as usize];
+
+    CarStatus {
+        tyres_damage: csd.tyres_damage(),
+        left_front_wing_damage: csd.front_left_wing_damage(),
+        right_front_wing_damage: csd.front_right_wing_damage(),
+        rear_wing_damage: csd.rear_wing_damage(),
+        engine_damage: csd.engine_damage(),
+        gearbox_damage: csd.gear_box_damage(),
+        fuel_in_tank: csd.fuel_in_tank(),
+        fuel_remaining_laps: csd.fuel_remaining_laps(),
+        tyre_compound: csd.visual_tyre_compound(),
+    }
 }
 
 fn get_current_lap(lap_data: &PacketLapData) -> u8 {

@@ -1,5 +1,8 @@
+use f1_telemetry::packet::car_status::TyreCompoundVisual;
+use f1_telemetry::packet::generic::WheelData;
 use f1_telemetry::packet::lap::ResultStatus;
 use f1_telemetry::packet::participants::{Driver, Team};
+use f1_telemetry::packet::session::SafetyCar;
 
 pub struct EventInfo<'a> {
     pub timestamp: f32,
@@ -31,6 +34,7 @@ pub struct SessionInfo<'a> {
     pub duration: u16,
     pub current_lap: u8,
     pub number_of_laps: u8,
+    pub safety_car: SafetyCar,
 }
 
 pub struct TelemetryInfo {
@@ -42,4 +46,16 @@ pub struct TelemetryInfo {
     pub drs: bool,
     pub rev_lights_percent: u8,
     pub engine_temperature: u16,
+}
+
+pub struct CarStatus {
+    pub tyres_damage: WheelData<u8>,
+    pub left_front_wing_damage: u8,
+    pub right_front_wing_damage: u8,
+    pub rear_wing_damage: u8,
+    pub engine_damage: u8,
+    pub gearbox_damage: u8,
+    pub fuel_in_tank: f32,
+    pub fuel_remaining_laps: f32,
+    pub tyre_compound: TyreCompoundVisual,
 }
