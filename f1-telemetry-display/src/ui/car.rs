@@ -35,6 +35,14 @@ const BODY: &str = "      /  \\
 ---|        |---
    |        |   ";
 
+const ENGINE: &str = "__--__
+|    |
+\\    /
+ \\__/";
+
+const GEARBOX: &str = "||
+||";
+
 const REAR_WING: &str = "\
 |------------------|
 |------------------|
@@ -56,6 +64,8 @@ pub fn render_car(w: WINDOW, car_status: &CarStatus, y: i32, x: i32) {
         x + 15,
     );
     render_component(w, BODY, 0, y + 4, x + 7);
+    render_component(w, ENGINE, car_status.engine_damage, y + 11, x + 12);
+    render_component(w, GEARBOX, car_status.gearbox_damage, y + 15, x + 14);
     render_component(w, REAR_WING, car_status.rear_wing_damage, y + 18, x + 5);
 
     render_component(w, TYRE, car_status.tyres_damage.front_left(), y + 4, x);
