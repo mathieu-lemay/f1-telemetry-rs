@@ -1,14 +1,16 @@
+use std::collections::BTreeMap;
+use std::f32::INFINITY;
+
 use f1_telemetry::packet::car_status::PacketCarStatusData;
 use f1_telemetry::packet::car_telemetry::PacketCarTelemetryData;
 use f1_telemetry::packet::event::PacketEventData;
-use f1_telemetry::packet::lap::{PacketLapData, PitStatus};
+use f1_telemetry::packet::lap::{PacketLapData, PitStatus, ResultStatus};
 use f1_telemetry::packet::participants::PacketParticipantsData;
 use f1_telemetry::packet::session::PacketSessionData;
 use f1_telemetry::packet::Packet;
 
-use crate::models::{CarStatus, EventInfo, LapInfo, SessionInfo};
-
 use crate::models::TelemetryInfo;
+use crate::models::{CarStatus, EventInfo, LapInfo, RelativePositions, SessionInfo};
 use crate::ui::Ui;
 
 #[derive(Eq, PartialEq)]
@@ -101,8 +103,8 @@ impl Renderer {
         }
 
         if let Packet::Lap(ld) = packet {
-            if let Some(lap_info) = parse_lap_data(&ld, &self.participants) {
-                self.ui.print_track_status_lap_info(&lap_info);
+            if let Some(rel_positions) = parse_relative_positions_data(&ld, &self.participants) {
+                self.ui.print_track_status_lap_info(&rel_positions);
             }
         }
     }
@@ -221,6 +223,50 @@ fn parse_car_status_data(car_status_data: &PacketCarStatusData) -> CarStatus {
         fuel_remaining_laps: csd.fuel_remaining_laps(),
         tyre_compound: csd.visual_tyre_compound(),
     }
+}
+
+fn parse_relative_positions_data(
+    lap_data: &PacketLapData,
+    participants: &Option<PacketParticipantsData>,
+) -> Option<RelativePositions> {
+    if participants.is_none() {
+        return None;
+    }
+
+    let participants = participants.as_ref().unwrap();
+
+    let mut positions = BTreeMap::new();
+
+    let mut min = INFINITY;
+    let mut max = -INFINITY;
+
+    for (i, p) in participants.participants().iter().enumerate() {
+        let ld = &lap_data.lap_data()[i];
+
+        if ld.result_status() != ResultStatus::Active {
+            continue;
+        }
+
+        let distance = ld.total_distance();
+
+        if distance > max {
+            max = distance;
+        }
+        if distance < min {
+            min = distance;
+        }
+
+        positions
+            .entry(p.team())
+            .or_insert_with(Vec::new)
+            .push(ld.total_distance());
+    }
+
+    Some(RelativePositions {
+        positions,
+        min,
+        max,
+    })
 }
 
 fn get_current_lap(lap_data: &PacketLapData) -> u8 {

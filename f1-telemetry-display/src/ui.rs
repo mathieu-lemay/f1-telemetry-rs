@@ -1,11 +1,10 @@
-use crate::models::{CarStatus, EventInfo, LapInfo, SessionInfo, TelemetryInfo};
-use crate::render::View;
-use f1_telemetry::packet::lap::ResultStatus;
-use f1_telemetry::packet::participants::Team;
-use f1_telemetry::packet::session::SafetyCar;
 use ncurses::*;
-use std::collections::BTreeMap;
-use std::f32::INFINITY;
+
+use f1_telemetry::packet::lap::ResultStatus;
+use f1_telemetry::packet::session::SafetyCar;
+
+use crate::models::{CarStatus, EventInfo, LapInfo, RelativePositions, SessionInfo, TelemetryInfo};
+use crate::render::View;
 
 mod car;
 mod fmt;
@@ -55,7 +54,8 @@ impl Ui {
         let win_h = MIN_HEIGHT - WINDOW_Y_OFFSET - 2;
 
         let dashboard_wnd = Ui::create_win(win_h, win_w, WINDOW_Y_OFFSET, 1, Some("Dashboard"));
-        let track_wnd = Ui::create_win(win_h, win_w, WINDOW_Y_OFFSET, 1, Some("Track Status"));
+        let track_wnd =
+            Ui::create_win(win_h, win_w, WINDOW_Y_OFFSET, 1, Some("Relative Positions"));
 
         let active_wnd = dashboard_wnd;
         wrefresh(active_wnd);
@@ -172,58 +172,37 @@ impl Ui {
         }
 
         fmt::wreset(wnd);
-        //RENDER SECOND WINDOW
 
         self.refresh()
     }
 
-    pub fn print_track_status_lap_info(&self, lap_info: &[LapInfo]) {
-        let wnd2 = self.track_wnd;
+    pub fn print_track_status_lap_info(&self, relative_positions: &RelativePositions) {
+        let wnd = self.track_wnd;
 
-        fmt::wset_bold(wnd2);
+        fmt::wset_bold(wnd);
 
-        let title = "Relative Positions";
         let mut header = "Last ".to_string();
         header += (0..35).map(|_| "->").collect::<String>().as_str();
         header += " First";
 
-        mvwaddstr(wnd2, 2, LEFT_BORDER_X_OFFSET, &title);
+        mvwaddstr(wnd, 2, LEFT_BORDER_X_OFFSET, "Relative Positions");
+        mvwaddstr(wnd, 3, LEFT_BORDER_X_OFFSET, &header);
 
-        mvwaddstr(wnd2, 3, LEFT_BORDER_X_OFFSET, &header);
-
-        let mut positions_by_team: BTreeMap<Team, Vec<f32>> = BTreeMap::new();
-        let mut max = -INFINITY;
-        let mut min = INFINITY;
-        for li in lap_info {
-            if li.status != ResultStatus::Active {
-                continue;
-            }
-            if li.total_distance > max {
-                max = li.total_distance;
-            }
-            if li.total_distance < min {
-                min = li.total_distance
-            }
-            positions_by_team
-                .entry(li.team)
-                .or_insert_with(Vec::new)
-                .push(li.total_distance)
-        }
-        let scale = max - min;
+        let scale = relative_positions.max - relative_positions.min;
         let slice = scale / 80.0;
-        let mut r = 3;
-        for (team, positions) in positions_by_team {
+
+        for (idx, (team, positions)) in relative_positions.positions.iter().enumerate() {
             let mut row = (0..81).map(|_| " ").collect::<Vec<&str>>();
-            for p in &positions {
-                let place = ((*p - min) / slice) as usize;
+            for p in positions {
+                let place = ((*p - relative_positions.min) / slice) as usize;
                 row[place] = "X"
             }
             let s = row.into_iter().collect::<String>();
-            fmt::set_team_color(wnd2, team);
-            mvwaddstr(wnd2, 1 + r, LEFT_BORDER_X_OFFSET, &s);
-            r += 1
+            fmt::set_team_color(wnd, *team);
+            mvwaddstr(wnd, idx as i32 + 4, LEFT_BORDER_X_OFFSET, &s);
         }
-        fmt::wreset(wnd2);
+
+        fmt::wreset(wnd);
 
         self.refresh()
     }
