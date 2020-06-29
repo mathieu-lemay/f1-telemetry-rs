@@ -9,8 +9,8 @@ use crate::render::View;
 mod car;
 mod fmt;
 
-const MIN_WIDTH: i32 = 132;
-const MIN_HEIGHT: i32 = 35;
+const WIDTH: i32 = 132;
+const HEIGHT: i32 = 35;
 const SESSION_Y_OFFSET: i32 = 1;
 const WINDOW_Y_OFFSET: i32 = 5;
 const LEFT_BORDER_X_OFFSET: i32 = 2;
@@ -32,10 +32,10 @@ impl Ui {
         let w = getmaxx(mwnd);
         let h = getmaxy(mwnd);
 
-        if w < MIN_WIDTH || h < MIN_HEIGHT {
+        if w < WIDTH || h < HEIGHT {
             panic!(format!(
                 "Terminal must be at least {}x{}. Current size: {}x{}",
-                MIN_WIDTH, MIN_HEIGHT, w, h
+                WIDTH, HEIGHT, w, h
             ));
         }
 
@@ -46,12 +46,12 @@ impl Ui {
         timeout(0);
         fmt::init_colors();
 
-        wresize(mwnd, MIN_HEIGHT, MIN_WIDTH);
+        wresize(mwnd, HEIGHT, WIDTH);
 
         refresh();
 
-        let win_w = MIN_WIDTH - 2;
-        let win_h = MIN_HEIGHT - WINDOW_Y_OFFSET - 2;
+        let win_w = WIDTH - 2;
+        let win_h = HEIGHT - WINDOW_Y_OFFSET - 2;
 
         let dashboard_wnd = Ui::create_win(win_h, win_w, WINDOW_Y_OFFSET, 1, Some("Dashboard"));
         let track_wnd =
