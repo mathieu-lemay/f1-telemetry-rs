@@ -1,6 +1,7 @@
 use crate::models::{CarStatus, EventInfo, LapInfo, SessionInfo, TelemetryInfo};
+use crate::render::View;
 use f1_telemetry::packet::lap::ResultStatus;
-use f1_telemetry::packet::participants::{PacketParticipantsData, Team};
+use f1_telemetry::packet::participants::Team;
 use f1_telemetry::packet::session::SafetyCar;
 use ncurses::*;
 use std::collections::BTreeMap;
@@ -16,21 +17,11 @@ const WINDOW_Y_OFFSET: i32 = 5;
 const LEFT_BORDER_X_OFFSET: i32 = 2;
 const CURRENT_CAR_DATA_Y_OFFSET: i32 = 24;
 
-pub enum Window {
-    Lap,
-    Car,
-    Track,
-}
-
 pub struct Ui {
     mwnd: WINDOW,
+    active_wnd: WINDOW,
     dashboard_wnd: WINDOW,
-    car_wnd: WINDOW,
     track_wnd: WINDOW,
-    pub active_wnd: WINDOW,
-    pub active_window: Window,
-    pub current_lap: u8,
-    pub participants: Option<PacketParticipantsData>,
 }
 
 impl Ui {
@@ -64,22 +55,16 @@ impl Ui {
         let win_h = MIN_HEIGHT - WINDOW_Y_OFFSET - 2;
 
         let dashboard_wnd = Ui::create_win(win_h, win_w, WINDOW_Y_OFFSET, 1, Some("Dashboard"));
-        let car_wnd = Ui::create_win(win_h, win_w, WINDOW_Y_OFFSET, 1, Some("Car Status"));
         let track_wnd = Ui::create_win(win_h, win_w, WINDOW_Y_OFFSET, 1, Some("Track Status"));
 
         let active_wnd = dashboard_wnd;
-        let active_window = Window::Lap;
         wrefresh(active_wnd);
 
         Ui {
             mwnd,
-            dashboard_wnd,
-            car_wnd,
-            track_wnd,
             active_wnd,
-            active_window,
-            current_lap: 0,
-            participants: None,
+            dashboard_wnd,
+            track_wnd,
         }
     }
 
@@ -87,11 +72,10 @@ impl Ui {
         endwin();
     }
 
-    pub fn switch_window(&mut self, window: Window) {
-        let neww = match window {
-            Window::Lap => self.dashboard_wnd,
-            Window::Car => self.car_wnd,
-            Window::Track => self.track_wnd,
+    pub fn switch_window(&mut self, view: &View) {
+        let neww = match view {
+            View::Dashboard => self.dashboard_wnd,
+            View::Positions => self.track_wnd,
         };
 
         if neww == self.active_wnd {
@@ -101,7 +85,6 @@ impl Ui {
         redrawwin(neww);
 
         self.active_wnd = neww;
-        self.active_window = window;
         self.refresh();
     }
 
