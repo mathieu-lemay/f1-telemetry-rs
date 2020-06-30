@@ -1,5 +1,6 @@
 use ncurses::*;
 
+use f1_telemetry::packet::car_status::TyreCompoundVisual;
 use f1_telemetry::packet::lap::ResultStatus;
 use f1_telemetry::packet::session::SafetyCar;
 
@@ -312,8 +313,11 @@ impl Ui {
             wnd,
             22,
             0,
-            &format!("Tyre Compound: {: <15}", car_status.tyre_compound.name()),
+            &format!("Tyre Compound: {} ", car_status.tyre_compound.name()),
         );
+
+        print_tyre(wnd, car_status.tyre_compound);
+        wclrtoeol(wnd);
 
         mvwaddstr(
             wnd,
@@ -328,6 +332,12 @@ impl Ui {
 
         self.commit(wnd);
     }
+}
+
+fn print_tyre(w: WINDOW, tc: TyreCompoundVisual) {
+    fmt::set_tyre_color(w, tc);
+    waddstr(w, "🞇");
+    fmt::wreset(w);
 }
 
 fn addstr_center(w: WINDOW, y: i32, str_: &str) {

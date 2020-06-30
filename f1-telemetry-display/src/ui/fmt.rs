@@ -1,3 +1,4 @@
+use f1_telemetry::packet::car_status::TyreCompoundVisual;
 use f1_telemetry::packet::participants::{Driver, Team};
 use ncurses::*;
 use std::borrow::Cow;
@@ -15,6 +16,18 @@ pub enum Color {
     Cyan = COLOR_CYAN as isize,
     White = COLOR_WHITE as isize,
 
+    StatusOk = 10,
+    StatusCaution,
+    StatusWarning,
+    StatusDanger,
+
+    TyreSoft = 20,
+    TyreMedium,
+    TyreHard,
+    TyreIntermediate,
+    TyreWet,
+    TyreOther,
+
     Mercedes = 100,
     Ferrari,
     RedBullRacing,
@@ -25,11 +38,6 @@ pub enum Color {
     Haas,
     McLaren,
     AlfaRomeo,
-
-    StatusOk = 200,
-    StatusCaution,
-    StatusWarning,
-    StatusDanger,
 }
 
 trait ToColor {
@@ -54,12 +62,26 @@ impl ToColor for Team {
     }
 }
 
+impl ToColor for TyreCompoundVisual {
+    fn get_color(&self) -> Color {
+        match self {
+            TyreCompoundVisual::Hard => Color::TyreHard,
+            TyreCompoundVisual::Medium => Color::TyreMedium,
+            TyreCompoundVisual::Soft => Color::TyreSoft,
+            TyreCompoundVisual::Inter => Color::TyreIntermediate,
+            TyreCompoundVisual::Wet => Color::TyreWet,
+            _ => Color::TyreOther,
+        }
+    }
+}
+
 pub fn init_colors() {
     start_color();
 
     init_base_color_pairs();
     init_team_colors();
-    init_status_colors()
+    init_status_colors();
+    init_tyre_colors();
 }
 
 fn init_base_color_pairs() {
@@ -105,6 +127,21 @@ fn init_status_colors() {
     }
 }
 
+fn init_tyre_colors() {
+    for (t, c) in vec![
+        (Color::TyreHard, (1000, 1000, 1000)),
+        (Color::TyreMedium, (863, 804, 196)),
+        (Color::TyreSoft, (953, 290, 200)),
+        (Color::TyreIntermediate, (514, 812, 294)),
+        (Color::TyreWet, (114, 435, 733)),
+        (Color::TyreOther, (500, 500, 500)),
+    ] {
+        let idx = t as i16;
+        init_color(idx, c.0, c.1, c.2);
+        init_pair(idx, idx, COLOR_BLACK);
+    }
+}
+
 pub fn set_bold() {
     attron(A_BOLD());
 }
@@ -115,6 +152,10 @@ pub fn wset_bold(w: WINDOW) {
 
 pub fn set_team_color(w: WINDOW, team: Team) {
     wcolor_set(w, team.get_color() as i16);
+}
+
+pub fn set_tyre_color(w: WINDOW, tyre_compound: TyreCompoundVisual) {
+    wcolor_set(w, tyre_compound.get_color() as i16);
 }
 
 pub fn set_color(w: Option<WINDOW>, c: i16) {
