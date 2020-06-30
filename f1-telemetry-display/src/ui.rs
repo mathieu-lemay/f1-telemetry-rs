@@ -197,7 +197,7 @@ impl Ui {
 
         let header = format!(
             "Last {} First",
-            (0..23).map(|_| "⎯⎯⎯⎯→").collect::<String>()
+            (0..23).map(|_| "---->").collect::<String>()
         );
         let filler = (0..w).map(|_| " ").collect::<String>();
 
@@ -215,7 +215,7 @@ impl Ui {
 
             for p in positions {
                 let place = ((*p - relative_positions.min) / slice) as i32 + 17;
-                mvwaddstr(wnd, y, place, "⏺");
+                mvwaddstr(wnd, y, place, "o");
             }
         }
 
@@ -320,8 +320,9 @@ impl Ui {
             &format!("Tyre Compound: {} ", car_status.tyre_compound.name()),
         );
 
+        fmt::wset_bold(wnd);
         fmt::set_tyre_color(wnd, car_status.tyre_compound);
-        waddstr(wnd, "🞇");
+        waddstr(wnd, "o");
         fmt::wreset(wnd);
 
         wclrtoeol(wnd);
@@ -349,7 +350,7 @@ impl Ui {
 
         for (i, tc) in tyre_compounds.iter().enumerate() {
             fmt::set_tyre_color(wnd, *tc);
-            mvwaddstr(wnd, i as i32 + 2, 0, "🞇");
+            mvwaddstr(wnd, i as i32 + 2, 0, "o");
         }
 
         self.commit(wnd);
