@@ -3,11 +3,14 @@ use ncurses::*;
 use f1_telemetry::packet::lap::ResultStatus;
 use f1_telemetry::packet::session::SafetyCar;
 
-use crate::models::{CarStatus, EventInfo, LapInfo, RelativePositions, SessionInfo, TelemetryInfo};
+use crate::models::{
+    CarStatus, EventInfo, LapInfo, RelativePositions, SessionInfo, TelemetryInfo, WeatherInfo,
+};
 use crate::render::View;
 
 mod car;
 mod fmt;
+mod weather;
 
 const WIDTH: i32 = 132;
 const HEIGHT: i32 = 35;
@@ -185,7 +188,7 @@ impl Ui {
         header += (0..35).map(|_| "->").collect::<String>().as_str();
         header += " First";
 
-        mvwaddstr(wnd, 2, LEFT_BORDER_X_OFFSET, "Relative Positions");
+        mvwaddstr(wnd, 2, LEFT_BORDER_X_OFFSET, "Track Status");
         mvwaddstr(wnd, 3, LEFT_BORDER_X_OFFSET, &header);
 
         let scale = relative_positions.max - relative_positions.min;
@@ -271,6 +274,11 @@ impl Ui {
         mvwaddstr(wnd, CURRENT_CAR_DATA_Y_OFFSET + 2, offset, &brake_bar);
 
         fmt::wreset(wnd);
+    }
+    pub fn print_weather_info(&self, weather_info: &WeatherInfo) {
+        let wnd = self.track_wnd;
+
+        weather::render_weather(wnd, weather_info, 2, 90);
     }
 
     pub fn print_car_status(&self, car_status: &CarStatus) {

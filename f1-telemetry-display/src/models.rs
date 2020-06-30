@@ -4,7 +4,7 @@ use f1_telemetry::packet::car_status::TyreCompoundVisual;
 use f1_telemetry::packet::generic::WheelData;
 use f1_telemetry::packet::lap::ResultStatus;
 use f1_telemetry::packet::participants::{Driver, Team};
-use f1_telemetry::packet::session::SafetyCar;
+use f1_telemetry::packet::session::{SafetyCar, Weather};
 
 pub struct EventInfo<'a> {
     pub timestamp: f32,
@@ -66,4 +66,10 @@ pub struct RelativePositions {
     pub positions: BTreeMap<Team, Vec<f32>>,
     pub min: f32,
     pub max: f32,
+}
+
+pub struct WeatherInfo {
+    pub weather: Weather,
+    pub track_temperature: i8,
+    pub air_temperature: i8,
 }

@@ -9,8 +9,8 @@ use f1_telemetry::packet::participants::PacketParticipantsData;
 use f1_telemetry::packet::session::PacketSessionData;
 use f1_telemetry::packet::Packet;
 
-use crate::models::TelemetryInfo;
 use crate::models::{CarStatus, EventInfo, LapInfo, RelativePositions, SessionInfo};
+use crate::models::{TelemetryInfo, WeatherInfo};
 use crate::ui::Ui;
 
 #[derive(Eq, PartialEq)]
@@ -101,14 +101,21 @@ impl Renderer {
         if !self.should_render(View::TrackOverview) {
             return;
         }
-
-        if let Packet::Lap(ld) = packet {
-            if let Some(rel_positions) = parse_relative_positions_data(&ld, &self.participants) {
-                self.ui.print_track_status_lap_info(&rel_positions);
+        match packet {
+            Packet::Lap(ld) => {
+                if let Some(rel_positions) = parse_relative_positions_data(&ld, &self.participants)
+                {
+                    self.ui.print_track_status_lap_info(&rel_positions);
+                }
             }
+            Packet::Session(sd) => {
+                if let Some(weather_info) = parse_weather_data(&sd) {
+                    self.ui.print_weather_info(&weather_info)
+                }
+            }
+            _ => {}
         }
     }
-
     fn should_render(&self, view: View) -> bool {
         view == self.active_view
     }
@@ -266,6 +273,14 @@ fn parse_relative_positions_data(
         positions,
         min,
         max,
+    })
+}
+
+fn parse_weather_data(session_data: &PacketSessionData) -> Option<WeatherInfo> {
+    Some(WeatherInfo {
+        weather: session_data.weather(),
+        track_temperature: session_data.track_temperature(),
+        air_temperature: session_data.air_temperature(),
     })
 }
 
