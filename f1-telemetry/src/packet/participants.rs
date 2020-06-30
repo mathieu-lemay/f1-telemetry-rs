@@ -295,6 +295,22 @@ impl Team {
             Team::Ferrari2010 => 65,
         }
     }
+
+    pub fn name(&self) -> &'static str {
+        match self {
+            Team::Mercedes => "Mercedes",
+            Team::Ferrari => "Ferrari",
+            Team::RedBullRacing => "Red Bull Racing",
+            Team::Williams => "Williams",
+            Team::RacingPoint => "Racing Point",
+            Team::Renault => "Renault",
+            Team::ToroRosso => "Toro Rosso",
+            Team::Haas => "Haas",
+            Team::McLaren => "McLaren",
+            Team::AlfaRomeo => "Alfa Romeo",
+            _ => "[N/A]",
+        }
+    }
 }
 
 impl TryFrom<u8> for Team {

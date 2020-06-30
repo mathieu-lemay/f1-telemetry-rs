@@ -26,6 +26,7 @@ pub struct Ui {
     track_wnd: WINDOW,
     lap_times_swnd: WINDOW,
     car_swnd: WINDOW,
+    rel_pos_swnd: WINDOW,
 }
 
 impl Ui {
@@ -61,8 +62,9 @@ impl Ui {
         let dashboard_wnd = Ui::create_win(win_h, win_w, WINDOW_Y_OFFSET, 1, Some("Dashboard"));
         let lap_times_swnd = derwin(dashboard_wnd, 22, 80, 1, 2);
         let car_swnd = derwin(dashboard_wnd, 24, 39, 2, 90);
-        let track_wnd =
-            Ui::create_win(win_h, win_w, WINDOW_Y_OFFSET, 1, Some("Relative Positions"));
+
+        let track_wnd = Ui::create_win(win_h, win_w, WINDOW_Y_OFFSET, 1, Some("Track Status"));
+        let rel_pos_swnd = derwin(track_wnd, 12, getmaxx(track_wnd) - 4, 15, 2);
 
         let active_wnd = dashboard_wnd;
         wrefresh(active_wnd);
@@ -74,6 +76,7 @@ impl Ui {
             track_wnd,
             lap_times_swnd,
             car_swnd,
+            rel_pos_swnd,
         }
     }
 
@@ -182,29 +185,33 @@ impl Ui {
     }
 
     pub fn print_track_status_lap_info(&self, relative_positions: &RelativePositions) {
-        let wnd = self.track_wnd;
+        let wnd = self.rel_pos_swnd;
+        let w = getmaxx(wnd) - 17;
 
         fmt::wset_bold(wnd);
 
-        let mut header = "Last ".to_string();
-        header += (0..35).map(|_| "->").collect::<String>().as_str();
-        header += " First";
+        let header = format!(
+            "Last {} First",
+            (0..23).map(|_| "⎯⎯⎯⎯→").collect::<String>()
+        );
+        let filler = (0..w).map(|_| " ").collect::<String>();
 
-        mvwaddstr(wnd, 2, LEFT_BORDER_X_OFFSET, "Track Status");
-        mvwaddstr(wnd, 3, LEFT_BORDER_X_OFFSET, &header);
+        mvwaddstr(wnd, 0, 0, "Relative Positions");
+        mvwaddstr(wnd, 1, 0, &header);
 
         let scale = relative_positions.max - relative_positions.min;
-        let slice = scale / 80.0;
+        let slice = scale / (w - 1) as f32;
 
         for (idx, (team, positions)) in relative_positions.positions.iter().enumerate() {
-            let mut row = (0..81).map(|_| " ").collect::<Vec<&str>>();
-            for p in positions {
-                let place = ((*p - relative_positions.min) / slice) as usize;
-                row[place] = "X"
-            }
-            let s = row.into_iter().collect::<String>();
+            let y = idx as i32 + 2;
+
             fmt::set_team_color(wnd, *team);
-            mvwaddstr(wnd, idx as i32 + 4, LEFT_BORDER_X_OFFSET, &s);
+            mvwaddstr(wnd, y, 0, &format!("{:<15.15} |{}", team.name(), &filler));
+
+            for p in positions {
+                let place = ((*p - relative_positions.min) / slice) as i32 + 17;
+                mvwaddstr(wnd, y, place, "⏺");
+            }
         }
 
         self.commit(wnd);
@@ -293,7 +300,7 @@ impl Ui {
             &format!("Track Temp : {}C", weather_info.track_temperature),
         );
 
-        fmt::wreset(wnd);
+        self.commit(wnd);
     }
 
     pub fn print_car_status(&self, car_status: &CarStatus) {
