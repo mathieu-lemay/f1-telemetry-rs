@@ -292,7 +292,7 @@ impl Ui {
             &format!("Track Temp : {}C", weather_info.track_temperature),
         );
 
-        fmt::wreset(w);
+        fmt::wreset(wnd);
     }
 
     pub fn print_car_status(&self, car_status: &CarStatus) {

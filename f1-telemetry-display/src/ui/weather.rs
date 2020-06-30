@@ -1,5 +1,4 @@
 use crate::models::WeatherInfo;
-use crate::ui::fmt;
 use f1_telemetry::packet::session::Weather;
 use ncurses::{mvwaddstr, WINDOW};
 use std::time::{SystemTime, UNIX_EPOCH};
