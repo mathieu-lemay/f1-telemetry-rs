@@ -25,6 +25,7 @@ pub struct Ui {
     active_wnd: WINDOW,
     dashboard_wnd: WINDOW,
     track_wnd: WINDOW,
+    tyres_swnd: WINDOW,
     lap_times_swnd: WINDOW,
     car_swnd: WINDOW,
     rel_pos_swnd: WINDOW,
@@ -61,7 +62,8 @@ impl Ui {
         let win_h = HEIGHT - WINDOW_Y_OFFSET - 2;
 
         let dashboard_wnd = Ui::create_win(win_h, win_w, WINDOW_Y_OFFSET, 1, Some("Dashboard"));
-        let lap_times_swnd = derwin(dashboard_wnd, 22, 80, 1, 2);
+        let tyres_swnd = derwin(dashboard_wnd, 22, 2, 1, 2);
+        let lap_times_swnd = derwin(dashboard_wnd, 22, 80, 1, 4);
         let car_swnd = derwin(dashboard_wnd, 24, 39, 2, 90);
 
         let track_wnd = Ui::create_win(win_h, win_w, WINDOW_Y_OFFSET, 1, Some("Track Status"));
@@ -75,6 +77,7 @@ impl Ui {
             active_wnd,
             dashboard_wnd,
             track_wnd,
+            tyres_swnd,
             lap_times_swnd,
             car_swnd,
             rel_pos_swnd,
@@ -160,10 +163,11 @@ impl Ui {
                 ResultStatus::Disqualified => String::from("DSQ"),
                 _ => format!("{:3}", li.position),
             };
+
             let penalties = if li.penalties > 0 {
                 format!("+{:2}s", li.penalties)
             } else {
-                "    ".to_string()
+                format!("{: <4}", "")
             };
 
             let s = format!(
@@ -316,7 +320,10 @@ impl Ui {
             &format!("Tyre Compound: {} ", car_status.tyre_compound.name()),
         );
 
-        print_tyre(wnd, car_status.tyre_compound);
+        fmt::set_tyre_color(wnd, car_status.tyre_compound);
+        waddstr(wnd, "🞇");
+        fmt::wreset(wnd);
+
         wclrtoeol(wnd);
 
         mvwaddstr(
@@ -332,12 +339,21 @@ impl Ui {
 
         self.commit(wnd);
     }
-}
 
-fn print_tyre(w: WINDOW, tc: TyreCompoundVisual) {
-    fmt::set_tyre_color(w, tc);
-    waddstr(w, "🞇");
-    fmt::wreset(w);
+    pub fn print_tyres_compounds(&self, tyre_compounds: &[TyreCompoundVisual]) {
+        let wnd = self.tyres_swnd;
+
+        fmt::wset_bold(wnd);
+
+        mvwaddstr(wnd, 0, 0, "T.");
+
+        for (i, tc) in tyre_compounds.iter().enumerate() {
+            fmt::set_tyre_color(wnd, *tc);
+            mvwaddstr(wnd, i as i32 + 2, 0, "🞇");
+        }
+
+        self.commit(wnd);
+    }
 }
 
 fn addstr_center(w: WINDOW, y: i32, str_: &str) {

@@ -16,19 +16,19 @@ pub enum Color {
     Cyan = COLOR_CYAN as isize,
     White = COLOR_WHITE as isize,
 
-    StatusOk = 10,
+    StatusOk = 100,
     StatusCaution,
     StatusWarning,
     StatusDanger,
 
-    TyreSoft = 20,
+    TyreSoft,
     TyreMedium,
     TyreHard,
     TyreIntermediate,
     TyreWet,
     TyreOther,
 
-    Mercedes = 100,
+    Mercedes,
     Ferrari,
     RedBullRacing,
     Williams,

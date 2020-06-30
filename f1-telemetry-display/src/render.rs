@@ -1,7 +1,7 @@
 use std::collections::BTreeMap;
 use std::f32::INFINITY;
 
-use f1_telemetry::packet::car_status::PacketCarStatusData;
+use f1_telemetry::packet::car_status::{PacketCarStatusData, TyreCompoundVisual};
 use f1_telemetry::packet::car_telemetry::PacketCarTelemetryData;
 use f1_telemetry::packet::event::PacketEventData;
 use f1_telemetry::packet::lap::{PacketLapData, PitStatus, ResultStatus};
@@ -90,7 +90,10 @@ impl Renderer {
             }
             Packet::CarStatus(cs) => {
                 let csd = parse_car_status_data(&cs);
-                self.ui.print_car_status(&csd)
+                self.ui.print_car_status(&csd);
+
+                let tcs = parse_tyre_compounds(&cs);
+                self.ui.print_tyres_compounds(&tcs);
             }
 
             _ => {}
@@ -232,6 +235,15 @@ fn parse_car_status_data(car_status_data: &PacketCarStatusData) -> CarStatus {
         fuel_remaining_laps: csd.fuel_remaining_laps(),
         tyre_compound: csd.visual_tyre_compound(),
     }
+}
+
+fn parse_tyre_compounds(car_status_data: &PacketCarStatusData) -> Vec<TyreCompoundVisual> {
+    car_status_data
+        .car_status_data()
+        .iter()
+        .map(|c| c.visual_tyre_compound())
+        .filter(|tc| tc != &TyreCompoundVisual::Invalid)
+        .collect::<Vec<TyreCompoundVisual>>()
 }
 
 fn parse_relative_positions_data(
