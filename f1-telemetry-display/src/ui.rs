@@ -279,6 +279,20 @@ impl Ui {
         let wnd = self.track_wnd;
 
         weather::render_weather(wnd, weather_info, 2, 90);
+        mvwaddstr(
+            wnd,
+            2 + 10,
+            90,
+            &format!("Air Temp   : {}C", weather_info.air_temperature),
+        );
+        mvwaddstr(
+            wnd,
+            2 + 11,
+            90,
+            &format!("Track Temp : {}C", weather_info.track_temperature),
+        );
+
+        fmt::wreset(w);
     }
 
     pub fn print_car_status(&self, car_status: &CarStatus) {

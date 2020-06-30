@@ -111,21 +111,6 @@ pub fn render_weather(w: WINDOW, weather_info: &WeatherInfo, y: i32, x: i32) {
     for (i, l) in weather_icon.split('\n').enumerate() {
         mvwaddstr(w, y + i as i32, x, l);
     }
-
-    mvwaddstr(
-        w,
-        y + 10,
-        x,
-        &format!("Air Temp   : {}C", weather_info.air_temperature),
-    );
-    mvwaddstr(
-        w,
-        y + 11,
-        x,
-        &format!("Track Temp : {}C", weather_info.track_temperature),
-    );
-
-    fmt::wreset(w);
 }
 
 fn blink() -> bool {
