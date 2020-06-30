@@ -116,13 +116,13 @@ pub fn render_weather(w: WINDOW, weather_info: &WeatherInfo, y: i32, x: i32) {
         w,
         y + 10,
         x,
-        &format!("Air Temp  : {}C", weather_info.air_temperature),
+        &format!("Air Temp   : {}C", weather_info.air_temperature),
     );
     mvwaddstr(
         w,
         y + 11,
         x,
-        &format!("Track Temp: {}C", weather_info.track_temperature),
+        &format!("Track Temp : {}C", weather_info.track_temperature),
     );
 
     fmt::wreset(w);
