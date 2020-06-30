@@ -101,6 +101,7 @@ impl Renderer {
         if !self.should_render(View::TrackOverview) {
             return;
         }
+
         match packet {
             Packet::Lap(ld) => {
                 if let Some(rel_positions) = parse_relative_positions_data(&ld, &self.participants)
@@ -116,6 +117,7 @@ impl Renderer {
             _ => {}
         }
     }
+
     fn should_render(&self, view: View) -> bool {
         view == self.active_view
     }

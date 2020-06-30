@@ -24,6 +24,8 @@ pub struct Ui {
     active_wnd: WINDOW,
     dashboard_wnd: WINDOW,
     track_wnd: WINDOW,
+    positions_swnd: WINDOW,
+    car_swnd: WINDOW,
 }
 
 impl Ui {
@@ -57,6 +59,8 @@ impl Ui {
         let win_h = HEIGHT - WINDOW_Y_OFFSET - 2;
 
         let dashboard_wnd = Ui::create_win(win_h, win_w, WINDOW_Y_OFFSET, 1, Some("Dashboard"));
+        let positions_swnd = derwin(dashboard_wnd, 22, 80, 1, 2);
+        let car_swnd = derwin(dashboard_wnd, 24, 39, 2, 90);
         let track_wnd =
             Ui::create_win(win_h, win_w, WINDOW_Y_OFFSET, 1, Some("Relative Positions"));
 
@@ -68,6 +72,8 @@ impl Ui {
             active_wnd,
             dashboard_wnd,
             track_wnd,
+            positions_swnd,
+            car_swnd,
         }
     }
 
@@ -88,11 +94,12 @@ impl Ui {
         redrawwin(neww);
 
         self.active_wnd = neww;
-        self.refresh();
+        self.commit(neww);
     }
 
-    fn refresh(&self) {
-        wrefresh(self.active_wnd);
+    fn commit(&self, w: WINDOW) {
+        fmt::wreset(w);
+        wrefresh(w);
     }
 
     fn create_win(h: i32, w: i32, y: i32, x: i32, title: Option<&str>) -> WINDOW {
@@ -127,14 +134,16 @@ impl Ui {
     }
 
     pub fn print_dashboard_lap_info(&self, lap_info: &[LapInfo]) {
-        let wnd = self.dashboard_wnd;
+        let wnd = self.positions_swnd;
+
+        werase(wnd);
 
         fmt::wset_bold(wnd);
 
         let header =
             "  P. NAME                 | CURRENT LAP  | LAST LAP     | BEST LAP     | STATUS";
 
-        mvwaddstr(wnd, 1, LEFT_BORDER_X_OFFSET, header);
+        mvwaddstr(wnd, 0, 0, header);
 
         for li in lap_info {
             if let ResultStatus::Invalid = li.status {
@@ -166,17 +175,10 @@ impl Ui {
             );
 
             fmt::set_team_color(wnd, li.team);
-            mvwaddstr(
-                wnd,
-                li.position as i32 + 2,
-                LEFT_BORDER_X_OFFSET,
-                s.as_str(),
-            );
+            mvwaddstr(wnd, li.position as i32 + 1, 0, s.as_str());
         }
 
-        fmt::wreset(wnd);
-
-        self.refresh()
+        self.commit(wnd);
     }
 
     pub fn print_track_status_lap_info(&self, relative_positions: &RelativePositions) {
@@ -205,9 +207,7 @@ impl Ui {
             mvwaddstr(wnd, idx as i32 + 4, LEFT_BORDER_X_OFFSET, &s);
         }
 
-        fmt::wreset(wnd);
-
-        self.refresh()
+        self.commit(wnd);
     }
 
     pub fn print_event_info(&self, event_info: &EventInfo) {
@@ -275,6 +275,7 @@ impl Ui {
 
         fmt::wreset(wnd);
     }
+
     pub fn print_weather_info(&self, weather_info: &WeatherInfo) {
         let wnd = self.track_wnd;
 
@@ -296,14 +297,14 @@ impl Ui {
     }
 
     pub fn print_car_status(&self, car_status: &CarStatus) {
-        let wnd = self.dashboard_wnd;
+        let wnd = self.car_swnd;
 
-        car::render_car(wnd, car_status, 2, 90);
+        car::render_car(wnd, car_status, 0, 0);
 
         mvwaddstr(
             wnd,
-            24,
-            90,
+            22,
+            0,
             &format!("Tyre Compound: {: <15}", car_status.tyre_compound.name()),
         );
 
@@ -315,8 +316,8 @@ impl Ui {
 
         mvwaddstr(
             wnd,
-            25,
-            90,
+            23,
+            0,
             &format!(
                 "Fuel Remaining: {:3.2}kg ({}{:1.2} laps)",
                 car_status.fuel_in_tank,
@@ -325,7 +326,7 @@ impl Ui {
             ),
         );
 
-        self.refresh()
+        self.commit(wnd);
     }
 }
 
