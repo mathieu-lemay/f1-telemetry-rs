@@ -24,7 +24,7 @@ pub struct Ui {
     active_wnd: WINDOW,
     dashboard_wnd: WINDOW,
     track_wnd: WINDOW,
-    positions_swnd: WINDOW,
+    lap_times_swnd: WINDOW,
     car_swnd: WINDOW,
 }
 
@@ -59,7 +59,7 @@ impl Ui {
         let win_h = HEIGHT - WINDOW_Y_OFFSET - 2;
 
         let dashboard_wnd = Ui::create_win(win_h, win_w, WINDOW_Y_OFFSET, 1, Some("Dashboard"));
-        let positions_swnd = derwin(dashboard_wnd, 22, 80, 1, 2);
+        let lap_times_swnd = derwin(dashboard_wnd, 22, 80, 1, 2);
         let car_swnd = derwin(dashboard_wnd, 24, 39, 2, 90);
         let track_wnd =
             Ui::create_win(win_h, win_w, WINDOW_Y_OFFSET, 1, Some("Relative Positions"));
@@ -72,7 +72,7 @@ impl Ui {
             active_wnd,
             dashboard_wnd,
             track_wnd,
-            positions_swnd,
+            lap_times_swnd,
             car_swnd,
         }
     }
@@ -134,7 +134,7 @@ impl Ui {
     }
 
     pub fn print_dashboard_lap_info(&self, lap_info: &[LapInfo]) {
-        let wnd = self.positions_swnd;
+        let wnd = self.lap_times_swnd;
 
         werase(wnd);
 
