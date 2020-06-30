@@ -308,20 +308,13 @@ impl Ui {
             &format!("Tyre Compound: {: <15}", car_status.tyre_compound.name()),
         );
 
-        let symbol = if car_status.fuel_remaining_laps >= 0.0 {
-            "+"
-        } else {
-            "-"
-        };
-
         mvwaddstr(
             wnd,
             23,
             0,
             &format!(
-                "Fuel Remaining: {:3.2}kg ({}{:1.2} laps)",
+                "Fuel Remaining: {:3.2}kg ({:+1.2} laps)",
                 car_status.fuel_in_tank,
-                symbol,
                 car_status.fuel_remaining_laps.abs()
             ),
         );
