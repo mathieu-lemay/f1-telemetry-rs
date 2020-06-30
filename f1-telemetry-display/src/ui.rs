@@ -318,8 +318,10 @@ impl Ui {
             25,
             90,
             &format!(
-                "Fuel Remaining: {:3.2}kg ({}{:2.1} laps)",
-                car_status.fuel_in_tank, symbol, car_status.fuel_remaining_laps
+                "Fuel Remaining: {:3.2}kg ({}{:1.2} laps)",
+                car_status.fuel_in_tank,
+                symbol,
+                car_status.fuel_remaining_laps.abs()
             ),
         );
 
