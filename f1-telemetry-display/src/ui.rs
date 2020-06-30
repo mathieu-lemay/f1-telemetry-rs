@@ -306,7 +306,7 @@ impl Ui {
     pub fn print_car_status(&self, car_status: &CarStatus) {
         let wnd = self.car_swnd;
 
-        car::render_car(wnd, car_status, 0, 0);
+        car::render_car(wnd, car_status);
 
         mvwaddstr(
             wnd,
