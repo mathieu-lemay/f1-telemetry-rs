@@ -22,8 +22,8 @@ use crate::packet::UnpackError;
 #[derive(Debug, Clone, Copy, CopyGetters)]
 #[getset(get_copy = "pub")]
 pub struct MarshalZone {
-    zone_start: f32,
-    zone_flag: Flag,
+    pub zone_start: f32,
+    pub zone_flag: Flag,
 }
 
 impl MarshalZone {

@@ -9,7 +9,7 @@ use f1_telemetry::packet::participants::PacketParticipantsData;
 use f1_telemetry::packet::session::PacketSessionData;
 use f1_telemetry::packet::Packet;
 
-use crate::models::{CarStatus, EventInfo, LapInfo, RelativePositions, SessionInfo};
+use crate::models::{CarStatus, EventInfo, LapInfo, RelativePositions, SessionInfo, ZoneFlag};
 use crate::models::{TelemetryInfo, WeatherInfo};
 use crate::ui::Ui;
 
@@ -115,6 +115,9 @@ impl Renderer {
             Packet::Session(sd) => {
                 if let Some(weather_info) = parse_weather_data(&sd) {
                     self.ui.print_weather_info(&weather_info)
+                }
+                if let Some(marshal_data) = parse_marshal_data(&sd) {
+                    self.ui.print_marshal_data(&marshal_data)
                 }
             }
             _ => {}
@@ -297,6 +300,26 @@ fn parse_weather_data(session_data: &PacketSessionData) -> Option<WeatherInfo> {
         air_temperature: session_data.air_temperature(),
     })
 }
+
+fn parse_marshal_data(session_data: &PacketSessionData) -> Option<Vec<ZoneFlag>>{
+    let mut marshal_zones = Vec::with_capacity(session_data.marshal_zones().len());
+    let zone_starts: Vec<f32> = session_data.marshal_zones().iter().map(|s| s.zone_start).collect();
+    let mut zone_ends: Vec<f32> = zone_starts.clone();
+    zone_ends.push(1.0);
+
+    let zone_bounds = zone_starts.iter().zip(zone_ends[1..].iter());
+
+    for (i, (start,end)) in zone_bounds.enumerate() {
+        let flag = session_data.marshal_zones()[i].zone_flag;
+        marshal_zones.push(ZoneFlag{
+            zone_start: *start,
+            zone_end: *end,
+            flag
+        })
+    }
+    Some(marshal_zones)
+}
+
 
 fn get_current_lap(lap_data: &PacketLapData) -> u8 {
     lap_data

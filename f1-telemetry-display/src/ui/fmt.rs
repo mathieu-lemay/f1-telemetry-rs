@@ -2,6 +2,7 @@ use f1_telemetry::packet::car_status::TyreCompoundVisual;
 use f1_telemetry::packet::participants::{Driver, Team};
 use ncurses::*;
 use std::borrow::Cow;
+use f1_telemetry::packet::generic::Flag;
 
 const PERCENTAGE_BAR_SLICES: i8 = 20;
 
@@ -38,6 +39,11 @@ pub enum Color {
     Haas,
     McLaren,
     AlfaRomeo,
+
+    FlagGreen = 500,
+    FlagYellow,
+    FlagBlue,
+    FlagRed
 }
 
 trait ToColor {
@@ -75,6 +81,18 @@ impl ToColor for TyreCompoundVisual {
     }
 }
 
+impl ToColor for Flag {
+    fn get_color(&self) -> Color {
+        match self {
+            Flag::Green => Color::FlagGreen,
+            Flag::Yellow => Color::FlagYellow,
+            Flag::Blue => Color::FlagBlue,
+            Flag::Red => Color::FlagRed,
+            _ => Color::FlagBlue
+        }
+    }
+}
+
 pub fn init_colors() {
     start_color();
 
@@ -82,6 +100,7 @@ pub fn init_colors() {
     init_team_colors();
     init_status_colors();
     init_tyre_colors();
+    init_flag_colours();
 }
 
 fn init_base_color_pairs() {
@@ -111,6 +130,18 @@ fn init_team_colors() {
         let idx = t as i16;
         init_color(idx, c.0, c.1, c.2);
         init_pair(idx, COLOR_WHITE, idx);
+    }
+}
+
+fn init_flag_colours() {
+    for (flag, c) in vec![
+        (Color::FlagGreen, Color::Green),
+        (Color::FlagYellow, Color::Yellow),
+        (Color::FlagBlue, Color::Blue ),
+        (Color::FlagRed, Color::Red),
+
+    ] {
+        init_pair(flag as i16, COLOR_WHITE, c as i16 );
     }
 }
 
@@ -156,6 +187,10 @@ pub fn set_team_color(w: WINDOW, team: Team) {
 
 pub fn set_tyre_color(w: WINDOW, tyre_compound: TyreCompoundVisual) {
     wcolor_set(w, tyre_compound.get_color() as i16);
+}
+
+pub fn set_flag_color(w: WINDOW, flag: Flag) {
+    wcolor_set(w, flag.get_color() as i16);
 }
 
 pub fn set_color(w: Option<WINDOW>, c: i16) {
