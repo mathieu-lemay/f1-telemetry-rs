@@ -214,7 +214,7 @@ impl Ui {
             mvwaddstr(wnd, y, 0, &format!("{:<15.15} |{}", team.name(), &filler));
 
             for p in positions {
-                let place = ((*p - relative_positions.min) / slice) as i32 + 17;
+                let place = ((*p - relative_positions.min) / slice).round() as i32 + 17;
                 mvwaddstr(wnd, y, place, "o");
             }
         }
