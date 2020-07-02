@@ -113,12 +113,11 @@ impl Renderer {
                 }
             }
             Packet::Session(sd) => {
-                if let Some(weather_info) = parse_weather_data(&sd) {
-                    self.ui.print_weather_info(&weather_info)
-                }
-                if let Some(marshal_data) = parse_marshal_data(&sd) {
-                    self.ui.print_marshal_data(&marshal_data)
-                }
+                let weather_info = parse_weather_data(&sd);
+                self.ui.print_weather_info(&weather_info);
+
+                let marshal_data = parse_marshal_data(&sd);
+                self.ui.print_marshal_data(&marshal_data);
             }
             _ => {}
         }
@@ -293,15 +292,15 @@ fn parse_relative_positions_data(
     })
 }
 
-fn parse_weather_data(session_data: &PacketSessionData) -> Option<WeatherInfo> {
-    Some(WeatherInfo {
+fn parse_weather_data(session_data: &PacketSessionData) -> WeatherInfo {
+    WeatherInfo {
         weather: session_data.weather(),
         track_temperature: session_data.track_temperature(),
         air_temperature: session_data.air_temperature(),
-    })
+    }
 }
 
-fn parse_marshal_data(session_data: &PacketSessionData) -> Option<Vec<ZoneFlag>> {
+fn parse_marshal_data(session_data: &PacketSessionData) -> Vec<ZoneFlag> {
     let mut marshal_zones = Vec::with_capacity(session_data.marshal_zones().len());
     let zone_starts: Vec<f32> = session_data
         .marshal_zones()
@@ -321,7 +320,8 @@ fn parse_marshal_data(session_data: &PacketSessionData) -> Option<Vec<ZoneFlag>>
             flag,
         })
     }
-    Some(marshal_zones)
+
+    marshal_zones
 }
 
 fn get_current_lap(lap_data: &PacketLapData) -> u8 {
