@@ -1,7 +1,7 @@
 use std::collections::BTreeMap;
 
 use f1_telemetry::packet::car_status::TyreCompoundVisual;
-use f1_telemetry::packet::generic::{WheelData, Flag};
+use f1_telemetry::packet::generic::{Flag, WheelData};
 use f1_telemetry::packet::lap::ResultStatus;
 use f1_telemetry::packet::participants::{Driver, Team};
 use f1_telemetry::packet::session::{SafetyCar, Weather};
@@ -77,5 +77,5 @@ pub struct WeatherInfo {
 pub struct ZoneFlag {
     pub zone_start: f32,
     pub zone_end: f32,
-    pub flag: Flag
+    pub flag: Flag,
 }

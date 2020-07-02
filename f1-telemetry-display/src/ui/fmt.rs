@@ -1,8 +1,8 @@
 use f1_telemetry::packet::car_status::TyreCompoundVisual;
+use f1_telemetry::packet::generic::Flag;
 use f1_telemetry::packet::participants::{Driver, Team};
 use ncurses::*;
 use std::borrow::Cow;
-use f1_telemetry::packet::generic::Flag;
 
 const PERCENTAGE_BAR_SLICES: i8 = 20;
 
@@ -40,10 +40,11 @@ pub enum Color {
     McLaren,
     AlfaRomeo,
 
-    FlagGreen = 500,
+    FlagBaseBg,
+    FlagGreen,
     FlagYellow,
     FlagBlue,
-    FlagRed
+    FlagRed,
 }
 
 trait ToColor {
@@ -88,7 +89,7 @@ impl ToColor for Flag {
             Flag::Yellow => Color::FlagYellow,
             Flag::Blue => Color::FlagBlue,
             Flag::Red => Color::FlagRed,
-            _ => Color::FlagBlue
+            _ => Color::FlagBaseBg,
         }
     }
 }
@@ -134,14 +135,16 @@ fn init_team_colors() {
 }
 
 fn init_flag_colours() {
+    init_color(Color::FlagBaseBg as i16, 250, 250, 250);
+
     for (flag, c) in vec![
         (Color::FlagGreen, Color::Green),
         (Color::FlagYellow, Color::Yellow),
-        (Color::FlagBlue, Color::Blue ),
+        (Color::FlagBlue, Color::Blue),
         (Color::FlagRed, Color::Red),
-
+        (Color::FlagBaseBg, Color::FlagBaseBg),
     ] {
-        init_pair(flag as i16, COLOR_WHITE, c as i16 );
+        init_pair(flag as i16, COLOR_WHITE, c as i16);
     }
 }
 

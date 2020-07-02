@@ -1,10 +1,14 @@
 use ncurses::*;
 
 use f1_telemetry::packet::car_status::TyreCompoundVisual;
+use f1_telemetry::packet::generic::Flag;
 use f1_telemetry::packet::lap::ResultStatus;
 use f1_telemetry::packet::session::SafetyCar;
 
-use crate::models::{CarStatus, EventInfo, LapInfo, RelativePositions, SessionInfo, TelemetryInfo, WeatherInfo, ZoneFlag};
+use crate::models::{
+    CarStatus, EventInfo, LapInfo, RelativePositions, SessionInfo, TelemetryInfo, WeatherInfo,
+    ZoneFlag,
+};
 use crate::render::View;
 
 mod car;
@@ -67,7 +71,13 @@ impl Ui {
 
         let track_wnd = Ui::create_win(win_h, win_w, WINDOW_Y_OFFSET, 1, Some("Track Status"));
         let rel_pos_swnd = derwin(track_wnd, 12, getmaxx(track_wnd) - 4, 15, 2);
-        let marshal_swnd = derwin(track_wnd, 3, (getmaxx(track_wnd)as f32 * 0.6) as i32 , 11,2);
+        let marshal_swnd = derwin(
+            track_wnd,
+            3,
+            (getmaxx(track_wnd) as f32 * 0.6) as i32,
+            11,
+            2,
+        );
 
         let active_wnd = dashboard_wnd;
         wrefresh(active_wnd);
@@ -81,7 +91,7 @@ impl Ui {
             lap_times_swnd,
             car_swnd,
             rel_pos_swnd,
-            marshal_swnd
+            marshal_swnd,
         }
     }
 
@@ -311,24 +321,29 @@ impl Ui {
 
     pub fn print_marshal_data(&self, marshal_zones: &[ZoneFlag]) {
         let wnd = self.marshal_swnd;
+        let max_x = getmaxx(wnd) as f32;
+
         let header = "Marshal Zones";
+        let bg = (0..max_x as usize).map(|_| " ").collect::<String>();
+
         fmt::wset_bold(wnd);
 
-        mvwaddstr(wnd,0,0,&header);
-        let max_x = getmaxx(wnd) as f32;
+        mvwaddstr(wnd, 0, 0, &header);
+        fmt::set_flag_color(wnd, Flag::None);
+        mvwaddstr(wnd, 1, 0, &bg);
+
         let mut cursor_x = 0;
         for mz in marshal_zones {
             let x_start = (max_x * mz.zone_start).round() as usize;
             let x_end = (max_x * mz.zone_end).round() as usize;
             let s = &(x_start..x_end).map(|_| " ").collect::<String>();
             fmt::set_flag_color(wnd, mz.flag);
-            mvwaddstr(wnd,1,cursor_x as i32,&format!{"|{}|",s});
+            mvwaddstr(wnd, 1, cursor_x as i32, &format! {"|{}|",s});
             cursor_x += (x_end + 1) as usize;
         }
 
         fmt::wreset(wnd);
         self.commit(wnd);
-
     }
 
     pub fn print_car_status(&self, car_status: &CarStatus) {
