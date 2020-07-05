@@ -2,13 +2,6 @@ use getset::{CopyGetters, Getters};
 
 use super::header::PacketHeader;
 
-#[derive(Debug, Clone, Copy, Eq, PartialEq)]
-pub enum TractionControl {
-    Off,
-    Low,
-    High,
-}
-
 /// This type is used for the 20-element `car_setups` array of the [`PacketCarSetupData`] type.
 ///
 /// ## Specification

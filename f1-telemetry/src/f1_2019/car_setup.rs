@@ -1,26 +1,9 @@
 use byteorder::{LittleEndian, ReadBytesExt};
-use std::convert::TryFrom;
 use std::io::BufRead;
 
-use crate::packet::car_setup::{CarSetupData, PacketCarSetupData, TractionControl};
+use crate::packet::car_setup::{CarSetupData, PacketCarSetupData};
 use crate::packet::header::PacketHeader;
 use crate::packet::UnpackError;
-
-impl TryFrom<u8> for TractionControl {
-    type Error = UnpackError;
-
-    fn try_from(value: u8) -> Result<Self, Self::Error> {
-        match value {
-            0 => Ok(TractionControl::Off),
-            1 => Ok(TractionControl::Low),
-            2 => Ok(TractionControl::High),
-            _ => Err(UnpackError(format!(
-                "Invalid TractionControl value: {}",
-                value
-            ))),
-        }
-    }
-}
 
 fn parse_car_setup<T: BufRead>(reader: &mut T) -> Result<CarSetupData, UnpackError> {
     let front_wing = reader.read_u8().unwrap();
