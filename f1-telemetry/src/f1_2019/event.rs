@@ -5,6 +5,7 @@ use std::io::BufRead;
 use crate::packet::event::{Event, PacketEventData};
 use crate::packet::header::PacketHeader;
 use crate::packet::UnpackError;
+use crate::utils::unpack_string;
 
 impl TryFrom<&str> for Event {
     type Error = UnpackError;
@@ -29,7 +30,9 @@ pub(crate) fn parse_event_data<T: BufRead>(
     reader: &mut T,
     header: PacketHeader,
 ) -> Result<PacketEventData, UnpackError> {
-    let event = read_event(reader)?;
+    let event_code = unpack_string(reader, 4)?;
+
+    let event = Event::try_from(event_code.as_str())?;
 
     let vehicle_idx = reader.read_u8().unwrap();
     let vehicle_idx = match event {
@@ -46,17 +49,4 @@ pub(crate) fn parse_event_data<T: BufRead>(
     };
 
     Ok(PacketEventData::new(header, event, vehicle_idx, lap_time))
-}
-
-fn read_event<T: BufRead>(reader: &mut T) -> Result<Event, UnpackError> {
-    let code_str: String = vec![
-        reader.read_u8().unwrap() as char,
-        reader.read_u8().unwrap() as char,
-        reader.read_u8().unwrap() as char,
-        reader.read_u8().unwrap() as char,
-    ]
-    .iter()
-    .collect();
-
-    Event::try_from(code_str.as_str())
 }

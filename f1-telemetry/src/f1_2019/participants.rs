@@ -7,6 +7,7 @@ use crate::packet::participants::{
     Driver, Nationality, PacketParticipantsData, ParticipantData, Team, Telemetry,
 };
 use crate::packet::UnpackError;
+use crate::utils::unpack_string;
 
 impl TryFrom<u8> for Driver {
     type Error = UnpackError;
@@ -276,7 +277,7 @@ fn parse_participant<T: BufRead>(reader: &mut T) -> Result<ParticipantData, Unpa
     let team = Team::try_from(reader.read_u8().unwrap())?;
     let race_number = reader.read_u8().unwrap();
     let nationality = Nationality::try_from(reader.read_u8().unwrap())?;
-    let name = read_name(reader)?;
+    let name = unpack_string(reader, 48)?;
     let telemetry = Telemetry::try_from(reader.read_u8().unwrap())?;
 
     Ok(ParticipantData::new(
@@ -307,32 +308,4 @@ pub(crate) fn parse_participants_data<T: BufRead>(
         num_active_cars,
         participants,
     ))
-}
-
-fn read_name<T: BufRead>(reader: &mut T) -> Result<String, UnpackError> {
-    let mut nb_read: u8 = 0;
-
-    let mut chars = Vec::with_capacity(48);
-
-    for _ in 0..48 {
-        nb_read += 1;
-
-        let c = reader.read_u8().unwrap();
-        if c == 0 {
-            break;
-        }
-
-        chars.push(c);
-    }
-
-    // Consume the full 48 bytes.
-    while nb_read < 48 {
-        nb_read += 1;
-        let _ = reader.read_u8();
-    }
-
-    match String::from_utf8(chars) {
-        Ok(v) => Ok(v),
-        Err(e) => Err(UnpackError(format!("Error decoding name: {}", e))),
-    }
 }

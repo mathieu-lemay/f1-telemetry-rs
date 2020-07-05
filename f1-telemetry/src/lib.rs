@@ -4,6 +4,7 @@ use std::net::{ToSocketAddrs, UdpSocket};
 
 mod f1_2019;
 pub mod packet;
+mod utils;
 
 pub struct Stream {
     socket: UdpSocket,
