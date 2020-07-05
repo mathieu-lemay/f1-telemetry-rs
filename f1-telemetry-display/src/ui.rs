@@ -285,7 +285,7 @@ impl Ui {
         fmt::set_color(Some(wnd), COLOR_RED);
         mvwaddstr(wnd, CURRENT_CAR_DATA_Y_OFFSET + 2, offset, &brake_bar);
 
-        fmt::wreset(wnd);
+        self.commit(wnd)
     }
 
     pub fn print_weather_info(&self, weather_info: &WeatherInfo) {
