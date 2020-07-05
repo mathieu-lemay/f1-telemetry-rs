@@ -88,6 +88,13 @@ pub enum Driver {
     DevonButler,
     LukasWebber,
     Player,
+    Unknown,
+}
+
+impl Default for Driver {
+    fn default() -> Self {
+        Driver::Unknown
+    }
 }
 
 impl TryFrom<u8> for Driver {
@@ -235,6 +242,7 @@ pub enum Team {
     Ferrari1990,
     McLaren2010,
     Ferrari2010,
+    Unknown,
 }
 
 impl Team {
@@ -293,10 +301,11 @@ impl Team {
             Team::Ferrari1990 => 63,
             Team::McLaren2010 => 64,
             Team::Ferrari2010 => 65,
+            Team::Unknown => 255,
         }
     }
 
-    pub fn name(&self) -> &'static str {
+    pub fn name(self) -> &'static str {
         match self {
             Team::Mercedes => "Mercedes",
             Team::Ferrari => "Ferrari",
@@ -310,6 +319,12 @@ impl Team {
             Team::AlfaRomeo => "Alfa Romeo",
             _ => "[N/A]",
         }
+    }
+}
+
+impl Default for Team {
+    fn default() -> Self {
+        Team::Unknown
     }
 }
 

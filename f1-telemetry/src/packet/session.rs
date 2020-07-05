@@ -48,6 +48,12 @@ pub enum Weather {
     Storm,
 }
 
+impl Default for Weather {
+    fn default() -> Self {
+        Self::Clear
+    }
+}
+
 impl TryFrom<u8> for Weather {
     type Error = UnpackError;
 
@@ -259,6 +265,12 @@ impl SafetyCar {
             SafetyCar::Virtual => "Virtual Safety Car",
             SafetyCar::Full => "Safety Car",
         }
+    }
+}
+
+impl Default for SafetyCar {
+    fn default() -> Self {
+        Self::None
     }
 }
 

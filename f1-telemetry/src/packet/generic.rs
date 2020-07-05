@@ -29,7 +29,7 @@ impl TryFrom<i8> for Flag {
     }
 }
 
-#[derive(Debug, Clone, Copy, CopyGetters)]
+#[derive(Debug, Clone, Copy, Default, CopyGetters)]
 #[getset(get_copy = "pub")]
 pub struct WheelData<T>
 where

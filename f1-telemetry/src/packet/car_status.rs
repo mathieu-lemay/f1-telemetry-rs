@@ -136,6 +136,12 @@ pub enum TyreCompoundVisual {
     Invalid,
 }
 
+impl Default for TyreCompoundVisual {
+    fn default() -> Self {
+        TyreCompoundVisual::Invalid
+    }
+}
+
 impl TyreCompoundVisual {
     pub fn name<'a>(self) -> &'a str {
         match self {

@@ -64,6 +64,12 @@ pub enum ResultStatus {
     Retired,
 }
 
+impl Default for ResultStatus {
+    fn default() -> Self {
+        ResultStatus::Invalid
+    }
+}
+
 impl TryFrom<u8> for ResultStatus {
     type Error = UnpackError;
 
