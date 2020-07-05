@@ -1,33 +1,13 @@
-use byteorder::{LittleEndian, ReadBytesExt};
 use getset::{CopyGetters, Getters};
-use std::convert::TryFrom;
-use std::io::BufRead;
 
 use super::header::PacketHeader;
 use crate::packet::generic::{Flag, WheelData};
-use crate::packet::UnpackError;
 
 #[derive(Debug, Clone, Copy, Eq, PartialEq)]
 pub enum TractionControl {
     Off,
     Low,
     High,
-}
-
-impl TryFrom<u8> for TractionControl {
-    type Error = UnpackError;
-
-    fn try_from(value: u8) -> Result<Self, Self::Error> {
-        match value {
-            0 => Ok(TractionControl::Off),
-            1 => Ok(TractionControl::Low),
-            2 => Ok(TractionControl::High),
-            _ => Err(UnpackError(format!(
-                "Invalid TractionControl value: {}",
-                value
-            ))),
-        }
-    }
 }
 
 #[derive(Debug, Clone, Copy, Eq, PartialEq)]
@@ -38,38 +18,11 @@ pub enum FuelMix {
     Max,
 }
 
-impl TryFrom<u8> for FuelMix {
-    type Error = UnpackError;
-
-    fn try_from(value: u8) -> Result<Self, Self::Error> {
-        match value {
-            0 => Ok(FuelMix::Lean),
-            1 => Ok(FuelMix::Standard),
-            2 => Ok(FuelMix::Rich),
-            3 => Ok(FuelMix::Max),
-            _ => Err(UnpackError(format!("Invalid FuelMix value: {}", value))),
-        }
-    }
-}
-
 #[derive(Debug, Clone, Copy, Eq, PartialEq)]
 pub enum DRS {
     NotAllowed,
     Allowed,
     Unknown,
-}
-
-impl TryFrom<i8> for DRS {
-    type Error = UnpackError;
-
-    fn try_from(value: i8) -> Result<Self, Self::Error> {
-        match value {
-            0 => Ok(DRS::NotAllowed),
-            1 => Ok(DRS::Allowed),
-            -1 => Ok(DRS::Unknown),
-            _ => Err(UnpackError(format!("Invalid DRS value: {}", value))),
-        }
-    }
 }
 
 #[derive(Debug, Clone, Copy, Eq, PartialEq)]
@@ -89,34 +42,6 @@ pub enum TyreCompound {
     F2Hard,
     F2Wet,
     Invalid,
-}
-
-impl TryFrom<u8> for TyreCompound {
-    type Error = UnpackError;
-
-    fn try_from(value: u8) -> Result<Self, Self::Error> {
-        match value {
-            16 => Ok(TyreCompound::C5),
-            17 => Ok(TyreCompound::C4),
-            18 => Ok(TyreCompound::C3),
-            19 => Ok(TyreCompound::C2),
-            20 => Ok(TyreCompound::C1),
-            7 => Ok(TyreCompound::Inter),
-            8 => Ok(TyreCompound::Wet),
-            9 => Ok(TyreCompound::ClassicDry),
-            10 => Ok(TyreCompound::ClassicWet),
-            11 => Ok(TyreCompound::F2SuperSoft),
-            12 => Ok(TyreCompound::F2Soft),
-            13 => Ok(TyreCompound::F2Medium),
-            14 => Ok(TyreCompound::F2Hard),
-            15 => Ok(TyreCompound::F2Wet),
-            0 | 255 => Ok(TyreCompound::Invalid),
-            _ => Err(UnpackError(format!(
-                "Invalid TyreCompound value: {}",
-                value
-            ))),
-        }
-    }
 }
 
 #[derive(Debug, Clone, Copy, Eq, PartialEq)]
@@ -162,32 +87,6 @@ impl TyreCompoundVisual {
     }
 }
 
-impl TryFrom<u8> for TyreCompoundVisual {
-    type Error = UnpackError;
-
-    fn try_from(value: u8) -> Result<Self, Self::Error> {
-        match value {
-            16 => Ok(TyreCompoundVisual::Soft),
-            17 => Ok(TyreCompoundVisual::Medium),
-            18 => Ok(TyreCompoundVisual::Hard),
-            7 => Ok(TyreCompoundVisual::Inter),
-            8 => Ok(TyreCompoundVisual::Wet),
-            9 => Ok(TyreCompoundVisual::ClassicDry),
-            10 => Ok(TyreCompoundVisual::ClassicWet),
-            11 => Ok(TyreCompoundVisual::F2SuperSoft),
-            12 => Ok(TyreCompoundVisual::F2Soft),
-            13 => Ok(TyreCompoundVisual::F2Medium),
-            14 => Ok(TyreCompoundVisual::F2Hard),
-            15 => Ok(TyreCompoundVisual::F2Wet),
-            0 => Ok(TyreCompoundVisual::Invalid),
-            _ => Err(UnpackError(format!(
-                "Invalid TyreCompoundVisual value: {}",
-                value
-            ))),
-        }
-    }
-}
-
 #[derive(Debug, Clone, Copy, Eq, PartialEq)]
 pub enum ERSDeployMode {
     None,
@@ -196,25 +95,6 @@ pub enum ERSDeployMode {
     High,
     Overtake,
     Hotlap,
-}
-
-impl TryFrom<u8> for ERSDeployMode {
-    type Error = UnpackError;
-
-    fn try_from(value: u8) -> Result<Self, Self::Error> {
-        match value {
-            0 => Ok(ERSDeployMode::None),
-            1 => Ok(ERSDeployMode::Low),
-            2 => Ok(ERSDeployMode::Medium),
-            3 => Ok(ERSDeployMode::High),
-            4 => Ok(ERSDeployMode::Overtake),
-            5 => Ok(ERSDeployMode::Hotlap),
-            _ => Err(UnpackError(format!(
-                "Invalid ERSDeployMode value: {}",
-                value
-            ))),
-        }
-    }
 }
 
 /// This type is used for the 20-element `car_status_data` array of the [`PacketCarStatusData`] type.
@@ -321,46 +201,37 @@ pub struct CarStatusData {
 }
 
 impl CarStatusData {
-    pub fn new<T: BufRead>(reader: &mut T) -> Result<CarStatusData, UnpackError> {
-        let traction_control = TractionControl::try_from(reader.read_u8().unwrap())?;
-        let anti_lock_brakes = reader.read_u8().unwrap() == 1;
-        let fuel_mix = FuelMix::try_from(reader.read_u8().unwrap())?;
-        let front_brake_bias = reader.read_u8().unwrap();
-        let pit_limiter = reader.read_u8().unwrap() == 1;
-        let fuel_in_tank = reader.read_f32::<LittleEndian>().unwrap();
-        let fuel_capacity = reader.read_f32::<LittleEndian>().unwrap();
-        let fuel_remaining_laps = reader.read_f32::<LittleEndian>().unwrap();
-        let max_rpm = reader.read_u16::<LittleEndian>().unwrap();
-        let idle_rpm = reader.read_u16::<LittleEndian>().unwrap();
-        let max_gears = reader.read_u8().unwrap();
-        let drs_allowed = DRS::try_from(reader.read_i8().unwrap())?;
-        let tyres_wear = WheelData::new(
-            reader.read_u8().unwrap(),
-            reader.read_u8().unwrap(),
-            reader.read_u8().unwrap(),
-            reader.read_u8().unwrap(),
-        );
-        let actual_tyre_compound = TyreCompound::try_from(reader.read_u8().unwrap())?;
-        let visual_tyre_compound = TyreCompoundVisual::try_from(reader.read_u8().unwrap())?;
-        let tyres_damage = WheelData::new(
-            reader.read_u8().unwrap(),
-            reader.read_u8().unwrap(),
-            reader.read_u8().unwrap(),
-            reader.read_u8().unwrap(),
-        );
-        let front_left_wing_damage = reader.read_u8().unwrap();
-        let front_right_wing_damage = reader.read_u8().unwrap();
-        let rear_wing_damage = reader.read_u8().unwrap();
-        let engine_damage = reader.read_u8().unwrap();
-        let gear_box_damage = reader.read_u8().unwrap();
-        let vehicle_fia_flags = Flag::try_from(reader.read_i8().unwrap())?;
-        let ers_store_energy = reader.read_f32::<LittleEndian>().unwrap();
-        let ers_deploy_mode = ERSDeployMode::try_from(reader.read_u8().unwrap())?;
-        let ers_harvested_this_lap_mguk = reader.read_f32::<LittleEndian>().unwrap();
-        let ers_harvested_this_lap_mguh = reader.read_f32::<LittleEndian>().unwrap();
-        let ers_deployed_this_lap = reader.read_f32::<LittleEndian>().unwrap();
-
-        Ok(CarStatusData {
+    #[allow(clippy::too_many_arguments)]
+    pub(crate) fn new(
+        traction_control: TractionControl,
+        anti_lock_brakes: bool,
+        fuel_mix: FuelMix,
+        front_brake_bias: u8,
+        pit_limiter: bool,
+        fuel_in_tank: f32,
+        fuel_capacity: f32,
+        fuel_remaining_laps: f32,
+        max_rpm: u16,
+        idle_rpm: u16,
+        max_gears: u8,
+        drs_allowed: DRS,
+        tyres_wear: WheelData<u8>,
+        actual_tyre_compound: TyreCompound,
+        visual_tyre_compound: TyreCompoundVisual,
+        tyres_damage: WheelData<u8>,
+        front_left_wing_damage: u8,
+        front_right_wing_damage: u8,
+        rear_wing_damage: u8,
+        engine_damage: u8,
+        gear_box_damage: u8,
+        vehicle_fia_flags: Flag,
+        ers_store_energy: f32,
+        ers_deploy_mode: ERSDeployMode,
+        ers_harvested_this_lap_mguk: f32,
+        ers_harvested_this_lap_mguh: f32,
+        ers_deployed_this_lap: f32,
+    ) -> CarStatusData {
+        CarStatusData {
             traction_control,
             anti_lock_brakes,
             fuel_mix,
@@ -388,7 +259,7 @@ impl CarStatusData {
             ers_harvested_this_lap_mguk,
             ers_harvested_this_lap_mguh,
             ers_deployed_this_lap,
-        })
+        }
     }
 }
 
@@ -413,19 +284,13 @@ pub struct PacketCarStatusData {
 }
 
 impl PacketCarStatusData {
-    pub fn new<T: BufRead>(
-        mut reader: &mut T,
+    pub(crate) fn new(
         header: PacketHeader,
-    ) -> Result<PacketCarStatusData, UnpackError> {
-        let mut car_status_data = Vec::with_capacity(20);
-        for _ in 0..20 {
-            let csd = CarStatusData::new(&mut reader)?;
-            car_status_data.push(csd);
-        }
-
-        Ok(PacketCarStatusData {
+        car_status_data: Vec<CarStatusData>,
+    ) -> PacketCarStatusData {
+        PacketCarStatusData {
             header,
             car_status_data,
-        })
+        }
     }
 }

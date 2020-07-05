@@ -1,7 +1,4 @@
 use getset::CopyGetters;
-use std::convert::TryFrom;
-
-use crate::packet::UnpackError;
 
 #[derive(Debug, Clone, Copy, Eq, PartialEq)]
 pub enum Flag {
@@ -11,22 +8,6 @@ pub enum Flag {
     Yellow,
     Red,
     Invalid,
-}
-
-impl TryFrom<i8> for Flag {
-    type Error = UnpackError;
-
-    fn try_from(value: i8) -> Result<Self, Self::Error> {
-        match value {
-            0 => Ok(Flag::None),
-            1 => Ok(Flag::Green),
-            2 => Ok(Flag::Blue),
-            3 => Ok(Flag::Yellow),
-            4 => Ok(Flag::Red),
-            -1 => Ok(Flag::Invalid),
-            _ => Err(UnpackError(format!("Invalid Flag value: {}", value))),
-        }
-    }
 }
 
 #[derive(Debug, Clone, Copy, Default, CopyGetters)]

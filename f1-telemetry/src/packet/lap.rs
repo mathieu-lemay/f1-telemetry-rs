@@ -1,29 +1,12 @@
-use byteorder::{LittleEndian, ReadBytesExt};
 use getset::{CopyGetters, Getters};
-use std::convert::TryFrom;
-use std::io::BufRead;
 
 use super::header::PacketHeader;
-use crate::packet::UnpackError;
 
 #[derive(Debug, Clone, Copy, Eq, PartialEq)]
 pub enum PitStatus {
     None,
     Pitting,
     PitLane,
-}
-
-impl TryFrom<u8> for PitStatus {
-    type Error = UnpackError;
-
-    fn try_from(value: u8) -> Result<Self, Self::Error> {
-        match value {
-            0 => Ok(PitStatus::None),
-            1 => Ok(PitStatus::Pitting),
-            2 => Ok(PitStatus::PitLane),
-            _ => Err(UnpackError(format!("Invalid PitStatus value: {}", value))),
-        }
-    }
 }
 
 #[derive(Debug, Clone, Copy, Eq, PartialEq)]
@@ -33,24 +16,6 @@ pub enum DriverStatus {
     InLap,
     OutLap,
     OnTrack,
-}
-
-impl TryFrom<u8> for DriverStatus {
-    type Error = UnpackError;
-
-    fn try_from(value: u8) -> Result<Self, Self::Error> {
-        match value {
-            0 => Ok(DriverStatus::Garage),
-            1 => Ok(DriverStatus::FlyingLap),
-            2 => Ok(DriverStatus::InLap),
-            3 => Ok(DriverStatus::OutLap),
-            4 => Ok(DriverStatus::OnTrack),
-            _ => Err(UnpackError(format!(
-                "Invalid DriverStatus value: {}",
-                value
-            ))),
-        }
-    }
 }
 
 #[derive(Debug, Clone, Copy, Eq, PartialEq)]
@@ -67,26 +32,6 @@ pub enum ResultStatus {
 impl Default for ResultStatus {
     fn default() -> Self {
         ResultStatus::Invalid
-    }
-}
-
-impl TryFrom<u8> for ResultStatus {
-    type Error = UnpackError;
-
-    fn try_from(value: u8) -> Result<Self, Self::Error> {
-        match value {
-            0 => Ok(ResultStatus::Invalid),
-            1 => Ok(ResultStatus::Inactive),
-            2 => Ok(ResultStatus::Active),
-            3 => Ok(ResultStatus::Finished),
-            4 => Ok(ResultStatus::Disqualified),
-            5 => Ok(ResultStatus::NotClassified),
-            6 => Ok(ResultStatus::Retired),
-            _ => Err(UnpackError(format!(
-                "Invalid ResultStatus value: {}",
-                value
-            ))),
-        }
     }
 }
 
@@ -145,26 +90,27 @@ pub struct LapData {
 }
 
 impl LapData {
-    pub fn new<T: BufRead>(reader: &mut T) -> Result<LapData, UnpackError> {
-        let last_lap_time = reader.read_f32::<LittleEndian>().unwrap();
-        let current_lap_time = reader.read_f32::<LittleEndian>().unwrap();
-        let best_lap_time = reader.read_f32::<LittleEndian>().unwrap();
-        let sector_1_time = reader.read_f32::<LittleEndian>().unwrap();
-        let sector_2_time = reader.read_f32::<LittleEndian>().unwrap();
-        let lap_distance = reader.read_f32::<LittleEndian>().unwrap();
-        let total_distance = reader.read_f32::<LittleEndian>().unwrap();
-        let safety_car_delta = reader.read_f32::<LittleEndian>().unwrap();
-        let car_position = reader.read_u8().unwrap();
-        let current_lap_num = reader.read_u8().unwrap();
-        let pit_status = PitStatus::try_from(reader.read_u8().unwrap())?;
-        let sector = reader.read_u8().unwrap();
-        let current_lap_invalid = reader.read_u8().unwrap() == 1;
-        let penalties = reader.read_u8().unwrap();
-        let grid_position = reader.read_u8().unwrap();
-        let driver_status = DriverStatus::try_from(reader.read_u8().unwrap())?;
-        let result_status = ResultStatus::try_from(reader.read_u8().unwrap())?;
-
-        Ok(LapData {
+    #[allow(clippy::too_many_arguments)]
+    pub(crate) fn new(
+        last_lap_time: f32,
+        current_lap_time: f32,
+        best_lap_time: f32,
+        sector_1_time: f32,
+        sector_2_time: f32,
+        lap_distance: f32,
+        total_distance: f32,
+        safety_car_delta: f32,
+        car_position: u8,
+        current_lap_num: u8,
+        pit_status: PitStatus,
+        sector: u8,
+        current_lap_invalid: bool,
+        penalties: u8,
+        grid_position: u8,
+        driver_status: DriverStatus,
+        result_status: ResultStatus,
+    ) -> LapData {
+        LapData {
             last_lap_time,
             current_lap_time,
             best_lap_time,
@@ -182,7 +128,7 @@ impl LapData {
             grid_position,
             driver_status,
             result_status,
-        })
+        }
     }
 }
 
@@ -207,17 +153,7 @@ pub struct PacketLapData {
 }
 
 impl PacketLapData {
-    pub fn new<T: BufRead>(
-        mut reader: &mut T,
-        header: PacketHeader,
-    ) -> Result<PacketLapData, UnpackError> {
-        let mut lap_data = Vec::with_capacity(20);
-
-        for _ in 0..20 {
-            let ld = LapData::new(&mut reader)?;
-            lap_data.push(ld);
-        }
-
-        Ok(PacketLapData { header, lap_data })
+    pub(crate) fn new(header: PacketHeader, lap_data: Vec<LapData>) -> PacketLapData {
+        PacketLapData { header, lap_data }
     }
 }

@@ -1,11 +1,7 @@
-use byteorder::{LittleEndian, ReadBytesExt};
 use getset::{CopyGetters, Getters};
-use std::convert::TryFrom;
-use std::io::BufRead;
 
 use super::header::PacketHeader;
 use crate::packet::generic::Flag;
-use crate::packet::UnpackError;
 
 /// This type is used for the 21-element `marshal_zones` array of the [`PacketSessionData`] type.
 ///
@@ -27,14 +23,11 @@ pub struct MarshalZone {
 }
 
 impl MarshalZone {
-    pub fn new<T: BufRead>(reader: &mut T) -> Result<MarshalZone, UnpackError> {
-        let zone_start = reader.read_f32::<LittleEndian>().unwrap();
-        let zone_flag = Flag::try_from(reader.read_i8().unwrap())?;
-
-        Ok(MarshalZone {
+    pub(crate) fn new(zone_start: f32, zone_flag: Flag) -> MarshalZone {
+        MarshalZone {
             zone_start,
             zone_flag,
-        })
+        }
     }
 }
 
@@ -51,22 +44,6 @@ pub enum Weather {
 impl Default for Weather {
     fn default() -> Self {
         Self::Clear
-    }
-}
-
-impl TryFrom<u8> for Weather {
-    type Error = UnpackError;
-
-    fn try_from(value: u8) -> Result<Self, Self::Error> {
-        match value {
-            0 => Ok(Weather::Clear),
-            1 => Ok(Weather::LightCloud),
-            2 => Ok(Weather::Overcast),
-            3 => Ok(Weather::LightRain),
-            4 => Ok(Weather::HeavyRain),
-            5 => Ok(Weather::Storm),
-            _ => Err(UnpackError(format!("Invalid Weather value: {}", value))),
-        }
     }
 }
 
@@ -103,29 +80,6 @@ impl SessionType {
             SessionType::Race => "Race",
             SessionType::Race2 => "Race 2",
             SessionType::TimeTrial => "Time Trial",
-        }
-    }
-}
-
-impl TryFrom<u8> for SessionType {
-    type Error = UnpackError;
-
-    fn try_from(value: u8) -> Result<Self, Self::Error> {
-        match value {
-            0 => Ok(SessionType::Unknown),
-            1 => Ok(SessionType::Practice1),
-            2 => Ok(SessionType::Practice2),
-            3 => Ok(SessionType::Practice3),
-            4 => Ok(SessionType::PracticeShort),
-            5 => Ok(SessionType::Qualifying1),
-            6 => Ok(SessionType::Qualifying2),
-            7 => Ok(SessionType::Qualifying3),
-            8 => Ok(SessionType::QualifyingShort),
-            9 => Ok(SessionType::OneShotQualifying),
-            10 => Ok(SessionType::Race),
-            11 => Ok(SessionType::Race2),
-            12 => Ok(SessionType::TimeTrial),
-            _ => Err(UnpackError(format!("Invalid SessionType value: {}", value))),
         }
     }
 }
@@ -193,62 +147,12 @@ impl Track {
     }
 }
 
-impl TryFrom<i8> for Track {
-    type Error = UnpackError;
-
-    fn try_from(value: i8) -> Result<Self, Self::Error> {
-        match value {
-            0 => Ok(Track::Melbourne),
-            1 => Ok(Track::PaulRicard),
-            2 => Ok(Track::Shanghai),
-            3 => Ok(Track::Sakhir),
-            4 => Ok(Track::Catalunya),
-            5 => Ok(Track::Monaco),
-            6 => Ok(Track::Montreal),
-            7 => Ok(Track::Silverstone),
-            8 => Ok(Track::Hockenheim),
-            9 => Ok(Track::Hungaroring),
-            10 => Ok(Track::Spa),
-            11 => Ok(Track::Monza),
-            12 => Ok(Track::Singapore),
-            13 => Ok(Track::Suzuka),
-            14 => Ok(Track::AbuDhabi),
-            15 => Ok(Track::Texas),
-            16 => Ok(Track::Brazil),
-            17 => Ok(Track::Austria),
-            18 => Ok(Track::Sochi),
-            19 => Ok(Track::Mexico),
-            20 => Ok(Track::Baku),
-            21 => Ok(Track::SakhirShort),
-            22 => Ok(Track::SilverstoneShort),
-            23 => Ok(Track::TexasShort),
-            24 => Ok(Track::SuzukaShort),
-            -1 => Ok(Track::Unknown),
-            _ => Err(UnpackError(format!("Invalid Track value: {}", value))),
-        }
-    }
-}
-
 #[derive(Debug, Clone, Copy, Eq, PartialEq)]
 pub enum Formula {
     F1Modern,
     F1Classic,
     F2,
     F1Generic,
-}
-
-impl TryFrom<u8> for Formula {
-    type Error = UnpackError;
-
-    fn try_from(value: u8) -> Result<Self, Self::Error> {
-        match value {
-            0 => Ok(Formula::F1Modern),
-            1 => Ok(Formula::F1Classic),
-            2 => Ok(Formula::F2),
-            3 => Ok(Formula::F1Generic),
-            _ => Err(UnpackError(format!("Invalid Formula value: {}", value))),
-        }
-    }
 }
 
 #[derive(Debug, Clone, Copy, Eq, PartialEq)]
@@ -271,19 +175,6 @@ impl SafetyCar {
 impl Default for SafetyCar {
     fn default() -> Self {
         Self::None
-    }
-}
-
-impl TryFrom<u8> for SafetyCar {
-    type Error = UnpackError;
-
-    fn try_from(value: u8) -> Result<Self, Self::Error> {
-        match value {
-            0 => Ok(SafetyCar::None),
-            1 => Ok(SafetyCar::Full),
-            2 => Ok(SafetyCar::Virtual),
-            _ => Err(UnpackError(format!("Invalid SafetyCar value: {}", value))),
-        }
     }
 }
 
@@ -368,37 +259,30 @@ pub struct PacketSessionData {
 }
 
 impl PacketSessionData {
-    pub fn new<T: BufRead>(
-        mut reader: &mut T,
+    #[allow(clippy::too_many_arguments)]
+    pub(crate) fn new(
         header: PacketHeader,
-    ) -> Result<PacketSessionData, UnpackError> {
-        let weather = Weather::try_from(reader.read_u8().unwrap())?;
-        let track_temperature = reader.read_i8().unwrap();
-        let air_temperature = reader.read_i8().unwrap();
-        let total_laps = reader.read_u8().unwrap();
-        let track_length = reader.read_u16::<LittleEndian>().unwrap();
-        let session_type = SessionType::try_from(reader.read_u8().unwrap())?;
-        let track = Track::try_from(reader.read_i8().unwrap())?;
-        let formula = Formula::try_from(reader.read_u8().unwrap())?;
-        let session_time_left = reader.read_u16::<LittleEndian>().unwrap();
-        let session_duration = reader.read_u16::<LittleEndian>().unwrap();
-        let pit_speed_limit = reader.read_u8().unwrap();
-        let game_paused = reader.read_u8().unwrap();
-        let is_spectating = reader.read_u8().unwrap() == 1;
-        let spectator_car_index = reader.read_u8().unwrap();
-        let sli_pro_native_support = reader.read_u8().unwrap() == 1;
-        let num_marshal_zones = reader.read_u8().unwrap();
-
-        let mut marshal_zones = Vec::with_capacity(21);
-        for _ in 0..21 {
-            let mz = MarshalZone::new(&mut reader)?;
-            marshal_zones.push(mz);
-        }
-
-        let safety_car_status = SafetyCar::try_from(reader.read_u8().unwrap())?;
-        let network_game = reader.read_u8().unwrap() == 1;
-
-        Ok(PacketSessionData {
+        weather: Weather,
+        track_temperature: i8,
+        air_temperature: i8,
+        total_laps: u8,
+        track_length: u16,
+        session_type: SessionType,
+        track: Track,
+        formula: Formula,
+        session_time_left: u16,
+        session_duration: u16,
+        pit_speed_limit: u8,
+        game_paused: u8,
+        is_spectating: bool,
+        spectator_car_index: u8,
+        sli_pro_native_support: bool,
+        num_marshal_zones: u8,
+        marshal_zones: Vec<MarshalZone>,
+        safety_car_status: SafetyCar,
+        network_game: bool,
+    ) -> PacketSessionData {
+        PacketSessionData {
             header,
             weather,
             track_temperature,
@@ -419,6 +303,6 @@ impl PacketSessionData {
             marshal_zones,
             safety_car_status,
             network_game,
-        })
+        }
     }
 }

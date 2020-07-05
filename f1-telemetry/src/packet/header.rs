@@ -1,6 +1,4 @@
-use byteorder::{LittleEndian, ReadBytesExt};
 use getset::CopyGetters;
-use std::io::BufRead;
 
 /// The header for each of the UDP telemetry packets.
 ///
@@ -35,17 +33,18 @@ pub struct PacketHeader {
 }
 
 impl PacketHeader {
-    pub fn new<T: BufRead>(reader: &mut T) -> PacketHeader {
-        let packet_format = reader.read_u16::<LittleEndian>().unwrap();
-        let game_major_version = reader.read_u8().unwrap();
-        let game_minor_version = reader.read_u8().unwrap();
-        let packet_version = reader.read_u8().unwrap();
-        let packet_id = reader.read_u8().unwrap();
-        let session_uid = reader.read_u64::<LittleEndian>().unwrap();
-        let session_time = reader.read_f32::<LittleEndian>().unwrap();
-        let frame_identifier = reader.read_u32::<LittleEndian>().unwrap();
-        let player_car_index = reader.read_u8().unwrap();
-
+    #[allow(clippy::too_many_arguments)]
+    pub(crate) fn new(
+        packet_format: u16,
+        game_major_version: u8,
+        game_minor_version: u8,
+        packet_version: u8,
+        packet_id: u8,
+        session_uid: u64,
+        session_time: f32,
+        frame_identifier: u32,
+        player_car_index: u8,
+    ) -> PacketHeader {
         PacketHeader {
             packet_format,
             game_major_version,

@@ -2,6 +2,7 @@ use packet::{parse_packet, Packet, UnpackError};
 use std::io::ErrorKind;
 use std::net::{ToSocketAddrs, UdpSocket};
 
+mod f1_2019;
 pub mod packet;
 
 pub struct Stream {

@@ -1,32 +1,12 @@
-use byteorder::{LittleEndian, ReadBytesExt};
 use getset::{CopyGetters, Getters};
-use std::convert::TryFrom;
-use std::io::BufRead;
 
 use super::header::PacketHeader;
-use crate::packet::UnpackError;
 
 #[derive(Debug, Clone, Copy, Eq, PartialEq)]
 pub enum TractionControl {
     Off,
     Low,
     High,
-}
-
-impl TryFrom<u8> for TractionControl {
-    type Error = UnpackError;
-
-    fn try_from(value: u8) -> Result<Self, Self::Error> {
-        match value {
-            0 => Ok(TractionControl::Off),
-            1 => Ok(TractionControl::Low),
-            2 => Ok(TractionControl::High),
-            _ => Err(UnpackError(format!(
-                "Invalid TractionControl value: {}",
-                value
-            ))),
-        }
-    }
 }
 
 /// This type is used for the 20-element `car_setups` array of the [`PacketCarSetupData`] type.
@@ -80,29 +60,30 @@ pub struct CarSetupData {
 }
 
 impl CarSetupData {
-    pub fn new<T: BufRead>(reader: &mut T) -> Result<CarSetupData, UnpackError> {
-        let front_wing = reader.read_u8().unwrap();
-        let rear_wing = reader.read_u8().unwrap();
-        let on_throttle = reader.read_u8().unwrap();
-        let off_throttle = reader.read_u8().unwrap();
-        let front_camber = reader.read_f32::<LittleEndian>().unwrap();
-        let rear_camber = reader.read_f32::<LittleEndian>().unwrap();
-        let front_toe = reader.read_f32::<LittleEndian>().unwrap();
-        let rear_toe = reader.read_f32::<LittleEndian>().unwrap();
-        let front_suspension = reader.read_u8().unwrap();
-        let rear_suspension = reader.read_u8().unwrap();
-        let front_anti_roll_bar = reader.read_u8().unwrap();
-        let rear_anti_roll_bar = reader.read_u8().unwrap();
-        let front_suspension_height = reader.read_u8().unwrap();
-        let rear_suspension_height = reader.read_u8().unwrap();
-        let brake_pressure = reader.read_u8().unwrap();
-        let brake_bias = reader.read_u8().unwrap();
-        let front_tyre_pressure = reader.read_f32::<LittleEndian>().unwrap();
-        let rear_tyre_pressure = reader.read_f32::<LittleEndian>().unwrap();
-        let ballast = reader.read_u8().unwrap();
-        let fuel_load = reader.read_f32::<LittleEndian>().unwrap();
-
-        Ok(CarSetupData {
+    #[allow(clippy::too_many_arguments)]
+    pub(crate) fn new(
+        front_wing: u8,
+        rear_wing: u8,
+        on_throttle: u8,
+        off_throttle: u8,
+        front_camber: f32,
+        rear_camber: f32,
+        front_toe: f32,
+        rear_toe: f32,
+        front_suspension: u8,
+        rear_suspension: u8,
+        front_anti_roll_bar: u8,
+        rear_anti_roll_bar: u8,
+        front_suspension_height: u8,
+        rear_suspension_height: u8,
+        brake_pressure: u8,
+        brake_bias: u8,
+        front_tyre_pressure: f32,
+        rear_tyre_pressure: f32,
+        ballast: u8,
+        fuel_load: f32,
+    ) -> CarSetupData {
+        CarSetupData {
             front_wing,
             rear_wing,
             on_throttle,
@@ -123,7 +104,7 @@ impl CarSetupData {
             rear_tyre_pressure,
             ballast,
             fuel_load,
-        })
+        }
     }
 }
 
@@ -150,16 +131,7 @@ pub struct PacketCarSetupData {
 }
 
 impl PacketCarSetupData {
-    pub fn new<T: BufRead>(
-        mut reader: &mut T,
-        header: PacketHeader,
-    ) -> Result<PacketCarSetupData, UnpackError> {
-        let mut car_setups = Vec::with_capacity(20);
-        for _ in 0..20 {
-            let csd = CarSetupData::new(&mut reader)?;
-            car_setups.push(csd);
-        }
-
-        Ok(PacketCarSetupData { header, car_setups })
+    pub(crate) fn new(header: PacketHeader, car_setups: Vec<CarSetupData>) -> PacketCarSetupData {
+        PacketCarSetupData { header, car_setups }
     }
 }

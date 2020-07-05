@@ -1,10 +1,7 @@
-use byteorder::{LittleEndian, ReadBytesExt};
 use getset::{CopyGetters, Getters};
-use std::io::BufRead;
 
 use super::header::PacketHeader;
 use crate::packet::generic::WheelData;
-use crate::packet::UnpackError;
 
 /// This type is used for the 20-element `motion_data` array of the [`PacketMotionData`] type.
 ///
@@ -55,27 +52,28 @@ pub struct MotionData {
 }
 
 impl MotionData {
-    pub fn new<T: BufRead>(reader: &mut T) -> Result<MotionData, UnpackError> {
-        let world_position_x = reader.read_f32::<LittleEndian>().unwrap();
-        let world_position_y = reader.read_f32::<LittleEndian>().unwrap();
-        let world_position_z = reader.read_f32::<LittleEndian>().unwrap();
-        let world_velocity_x = reader.read_f32::<LittleEndian>().unwrap();
-        let world_velocity_y = reader.read_f32::<LittleEndian>().unwrap();
-        let world_velocity_z = reader.read_f32::<LittleEndian>().unwrap();
-        let world_forward_dir_x = reader.read_i16::<LittleEndian>().unwrap();
-        let world_forward_dir_y = reader.read_i16::<LittleEndian>().unwrap();
-        let world_forward_dir_z = reader.read_i16::<LittleEndian>().unwrap();
-        let world_right_dir_x = reader.read_i16::<LittleEndian>().unwrap();
-        let world_right_dir_y = reader.read_i16::<LittleEndian>().unwrap();
-        let world_right_dir_z = reader.read_i16::<LittleEndian>().unwrap();
-        let g_force_lateral = reader.read_f32::<LittleEndian>().unwrap();
-        let g_force_longitudinal = reader.read_f32::<LittleEndian>().unwrap();
-        let g_force_vertical = reader.read_f32::<LittleEndian>().unwrap();
-        let yaw = reader.read_f32::<LittleEndian>().unwrap();
-        let pitch = reader.read_f32::<LittleEndian>().unwrap();
-        let roll = reader.read_f32::<LittleEndian>().unwrap();
-
-        Ok(MotionData {
+    #[allow(clippy::too_many_arguments)]
+    pub(crate) fn new(
+        world_position_x: f32,
+        world_position_y: f32,
+        world_position_z: f32,
+        world_velocity_x: f32,
+        world_velocity_y: f32,
+        world_velocity_z: f32,
+        world_forward_dir_x: i16,
+        world_forward_dir_y: i16,
+        world_forward_dir_z: i16,
+        world_right_dir_x: i16,
+        world_right_dir_y: i16,
+        world_right_dir_z: i16,
+        g_force_lateral: f32,
+        g_force_longitudinal: f32,
+        g_force_vertical: f32,
+        yaw: f32,
+        pitch: f32,
+        roll: f32,
+    ) -> MotionData {
+        MotionData {
             world_position_x,
             world_position_y,
             world_position_z,
@@ -94,7 +92,7 @@ impl MotionData {
             yaw,
             pitch,
             roll,
-        })
+        }
     }
 }
 
@@ -174,63 +172,27 @@ pub struct PacketMotionData {
 }
 
 impl PacketMotionData {
-    pub fn new<T: BufRead>(
-        mut reader: &mut T,
+    #[allow(clippy::too_many_arguments)]
+    pub(crate) fn new(
         header: PacketHeader,
-    ) -> Result<PacketMotionData, UnpackError> {
-        let mut motion_data = Vec::with_capacity(20);
-        for _ in 0..20 {
-            let md = MotionData::new(&mut reader)?;
-            motion_data.push(md);
-        }
-
-        let suspension_position = WheelData::new(
-            reader.read_f32::<LittleEndian>().unwrap(),
-            reader.read_f32::<LittleEndian>().unwrap(),
-            reader.read_f32::<LittleEndian>().unwrap(),
-            reader.read_f32::<LittleEndian>().unwrap(),
-        );
-
-        let suspension_velocity = WheelData::new(
-            reader.read_f32::<LittleEndian>().unwrap(),
-            reader.read_f32::<LittleEndian>().unwrap(),
-            reader.read_f32::<LittleEndian>().unwrap(),
-            reader.read_f32::<LittleEndian>().unwrap(),
-        );
-
-        let suspension_acceleration = WheelData::new(
-            reader.read_f32::<LittleEndian>().unwrap(),
-            reader.read_f32::<LittleEndian>().unwrap(),
-            reader.read_f32::<LittleEndian>().unwrap(),
-            reader.read_f32::<LittleEndian>().unwrap(),
-        );
-
-        let wheel_speed = WheelData::new(
-            reader.read_f32::<LittleEndian>().unwrap(),
-            reader.read_f32::<LittleEndian>().unwrap(),
-            reader.read_f32::<LittleEndian>().unwrap(),
-            reader.read_f32::<LittleEndian>().unwrap(),
-        );
-
-        let wheel_slip = WheelData::new(
-            reader.read_f32::<LittleEndian>().unwrap(),
-            reader.read_f32::<LittleEndian>().unwrap(),
-            reader.read_f32::<LittleEndian>().unwrap(),
-            reader.read_f32::<LittleEndian>().unwrap(),
-        );
-
-        let local_velocity_x = reader.read_f32::<LittleEndian>().unwrap();
-        let local_velocity_y = reader.read_f32::<LittleEndian>().unwrap();
-        let local_velocity_z = reader.read_f32::<LittleEndian>().unwrap();
-        let angular_velocity_x = reader.read_f32::<LittleEndian>().unwrap();
-        let angular_velocity_y = reader.read_f32::<LittleEndian>().unwrap();
-        let angular_velocity_z = reader.read_f32::<LittleEndian>().unwrap();
-        let angular_acceleration_x = reader.read_f32::<LittleEndian>().unwrap();
-        let angular_acceleration_y = reader.read_f32::<LittleEndian>().unwrap();
-        let angular_acceleration_z = reader.read_f32::<LittleEndian>().unwrap();
-        let front_wheels_angle = reader.read_f32::<LittleEndian>().unwrap();
-
-        Ok(PacketMotionData {
+        motion_data: Vec<MotionData>,
+        suspension_position: WheelData<f32>,
+        suspension_velocity: WheelData<f32>,
+        suspension_acceleration: WheelData<f32>,
+        wheel_speed: WheelData<f32>,
+        wheel_slip: WheelData<f32>,
+        local_velocity_x: f32,
+        local_velocity_y: f32,
+        local_velocity_z: f32,
+        angular_velocity_x: f32,
+        angular_velocity_y: f32,
+        angular_velocity_z: f32,
+        angular_acceleration_x: f32,
+        angular_acceleration_y: f32,
+        angular_acceleration_z: f32,
+        front_wheels_angle: f32,
+    ) -> PacketMotionData {
+        PacketMotionData {
             header,
             motion_data,
             suspension_position,
@@ -248,6 +210,6 @@ impl PacketMotionData {
             angular_acceleration_y,
             angular_acceleration_z,
             front_wheels_angle,
-        })
+        }
     }
 }

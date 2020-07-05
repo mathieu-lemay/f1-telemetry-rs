@@ -1,11 +1,7 @@
-use byteorder::{LittleEndian, ReadBytesExt};
 use getset::{CopyGetters, Getters};
-use std::convert::TryFrom;
-use std::io::BufRead;
 
 use super::header::PacketHeader;
 use crate::packet::generic::WheelData;
-use crate::packet::UnpackError;
 
 #[derive(Debug, Clone, Copy, Eq, PartialEq)]
 pub enum SurfaceType {
@@ -21,28 +17,6 @@ pub enum SurfaceType {
     Cobblestone,
     Metal,
     Ridged,
-}
-
-impl TryFrom<u8> for SurfaceType {
-    type Error = UnpackError;
-
-    fn try_from(value: u8) -> Result<Self, Self::Error> {
-        match value {
-            0 => Ok(SurfaceType::Tarmac),
-            1 => Ok(SurfaceType::RumbleStrip),
-            2 => Ok(SurfaceType::Concrete),
-            3 => Ok(SurfaceType::Rock),
-            4 => Ok(SurfaceType::Gravel),
-            5 => Ok(SurfaceType::Mud),
-            6 => Ok(SurfaceType::Sand),
-            7 => Ok(SurfaceType::Grass),
-            8 => Ok(SurfaceType::Water),
-            9 => Ok(SurfaceType::Cobblestone),
-            10 => Ok(SurfaceType::Metal),
-            11 => Ok(SurfaceType::Ridged),
-            _ => Err(UnpackError(format!("Invalid SurfaceType value: {}", value))),
-        }
-    }
 }
 
 /// This type is used for the 20-element `car_telemetry_data` array of the [`PacketCarTelemetryData`] type.
@@ -86,49 +60,25 @@ pub struct CarTelemetryData {
 }
 
 impl CarTelemetryData {
-    pub fn new<T: BufRead>(reader: &mut T) -> Result<CarTelemetryData, UnpackError> {
-        let speed = reader.read_u16::<LittleEndian>().unwrap();
-        let throttle = reader.read_f32::<LittleEndian>().unwrap();
-        let steer = reader.read_f32::<LittleEndian>().unwrap();
-        let brake = reader.read_f32::<LittleEndian>().unwrap();
-        let clutch = reader.read_u8().unwrap();
-        let gear = reader.read_i8().unwrap();
-        let engine_rpm = reader.read_u16::<LittleEndian>().unwrap();
-        let drs = reader.read_u8().unwrap() == 1;
-        let rev_lights_percent = reader.read_u8().unwrap();
-        let brakes_temperature = WheelData::new(
-            reader.read_u16::<LittleEndian>().unwrap(),
-            reader.read_u16::<LittleEndian>().unwrap(),
-            reader.read_u16::<LittleEndian>().unwrap(),
-            reader.read_u16::<LittleEndian>().unwrap(),
-        );
-        let tyres_surface_temperature = WheelData::new(
-            reader.read_u16::<LittleEndian>().unwrap(),
-            reader.read_u16::<LittleEndian>().unwrap(),
-            reader.read_u16::<LittleEndian>().unwrap(),
-            reader.read_u16::<LittleEndian>().unwrap(),
-        );
-        let tyres_inner_temperature = WheelData::new(
-            reader.read_u16::<LittleEndian>().unwrap(),
-            reader.read_u16::<LittleEndian>().unwrap(),
-            reader.read_u16::<LittleEndian>().unwrap(),
-            reader.read_u16::<LittleEndian>().unwrap(),
-        );
-        let engine_temperature = reader.read_u16::<LittleEndian>().unwrap();
-        let tyre_pressures = WheelData::new(
-            reader.read_f32::<LittleEndian>().unwrap(),
-            reader.read_f32::<LittleEndian>().unwrap(),
-            reader.read_f32::<LittleEndian>().unwrap(),
-            reader.read_f32::<LittleEndian>().unwrap(),
-        );
-        let surface_types = WheelData::new(
-            SurfaceType::try_from(reader.read_u8().unwrap())?,
-            SurfaceType::try_from(reader.read_u8().unwrap())?,
-            SurfaceType::try_from(reader.read_u8().unwrap())?,
-            SurfaceType::try_from(reader.read_u8().unwrap())?,
-        );
-
-        Ok(CarTelemetryData {
+    #[allow(clippy::too_many_arguments)]
+    pub(crate) fn new(
+        speed: u16,
+        throttle: f32,
+        steer: f32,
+        brake: f32,
+        clutch: u8,
+        gear: i8,
+        engine_rpm: u16,
+        drs: bool,
+        rev_lights_percent: u8,
+        brakes_temperature: WheelData<u16>,
+        tyres_surface_temperature: WheelData<u16>,
+        tyres_inner_temperature: WheelData<u16>,
+        engine_temperature: u16,
+        tyre_pressures: WheelData<f32>,
+        surface_types: WheelData<SurfaceType>,
+    ) -> CarTelemetryData {
+        CarTelemetryData {
             speed,
             throttle,
             steer,
@@ -144,7 +94,7 @@ impl CarTelemetryData {
             engine_temperature,
             tyre_pressures,
             surface_types,
-        })
+        }
     }
 }
 
@@ -198,23 +148,16 @@ pub struct PacketCarTelemetryData {
 }
 
 impl PacketCarTelemetryData {
-    pub fn new<T: BufRead>(
-        mut reader: &mut T,
+    pub(crate) fn new(
         header: PacketHeader,
-    ) -> Result<PacketCarTelemetryData, UnpackError> {
-        let mut car_telemetry_data = Vec::with_capacity(20);
-        for _ in 0..20 {
-            let ctd = CarTelemetryData::new(&mut reader)?;
-            car_telemetry_data.push(ctd);
-        }
-
-        let button_status = reader.read_u32::<LittleEndian>().unwrap();
-
-        Ok(PacketCarTelemetryData {
+        car_telemetry_data: Vec<CarTelemetryData>,
+        button_status: u32,
+    ) -> PacketCarTelemetryData {
+        PacketCarTelemetryData {
             header,
             car_telemetry_data,
             button_status,
-        })
+        }
     }
 
     pub fn get_pressed_buttons(&self) -> Vec<ButtonFlag> {
