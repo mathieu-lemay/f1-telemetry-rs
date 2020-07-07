@@ -10,7 +10,6 @@ use crate::f1_2019::lap::parse_lap_data;
 use crate::f1_2019::motion::parse_motion_data;
 use crate::f1_2019::participants::parse_participants_data;
 use crate::f1_2019::session::parse_session_data;
-use crate::packet::header::PacketHeader;
 use crate::packet::{Packet, PacketType, UnpackError};
 
 mod car_setup;
@@ -25,15 +24,8 @@ mod participants;
 mod session;
 
 pub(crate) fn parse_packet(size: usize, packet: &[u8]) -> Result<Packet, UnpackError> {
-    if size < PacketHeader::size() {
-        return Err(UnpackError(format!(
-            "Invalid packet: too small ({} bytes)",
-            size
-        )));
-    }
-
     let mut cursor = Cursor::new(packet);
-    let header = parse_header(&mut cursor);
+    let header = parse_header(&mut cursor, size)?;
 
     let packet_id: PacketType = PacketType::try_from(header.packet_id())?;
 

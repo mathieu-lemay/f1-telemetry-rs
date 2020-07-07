@@ -33,9 +33,34 @@ pub struct PacketHeader {
     secondary_player_car_index: u8,
 }
 
+#[allow(clippy::too_many_arguments)]
 impl PacketHeader {
-    #[allow(clippy::too_many_arguments)]
-    pub(crate) fn new(
+    pub(crate) fn from_2019(
+        packet_format: u16,
+        game_major_version: u8,
+        game_minor_version: u8,
+        packet_version: u8,
+        packet_id: u8,
+        session_uid: u64,
+        session_time: f32,
+        frame_identifier: u32,
+        player_car_index: u8,
+    ) -> PacketHeader {
+        PacketHeader {
+            packet_format,
+            game_major_version,
+            game_minor_version,
+            packet_version,
+            packet_id,
+            session_uid,
+            session_time,
+            frame_identifier,
+            player_car_index,
+            secondary_player_car_index: 255,
+        }
+    }
+
+    pub(crate) fn from_2020(
         packet_format: u16,
         game_major_version: u8,
         game_minor_version: u8,

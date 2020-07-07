@@ -159,7 +159,7 @@ pub(crate) fn parse_session_data<T: BufRead>(
         weather_forecast_samples.push(wfs);
     }
 
-    Ok(PacketSessionData::new(
+    Ok(PacketSessionData::from_2020(
         header,
         weather,
         track_temperature,

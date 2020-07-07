@@ -1,11 +1,17 @@
 use crate::packet::header::PacketHeader;
 use crate::packet::UnpackError;
+use crate::utils::assert_packet_at_least_size;
 use byteorder::{LittleEndian, ReadBytesExt};
 use std::io::BufRead;
 
 const PACKET_SIZE: usize = 24;
 
-pub(crate) fn parse_header<T: BufRead>(reader: &mut T) -> PacketHeader {
+pub(crate) fn parse_header<T: BufRead>(
+    reader: &mut T,
+    size: usize,
+) -> Result<PacketHeader, UnpackError> {
+    assert_packet_at_least_size(size, PACKET_SIZE)?;
+
     let packet_format = reader.read_u16::<LittleEndian>().unwrap();
     let game_major_version = reader.read_u8().unwrap();
     let game_minor_version = reader.read_u8().unwrap();
@@ -17,7 +23,7 @@ pub(crate) fn parse_header<T: BufRead>(reader: &mut T) -> PacketHeader {
     let player_car_index = reader.read_u8().unwrap();
     let secondary_player_car_index = reader.read_u8().unwrap();
 
-    PacketHeader::new(
+    Ok(PacketHeader::from_2020(
         packet_format,
         game_major_version,
         game_minor_version,
@@ -28,16 +34,5 @@ pub(crate) fn parse_header<T: BufRead>(reader: &mut T) -> PacketHeader {
         frame_identifier,
         player_car_index,
         secondary_player_car_index,
-    )
-}
-
-pub(crate) fn validate_header_size(size: usize) -> Result<(), UnpackError> {
-    if size < PACKET_SIZE {
-        Err(UnpackError(format!(
-            "Invalid packet: too small ({} bytes)",
-            size
-        )))
-    } else {
-        Ok(())
-    }
+    ))
 }

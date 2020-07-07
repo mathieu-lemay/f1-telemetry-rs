@@ -40,3 +40,17 @@ pub(crate) fn assert_packet_size(
         Err(UnpackError(String::from("Invalid packet size")))
     }
 }
+
+pub(crate) fn assert_packet_at_least_size(
+    actual_size: usize,
+    minimum_size: usize,
+) -> Result<(), UnpackError> {
+    if actual_size >= minimum_size {
+        Ok(())
+    } else {
+        Err(UnpackError(format!(
+            "Invalid packet: too small ({} bytes)",
+            actual_size
+        )))
+    }
+}

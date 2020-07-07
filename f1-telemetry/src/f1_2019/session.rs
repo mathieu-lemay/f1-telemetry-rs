@@ -134,7 +134,7 @@ pub(crate) fn parse_session_data<T: BufRead>(
     let safety_car_status = unpack_safety_car(reader.read_u8().unwrap())?;
     let network_game = reader.read_u8().unwrap() == 1;
 
-    Ok(PacketSessionData::new(
+    Ok(PacketSessionData::from_2019(
         header,
         weather,
         track_temperature,
@@ -155,7 +155,5 @@ pub(crate) fn parse_session_data<T: BufRead>(
         marshal_zones,
         safety_car_status,
         network_game,
-        0,
-        Vec::new(),
     ))
 }
