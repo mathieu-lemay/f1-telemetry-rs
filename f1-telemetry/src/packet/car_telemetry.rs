@@ -120,6 +120,16 @@ pub enum ButtonFlag {
     RightStickClick = 0x4000,
 }
 
+#[derive(Debug, Copy, Clone)]
+pub enum MFDPanel {
+    CarSetup,
+    Pits,
+    Damage,
+    Engine,
+    Temperatures,
+    Closed,
+}
+
 /// This packet details telemetry for all the cars in the race.
 ///
 /// It details various values that would be recorded on the car such as speed, throttle application, DRS etc.
@@ -145,10 +155,16 @@ pub struct PacketCarTelemetryData {
     car_telemetry_data: Vec<CarTelemetryData>,
     #[getset(get_copy = "pub")]
     button_status: u32,
+    #[getset(get_copy = "pub")]
+    mfd_panel: MFDPanel,
+    #[getset(get_copy = "pub")]
+    secondary_player_mfd_panel: MFDPanel,
+    #[getset(get_copy = "pub")]
+    suggested_gear: i8,
 }
 
 impl PacketCarTelemetryData {
-    pub(crate) fn new(
+    pub(crate) fn from_2019(
         header: PacketHeader,
         car_telemetry_data: Vec<CarTelemetryData>,
         button_status: u32,
@@ -157,6 +173,26 @@ impl PacketCarTelemetryData {
             header,
             car_telemetry_data,
             button_status,
+            mfd_panel: MFDPanel::Closed,
+            secondary_player_mfd_panel: MFDPanel::Closed,
+            suggested_gear: 0,
+        }
+    }
+    pub(crate) fn from_2020(
+        header: PacketHeader,
+        car_telemetry_data: Vec<CarTelemetryData>,
+        button_status: u32,
+        mfd_panel: MFDPanel,
+        secondary_player_mfd_panel: MFDPanel,
+        suggested_gear: i8,
+    ) -> PacketCarTelemetryData {
+        PacketCarTelemetryData {
+            header,
+            car_telemetry_data,
+            button_status,
+            mfd_panel,
+            secondary_player_mfd_panel,
+            suggested_gear,
         }
     }
 

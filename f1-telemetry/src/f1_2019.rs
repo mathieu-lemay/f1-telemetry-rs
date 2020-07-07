@@ -61,7 +61,7 @@ pub(crate) fn parse_packet(size: usize, packet: &[u8]) -> Result<Packet, UnpackE
             Ok(Packet::CarSetups(packet))
         }
         PacketType::CarTelemetry => {
-            let packet = parse_car_telemetry_data(&mut cursor, header)?;
+            let packet = parse_car_telemetry_data(&mut cursor, header, size)?;
 
             Ok(Packet::CarTelemetry(packet))
         }
