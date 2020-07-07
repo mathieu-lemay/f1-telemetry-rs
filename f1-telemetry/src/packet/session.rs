@@ -3,34 +3,6 @@ use getset::{CopyGetters, Getters};
 use super::header::PacketHeader;
 use crate::packet::generic::Flag;
 
-/// This type is used for the 21-element `marshal_zones` array of the [`PacketSessionData`] type.
-///
-/// Size: 5 bytes
-///
-/// Version: 1
-///
-/// ## Specification
-/// ```text
-/// zone_start: Fraction (0..1) of way through the lap the marshal zone starts
-/// zone_flag:  -1 = invalid/unknown, 0 = none, 1 = green, 2 = blue, 3 = yellow, 4 = red
-/// ```
-/// [`PacketSessionData`]: ./struct.PacketSessionData.html
-#[derive(Debug, Clone, Copy, CopyGetters)]
-#[getset(get_copy = "pub")]
-pub struct MarshalZone {
-    zone_start: f32,
-    zone_flag: Flag,
-}
-
-impl MarshalZone {
-    pub(crate) fn new(zone_start: f32, zone_flag: Flag) -> MarshalZone {
-        MarshalZone {
-            zone_start,
-            zone_flag,
-        }
-    }
-}
-
 #[derive(Debug, Clone, Copy, Eq, PartialEq)]
 pub enum Weather {
     Clear,
@@ -111,6 +83,8 @@ pub enum Track {
     SilverstoneShort,
     TexasShort,
     SuzukaShort,
+    Hanoi,
+    Zandvoort,
     Unknown,
 }
 
@@ -142,6 +116,8 @@ impl Track {
             Track::SilverstoneShort => "Silverstone Circuit (Short)",
             Track::TexasShort => "Circuit of the Americas (Short)",
             Track::SuzukaShort => "Suzuka International Racing Course (Short)",
+            Track::Hanoi => "Hanoi Street Circuit",
+            Track::Zandvoort => "Circuit Zandvoort",
             Track::Unknown => "[UNKNOWN]",
         }
     }
@@ -175,6 +151,77 @@ impl SafetyCar {
 impl Default for SafetyCar {
     fn default() -> Self {
         Self::None
+    }
+}
+
+/// This type is used for the `weather_forecast_sample` array of the [`PacketSessionData`] type.
+///
+/// Size: 5 bytes
+///
+/// Version: 1
+///
+/// ## Specification
+/// ```text
+/// session_type:      Type of session the forecast applies to. See [`SessionType`].
+/// time_offset:       Time in minutes the forecast is for.
+/// weather:           Expected weather. See [`Weather`].
+/// track_temperature: Track temp. in degrees celsius.
+/// air_temperature:   Air temp. in degrees celsius.
+/// ```
+/// [`PacketSessionData`]: ./struct.PacketSessionData.html
+#[derive(Debug, CopyGetters)]
+#[getset(get_copy = "pub")]
+pub struct WeatherForecastSample {
+    session_type: SessionType,
+    time_offset: u8,
+    weather: Weather,
+    track_temperature: i8,
+    air_temperature: i8,
+}
+
+impl WeatherForecastSample {
+    pub(crate) fn new(
+        session_type: SessionType,
+        time_offset: u8,
+        weather: Weather,
+        track_temperature: i8,
+        air_temperature: i8,
+    ) -> WeatherForecastSample {
+        WeatherForecastSample {
+            session_type,
+            time_offset,
+            weather,
+            track_temperature,
+            air_temperature,
+        }
+    }
+}
+
+/// This type is used for the 21-element `marshal_zones` array of the [`PacketSessionData`] type.
+///
+/// Size: 5 bytes
+///
+/// Version: 1
+///
+/// ## Specification
+/// ```text
+/// zone_start: Fraction (0..1) of way through the lap the marshal zone starts
+/// zone_flag:  -1 = invalid/unknown, 0 = none, 1 = green, 2 = blue, 3 = yellow, 4 = red
+/// ```
+/// [`PacketSessionData`]: ./struct.PacketSessionData.html
+#[derive(Debug, Clone, Copy, CopyGetters)]
+#[getset(get_copy = "pub")]
+pub struct MarshalZone {
+    zone_start: f32,
+    zone_flag: Flag,
+}
+
+impl MarshalZone {
+    pub(crate) fn new(zone_start: f32, zone_flag: Flag) -> MarshalZone {
+        MarshalZone {
+            zone_start,
+            zone_flag,
+        }
     }
 }
 
@@ -256,6 +303,10 @@ pub struct PacketSessionData {
     safety_car_status: SafetyCar,
     #[getset(get_copy = "pub")]
     network_game: bool,
+    #[getset(get_copy = "pub")]
+    num_weather_forecast_samples: u8,
+    #[getset(get = "pub")]
+    weather_forecast_samples: Vec<WeatherForecastSample>,
 }
 
 impl PacketSessionData {
@@ -281,6 +332,8 @@ impl PacketSessionData {
         marshal_zones: Vec<MarshalZone>,
         safety_car_status: SafetyCar,
         network_game: bool,
+        num_weather_forecast_samples: u8,
+        weather_forecast_samples: Vec<WeatherForecastSample>,
     ) -> PacketSessionData {
         PacketSessionData {
             header,
@@ -303,6 +356,8 @@ impl PacketSessionData {
             marshal_zones,
             safety_car_status,
             network_game,
+            num_weather_forecast_samples,
+            weather_forecast_samples,
         }
     }
 }

@@ -3,6 +3,7 @@ use std::io::ErrorKind;
 use std::net::{ToSocketAddrs, UdpSocket};
 
 mod f1_2019;
+mod f1_2020;
 pub mod packet;
 mod utils;
 

@@ -1,12 +1,9 @@
 use crate::packet::header::PacketHeader;
+use crate::packet::UnpackError;
 use byteorder::{LittleEndian, ReadBytesExt};
 use std::io::BufRead;
 
-impl PacketHeader {
-    pub(crate) fn size() -> usize {
-        24
-    }
-}
+const PACKET_SIZE: usize = 24;
 
 pub(crate) fn parse_header<T: BufRead>(reader: &mut T) -> PacketHeader {
     let packet_format = reader.read_u16::<LittleEndian>().unwrap();
@@ -18,6 +15,7 @@ pub(crate) fn parse_header<T: BufRead>(reader: &mut T) -> PacketHeader {
     let session_time = reader.read_f32::<LittleEndian>().unwrap();
     let frame_identifier = reader.read_u32::<LittleEndian>().unwrap();
     let player_car_index = reader.read_u8().unwrap();
+    let secondary_player_car_index = reader.read_u8().unwrap();
 
     PacketHeader::new(
         packet_format,
@@ -29,6 +27,17 @@ pub(crate) fn parse_header<T: BufRead>(reader: &mut T) -> PacketHeader {
         session_time,
         frame_identifier,
         player_car_index,
-        255,
+        secondary_player_car_index,
     )
+}
+
+pub(crate) fn validate_header_size(size: usize) -> Result<(), UnpackError> {
+    if size < PACKET_SIZE {
+        Err(UnpackError(format!(
+            "Invalid packet: too small ({} bytes)",
+            size
+        )))
+    } else {
+        Ok(())
+    }
 }

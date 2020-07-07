@@ -29,3 +29,14 @@ pub(crate) fn unpack_string<T: BufRead>(reader: &mut T, n: usize) -> Result<Stri
         Err(e) => Err(UnpackError(format!("Error decoding name: {}", e))),
     }
 }
+
+pub(crate) fn assert_packet_size(
+    actual_size: usize,
+    expected_size: usize,
+) -> Result<(), UnpackError> {
+    if actual_size == expected_size {
+        Ok(())
+    } else {
+        Err(UnpackError(String::from("Invalid packet size")))
+    }
+}

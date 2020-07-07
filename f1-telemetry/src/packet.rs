@@ -1,4 +1,4 @@
-use super::f1_2019;
+use super::{f1_2019, f1_2020};
 use car_setup::PacketCarSetupData;
 use car_status::PacketCarStatusData;
 use car_telemetry::PacketCarTelemetryData;
@@ -60,6 +60,8 @@ pub(crate) enum PacketType {
     CarSetups,
     CarTelemetry,
     CarStatus,
+    FinalClassification,
+    LobbyInfo,
 }
 
 pub(crate) fn parse_packet(size: usize, packet: &[u8]) -> Result<Packet, UnpackError> {
@@ -67,6 +69,7 @@ pub(crate) fn parse_packet(size: usize, packet: &[u8]) -> Result<Packet, UnpackE
 
     match packet_format {
         2019 => Ok(f1_2019::parse_packet(size, packet)?),
+        2020 => Ok(f1_2020::parse_packet(size, packet)?),
         _ => Err(UnpackError(format!(
             "Invalid packet: unknown format ({})",
             packet_format

@@ -44,7 +44,7 @@ pub(crate) fn parse_packet(size: usize, packet: &[u8]) -> Result<Packet, UnpackE
             Ok(Packet::Motion(packet))
         }
         PacketType::Session => {
-            let packet = parse_session_data(&mut cursor, header)?;
+            let packet = parse_session_data(&mut cursor, header, size)?;
 
             Ok(Packet::Session(packet))
         }
@@ -78,6 +78,7 @@ pub(crate) fn parse_packet(size: usize, packet: &[u8]) -> Result<Packet, UnpackE
 
             Ok(Packet::CarStatus(packet))
         }
+        p => Err(UnpackError(format!("Unsupported packet type: {:?}", p))),
     }
 }
 

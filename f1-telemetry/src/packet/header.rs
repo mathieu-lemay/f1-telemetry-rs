@@ -30,6 +30,7 @@ pub struct PacketHeader {
     session_time: f32,
     frame_identifier: u32,
     player_car_index: u8,
+    secondary_player_car_index: u8,
 }
 
 impl PacketHeader {
@@ -44,6 +45,7 @@ impl PacketHeader {
         session_time: f32,
         frame_identifier: u32,
         player_car_index: u8,
+        secondary_player_car_index: u8,
     ) -> PacketHeader {
         PacketHeader {
             packet_format,
@@ -55,6 +57,7 @@ impl PacketHeader {
             session_time,
             frame_identifier,
             player_car_index,
+            secondary_player_car_index,
         }
     }
 }

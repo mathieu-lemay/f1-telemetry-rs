@@ -4,13 +4,11 @@ use std::io::BufRead;
 
 use crate::packet::generic::Flag;
 use crate::packet::header::PacketHeader;
-use crate::packet::session::{
-    Formula, MarshalZone, PacketSessionData, SafetyCar, SessionType, Track, Weather,
-};
+use crate::packet::session::*;
 use crate::packet::UnpackError;
 use crate::utils::assert_packet_size;
 
-const PACKET_SIZE: usize = 149;
+const PACKET_SIZE: usize = 251;
 
 fn unpack_weather(value: u8) -> Result<Weather, UnpackError> {
     match value {
@@ -70,6 +68,8 @@ fn unpack_track(value: i8) -> Result<Track, UnpackError> {
         22 => Ok(Track::SilverstoneShort),
         23 => Ok(Track::TexasShort),
         24 => Ok(Track::SuzukaShort),
+        25 => Ok(Track::Hanoi),
+        26 => Ok(Track::Zandvoort),
         -1 => Ok(Track::Unknown),
         _ => Err(UnpackError(format!("Invalid Track value: {}", value))),
     }
@@ -101,6 +101,24 @@ fn parse_marshal_zone<T: BufRead>(reader: &mut T) -> Result<MarshalZone, UnpackE
     Ok(MarshalZone::new(zone_start, zone_flag))
 }
 
+fn parse_weather_forecast_sample<T: BufRead>(
+    reader: &mut T,
+) -> Result<WeatherForecastSample, UnpackError> {
+    let session_type = unpack_session_type(reader.read_u8().unwrap())?;
+    let time_offset = reader.read_u8().unwrap();
+    let weather = unpack_weather(reader.read_u8().unwrap())?;
+    let track_temperature = reader.read_i8().unwrap();
+    let air_temperature = reader.read_i8().unwrap();
+
+    Ok(WeatherForecastSample::new(
+        session_type,
+        time_offset,
+        weather,
+        track_temperature,
+        air_temperature,
+    ))
+}
+
 pub(crate) fn parse_session_data<T: BufRead>(
     mut reader: &mut T,
     header: PacketHeader,
@@ -123,8 +141,8 @@ pub(crate) fn parse_session_data<T: BufRead>(
     let is_spectating = reader.read_u8().unwrap() == 1;
     let spectator_car_index = reader.read_u8().unwrap();
     let sli_pro_native_support = reader.read_u8().unwrap() == 1;
-    let num_marshal_zones = reader.read_u8().unwrap();
 
+    let num_marshal_zones = reader.read_u8().unwrap();
     let mut marshal_zones = Vec::with_capacity(21);
     for _ in 0..21 {
         let mz = parse_marshal_zone(&mut reader)?;
@@ -133,6 +151,13 @@ pub(crate) fn parse_session_data<T: BufRead>(
 
     let safety_car_status = unpack_safety_car(reader.read_u8().unwrap())?;
     let network_game = reader.read_u8().unwrap() == 1;
+
+    let num_weather_forecast_samples = reader.read_u8().unwrap();
+    let mut weather_forecast_samples = Vec::with_capacity(20);
+    for _ in 0..20 {
+        let wfs = parse_weather_forecast_sample(&mut reader)?;
+        weather_forecast_samples.push(wfs);
+    }
 
     Ok(PacketSessionData::new(
         header,
@@ -155,7 +180,7 @@ pub(crate) fn parse_session_data<T: BufRead>(
         marshal_zones,
         safety_car_status,
         network_game,
-        0,
-        Vec::new(),
+        num_weather_forecast_samples,
+        weather_forecast_samples,
     ))
 }
