@@ -46,7 +46,7 @@ pub(crate) fn parse_packet(size: usize, packet: &[u8]) -> Result<Packet, UnpackE
             Ok(Packet::Lap(packet))
         }
         PacketType::Event => {
-            let packet = parse_event_data(&mut cursor, header)?;
+            let packet = parse_event_data(&mut cursor, header, size)?;
 
             Ok(Packet::Event(packet))
         }

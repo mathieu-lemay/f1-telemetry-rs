@@ -10,7 +10,7 @@ use crate::models::{
 use crate::render::View;
 
 mod car;
-mod fmt;
+pub mod fmt;
 mod weather;
 
 const WIDTH: i32 = 132;
@@ -235,8 +235,8 @@ impl Ui {
             msg += &format!(": {}", driver);
         }
 
-        if let Some(lap_time) = event_info.lap_time {
-            msg += &format!(" ({})", fmt::format_time_ms(lap_time));
+        if let Some(detail) = &event_info.detail {
+            msg += &format!(" ({})", detail);
         }
 
         mvaddstr(getmaxy(self.mwnd) - 1, LEFT_BORDER_X_OFFSET, &msg);

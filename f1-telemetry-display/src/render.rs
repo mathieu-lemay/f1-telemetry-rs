@@ -3,7 +3,7 @@ use std::f32::INFINITY;
 
 use f1_telemetry::packet::car_status::{PacketCarStatusData, TyreCompoundVisual};
 use f1_telemetry::packet::car_telemetry::PacketCarTelemetryData;
-use f1_telemetry::packet::event::PacketEventData;
+use f1_telemetry::packet::event::{Event, PacketEventData};
 use f1_telemetry::packet::lap::{PacketLapData, PitStatus, ResultStatus};
 use f1_telemetry::packet::participants::PacketParticipantsData;
 use f1_telemetry::packet::session::PacketSessionData;
@@ -11,7 +11,7 @@ use f1_telemetry::packet::Packet;
 
 use crate::models::{CarStatus, EventInfo, LapInfo, RelativePositions, SessionInfo};
 use crate::models::{TelemetryInfo, WeatherInfo};
-use crate::ui::Ui;
+use crate::ui::{fmt, Ui};
 
 #[derive(Eq, PartialEq)]
 pub enum View {
@@ -183,12 +183,14 @@ fn parse_event_data<'a>(
     event_data: &'a PacketEventData,
     participants: &'a Option<PacketParticipantsData>,
 ) -> Option<EventInfo<'a>> {
-    if event_data.vehicle_idx().is_some() && participants.is_none() {
+    let evt = event_data.event();
+
+    if evt.vehicle_idx().is_some() && participants.is_none() {
         return None;
     }
 
     let description = event_data.event().description();
-    let driver_name = match event_data.vehicle_idx() {
+    let driver_name = match evt.vehicle_idx() {
         Some(idx) => {
             let name = participants.as_ref().unwrap().participants()[idx as usize].name();
             Some(name.as_str())
@@ -196,11 +198,18 @@ fn parse_event_data<'a>(
         None => None,
     };
 
+    let detail = match evt {
+        Event::FastestLap(f) => Some(fmt::format_time_ms(f.lap_time())),
+        Event::Penalty(p) => Some(format!("{:?}", p.penalty_type())),
+        Event::SpeedTrap(s) => Some(format!("{:.1} km/h", s.speed())),
+        _ => None,
+    };
+
     Some(EventInfo {
         timestamp: event_data.header().session_time(),
         description,
         driver_name,
-        lap_time: event_data.lap_time(),
+        detail,
     })
 }
 

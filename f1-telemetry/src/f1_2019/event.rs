@@ -1,52 +1,55 @@
 use byteorder::{LittleEndian, ReadBytesExt};
-use std::convert::TryFrom;
 use std::io::BufRead;
 
-use crate::packet::event::{Event, PacketEventData};
+use crate::packet::event::*;
 use crate::packet::header::PacketHeader;
 use crate::packet::UnpackError;
-use crate::utils::unpack_string;
+use crate::utils::{assert_packet_size, unpack_string};
 
-impl TryFrom<&str> for Event {
-    type Error = UnpackError;
-
-    fn try_from(value: &str) -> Result<Self, Self::Error> {
-        match value {
-            "SSTA" => Ok(Event::SessionStarted),
-            "SEND" => Ok(Event::SessionEnded),
-            "FTLP" => Ok(Event::FastestLap),
-            "RTMT" => Ok(Event::Retirement),
-            "DRSE" => Ok(Event::DRSEnabled),
-            "DRSD" => Ok(Event::DRSDisabled),
-            "TMPT" => Ok(Event::TeamMateInPits),
-            "CHQF" => Ok(Event::ChequeredFlag),
-            "RCWN" => Ok(Event::RaceWinner),
-            _ => Err(UnpackError(format!("Invalid Event value: {}", value))),
-        }
-    }
-}
+const PACKET_SIZE: usize = 32;
 
 pub(crate) fn parse_event_data<T: BufRead>(
     reader: &mut T,
     header: PacketHeader,
+    size: usize,
 ) -> Result<PacketEventData, UnpackError> {
+    assert_packet_size(size, PACKET_SIZE)?;
+
     let event_code = unpack_string(reader, 4)?;
 
-    let event = Event::try_from(event_code.as_str())?;
+    let event = match event_code.as_str() {
+        "SSTA" => Ok(Event::SessionStarted),
+        "SEND" => Ok(Event::SessionEnded),
+        "FTLP" => {
+            let vehicle_idx = reader.read_u8().unwrap();
+            let lap_time = reader.read_f32::<LittleEndian>().unwrap();
 
-    let vehicle_idx = reader.read_u8().unwrap();
-    let vehicle_idx = match event {
-        Event::FastestLap | Event::Retirement | Event::TeamMateInPits | Event::RaceWinner => {
-            Some(vehicle_idx)
+            let evt_detail = FastestLap::new(vehicle_idx, lap_time);
+            Ok(Event::FastestLap(evt_detail))
         }
-        _ => None,
-    };
+        "RTMT" => {
+            let vehicle_idx = reader.read_u8().unwrap();
 
-    let lap_time = reader.read_f32::<LittleEndian>().unwrap();
-    let lap_time = match event {
-        Event::FastestLap => Some(lap_time),
-        _ => None,
-    };
+            let evt_detail = Retirement::new(vehicle_idx);
+            Ok(Event::Retirement(evt_detail))
+        }
+        "DRSE" => Ok(Event::DRSEnabled),
+        "DRSD" => Ok(Event::DRSDisabled),
+        "TMPT" => {
+            let vehicle_idx = reader.read_u8().unwrap();
 
-    Ok(PacketEventData::new(header, event, vehicle_idx, lap_time))
+            let evt_detail = TeamMateInPits::new(vehicle_idx);
+            Ok(Event::TeamMateInPits(evt_detail))
+        }
+        "CHQF" => Ok(Event::ChequeredFlag),
+        "RCWN" => {
+            let vehicle_idx = reader.read_u8().unwrap();
+
+            let evt_detail = RaceWinner::new(vehicle_idx);
+            Ok(Event::RaceWinner(evt_detail))
+        }
+        _ => Err(UnpackError(format!("Invalid Event Code: {}", event_code))),
+    }?;
+
+    Ok(PacketEventData::new(header, event))
 }

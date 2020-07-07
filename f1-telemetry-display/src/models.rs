@@ -10,7 +10,7 @@ pub struct EventInfo<'a> {
     pub timestamp: f32,
     pub description: &'a str,
     pub driver_name: Option<&'a str>,
-    pub lap_time: Option<f32>,
+    pub detail: Option<String>,
 }
 
 pub struct LapInfo<'a> {
