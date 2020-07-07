@@ -8,7 +8,7 @@ use crate::packet::participants::{
 use crate::packet::UnpackError;
 use crate::utils::{assert_packet_size, unpack_string};
 
-const PACKET_SIZE: usize = 1104;
+const PACKET_SIZE: usize = 1213;
 
 fn unpack_driver(value: u8) -> Result<Driver, UnpackError> {
     match value {
@@ -24,6 +24,7 @@ fn unpack_driver(value: u8) -> Result<Driver, UnpackError> {
         13 => Ok(Driver::SebastianVettel),
         14 => Ok(Driver::SergioPerez),
         15 => Ok(Driver::ValtteriBottas),
+        17 => Ok(Driver::EstebanOcon),
         19 => Ok(Driver::LanceStroll),
         20 => Ok(Driver::ArronBarnes),
         21 => Ok(Driver::MartinGiles),
@@ -75,8 +76,6 @@ fn unpack_driver(value: u8) -> Result<Driver, UnpackError> {
         69 => Ok(Driver::RubenMeijer),
         70 => Ok(Driver::RashidNair),
         71 => Ok(Driver::JackTremblay),
-        72 => Ok(Driver::DevonButler),
-        73 => Ok(Driver::LukasWebber),
         74 => Ok(Driver::AntonioGiovinazzi),
         75 => Ok(Driver::RobertKubica),
         78 => Ok(Driver::NobuharuMatsushita),
@@ -104,7 +103,7 @@ fn unpack_team(value: u8) -> Result<Team, UnpackError> {
         3 => Ok(Team::Williams),
         4 => Ok(Team::RacingPoint),
         5 => Ok(Team::Renault),
-        6 => Ok(Team::ToroRosso),
+        6 => Ok(Team::AlphaTauri),
         7 => Ok(Team::Haas),
         8 => Ok(Team::McLaren),
         9 => Ok(Team::AlfaRomeo),
@@ -118,6 +117,7 @@ fn unpack_team(value: u8) -> Result<Team, UnpackError> {
         17 => Ok(Team::Ferrari2004),
         18 => Ok(Team::Renault2006),
         19 => Ok(Team::Ferrari2007),
+        20 => Ok(Team::McLaren2008),
         21 => Ok(Team::RedBull2010),
         22 => Ok(Team::Ferrari1976),
         23 => Ok(Team::ARTGrandPrix),
@@ -138,6 +138,7 @@ fn unpack_team(value: u8) -> Result<Team, UnpackError> {
         38 => Ok(Team::Williams2003),
         39 => Ok(Team::Brawn2009),
         40 => Ok(Team::Lotus1978),
+        41 => Ok(Team::F1GenericCar),
         42 => Ok(Team::ArtGP2019),
         43 => Ok(Team::Campos2019),
         44 => Ok(Team::Carlin2019),
@@ -148,9 +149,11 @@ fn unpack_team(value: u8) -> Result<Team, UnpackError> {
         49 => Ok(Team::Prema2019),
         50 => Ok(Team::Trident2019),
         51 => Ok(Team::Arden2019),
-        63 => Ok(Team::Ferrari1990),
-        64 => Ok(Team::McLaren2010),
-        65 => Ok(Team::Ferrari2010),
+        53 => Ok(Team::Benetton1994),
+        54 => Ok(Team::Benetton1995),
+        55 => Ok(Team::Ferrari2000),
+        56 => Ok(Team::Jordan1991),
+        255 => Ok(Team::MyTeam),
         _ => Err(UnpackError(format!("Invalid Team value: {}", value))),
     }
 }
@@ -243,6 +246,8 @@ fn unpack_nationality(value: u8) -> Result<Nationality, UnpackError> {
         84 => Ok(Nationality::Ukrainian),
         85 => Ok(Nationality::Venezuelan),
         86 => Ok(Nationality::Welsh),
+        87 => Ok(Nationality::Barbadian),
+        88 => Ok(Nationality::Vietnamese),
         0 => Ok(Nationality::Invalid),
         _ => Err(UnpackError(format!("Invalid Nationality value: {}", value))),
     }
@@ -263,7 +268,7 @@ fn parse_participant<T: BufRead>(reader: &mut T) -> Result<ParticipantData, Unpa
     let race_number = reader.read_u8().unwrap();
     let nationality = unpack_nationality(reader.read_u8().unwrap())?;
     let name = unpack_string(reader, 48)?;
-    let telemetry = unpack_telemetry(reader.read_u8().unwrap())?;
+    let telemetry_access = unpack_telemetry(reader.read_u8().unwrap())?;
 
     Ok(ParticipantData::new(
         ai_controlled,
@@ -272,7 +277,7 @@ fn parse_participant<T: BufRead>(reader: &mut T) -> Result<ParticipantData, Unpa
         race_number,
         nationality,
         name,
-        telemetry,
+        telemetry_access,
     ))
 }
 
@@ -285,8 +290,8 @@ pub(crate) fn parse_participants_data<T: BufRead>(
 
     let num_active_cars = reader.read_u8().unwrap();
 
-    let mut participants = Vec::with_capacity(20);
-    for _ in 0..20 {
+    let mut participants = Vec::with_capacity(22);
+    for _ in 0..22 {
         let p = parse_participant(&mut reader)?;
         participants.push(p);
     }

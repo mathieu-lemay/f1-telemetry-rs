@@ -16,6 +16,7 @@ pub enum Driver {
     SebastianVettel,
     SergioPerez,
     ValtteriBottas,
+    EstebanOcon,
     LanceStroll,
     ArronBarnes,
     MartinGiles,
@@ -148,69 +149,18 @@ pub enum Team {
     Ferrari1990,
     McLaren2010,
     Ferrari2010,
+    AlphaTauri,
+    McLaren2008,
+    F1GenericCar,
+    Benetton1994,
+    Benetton1995,
+    Ferrari2000,
+    Jordan1991,
+    MyTeam,
     Unknown,
 }
 
 impl Team {
-    pub fn id(self) -> u8 {
-        match self {
-            Team::Mercedes => 0,
-            Team::Ferrari => 1,
-            Team::RedBullRacing => 2,
-            Team::Williams => 3,
-            Team::RacingPoint => 4,
-            Team::Renault => 5,
-            Team::ToroRosso => 6,
-            Team::Haas => 7,
-            Team::McLaren => 8,
-            Team::AlfaRomeo => 9,
-            Team::McLaren1988 => 10,
-            Team::McLaren1991 => 11,
-            Team::Williams1992 => 12,
-            Team::Ferrari1995 => 13,
-            Team::Williams1996 => 14,
-            Team::McLaren1998 => 15,
-            Team::Ferrari2002 => 16,
-            Team::Ferrari2004 => 17,
-            Team::Renault2006 => 18,
-            Team::Ferrari2007 => 19,
-            Team::RedBull2010 => 21,
-            Team::Ferrari1976 => 22,
-            Team::ARTGrandPrix => 23,
-            Team::CamposVexatecRacing => 24,
-            Team::Carlin => 25,
-            Team::CharouzRacingSystem => 26,
-            Team::DAMS => 27,
-            Team::RussianTime => 28,
-            Team::MPMotorsport => 29,
-            Team::Pertamina => 30,
-            Team::McLaren1990 => 31,
-            Team::Trident => 32,
-            Team::BWTArden => 33,
-            Team::McLaren1976 => 34,
-            Team::Lotus1972 => 35,
-            Team::Ferrari1979 => 36,
-            Team::McLaren1982 => 37,
-            Team::Williams2003 => 38,
-            Team::Brawn2009 => 39,
-            Team::Lotus1978 => 40,
-            Team::ArtGP2019 => 42,
-            Team::Campos2019 => 43,
-            Team::Carlin2019 => 44,
-            Team::SauberJuniorCharouz2019 => 45,
-            Team::Dams2019 => 46,
-            Team::UniVirtuosi2019 => 47,
-            Team::MPMotorsport2019 => 48,
-            Team::Prema2019 => 49,
-            Team::Trident2019 => 50,
-            Team::Arden2019 => 51,
-            Team::Ferrari1990 => 63,
-            Team::McLaren2010 => 64,
-            Team::Ferrari2010 => 65,
-            Team::Unknown => 255,
-        }
-    }
-
     pub fn name(self) -> &'static str {
         match self {
             Team::Mercedes => "Mercedes",
@@ -223,6 +173,7 @@ impl Team {
             Team::Haas => "Haas",
             Team::McLaren => "McLaren",
             Team::AlfaRomeo => "Alfa Romeo",
+            Team::AlphaTauri => "Alpha Tauri",
             _ => "[N/A]",
         }
     }
@@ -242,6 +193,7 @@ pub enum Nationality {
     Austrian,
     Azerbaijani,
     Bahraini,
+    Barbadian,
     Belgian,
     Bolivian,
     Brazilian,
@@ -259,8 +211,8 @@ pub enum Nationality {
     Danish,
     Dutch,
     Ecuadorian,
-    English,
     Emirian,
+    English,
     Estonian,
     Finnish,
     French,
@@ -311,16 +263,17 @@ pub enum Nationality {
     Singaporean,
     Slovakian,
     Slovenian,
-    SouthKorean,
     SouthAfrican,
+    SouthKorean,
     Spanish,
     Swedish,
     Swiss,
     Thai,
     Turkish,
-    Uruguayan,
     Ukrainian,
+    Uruguayan,
     Venezuelan,
+    Vietnamese,
     Welsh,
     Invalid,
 }
@@ -364,7 +317,7 @@ pub struct ParticipantData {
     #[getset(get = "pub")]
     name: String,
     #[getset(get_copy = "pub")]
-    telemetry: Telemetry,
+    telemetry_access: Telemetry,
 }
 
 impl ParticipantData {
@@ -375,7 +328,7 @@ impl ParticipantData {
         race_number: u8,
         nationality: Nationality,
         name: String,
-        telemetry: Telemetry,
+        telemetry_access: Telemetry,
     ) -> ParticipantData {
         ParticipantData {
             ai_controlled,
@@ -384,7 +337,7 @@ impl ParticipantData {
             race_number,
             nationality,
             name,
-            telemetry,
+            telemetry_access,
         }
     }
 }
