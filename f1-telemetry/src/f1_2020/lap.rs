@@ -6,7 +6,7 @@ use crate::packet::lap::{DriverStatus, LapData, PacketLapData, PitStatus, Result
 use crate::packet::UnpackError;
 use crate::utils::assert_packet_size;
 
-const PACKET_SIZE: usize = 843;
+const PACKET_SIZE: usize = 1190;
 
 fn unpack_pit_status(value: u8) -> Result<PitStatus, UnpackError> {
     match value {
@@ -50,9 +50,19 @@ fn unpack_result_status(value: u8) -> Result<ResultStatus, UnpackError> {
 fn parse_lap<T: BufRead>(reader: &mut T) -> Result<LapData, UnpackError> {
     let last_lap_time = reader.read_f32::<LittleEndian>().unwrap();
     let current_lap_time = reader.read_f32::<LittleEndian>().unwrap();
+    let sector_1_time = reader.read_u16::<LittleEndian>().unwrap();
+    let sector_2_time = reader.read_u16::<LittleEndian>().unwrap();
     let best_lap_time = reader.read_f32::<LittleEndian>().unwrap();
-    let sector_1_time = reader.read_f32::<LittleEndian>().unwrap();
-    let sector_2_time = reader.read_f32::<LittleEndian>().unwrap();
+    let best_lap_num = reader.read_u8().unwrap();
+    let best_lap_sector_1_time = reader.read_u16::<LittleEndian>().unwrap();
+    let best_lap_sector_2_time = reader.read_u16::<LittleEndian>().unwrap();
+    let best_lap_sector_3_time = reader.read_u16::<LittleEndian>().unwrap();
+    let best_overall_sector_1_time = reader.read_u16::<LittleEndian>().unwrap();
+    let best_overall_sector_1_lap_num = reader.read_u8().unwrap();
+    let best_overall_sector_2_time = reader.read_u16::<LittleEndian>().unwrap();
+    let best_overall_sector_2_lap_num = reader.read_u8().unwrap();
+    let best_overall_sector_3_time = reader.read_u16::<LittleEndian>().unwrap();
+    let best_overall_sector_3_lap_num = reader.read_u8().unwrap();
     let lap_distance = reader.read_f32::<LittleEndian>().unwrap();
     let total_distance = reader.read_f32::<LittleEndian>().unwrap();
     let safety_car_delta = reader.read_f32::<LittleEndian>().unwrap();
@@ -66,12 +76,22 @@ fn parse_lap<T: BufRead>(reader: &mut T) -> Result<LapData, UnpackError> {
     let driver_status = unpack_driver_status(reader.read_u8().unwrap())?;
     let result_status = unpack_result_status(reader.read_u8().unwrap())?;
 
-    Ok(LapData::from_2019(
+    Ok(LapData::from_2020(
         last_lap_time,
         current_lap_time,
-        best_lap_time,
         sector_1_time,
         sector_2_time,
+        best_lap_time,
+        best_lap_num,
+        best_lap_sector_1_time,
+        best_lap_sector_2_time,
+        best_lap_sector_3_time,
+        best_overall_sector_1_time,
+        best_overall_sector_1_lap_num,
+        best_overall_sector_2_time,
+        best_overall_sector_2_lap_num,
+        best_overall_sector_3_time,
+        best_overall_sector_3_lap_num,
         lap_distance,
         total_distance,
         safety_car_delta,
@@ -94,9 +114,9 @@ pub(crate) fn parse_lap_data<T: BufRead>(
 ) -> Result<PacketLapData, UnpackError> {
     assert_packet_size(size, PACKET_SIZE)?;
 
-    let mut lap_data = Vec::with_capacity(20);
+    let mut lap_data = Vec::with_capacity(22);
 
-    for _ in 0..20 {
+    for _ in 0..22 {
         let ld = parse_lap(&mut reader)?;
         lap_data.push(ld);
     }

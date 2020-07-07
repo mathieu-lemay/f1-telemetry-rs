@@ -1,11 +1,13 @@
 use std::io::Cursor;
 
 use crate::f1_2020::header::{parse_header, validate_header_size};
+use crate::f1_2020::lap::parse_lap_data;
 use crate::f1_2020::participants::parse_participants_data;
 use crate::f1_2020::session::parse_session_data;
 use crate::packet::{Packet, PacketType, UnpackError};
 
 mod header;
+mod lap;
 mod participants;
 mod session;
 
@@ -22,6 +24,11 @@ pub(crate) fn parse_packet(size: usize, packet: &[u8]) -> Result<Packet, UnpackE
             let packet = parse_session_data(&mut cursor, header, size)?;
 
             Ok(Packet::Session(packet))
+        }
+        PacketType::LapData => {
+            let packet = parse_lap_data(&mut cursor, header, size)?;
+
+            Ok(Packet::Lap(packet))
         }
         PacketType::Participants => {
             let packet = parse_participants_data(&mut cursor, header, size)?;
