@@ -1,5 +1,6 @@
 use std::io::Cursor;
 
+use crate::f1_2020::car_status::parse_car_status_data;
 use crate::f1_2020::car_telemetry::parse_car_telemetry_data;
 use crate::f1_2020::event::parse_event_data;
 use crate::f1_2020::header::parse_header;
@@ -8,6 +9,7 @@ use crate::f1_2020::participants::parse_participants_data;
 use crate::f1_2020::session::parse_session_data;
 use crate::packet::{Packet, PacketType, UnpackError};
 
+mod car_status;
 mod car_telemetry;
 mod event;
 mod header;
@@ -46,6 +48,11 @@ pub(crate) fn parse_packet(size: usize, packet: &[u8]) -> Result<Packet, UnpackE
             let packet = parse_car_telemetry_data(&mut cursor, header, size)?;
 
             Ok(Packet::CarTelemetry(packet))
+        }
+        PacketType::CarStatus => {
+            let packet = parse_car_status_data(&mut cursor, header, size)?;
+
+            Ok(Packet::CarStatus(packet))
         }
         _ => Err(UnpackError("Not Implemented".to_string())),
     }
