@@ -1,5 +1,6 @@
 use std::io::Cursor;
 
+use crate::f1_2020::car_setup::parse_car_setup_data;
 use crate::f1_2020::car_status::parse_car_status_data;
 use crate::f1_2020::car_telemetry::parse_car_telemetry_data;
 use crate::f1_2020::event::parse_event_data;
@@ -9,6 +10,7 @@ use crate::f1_2020::participants::parse_participants_data;
 use crate::f1_2020::session::parse_session_data;
 use crate::packet::{Packet, PacketType, UnpackError};
 
+mod car_setup;
 mod car_status;
 mod car_telemetry;
 mod event;
@@ -44,6 +46,11 @@ pub(crate) fn parse_packet(size: usize, packet: &[u8]) -> Result<Packet, UnpackE
             let packet = parse_participants_data(&mut cursor, header, size)?;
 
             Ok(Packet::Participants(packet))
+        }
+        PacketType::CarSetups => {
+            let packet = parse_car_setup_data(&mut cursor, header, size)?;
+
+            Ok(Packet::CarSetups(packet))
         }
         PacketType::CarTelemetry => {
             let packet = parse_car_telemetry_data(&mut cursor, header, size)?;

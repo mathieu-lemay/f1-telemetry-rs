@@ -2,11 +2,12 @@ use byteorder::{LittleEndian, ReadBytesExt};
 use std::io::BufRead;
 
 use crate::packet::car_setup::{CarSetupData, PacketCarSetupData};
+use crate::packet::generic::WheelData;
 use crate::packet::header::PacketHeader;
 use crate::packet::UnpackError;
 use crate::utils::assert_packet_size;
 
-const PACKET_SIZE: usize = 843;
+const PACKET_SIZE: usize = 1102;
 
 fn parse_car_setup<T: BufRead>(reader: &mut T) -> Result<CarSetupData, UnpackError> {
     let front_wing = reader.read_u8().unwrap();
@@ -25,12 +26,16 @@ fn parse_car_setup<T: BufRead>(reader: &mut T) -> Result<CarSetupData, UnpackErr
     let rear_suspension_height = reader.read_u8().unwrap();
     let brake_pressure = reader.read_u8().unwrap();
     let brake_bias = reader.read_u8().unwrap();
-    let front_tyre_pressure = reader.read_f32::<LittleEndian>().unwrap();
-    let rear_tyre_pressure = reader.read_f32::<LittleEndian>().unwrap();
+    let tyre_pressures = WheelData::new(
+        reader.read_f32::<LittleEndian>().unwrap(),
+        reader.read_f32::<LittleEndian>().unwrap(),
+        reader.read_f32::<LittleEndian>().unwrap(),
+        reader.read_f32::<LittleEndian>().unwrap(),
+    );
     let ballast = reader.read_u8().unwrap();
     let fuel_load = reader.read_f32::<LittleEndian>().unwrap();
 
-    Ok(CarSetupData::from_2019(
+    Ok(CarSetupData::from_2020(
         front_wing,
         rear_wing,
         on_throttle,
@@ -47,8 +52,7 @@ fn parse_car_setup<T: BufRead>(reader: &mut T) -> Result<CarSetupData, UnpackErr
         rear_suspension_height,
         brake_pressure,
         brake_bias,
-        front_tyre_pressure,
-        rear_tyre_pressure,
+        tyre_pressures,
         ballast,
         fuel_load,
     ))
@@ -61,8 +65,8 @@ pub(crate) fn parse_car_setup_data<T: BufRead>(
 ) -> Result<PacketCarSetupData, UnpackError> {
     assert_packet_size(size, PACKET_SIZE)?;
 
-    let mut car_setups = Vec::with_capacity(20);
-    for _ in 0..20 {
+    let mut car_setups = Vec::with_capacity(22);
+    for _ in 0..22 {
         let csd = parse_car_setup(&mut reader)?;
         car_setups.push(csd);
     }
