@@ -10,6 +10,7 @@ pub const CAR_TELEMETRY_PACKET_SIZE: usize = 1307;
 pub const EVENT_PACKET_SIZE: usize = 35;
 pub const FINAL_CLASSIFICATION_PACKET_SIZE: usize = 839;
 pub const LAP_DATA_PACKET_SIZE: usize = 1190;
+pub const LOBBY_INFO_PACKET_SIZE: usize = 1169;
 pub const MOTION_PACKET_SIZE: usize = 1464;
 pub const PARTICIPANTS_PACKET_SIZE: usize = 1213;
 pub const SESSION_PACKET_SIZE: usize = 251;

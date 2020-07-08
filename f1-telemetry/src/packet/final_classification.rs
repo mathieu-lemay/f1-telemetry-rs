@@ -54,6 +54,7 @@ pub struct FinalClassification {
 }
 
 impl FinalClassification {
+    #[allow(clippy::too_many_arguments)]
     pub(crate) fn new(
         position: u8,
         num_laps: u8,

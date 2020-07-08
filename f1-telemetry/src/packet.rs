@@ -5,6 +5,7 @@ use event::PacketEventData;
 use final_classification::PacketFinalClassificationData;
 use header::PacketHeader;
 use lap::PacketLapData;
+use lobby_info::PacketLobbyInfoData;
 use motion::PacketMotionData;
 use participants::PacketParticipantsData;
 use session::PacketSessionData;
@@ -19,6 +20,7 @@ pub mod final_classification;
 pub mod generic;
 pub mod header;
 pub mod lap;
+pub mod lobby_info;
 pub mod motion;
 pub mod participants;
 pub mod session;
@@ -37,6 +39,7 @@ pub enum Packet {
     CarTelemetry(PacketCarTelemetryData),
     CarStatus(PacketCarStatusData),
     FinalClassification(PacketFinalClassificationData),
+    LobbyInfo(PacketLobbyInfoData),
 }
 
 impl Packet {
@@ -51,6 +54,7 @@ impl Packet {
             Packet::CarTelemetry(p) => p.header(),
             Packet::CarStatus(p) => p.header(),
             Packet::FinalClassification(p) => p.header(),
+            Packet::LobbyInfo(p) => p.header(),
         }
     }
 }
