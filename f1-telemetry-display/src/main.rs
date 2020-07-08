@@ -3,6 +3,7 @@ use std::time::Duration;
 
 use f1_telemetry::Stream;
 
+use crate::models::GameState;
 use crate::render::{Renderer, View};
 
 mod models;
@@ -14,12 +15,14 @@ fn main() {
     println!("Listening on {}", stream.socket().local_addr().unwrap());
 
     let mut renderer = Renderer::new();
+    let mut game_state = GameState::default();
 
     loop {
         match stream.next() {
             Ok(p) => match p {
                 Some(p) => {
-                    renderer.render(&p);
+                    game_state.parse_packet(&p);
+                    renderer.render(&game_state, &p);
                 }
                 None => sleep(Duration::from_millis(5)),
             },

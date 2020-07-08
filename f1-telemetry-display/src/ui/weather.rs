@@ -4,7 +4,7 @@ use ncurses::{mvwaddstr, WINDOW};
 
 use f1_telemetry::packet::session::Weather;
 
-use crate::models::WeatherInfo;
+use crate::models::SessionInfo;
 
 const OVERCAST: &str = "
                _           
@@ -82,8 +82,8 @@ const STORM: &str = "
 /          /          /
 ";
 
-pub fn render_weather(w: WINDOW, weather_info: &WeatherInfo, y: i32, x: i32) {
-    let weather_icon: &str = match weather_info.weather {
+pub fn render_weather(w: WINDOW, session_info: &SessionInfo, y: i32, x: i32) {
+    let weather_icon: &str = match session_info.weather {
         Weather::Clear => {
             if blink() {
                 CLEAR_1

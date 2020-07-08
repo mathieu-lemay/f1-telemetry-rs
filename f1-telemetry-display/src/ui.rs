@@ -3,9 +3,7 @@ use ncurses::*;
 use f1_telemetry::packet::generic::{ResultStatus, TyreCompoundVisual};
 use f1_telemetry::packet::session::SafetyCar;
 
-use crate::models::{
-    CarStatus, EventInfo, LapInfo, RelativePositions, SessionInfo, TelemetryInfo, WeatherInfo,
-};
+use crate::models::*;
 use crate::render::View;
 
 mod car;
@@ -119,7 +117,9 @@ impl Ui {
         wnd
     }
 
-    pub fn print_session_info(&self, sinfo: &SessionInfo) {
+    pub fn print_session_info(&self, game_state: &GameState) {
+        let sinfo = &game_state.session_info;
+
         let session_name = &format!("{} - {}", sinfo.session_name, sinfo.track_name);
         let lap_info = &format!("Lap {} of {}", sinfo.current_lap, sinfo.number_of_laps);
         let session_time = &format!(
@@ -139,7 +139,7 @@ impl Ui {
         }
     }
 
-    pub fn print_dashboard_lap_info(&self, lap_info: &[LapInfo]) {
+    pub fn print_dashboard_lap_info(&self, game_state: &GameState) {
         let wnd = self.lap_times_swnd;
 
         werase(wnd);
@@ -151,10 +151,12 @@ impl Ui {
 
         mvwaddstr(wnd, 0, 0, header);
 
-        for li in lap_info {
+        for (idx, li) in game_state.lap_infos.iter().enumerate() {
             if let ResultStatus::Invalid = li.status {
                 continue;
             }
+
+            let participant = &game_state.participants[idx];
 
             let pos = match li.status {
                 ResultStatus::Retired => String::from("RET"),
@@ -172,7 +174,7 @@ impl Ui {
             let s = format!(
                 "{}. {:20} | {} | {} | {} | {}{}{} ",
                 pos,
-                fmt::format_driver_name(li.name, li.driver),
+                fmt::format_driver_name(&participant.name, participant.driver),
                 fmt::format_time_ms(li.current_lap_time),
                 fmt::format_time_ms(li.last_lap_time),
                 fmt::format_time_ms(li.best_lap_time),
@@ -181,16 +183,18 @@ impl Ui {
                 penalties,
             );
 
-            fmt::set_team_color(wnd, li.team);
+            fmt::set_team_color(wnd, participant.team);
             mvwaddstr(wnd, li.position as i32, 0, s.as_str());
         }
 
         self.commit(wnd);
     }
 
-    pub fn print_track_status_lap_info(&self, relative_positions: &RelativePositions) {
+    pub fn print_track_status_lap_info(&self, game_state: &GameState) {
         let wnd = self.rel_pos_swnd;
         let w = getmaxx(wnd) - 17;
+
+        let relative_positions = &game_state.relative_positions;
 
         fmt::wset_bold(wnd);
 
@@ -221,8 +225,10 @@ impl Ui {
         self.commit(wnd);
     }
 
-    pub fn print_event_info(&self, event_info: &EventInfo) {
+    pub fn print_event_info(&self, game_state: &GameState) {
         fmt::set_bold();
+
+        let event_info = &game_state.event_info;
 
         let mut msg = format!(
             "{}: {}",
@@ -230,7 +236,7 @@ impl Ui {
             event_info.description
         );
 
-        if let Some(driver) = event_info.driver_name {
+        if let Some(driver) = &event_info.driver_name {
             msg += &format!(": {}", driver);
         }
 
@@ -244,8 +250,10 @@ impl Ui {
         fmt::reset();
     }
 
-    pub fn print_telemetry_info(&self, telemetry_info: &TelemetryInfo) {
+    pub fn print_telemetry_info(&self, game_state: &GameState) {
         let wnd = self.dashboard_wnd;
+
+        let telemetry_info = &game_state.telemetry_info;
 
         fmt::set_bold();
 
@@ -254,6 +262,7 @@ impl Ui {
             fmt::format_gear(telemetry_info.gear),
             fmt::format_speed(telemetry_info.speed)
         );
+
         mvwaddstr(
             wnd,
             CURRENT_CAR_DATA_Y_OFFSET,
@@ -287,28 +296,32 @@ impl Ui {
         self.commit(wnd)
     }
 
-    pub fn print_weather_info(&self, weather_info: &WeatherInfo) {
+    pub fn print_weather_info(&self, game_state: &GameState) {
         let wnd = self.track_wnd;
 
-        weather::render_weather(wnd, weather_info, 2, 90);
+        let session = &game_state.session_info;
+
+        weather::render_weather(wnd, session, 2, 90);
         mvwaddstr(
             wnd,
             2 + 10,
             90,
-            &format!("Air Temp   : {}C", weather_info.air_temperature),
+            &format!("Air Temp   : {}C", session.air_temperature),
         );
         mvwaddstr(
             wnd,
             2 + 11,
             90,
-            &format!("Track Temp : {}C", weather_info.track_temperature),
+            &format!("Track Temp : {}C", session.track_temperature),
         );
 
         self.commit(wnd);
     }
 
-    pub fn print_car_status(&self, car_status: &CarStatus) {
+    pub fn print_car_status(&self, game_state: &GameState) {
         let wnd = self.car_swnd;
+
+        let car_status = &game_state.car_status;
 
         car::render_car(wnd, car_status);
 
@@ -342,16 +355,22 @@ impl Ui {
         self.commit(wnd);
     }
 
-    pub fn print_tyres_compounds(&self, tyre_compounds: &[TyreCompoundVisual]) {
+    pub fn print_tyres_compounds(&self, game_state: &GameState) {
         let wnd = self.tyres_swnd;
+
+        werase(wnd);
 
         fmt::wset_bold(wnd);
 
         mvwaddstr(wnd, 0, 0, "T.");
 
-        for (i, tc) in tyre_compounds.iter().enumerate() {
-            fmt::set_tyre_color(wnd, *tc);
-            mvwaddstr(wnd, i as i32 + 1, 0, "o");
+        for li in &game_state.lap_infos {
+            if let TyreCompoundVisual::Invalid = li.tyre_compound {
+                continue;
+            }
+
+            fmt::set_tyre_color(wnd, li.tyre_compound);
+            mvwaddstr(wnd, li.position as i32, 0, "o");
         }
 
         self.commit(wnd);
