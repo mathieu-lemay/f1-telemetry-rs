@@ -1,7 +1,7 @@
 use std::collections::BTreeMap;
 
-use f1_telemetry::packet::generic::{ResultStatus, TyreCompoundVisual, WheelData};
-use f1_telemetry::packet::participants::{Driver, Team};
+use f1_telemetry::packet::generic::{ResultStatus, Team, TyreCompoundVisual, WheelData};
+use f1_telemetry::packet::participants::Driver;
 use f1_telemetry::packet::session::{SafetyCar, Weather};
 
 pub struct EventInfo<'a> {

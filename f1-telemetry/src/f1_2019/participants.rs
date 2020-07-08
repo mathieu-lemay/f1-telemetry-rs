@@ -2,6 +2,7 @@ use std::io::BufRead;
 
 use byteorder::ReadBytesExt;
 
+use crate::packet::generic::{Nationality, Team};
 use crate::packet::header::PacketHeader;
 use crate::packet::participants::*;
 use crate::packet::UnpackError;
