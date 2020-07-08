@@ -12,6 +12,7 @@ use crate::packet::{Packet, PacketType, UnpackError};
 mod car_status;
 mod car_telemetry;
 mod event;
+mod generic;
 mod header;
 mod lap;
 mod participants;

@@ -1,8 +1,7 @@
 use byteorder::{LittleEndian, ReadBytesExt};
-use std::convert::TryFrom;
 use std::io::BufRead;
 
-use crate::packet::generic::Flag;
+use crate::f1_2019::generic::unpack_flag;
 use crate::packet::header::PacketHeader;
 use crate::packet::session::{
     Formula, MarshalZone, PacketSessionData, SafetyCar, SessionType, Track, Weather,
@@ -96,7 +95,7 @@ fn unpack_safety_car(value: u8) -> Result<SafetyCar, UnpackError> {
 
 fn parse_marshal_zone<T: BufRead>(reader: &mut T) -> Result<MarshalZone, UnpackError> {
     let zone_start = reader.read_f32::<LittleEndian>().unwrap();
-    let zone_flag = Flag::try_from(reader.read_i8().unwrap())?;
+    let zone_flag = unpack_flag(reader.read_i8().unwrap())?;
 
     Ok(MarshalZone::new(zone_start, zone_flag))
 }

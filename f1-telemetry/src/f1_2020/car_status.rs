@@ -1,12 +1,12 @@
 use byteorder::{LittleEndian, ReadBytesExt};
-use std::convert::TryFrom;
 use std::io::BufRead;
 
+use crate::f1_2020::generic::unpack_flag;
 use crate::packet::car_status::{
     CarStatusData, ERSDeployMode, FuelMix, PacketCarStatusData, TractionControl, TyreCompound,
     TyreCompoundVisual, DRS,
 };
-use crate::packet::generic::{Flag, WheelData};
+use crate::packet::generic::WheelData;
 use crate::packet::header::PacketHeader;
 use crate::packet::UnpackError;
 use crate::utils::assert_packet_size;
@@ -138,7 +138,7 @@ fn parse_car<T: BufRead>(reader: &mut T) -> Result<CarStatusData, UnpackError> {
     let drs_fault = reader.read_u8().unwrap() == 1;
     let engine_damage = reader.read_u8().unwrap();
     let gear_box_damage = reader.read_u8().unwrap();
-    let vehicle_fia_flags = Flag::try_from(reader.read_i8().unwrap())?;
+    let vehicle_fia_flags = unpack_flag(reader.read_i8().unwrap())?;
     let ers_store_energy = reader.read_f32::<LittleEndian>().unwrap();
     let ers_deploy_mode = unpack_ers_deploy_mode(reader.read_u8().unwrap())?;
     let ers_harvested_this_lap_mguk = reader.read_f32::<LittleEndian>().unwrap();
