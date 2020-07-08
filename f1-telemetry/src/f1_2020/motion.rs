@@ -7,7 +7,7 @@ use crate::packet::motion::{MotionData, PacketMotionData};
 use crate::packet::UnpackError;
 use crate::utils::assert_packet_size;
 
-const PACKET_SIZE: usize = 1343;
+const PACKET_SIZE: usize = 1464;
 
 fn parse_motion<T: BufRead>(reader: &mut T) -> Result<MotionData, UnpackError> {
     let world_position_x = reader.read_f32::<LittleEndian>().unwrap();
@@ -58,8 +58,8 @@ pub(crate) fn parse_motion_data<T: BufRead>(
 ) -> Result<PacketMotionData, UnpackError> {
     assert_packet_size(size, PACKET_SIZE)?;
 
-    let mut motion_data = Vec::with_capacity(20);
-    for _ in 0..20 {
+    let mut motion_data = Vec::with_capacity(22);
+    for _ in 0..22 {
         let md = parse_motion(&mut reader)?;
         motion_data.push(md);
     }

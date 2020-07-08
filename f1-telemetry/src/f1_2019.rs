@@ -31,7 +31,7 @@ pub(crate) fn parse_packet(size: usize, packet: &[u8]) -> Result<Packet, UnpackE
 
     match packet_id {
         PacketType::Motion => {
-            let packet = parse_motion_data(&mut cursor, header)?;
+            let packet = parse_motion_data(&mut cursor, header, size)?;
 
             Ok(Packet::Motion(packet))
         }

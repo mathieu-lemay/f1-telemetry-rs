@@ -6,6 +6,7 @@ use crate::f1_2020::car_telemetry::parse_car_telemetry_data;
 use crate::f1_2020::event::parse_event_data;
 use crate::f1_2020::header::parse_header;
 use crate::f1_2020::lap::parse_lap_data;
+use crate::f1_2020::motion::parse_motion_data;
 use crate::f1_2020::participants::parse_participants_data;
 use crate::f1_2020::session::parse_session_data;
 use crate::packet::{Packet, PacketType, UnpackError};
@@ -17,6 +18,7 @@ mod event;
 mod generic;
 mod header;
 mod lap;
+mod motion;
 mod participants;
 mod session;
 
@@ -27,6 +29,11 @@ pub(crate) fn parse_packet(size: usize, packet: &[u8]) -> Result<Packet, UnpackE
     let packet_id: PacketType = parse_packet_type(header.packet_id())?;
 
     match packet_id {
+        PacketType::Motion => {
+            let packet = parse_motion_data(&mut cursor, header, size)?;
+
+            Ok(Packet::Motion(packet))
+        }
         PacketType::Session => {
             let packet = parse_session_data(&mut cursor, header, size)?;
 
