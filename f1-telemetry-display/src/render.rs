@@ -244,6 +244,7 @@ fn parse_car_status_data(car_status_data: &PacketCarStatusData) -> CarStatus {
         fuel_in_tank: csd.fuel_in_tank(),
         fuel_remaining_laps: csd.fuel_remaining_laps(),
         tyre_compound: csd.visual_tyre_compound(),
+        tyre_age_laps: csd.tyre_age_laps(),
     }
 }
 

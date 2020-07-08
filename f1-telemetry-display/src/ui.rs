@@ -323,6 +323,7 @@ impl Ui {
         fmt::set_tyre_color(wnd, car_status.tyre_compound);
         waddstr(wnd, "o");
         fmt::wreset(wnd);
+        waddstr(wnd, &format!(" ({} Laps)", car_status.tyre_age_laps));
 
         wclrtoeol(wnd);
 
@@ -336,6 +337,7 @@ impl Ui {
                 car_status.fuel_remaining_laps.abs()
             ),
         );
+        wclrtoeol(wnd);
 
         self.commit(wnd);
     }

@@ -58,6 +58,7 @@ pub struct CarStatus {
     pub fuel_in_tank: f32,
     pub fuel_remaining_laps: f32,
     pub tyre_compound: TyreCompoundVisual,
+    pub tyre_age_laps: u8,
 }
 
 pub struct RelativePositions {
