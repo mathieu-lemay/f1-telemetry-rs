@@ -61,8 +61,8 @@ impl Ui {
         let win_h = HEIGHT - WINDOW_Y_OFFSET - 2;
 
         let dashboard_wnd = Ui::create_win(win_h, win_w, WINDOW_Y_OFFSET, 1, Some("Dashboard"));
-        let tyres_swnd = derwin(dashboard_wnd, 22, 2, 1, 2);
-        let lap_times_swnd = derwin(dashboard_wnd, 22, 80, 1, 4);
+        let tyres_swnd = derwin(dashboard_wnd, 23, 2, 1, 2);
+        let lap_times_swnd = derwin(dashboard_wnd, 23, 80, 1, 4);
         let car_swnd = derwin(dashboard_wnd, 24, 39, 2, 90);
 
         let track_wnd = Ui::create_win(win_h, win_w, WINDOW_Y_OFFSET, 1, Some("Track Status"));
@@ -182,7 +182,7 @@ impl Ui {
             );
 
             fmt::set_team_color(wnd, li.team);
-            mvwaddstr(wnd, li.position as i32 + 1, 0, s.as_str());
+            mvwaddstr(wnd, li.position as i32, 0, s.as_str());
         }
 
         self.commit(wnd);
@@ -351,7 +351,7 @@ impl Ui {
 
         for (i, tc) in tyre_compounds.iter().enumerate() {
             fmt::set_tyre_color(wnd, *tc);
-            mvwaddstr(wnd, i as i32 + 2, 0, "o");
+            mvwaddstr(wnd, i as i32 + 1, 0, "o");
         }
 
         self.commit(wnd);
