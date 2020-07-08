@@ -1,15 +1,16 @@
 use std::convert::TryFrom;
 use std::io::Cursor;
 
-use crate::f1_2019::car_setup::parse_car_setup_data;
-use crate::f1_2019::car_status::parse_car_status_data;
-use crate::f1_2019::car_telemetry::parse_car_telemetry_data;
-use crate::f1_2019::event::parse_event_data;
-use crate::f1_2019::header::parse_header;
-use crate::f1_2019::lap::parse_lap_data;
-use crate::f1_2019::motion::parse_motion_data;
-use crate::f1_2019::participants::parse_participants_data;
-use crate::f1_2019::session::parse_session_data;
+use car_setup::parse_car_setup_data;
+use car_status::parse_car_status_data;
+use car_telemetry::parse_car_telemetry_data;
+use event::parse_event_data;
+use header::parse_header;
+use lap::parse_lap_data;
+use motion::parse_motion_data;
+use participants::parse_participants_data;
+use session::parse_session_data;
+
 use crate::packet::{Packet, PacketType, UnpackError};
 
 mod car_setup;
