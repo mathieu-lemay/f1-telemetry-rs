@@ -1,16 +1,18 @@
+use std::io::BufRead;
+
+use byteorder::{LittleEndian, ReadBytesExt};
+
 use crate::packet::header::PacketHeader;
 use crate::packet::UnpackError;
 use crate::utils::assert_packet_at_least_size;
-use byteorder::{LittleEndian, ReadBytesExt};
-use std::io::BufRead;
 
-const PACKET_SIZE: usize = 23;
+use super::consts::*;
 
 pub(crate) fn parse_header<T: BufRead>(
     reader: &mut T,
     size: usize,
 ) -> Result<PacketHeader, UnpackError> {
-    assert_packet_at_least_size(size, PACKET_SIZE)?;
+    assert_packet_at_least_size(size, HEADER_SIZE)?;
 
     let packet_format = reader.read_u16::<LittleEndian>().unwrap();
     let game_major_version = reader.read_u8().unwrap();

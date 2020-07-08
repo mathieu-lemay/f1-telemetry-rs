@@ -1,4 +1,3 @@
-use super::{f1_2019, f1_2020};
 use car_setup::PacketCarSetupData;
 use car_status::PacketCarStatusData;
 use car_telemetry::PacketCarTelemetryData;
@@ -8,6 +7,8 @@ use lap::PacketLapData;
 use motion::PacketMotionData;
 use participants::PacketParticipantsData;
 use session::PacketSessionData;
+
+use super::{f1_2019, f1_2020};
 
 pub mod car_setup;
 pub mod car_status;

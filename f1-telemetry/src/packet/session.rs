@@ -1,7 +1,8 @@
 use getset::{CopyGetters, Getters};
 
-use super::header::PacketHeader;
 use crate::packet::generic::Flag;
+
+use super::header::PacketHeader;
 
 #[derive(Debug, Clone, Copy, Eq, PartialEq)]
 pub enum Weather {

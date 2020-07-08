@@ -1,14 +1,13 @@
-use byteorder::ReadBytesExt;
 use std::io::BufRead;
 
+use byteorder::ReadBytesExt;
+
 use crate::packet::header::PacketHeader;
-use crate::packet::participants::{
-    Driver, Nationality, PacketParticipantsData, ParticipantData, Team, Telemetry,
-};
+use crate::packet::participants::*;
 use crate::packet::UnpackError;
 use crate::utils::{assert_packet_size, unpack_string};
 
-const PACKET_SIZE: usize = 1104;
+use super::consts::*;
 
 fn unpack_driver(value: u8) -> Result<Driver, UnpackError> {
     match value {
@@ -281,12 +280,12 @@ pub(crate) fn parse_participants_data<T: BufRead>(
     header: PacketHeader,
     size: usize,
 ) -> Result<PacketParticipantsData, UnpackError> {
-    assert_packet_size(size, PACKET_SIZE)?;
+    assert_packet_size(size, PARTICIPANTS_PACKET_SIZE)?;
 
     let num_active_cars = reader.read_u8().unwrap();
 
-    let mut participants = Vec::with_capacity(20);
-    for _ in 0..20 {
+    let mut participants = Vec::with_capacity(NUMBER_CARS);
+    for _ in 0..NUMBER_CARS {
         let p = parse_participant(&mut reader)?;
         participants.push(p);
     }

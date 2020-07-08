@@ -1,5 +1,6 @@
-use byteorder::{LittleEndian, ReadBytesExt};
 use std::io::BufRead;
+
+use byteorder::{LittleEndian, ReadBytesExt};
 
 use crate::packet::car_telemetry::{
     CarTelemetryData, MFDPanel, PacketCarTelemetryData, SurfaceType,
@@ -9,7 +10,7 @@ use crate::packet::header::PacketHeader;
 use crate::packet::UnpackError;
 use crate::utils::assert_packet_size;
 
-const PACKET_SIZE: usize = 1307;
+use super::consts::*;
 
 fn unpack_surface_type(value: u8) -> Result<SurfaceType, UnpackError> {
     match value {
@@ -107,10 +108,10 @@ pub(crate) fn parse_car_telemetry_data<T: BufRead>(
     header: PacketHeader,
     size: usize,
 ) -> Result<PacketCarTelemetryData, UnpackError> {
-    assert_packet_size(size, PACKET_SIZE)?;
+    assert_packet_size(size, CAR_TELEMETRY_PACKET_SIZE)?;
 
-    let mut car_telemetry_data = Vec::with_capacity(22);
-    for _ in 0..22 {
+    let mut car_telemetry_data = Vec::with_capacity(NUMBER_CARS);
+    for _ in 0..NUMBER_CARS {
         let ctd = parse_car_telemetry(&mut reader)?;
         car_telemetry_data.push(ctd);
     }

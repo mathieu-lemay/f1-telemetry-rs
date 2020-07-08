@@ -1,12 +1,13 @@
-use byteorder::{LittleEndian, ReadBytesExt};
 use std::io::BufRead;
+
+use byteorder::{LittleEndian, ReadBytesExt};
 
 use crate::packet::event::*;
 use crate::packet::header::PacketHeader;
 use crate::packet::UnpackError;
 use crate::utils::{assert_packet_size, unpack_string};
 
-const PACKET_SIZE: usize = 35;
+use super::consts::*;
 
 fn unpack_penalty_type(value: u8) -> Result<PenaltyType, UnpackError> {
     match value {
@@ -98,7 +99,7 @@ pub(crate) fn parse_event_data<T: BufRead>(
     header: PacketHeader,
     size: usize,
 ) -> Result<PacketEventData, UnpackError> {
-    assert_packet_size(size, PACKET_SIZE)?;
+    assert_packet_size(size, EVENT_PACKET_SIZE)?;
 
     let event_code = unpack_string(reader, 4)?;
 
@@ -165,6 +166,3 @@ pub(crate) fn parse_event_data<T: BufRead>(
 
     Ok(PacketEventData::new(header, event))
 }
-
-/*
-*/

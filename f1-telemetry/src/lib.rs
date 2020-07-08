@@ -1,6 +1,7 @@
-use packet::{parse_packet, Packet, UnpackError};
 use std::io::ErrorKind;
 use std::net::{ToSocketAddrs, UdpSocket};
+
+use packet::{parse_packet, Packet, UnpackError};
 
 mod f1_2019;
 mod f1_2020;

@@ -1,6 +1,8 @@
-use crate::packet::UnpackError;
-use byteorder::ReadBytesExt;
 use std::io::BufRead;
+
+use byteorder::ReadBytesExt;
+
+use crate::packet::UnpackError;
 
 pub(crate) fn unpack_string<T: BufRead>(reader: &mut T, n: usize) -> Result<String, UnpackError> {
     let mut chars: Vec<u8> = (0..n).map(|_| reader.read_u8().unwrap()).collect();
@@ -20,7 +22,10 @@ pub(crate) fn assert_packet_size(
     if actual_size == expected_size {
         Ok(())
     } else {
-        Err(UnpackError(String::from("Invalid packet size")))
+        Err(UnpackError(format!(
+            "Invalid packet size: {} bytes (expected {} bytes)",
+            actual_size, expected_size
+        )))
     }
 }
 
@@ -32,8 +37,8 @@ pub(crate) fn assert_packet_at_least_size(
         Ok(())
     } else {
         Err(UnpackError(format!(
-            "Invalid packet: too small ({} bytes)",
-            actual_size
+            "Packet too small: {} bytes (minimum: {} bytes)",
+            actual_size, minimum_size
         )))
     }
 }

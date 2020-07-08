@@ -1,12 +1,13 @@
-use byteorder::{LittleEndian, ReadBytesExt};
 use std::io::BufRead;
+
+use byteorder::{LittleEndian, ReadBytesExt};
 
 use crate::packet::header::PacketHeader;
 use crate::packet::lap::{DriverStatus, LapData, PacketLapData, PitStatus, ResultStatus};
 use crate::packet::UnpackError;
 use crate::utils::assert_packet_size;
 
-const PACKET_SIZE: usize = 1190;
+use super::consts::*;
 
 fn unpack_pit_status(value: u8) -> Result<PitStatus, UnpackError> {
     match value {
@@ -112,11 +113,11 @@ pub(crate) fn parse_lap_data<T: BufRead>(
     header: PacketHeader,
     size: usize,
 ) -> Result<PacketLapData, UnpackError> {
-    assert_packet_size(size, PACKET_SIZE)?;
+    assert_packet_size(size, LAP_DATA_PACKET_SIZE)?;
 
-    let mut lap_data = Vec::with_capacity(22);
+    let mut lap_data = Vec::with_capacity(NUMBER_CARS);
 
-    for _ in 0..22 {
+    for _ in 0..NUMBER_CARS {
         let ld = parse_lap(&mut reader)?;
         lap_data.push(ld);
     }

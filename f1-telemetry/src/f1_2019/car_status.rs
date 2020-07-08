@@ -1,17 +1,15 @@
-use byteorder::{LittleEndian, ReadBytesExt};
 use std::io::BufRead;
 
+use byteorder::{LittleEndian, ReadBytesExt};
+
 use crate::f1_2019::generic::unpack_flag;
-use crate::packet::car_status::{
-    CarStatusData, ERSDeployMode, FuelMix, PacketCarStatusData, TractionControl, TyreCompound,
-    TyreCompoundVisual, DRS,
-};
+use crate::packet::car_status::*;
 use crate::packet::generic::WheelData;
 use crate::packet::header::PacketHeader;
 use crate::packet::UnpackError;
 use crate::utils::assert_packet_size;
 
-const PACKET_SIZE: usize = 1143;
+use super::consts::*;
 
 fn unpack_traction_control(value: u8) -> Result<TractionControl, UnpackError> {
     match value {
@@ -180,10 +178,10 @@ pub fn parse_car_status_data<T: BufRead>(
     header: PacketHeader,
     size: usize,
 ) -> Result<PacketCarStatusData, UnpackError> {
-    assert_packet_size(size, PACKET_SIZE)?;
+    assert_packet_size(size, CAR_STATUS_PACKET_SIZE)?;
 
-    let mut car_status_data = Vec::with_capacity(20);
-    for _ in 0..20 {
+    let mut car_status_data = Vec::with_capacity(NUMBER_CARS);
+    for _ in 0..NUMBER_CARS {
         let csd = parse_car(&mut reader)?;
         car_status_data.push(csd);
     }

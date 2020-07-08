@@ -1,7 +1,8 @@
 use getset::{CopyGetters, Getters};
 
-use super::header::PacketHeader;
 use crate::packet::generic::WheelData;
+
+use super::header::PacketHeader;
 
 /// This type is used for the 20-element `motion_data` array of the [`PacketMotionData`] type.
 ///

@@ -1,12 +1,13 @@
-use byteorder::{LittleEndian, ReadBytesExt};
 use std::io::BufRead;
+
+use byteorder::{LittleEndian, ReadBytesExt};
 
 use crate::packet::car_setup::{CarSetupData, PacketCarSetupData};
 use crate::packet::header::PacketHeader;
 use crate::packet::UnpackError;
 use crate::utils::assert_packet_size;
 
-const PACKET_SIZE: usize = 843;
+use super::consts::*;
 
 fn parse_car_setup<T: BufRead>(reader: &mut T) -> Result<CarSetupData, UnpackError> {
     let front_wing = reader.read_u8().unwrap();
@@ -59,10 +60,10 @@ pub(crate) fn parse_car_setup_data<T: BufRead>(
     header: PacketHeader,
     size: usize,
 ) -> Result<PacketCarSetupData, UnpackError> {
-    assert_packet_size(size, PACKET_SIZE)?;
+    assert_packet_size(size, CAR_SETUPS_PACKET_SIZE)?;
 
-    let mut car_setups = Vec::with_capacity(20);
-    for _ in 0..20 {
+    let mut car_setups = Vec::with_capacity(NUMBER_CARS);
+    for _ in 0..NUMBER_CARS {
         let csd = parse_car_setup(&mut reader)?;
         car_setups.push(csd);
     }

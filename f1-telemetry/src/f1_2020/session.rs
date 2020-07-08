@@ -1,5 +1,6 @@
-use byteorder::{LittleEndian, ReadBytesExt};
 use std::io::BufRead;
+
+use byteorder::{LittleEndian, ReadBytesExt};
 
 use crate::f1_2020::generic::unpack_flag;
 use crate::packet::header::PacketHeader;
@@ -7,7 +8,7 @@ use crate::packet::session::*;
 use crate::packet::UnpackError;
 use crate::utils::assert_packet_size;
 
-const PACKET_SIZE: usize = 251;
+use super::consts::*;
 
 fn unpack_weather(value: u8) -> Result<Weather, UnpackError> {
     match value {
@@ -123,7 +124,7 @@ pub(crate) fn parse_session_data<T: BufRead>(
     header: PacketHeader,
     size: usize,
 ) -> Result<PacketSessionData, UnpackError> {
-    assert_packet_size(size, PACKET_SIZE)?;
+    assert_packet_size(size, SESSION_PACKET_SIZE)?;
 
     let weather = unpack_weather(reader.read_u8().unwrap())?;
     let track_temperature = reader.read_i8().unwrap();
@@ -142,8 +143,8 @@ pub(crate) fn parse_session_data<T: BufRead>(
     let sli_pro_native_support = reader.read_u8().unwrap() == 1;
 
     let num_marshal_zones = reader.read_u8().unwrap();
-    let mut marshal_zones = Vec::with_capacity(21);
-    for _ in 0..21 {
+    let mut marshal_zones = Vec::with_capacity(NUMBER_MARSHAL_ZONES);
+    for _ in 0..NUMBER_MARSHAL_ZONES {
         let mz = parse_marshal_zone(&mut reader)?;
         marshal_zones.push(mz);
     }
@@ -152,8 +153,8 @@ pub(crate) fn parse_session_data<T: BufRead>(
     let network_game = reader.read_u8().unwrap() == 1;
 
     let num_weather_forecast_samples = reader.read_u8().unwrap();
-    let mut weather_forecast_samples = Vec::with_capacity(20);
-    for _ in 0..20 {
+    let mut weather_forecast_samples = Vec::with_capacity(NUMBER_WEATHER_FORECASTS);
+    for _ in 0..NUMBER_WEATHER_FORECASTS {
         let wfs = parse_weather_forecast_sample(&mut reader)?;
         weather_forecast_samples.push(wfs);
     }
