@@ -1,6 +1,6 @@
 # f1-telemetry-rs
 
-Rust library to parse telemetry data from the F1 games. Currently, only F1 2019 is fully supported, with F1 2020 in progress.
+Rust library to parse telemetry data from the F1 games. Supports F1 2019 and F1 2020.
 
 ## Specifications
 * F1 2019: https://forums.codemasters.com/topic/44592-f1-2019-udp-specification/
