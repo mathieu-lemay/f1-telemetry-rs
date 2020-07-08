@@ -1,7 +1,10 @@
-use crate::models::WeatherInfo;
-use f1_telemetry::packet::session::Weather;
-use ncurses::{mvwaddstr, WINDOW};
 use std::time::{SystemTime, UNIX_EPOCH};
+
+use ncurses::{mvwaddstr, WINDOW};
+
+use f1_telemetry::packet::session::Weather;
+
+use crate::models::WeatherInfo;
 
 const OVERCAST: &str = "
                _           

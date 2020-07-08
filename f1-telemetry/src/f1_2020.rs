@@ -4,6 +4,7 @@ use crate::f1_2020::car_setup::parse_car_setup_data;
 use crate::f1_2020::car_status::parse_car_status_data;
 use crate::f1_2020::car_telemetry::parse_car_telemetry_data;
 use crate::f1_2020::event::parse_event_data;
+use crate::f1_2020::final_classification::parse_final_classification_data;
 use crate::f1_2020::header::parse_header;
 use crate::f1_2020::lap::parse_lap_data;
 use crate::f1_2020::motion::parse_motion_data;
@@ -16,6 +17,7 @@ mod car_status;
 mod car_telemetry;
 mod consts;
 mod event;
+mod final_classification;
 mod generic;
 mod header;
 mod lap;
@@ -69,6 +71,11 @@ pub(crate) fn parse_packet(size: usize, packet: &[u8]) -> Result<Packet, UnpackE
             let packet = parse_car_status_data(&mut cursor, header, size)?;
 
             Ok(Packet::CarStatus(packet))
+        }
+        PacketType::FinalClassification => {
+            let packet = parse_final_classification_data(&mut cursor, header, size)?;
+
+            Ok(Packet::FinalClassification(packet))
         }
         _ => Err(UnpackError("Not Implemented".to_string())),
     }

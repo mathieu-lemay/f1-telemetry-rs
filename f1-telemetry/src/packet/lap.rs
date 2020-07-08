@@ -1,5 +1,7 @@
 use getset::{CopyGetters, Getters};
 
+use crate::packet::generic::ResultStatus;
+
 use super::header::PacketHeader;
 
 #[derive(Debug, Clone, Copy, Eq, PartialEq)]
@@ -27,23 +29,6 @@ pub enum DriverStatus {
 impl Default for DriverStatus {
     fn default() -> Self {
         Self::Garage
-    }
-}
-
-#[derive(Debug, Clone, Copy, Eq, PartialEq)]
-pub enum ResultStatus {
-    Invalid,
-    Inactive,
-    Active,
-    Finished,
-    Disqualified,
-    NotClassified,
-    Retired,
-}
-
-impl Default for ResultStatus {
-    fn default() -> Self {
-        Self::Invalid
     }
 }
 

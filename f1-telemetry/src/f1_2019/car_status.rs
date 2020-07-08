@@ -4,7 +4,7 @@ use byteorder::{LittleEndian, ReadBytesExt};
 
 use crate::f1_2019::generic::unpack_flag;
 use crate::packet::car_status::*;
-use crate::packet::generic::WheelData;
+use crate::packet::generic::{TyreCompound, TyreCompoundVisual, WheelData};
 use crate::packet::header::PacketHeader;
 use crate::packet::UnpackError;
 use crate::utils::assert_packet_size;

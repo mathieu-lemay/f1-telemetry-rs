@@ -1,6 +1,8 @@
-use super::fmt;
-use crate::models::CarStatus;
 use ncurses::*;
+
+use crate::models::CarStatus;
+
+use super::fmt;
 
 const LEFT_FRONT_WING: &str = "\
 ___________/--

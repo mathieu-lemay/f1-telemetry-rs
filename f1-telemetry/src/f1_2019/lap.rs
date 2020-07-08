@@ -2,8 +2,9 @@ use std::io::BufRead;
 
 use byteorder::{LittleEndian, ReadBytesExt};
 
+use crate::f1_2019::generic::unpack_result_status;
 use crate::packet::header::PacketHeader;
-use crate::packet::lap::{DriverStatus, LapData, PacketLapData, PitStatus, ResultStatus};
+use crate::packet::lap::{DriverStatus, LapData, PacketLapData, PitStatus};
 use crate::packet::UnpackError;
 use crate::utils::assert_packet_size;
 
@@ -27,22 +28,6 @@ fn unpack_driver_status(value: u8) -> Result<DriverStatus, UnpackError> {
         4 => Ok(DriverStatus::OnTrack),
         _ => Err(UnpackError(format!(
             "Invalid DriverStatus value: {}",
-            value
-        ))),
-    }
-}
-
-fn unpack_result_status(value: u8) -> Result<ResultStatus, UnpackError> {
-    match value {
-        0 => Ok(ResultStatus::Invalid),
-        1 => Ok(ResultStatus::Inactive),
-        2 => Ok(ResultStatus::Active),
-        3 => Ok(ResultStatus::Finished),
-        4 => Ok(ResultStatus::Disqualified),
-        5 => Ok(ResultStatus::NotClassified),
-        6 => Ok(ResultStatus::Retired),
-        _ => Err(UnpackError(format!(
-            "Invalid ResultStatus value: {}",
             value
         ))),
     }

@@ -1,7 +1,9 @@
-use f1_telemetry::packet::car_status::TyreCompoundVisual;
-use f1_telemetry::packet::participants::{Driver, Team};
-use ncurses::*;
 use std::borrow::Cow;
+
+use ncurses::*;
+
+use f1_telemetry::packet::generic::TyreCompoundVisual;
+use f1_telemetry::packet::participants::{Driver, Team};
 
 const PERCENTAGE_BAR_SLICES: i8 = 20;
 

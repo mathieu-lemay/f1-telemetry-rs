@@ -1,10 +1,11 @@
 use std::collections::BTreeMap;
 use std::f32::INFINITY;
 
-use f1_telemetry::packet::car_status::{PacketCarStatusData, TyreCompoundVisual};
+use f1_telemetry::packet::car_status::PacketCarStatusData;
 use f1_telemetry::packet::car_telemetry::PacketCarTelemetryData;
 use f1_telemetry::packet::event::{Event, PacketEventData};
-use f1_telemetry::packet::lap::{PacketLapData, PitStatus, ResultStatus};
+use f1_telemetry::packet::generic::{ResultStatus, TyreCompoundVisual};
+use f1_telemetry::packet::lap::{PacketLapData, PitStatus};
 use f1_telemetry::packet::participants::PacketParticipantsData;
 use f1_telemetry::packet::session::PacketSessionData;
 use f1_telemetry::packet::Packet;

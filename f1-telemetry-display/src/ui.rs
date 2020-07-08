@@ -1,7 +1,6 @@
 use ncurses::*;
 
-use f1_telemetry::packet::car_status::TyreCompoundVisual;
-use f1_telemetry::packet::lap::ResultStatus;
+use f1_telemetry::packet::generic::{ResultStatus, TyreCompoundVisual};
 use f1_telemetry::packet::session::SafetyCar;
 
 use crate::models::{

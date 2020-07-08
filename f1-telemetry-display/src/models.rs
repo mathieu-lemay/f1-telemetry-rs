@@ -1,8 +1,6 @@
 use std::collections::BTreeMap;
 
-use f1_telemetry::packet::car_status::TyreCompoundVisual;
-use f1_telemetry::packet::generic::WheelData;
-use f1_telemetry::packet::lap::ResultStatus;
+use f1_telemetry::packet::generic::{ResultStatus, TyreCompoundVisual, WheelData};
 use f1_telemetry::packet::participants::{Driver, Team};
 use f1_telemetry::packet::session::{SafetyCar, Weather};
 
