@@ -38,6 +38,8 @@ impl Ui {
         let h = getmaxy(mwnd);
 
         if w < WIDTH || h < HEIGHT {
+            endwin();
+
             panic!(format!(
                 "Terminal must be at least {}x{}. Current size: {}x{}",
                 WIDTH, HEIGHT, w, h

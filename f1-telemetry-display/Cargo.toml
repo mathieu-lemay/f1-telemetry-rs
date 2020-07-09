@@ -7,3 +7,5 @@ edition = "2018"
 [dependencies]
 f1-telemetry = { path = "../f1-telemetry" }
 ncurses = { version = "^5.99.0", features = ["wide"] }
+log = "0.4"
+simplelog = "0.8"
