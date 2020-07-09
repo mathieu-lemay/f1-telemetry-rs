@@ -26,6 +26,7 @@ fn unpack_surface_type(value: u8) -> Result<SurfaceType, UnpackError> {
         9 => Ok(SurfaceType::Cobblestone),
         10 => Ok(SurfaceType::Metal),
         11 => Ok(SurfaceType::Ridged),
+        12 => Ok(SurfaceType::Unknown),
         _ => Err(UnpackError(format!("Invalid SurfaceType value: {}", value))),
     }
 }
@@ -38,7 +39,7 @@ fn unpack_mfd_panel(value: u8) -> Result<MFDPanel, UnpackError> {
         3 => Ok(MFDPanel::Engine),
         4 => Ok(MFDPanel::Temperatures),
         255 => Ok(MFDPanel::Closed),
-        _ => Err(UnpackError(format!("Invalid SurfaceType value: {}", value))),
+        _ => Err(UnpackError(format!("Invalid MFDPanel value: {}", value))),
     }
 }
 

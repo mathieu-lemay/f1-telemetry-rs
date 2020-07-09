@@ -24,6 +24,7 @@ fn unpack_surface_type(value: u8) -> Result<SurfaceType, UnpackError> {
         9 => Ok(SurfaceType::Cobblestone),
         10 => Ok(SurfaceType::Metal),
         11 => Ok(SurfaceType::Ridged),
+        12 => Ok(SurfaceType::Unknown),
         _ => Err(UnpackError(format!("Invalid SurfaceType value: {}", value))),
     }
 }

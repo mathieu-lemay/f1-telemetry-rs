@@ -18,6 +18,7 @@ pub enum SurfaceType {
     Cobblestone,
     Metal,
     Ridged,
+    Unknown,
 }
 
 /// This type is used for the 20-element `car_telemetry_data` array of the [`PacketCarTelemetryData`] type.
