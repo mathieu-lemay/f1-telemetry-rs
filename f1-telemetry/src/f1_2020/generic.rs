@@ -119,11 +119,12 @@ pub(crate) fn unpack_result_status(value: u8) -> Result<ResultStatus, UnpackErro
         4 => Ok(ResultStatus::Disqualified),
         5 => Ok(ResultStatus::NotClassified),
         6 => Ok(ResultStatus::Retired),
+        7 => Ok(ResultStatus::Retired),
         _ => Err(UnpackError(format!(
             "Invalid ResultStatus value: {}",
             value
         ))),
-    }
+    }q
 }
 
 pub(crate) fn unpack_team(value: u8) -> Result<Team, UnpackError> {
