@@ -135,7 +135,7 @@ impl Ui {
         addstr_center(self.mwnd, SESSION_Y_OFFSET + 2, session_time);
 
         if sinfo.safety_car == SafetyCar::Virtual || sinfo.safety_car == SafetyCar::Full {
-            fmt::set_color(None, COLOR_YELLOW);
+            fmt::blink_colour(COLOR_WHITE, COLOR_YELLOW);
             addstr_center(self.mwnd, SESSION_Y_OFFSET + 3, sinfo.safety_car.name());
             fmt::reset();
         }

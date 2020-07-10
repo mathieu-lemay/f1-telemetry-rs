@@ -1,10 +1,9 @@
-use std::time::{SystemTime, UNIX_EPOCH};
-
 use ncurses::{mvwaddstr, WINDOW};
 
 use f1_telemetry::packet::session::Weather;
 
 use crate::models::SessionInfo;
+use crate::ui::fmt;
 
 const OVERCAST: &str = "
                _           
@@ -85,7 +84,7 @@ const STORM: &str = "
 pub fn render_weather(w: WINDOW, session_info: &SessionInfo, y: i32, x: i32) {
     let weather_icon: &str = match session_info.weather {
         Weather::Clear => {
-            if blink() {
+            if fmt::blink() {
                 CLEAR_1
             } else {
                 CLEAR_2
@@ -94,14 +93,14 @@ pub fn render_weather(w: WINDOW, session_info: &SessionInfo, y: i32, x: i32) {
         Weather::Overcast => OVERCAST,
         Weather::LightCloud => LIGHT_CLOUD,
         Weather::LightRain => {
-            if blink() {
+            if fmt::blink() {
                 LIGHT_RAIN_1
             } else {
                 LIGHT_RAIN_2
             }
         }
         Weather::HeavyRain => {
-            if blink() {
+            if fmt::blink() {
                 HEAVY_RAIN_1
             } else {
                 HEAVY_RAIN_2
@@ -113,13 +112,4 @@ pub fn render_weather(w: WINDOW, session_info: &SessionInfo, y: i32, x: i32) {
     for (i, l) in weather_icon.split('\n').enumerate() {
         mvwaddstr(w, y + i as i32, x, l);
     }
-}
-
-fn blink() -> bool {
-    (SystemTime::now()
-        .duration_since(UNIX_EPOCH)
-        .unwrap()
-        .as_secs()
-        % 2)
-        == 0
 }

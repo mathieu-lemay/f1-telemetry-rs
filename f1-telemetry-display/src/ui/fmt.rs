@@ -4,6 +4,7 @@ use ncurses::*;
 
 use f1_telemetry::packet::generic::{Team, TyreCompoundVisual};
 use f1_telemetry::packet::participants::Driver;
+use std::time::{SystemTime, UNIX_EPOCH};
 
 const PERCENTAGE_BAR_SLICES: i8 = 20;
 
@@ -241,4 +242,21 @@ pub fn format_speed(speed: u16) -> String {
 pub fn center(hwnd: WINDOW, s: &str) -> i32 {
     let w = getmaxx(hwnd);
     (w - s.len() as i32) / 2
+}
+
+pub(crate) fn blink() -> bool {
+    (SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .unwrap()
+        .as_secs()
+        % 2)
+        == 0
+}
+
+pub fn blink_colour(c1: i16, c2: i16) {
+    if blink() {
+        set_color(None, c1);
+    } else {
+        set_color(None, c2)
+    }
 }
