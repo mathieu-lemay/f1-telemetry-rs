@@ -168,11 +168,11 @@ pub fn set_color(w: Option<WINDOW>, c: i16) {
     };
 }
 
-pub fn set_damage_color(w: Option<WINDOW>, damage_pct: u8) {
+pub fn set_damage_color(w: Option<WINDOW>, damage_pct: u8, ok: u8, caution: u8, warning: u8) {
     let c = match damage_pct {
-        d if d <= 30 => Color::StatusOk,
-        d if d <= 60 => Color::StatusCaution,
-        d if d <= 80 => Color::StatusWarning,
+        d if d <= ok => Color::StatusOk,
+        d if d <= caution => Color::StatusCaution,
+        d if d <= warning => Color::StatusWarning,
         _ => Color::StatusDanger,
     };
 
