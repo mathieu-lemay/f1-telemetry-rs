@@ -105,7 +105,7 @@ pub(crate) fn unpack_nationality(value: u8) -> Result<Nationality, UnpackError> 
         86 => Ok(Nationality::Welsh),
         87 => Ok(Nationality::Barbadian),
         88 => Ok(Nationality::Vietnamese),
-        0 => Ok(Nationality::Invalid),
+        0 | 255 => Ok(Nationality::Invalid),
         _ => Err(UnpackError(format!("Invalid Nationality value: {}", value))),
     }
 }
