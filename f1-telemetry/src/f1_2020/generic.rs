@@ -124,7 +124,7 @@ pub(crate) fn unpack_result_status(value: u8) -> Result<ResultStatus, UnpackErro
             "Invalid ResultStatus value: {}",
             value
         ))),
-    }q
+    }
 }
 
 pub(crate) fn unpack_team(value: u8) -> Result<Team, UnpackError> {
