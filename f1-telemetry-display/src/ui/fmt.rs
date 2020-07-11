@@ -41,6 +41,8 @@ pub enum Color {
     Haas,
     McLaren,
     AlfaRomeo,
+    AlphaTauri,
+    MyTeam,
 }
 
 trait ToColor {
@@ -60,6 +62,8 @@ impl ToColor for Team {
             Team::Haas => Color::Haas,
             Team::McLaren => Color::McLaren,
             Team::AlfaRomeo => Color::AlfaRomeo,
+            Team::AlphaTauri => Color::AlphaTauri,
+            Team::MyTeam => Color::MyTeam,
             _ => Color::Black,
         }
     }
@@ -102,19 +106,31 @@ fn init_team_colors() {
     for (t, c) in vec![
         (Color::Mercedes, (0, 210, 190)),
         (Color::Ferrari, (220, 0, 0)),
-        (Color::RedBullRacing, (30, 65, 255)),
-        (Color::Williams, (255, 255, 255)),
+        (Color::RedBullRacing, (60, 0, 255)),
+        (Color::Williams, (0, 128, 255)),
         (Color::RacingPoint, (245, 150, 200)),
         (Color::Renault, (255, 245, 0)),
         (Color::ToroRosso, (70, 155, 255)),
-        (Color::Haas, (240, 215, 135)),
+        (Color::Haas, (119, 119, 119)),
         (Color::McLaren, (255, 135, 0)),
         (Color::AlfaRomeo, (155, 0, 0)),
+        (Color::AlphaTauri, (255, 255, 255)),
+        (Color::MyTeam, (118, 0, 218)),
     ] {
         let idx = t as i16;
-        init_color(idx, c.0, c.1, c.2);
+        let (r, g, b) = rgb_to_curses(c);
+        init_color(idx, r, g, b);
         init_pair(idx, COLOR_WHITE, idx);
     }
+}
+
+#[inline]
+fn rgb_to_curses(c: (i16, i16, i16)) -> (i16, i16, i16) {
+    let r = (c.0 as f32 / 255.0 * 500.0) as i16;
+    let g = (c.1 as f32 / 255.0 * 500.0) as i16;
+    let b = (c.2 as f32 / 255.0 * 500.0) as i16;
+
+    (r, g, b)
 }
 
 fn init_status_colors() {
