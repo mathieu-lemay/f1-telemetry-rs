@@ -189,6 +189,8 @@ impl GameState {
         self.telemetry_info.drs = td.drs();
         self.telemetry_info.rev_lights_percent = td.rev_lights_percent();
         self.telemetry_info.engine_temperature = td.engine_temperature();
+
+        self.car_status.drs = td.drs();
     }
 
     fn parse_car_status(&mut self, car_status_data: &PacketCarStatusData) {
@@ -282,6 +284,7 @@ pub struct CarStatus {
     pub fuel_remaining_laps: f32,
     pub tyre_compound: TyreCompoundVisual,
     pub tyre_age_laps: u8,
+    pub drs: bool,
 }
 
 #[derive(Default)]

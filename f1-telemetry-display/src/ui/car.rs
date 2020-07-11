@@ -50,6 +50,11 @@ const REAR_WING: &str = "\
 |------------------|
 |------------------|";
 
+const REAR_WING_DRS: &str = "\
+|------------------|
+|                  |
+|------------------|";
+
 pub fn render_car(w: WINDOW, car_status: &CarStatus) {
     render_component(w, LEFT_FRONT_WING, car_status.left_front_wing_damage, 0, 1);
     render_component(
@@ -62,7 +67,18 @@ pub fn render_car(w: WINDOW, car_status: &CarStatus) {
     render_component(w, BODY, 0, 4, 7);
     render_component(w, ENGINE, car_status.engine_damage, 11, 12);
     render_component(w, GEARBOX, car_status.gearbox_damage, 15, 14);
-    render_component(w, REAR_WING, car_status.rear_wing_damage, 18, 5);
+
+    render_component(
+        w,
+        if car_status.drs {
+            REAR_WING_DRS
+        } else {
+            REAR_WING
+        },
+        car_status.rear_wing_damage,
+        18,
+        5,
+    );
 
     render_component(w, TYRE, car_status.tyres_damage.front_left(), 4, 0);
     render_component(w, TYRE, car_status.tyres_damage.front_right(), 4, 22);
