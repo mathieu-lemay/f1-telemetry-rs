@@ -245,6 +245,14 @@ impl GameState {
         self.car_status.tyre_compound = csd.visual_tyre_compound();
         self.car_status.tyre_age_laps = csd.tyre_age_laps();
     }
+
+    pub(crate) fn compute_theoretical_best_lap(&self) -> u32 {
+        if self.best_sector_times.2 > 0 {
+            self.best_sector_times.0 + self.best_sector_times.1 + self.best_sector_times.2
+        } else {
+            0
+        }
+    }
 }
 
 pub struct Participant {

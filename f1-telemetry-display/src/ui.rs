@@ -315,15 +315,8 @@ impl Ui {
 
         mvwaddstr(wnd, 0, 2, header);
 
-        let best_s1 = game_state.best_sector_times.0;
-        let best_s2 = game_state.best_sector_times.1;
-        let best_s3 = game_state.best_sector_times.2;
-
-        let best_lap = if best_s3 > 0 {
-            best_s1 + best_s2 + best_s3
-        } else {
-            0
-        };
+        let (best_s1, best_s2, best_s3) = game_state.best_sector_times;
+        let best_lap = game_state.compute_theoretical_best_lap();
 
         let s = format!(
             "{}     | {}     | {}     | {}   ",
