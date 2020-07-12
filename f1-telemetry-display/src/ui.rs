@@ -21,6 +21,7 @@ const CURRENT_CAR_DATA_Y_OFFSET: i32 = 24;
 pub enum View {
     Dashboard,
     TrackOverview,
+    LapDetail,
 }
 
 pub struct Ui {
@@ -79,8 +80,8 @@ impl Ui {
         let rel_pos_swnd = derwin(track_wnd, 12, getmaxx(track_wnd) - 4, 15, 2);
 
         let laps_wnd = Ui::create_win(win_h, win_w, WINDOW_Y_OFFSET, 1, Some("Lap Details"));
-        let lap_details_swnd = derwin(dashboard_wnd, 23, 120, 1, 4);
-        let best_sectors_swnd = derwin(dashboard_wnd, 2, 80, 24, 4);
+        let lap_details_swnd = derwin(dashboard_wnd, 23, 123, 1, 4);
+        let best_sectors_swnd = derwin(dashboard_wnd, 2, 80, 24, 3);
         let active_wnd = dashboard_wnd;
         wrefresh(active_wnd);
 
@@ -142,6 +143,7 @@ impl Ui {
         self.render_main_view(game_state, packet);
         self.render_dashboard_view(game_state, packet);
         self.render_track_view(game_state, packet);
+        self.render_lap_view(game_state, packet);
     }
 
     fn render_main_view(&mut self, game_state: &GameState, packet: &Packet) {
@@ -177,6 +179,22 @@ impl Ui {
         }
     }
 
+    fn render_lap_view(&mut self, game_state: &GameState, packet: &Packet) {
+        if !self.should_render(View::LapDetail) {
+            return;
+        }
+
+        match packet {
+            Packet::Lap(_) => {
+                self.print_lap_details_lap_info(&game_state);
+                self.print_best_sectors_lap_info(&game_state);
+            }
+            Packet::CarStatus(_) => {
+                self.print_tyres_compounds(&game_state);
+            }
+            _ => {}
+        }
+    }
     fn render_track_view(&self, game_state: &GameState, packet: &Packet) {
         if !self.should_render(View::TrackOverview) {
             return;
@@ -313,8 +331,6 @@ impl Ui {
 
         self.commit(wnd);
     }
-
-
 
     fn print_dashboard_lap_info(&self, game_state: &GameState) {
         let wnd = self.lap_times_swnd;

@@ -63,7 +63,7 @@ fn main() {
                 }
                 ncurses::WchResult::Char(51) => {
                     // 3
-                    renderer.switch_view(View::LapDetail);
+                    ui.switch_view(View::LapDetail);
                 }
                 ncurses::WchResult::Char(113) => {
                     // q
