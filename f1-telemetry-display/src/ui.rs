@@ -232,6 +232,9 @@ impl Ui {
             fmt::blink_colour(COLOR_WHITE, COLOR_YELLOW);
             addstr_center(self.mwnd, SESSION_Y_OFFSET + 3, sinfo.safety_car.name());
             fmt::reset();
+        } else {
+            wmove(self.mwnd, SESSION_Y_OFFSET + 3, 0);
+            clrtoeol();
         }
     }
 
