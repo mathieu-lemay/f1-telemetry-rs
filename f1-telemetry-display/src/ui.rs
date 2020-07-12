@@ -24,19 +24,30 @@ pub enum View {
     LapDetail,
 }
 
-pub struct Ui {
-    active_view: View,
-    mwnd: WINDOW,
-    active_wnd: WINDOW,
-    dashboard_wnd: WINDOW,
-    track_wnd: WINDOW,
-    laps_wnd: WINDOW,
+struct DashboardView {
+    win: WINDOW,
     tyres_swnd: WINDOW,
     lap_times_swnd: WINDOW,
     car_swnd: WINDOW,
+}
+
+struct TrackView {
+    win: WINDOW,
     rel_pos_swnd: WINDOW,
-    lap_details_swnd: WINDOW,
+}
+
+struct LapDetailView {
+    win: WINDOW,
+    lap_detail_swnd: WINDOW,
     best_sectors_swnd: WINDOW,
+}
+
+pub struct Ui {
+    main_window: WINDOW,
+    active_view: View,
+    dashboard_view: DashboardView,
+    track_view: TrackView,
+    lap_detail_view: LapDetailView,
 }
 
 impl Ui {
@@ -76,28 +87,39 @@ impl Ui {
         let lap_times_swnd = derwin(dashboard_wnd, 23, 80, 1, 4);
         let car_swnd = derwin(dashboard_wnd, 24, 39, 2, 90);
 
-        let track_wnd = Ui::create_win(win_h, win_w, WINDOW_Y_OFFSET, 1, Some("Track Status"));
-        let rel_pos_swnd = derwin(track_wnd, 12, getmaxx(track_wnd) - 4, 15, 2);
-
-        let laps_wnd = Ui::create_win(win_h, win_w, WINDOW_Y_OFFSET, 1, Some("Lap Details"));
-        let lap_details_swnd = derwin(laps_wnd, 23, 123, 1, 4);
-        let best_sectors_swnd = derwin(laps_wnd, 2, 80, 24, 3);
-        let active_wnd = dashboard_wnd;
-        wrefresh(active_wnd);
-
-        Ui {
-            active_view: View::Dashboard,
-            mwnd,
-            active_wnd,
-            dashboard_wnd,
-            laps_wnd,
-            track_wnd,
+        let dashboard_view = DashboardView {
+            win: dashboard_wnd,
             tyres_swnd,
             lap_times_swnd,
             car_swnd,
+        };
+
+        let track_wnd = Ui::create_win(win_h, win_w, WINDOW_Y_OFFSET, 1, Some("Track Status"));
+        let rel_pos_swnd = derwin(track_wnd, 12, getmaxx(track_wnd) - 4, 15, 2);
+
+        let track_view = TrackView {
+            win: track_wnd,
             rel_pos_swnd,
-            lap_details_swnd,
+        };
+
+        let laps_wnd = Ui::create_win(win_h, win_w, WINDOW_Y_OFFSET, 1, Some("Lap Details"));
+        let lap_detail_swnd = derwin(laps_wnd, 23, 123, 1, 4);
+        let best_sectors_swnd = derwin(laps_wnd, 2, 80, 24, 3);
+
+        let lap_detail_view = LapDetailView {
+            win: laps_wnd,
+            lap_detail_swnd,
             best_sectors_swnd,
+        };
+
+        wrefresh(dashboard_wnd);
+
+        Ui {
+            main_window: mwnd,
+            active_view: View::Dashboard,
+            dashboard_view,
+            track_view,
+            lap_detail_view,
         }
     }
 
@@ -111,14 +133,13 @@ impl Ui {
         }
 
         let neww = match &view {
-            View::Dashboard => self.dashboard_wnd,
-            View::TrackOverview => self.track_wnd,
-            View::LapDetail => self.laps_wnd,
+            View::Dashboard => self.dashboard_view.win,
+            View::TrackOverview => self.track_view.win,
+            View::LapDetail => self.lap_detail_view.win,
         };
 
         self.active_view = view;
 
-        self.active_wnd = neww;
         redrawwin(neww);
         self.commit(neww);
     }
@@ -141,9 +162,12 @@ impl Ui {
 
     pub fn render(&mut self, game_state: &GameState, packet: &Packet) {
         self.render_main_view(game_state, packet);
-        self.render_dashboard_view(game_state, packet);
-        self.render_track_view(game_state, packet);
-        self.render_lap_view(game_state, packet);
+
+        match self.active_view {
+            View::Dashboard => self.render_dashboard_view(game_state, packet),
+            View::TrackOverview => self.render_track_view(game_state, packet),
+            View::LapDetail => self.render_lap_view(game_state, packet),
+        };
     }
 
     fn render_main_view(&mut self, game_state: &GameState, packet: &Packet) {
@@ -162,10 +186,6 @@ impl Ui {
     }
 
     fn render_dashboard_view(&mut self, game_state: &GameState, packet: &Packet) {
-        if !self.should_render(View::Dashboard) {
-            return;
-        }
-
         match packet {
             Packet::Lap(_) => {
                 self.print_dashboard_lap_info(&game_state);
@@ -180,10 +200,6 @@ impl Ui {
     }
 
     fn render_lap_view(&mut self, game_state: &GameState, packet: &Packet) {
-        if !self.should_render(View::LapDetail) {
-            return;
-        }
-
         match packet {
             Packet::Lap(_) => {
                 self.print_lap_details_lap_info(&game_state);
@@ -197,10 +213,6 @@ impl Ui {
     }
 
     fn render_track_view(&self, game_state: &GameState, packet: &Packet) {
-        if !self.should_render(View::TrackOverview) {
-            return;
-        }
-
         match packet {
             Packet::Lap(_) => {
                 self.print_track_status_lap_info(game_state);
@@ -208,10 +220,6 @@ impl Ui {
             Packet::Session(_) => self.print_weather_info(game_state),
             _ => {}
         }
-    }
-
-    fn should_render(&self, view: View) -> bool {
-        view == self.active_view
     }
 
     fn print_session_info(&self, game_state: &GameState) {
@@ -225,22 +233,26 @@ impl Ui {
             fmt::format_time(sinfo.duration)
         );
 
-        addstr_center(self.mwnd, SESSION_Y_OFFSET, session_name);
-        addstr_center(self.mwnd, SESSION_Y_OFFSET + 1, lap_info);
-        addstr_center(self.mwnd, SESSION_Y_OFFSET + 2, session_time);
+        addstr_center(self.main_window, SESSION_Y_OFFSET, session_name);
+        addstr_center(self.main_window, SESSION_Y_OFFSET + 1, lap_info);
+        addstr_center(self.main_window, SESSION_Y_OFFSET + 2, session_time);
 
         if sinfo.safety_car == SafetyCar::Virtual || sinfo.safety_car == SafetyCar::Full {
             fmt::blink_colour(COLOR_WHITE, COLOR_YELLOW);
-            addstr_center(self.mwnd, SESSION_Y_OFFSET + 3, sinfo.safety_car.name());
+            addstr_center(
+                self.main_window,
+                SESSION_Y_OFFSET + 3,
+                sinfo.safety_car.name(),
+            );
             fmt::reset();
         } else {
-            wmove(self.mwnd, SESSION_Y_OFFSET + 3, 0);
+            wmove(self.main_window, SESSION_Y_OFFSET + 3, 0);
             clrtoeol();
         }
     }
 
     fn print_lap_details_lap_info(&self, game_state: &GameState) {
-        let wnd = self.lap_details_swnd;
+        let wnd = self.lap_detail_view.lap_detail_swnd;
 
         werase(wnd);
         fmt::wset_bold(wnd);
@@ -293,7 +305,7 @@ impl Ui {
     }
 
     fn print_best_sectors_lap_info(&self, game_state: &GameState) {
-        let wnd = self.best_sectors_swnd;
+        let wnd = self.lap_detail_view.best_sectors_swnd;
 
         werase(wnd);
 
@@ -337,7 +349,7 @@ impl Ui {
     }
 
     fn print_dashboard_lap_info(&self, game_state: &GameState) {
-        let wnd = self.lap_times_swnd;
+        let wnd = self.dashboard_view.lap_times_swnd;
 
         werase(wnd);
 
@@ -388,7 +400,7 @@ impl Ui {
     }
 
     fn print_track_status_lap_info(&self, game_state: &GameState) {
-        let wnd = self.rel_pos_swnd;
+        let wnd = self.track_view.rel_pos_swnd;
         let w = getmaxx(wnd) - 17;
 
         let relative_positions = &game_state.relative_positions;
@@ -441,14 +453,14 @@ impl Ui {
             msg += &format!(" ({})", detail);
         }
 
-        mvaddstr(getmaxy(self.mwnd) - 1, LEFT_BORDER_X_OFFSET, &msg);
+        mvaddstr(getmaxy(self.main_window) - 1, LEFT_BORDER_X_OFFSET, &msg);
         clrtoeol();
 
         fmt::reset();
     }
 
     fn print_telemetry_info(&self, game_state: &GameState) {
-        let wnd = self.dashboard_wnd;
+        let wnd = self.dashboard_view.win;
 
         let telemetry_info = &game_state.telemetry_info;
 
@@ -494,7 +506,7 @@ impl Ui {
     }
 
     fn print_weather_info(&self, game_state: &GameState) {
-        let wnd = self.track_wnd;
+        let wnd = self.track_view.win;
 
         let session = &game_state.session_info;
 
@@ -516,7 +528,7 @@ impl Ui {
     }
 
     fn print_car_status(&self, game_state: &GameState) {
-        let wnd = self.car_swnd;
+        let wnd = self.dashboard_view.car_swnd;
 
         let car_status = &game_state.car_status;
 
@@ -553,7 +565,7 @@ impl Ui {
     }
 
     fn print_tyres_compounds(&self, game_state: &GameState) {
-        let wnd = self.tyres_swnd;
+        let wnd = self.dashboard_view.tyres_swnd;
 
         werase(wnd);
 
