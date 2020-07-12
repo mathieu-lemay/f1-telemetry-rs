@@ -315,26 +315,15 @@ impl Ui {
 
         mvwaddstr(wnd, 0, 0, header);
 
-        let mut best_s1 = u16::MAX;
-        let mut best_s2 = u16::MAX;
-        let mut best_s3 = u16::MAX;
+        let best_s1 = game_state.best_sector_times.0;
+        let best_s2 = game_state.best_sector_times.1;
+        let best_s3 = game_state.best_sector_times.2;
 
-        for li in game_state.lap_infos.iter() {
-            if 0 < li.best_sector_1 && li.best_sector_1 < best_s1 {
-                best_s1 = li.best_sector_1
-            }
-            if 0 < li.best_sector_2 && li.best_sector_2 < best_s2 {
-                best_s2 = li.best_sector_2
-            }
-            if 0 < li.best_sector_3 && li.best_sector_3 < best_s3 {
-                best_s3 = li.best_sector_3
-            }
-        }
-
-        let mut best_lap = 0;
-        if best_s3 != u16::MAX {
-            best_lap = best_s1 + best_s2 + best_s3
-        }
+        let best_lap = if best_s3 > 0 {
+            best_s1 + best_s2 + best_s3
+        } else {
+            0
+        };
 
         let s = format!(
             "  {} | {} | {} | {}   ",

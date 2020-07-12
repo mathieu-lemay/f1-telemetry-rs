@@ -17,6 +17,7 @@ pub struct GameState {
     pub session_uid: Option<u64>,
     pub session_info: SessionInfo,
     pub lap_infos: Vec<LapInfo>,
+    pub best_sector_times: (u32, u32, u32),
     pub event_info: EventInfo,
     pub participants: Vec<Participant>,
     pub car_status: CarStatus,
@@ -93,6 +94,30 @@ impl GameState {
             li.sector_1 = ld.sector_1_time();
             li.sector_2 = ld.sector_2_time();
         }
+
+        let best_s1 = self
+            .lap_infos
+            .iter()
+            .filter(|li| li.best_sector_1 > 0)
+            .map(|li| li.best_sector_1)
+            .min()
+            .unwrap_or(0) as u32;
+        let best_s2 = self
+            .lap_infos
+            .iter()
+            .filter(|li| li.best_sector_2 > 0)
+            .map(|li| li.best_sector_2)
+            .min()
+            .unwrap_or(0) as u32;
+        let best_s3 = self
+            .lap_infos
+            .iter()
+            .filter(|li| li.best_sector_3 > 0)
+            .map(|li| li.best_sector_3)
+            .min()
+            .unwrap_or(0) as u32;
+
+        self.best_sector_times = (best_s1, best_s2, best_s3);
     }
 
     fn parse_lap_data_current_lap(&mut self, lap_data: &PacketLapData) {
