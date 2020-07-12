@@ -40,7 +40,7 @@ fn main() {
         match stream.next() {
             Ok(p) => match p {
                 Some(p) => {
-                    game_state.parse_packet(&p);
+                    game_state.update(&p);
                     ui.render(&game_state, &p);
                 }
                 None => sleep(Duration::from_millis(5)),

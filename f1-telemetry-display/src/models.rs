@@ -25,7 +25,7 @@ pub struct GameState {
 }
 
 impl GameState {
-    pub fn parse_packet(&mut self, packet: &Packet) {
+    pub fn update(&mut self, packet: &Packet) {
         self.validate_session(packet);
 
         match packet {
