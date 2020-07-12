@@ -87,6 +87,11 @@ impl GameState {
             li.penalties = ld.penalties();
             li.lap_distance = ld.lap_distance();
             li.total_distance = ld.total_distance();
+            li.best_sector_1 = ld.best_overall_sector_1_time();
+            li.best_sector_2 = ld.best_overall_sector_2_time();
+            li.best_sector_3 = ld.best_overall_sector_3_time();
+            li.sector_1 = ld.sector_1_time();
+            li.sector_2 = ld.sector_2_time();
         }
     }
 
@@ -244,6 +249,11 @@ pub struct LapInfo {
     pub lap_distance: f32,
     pub total_distance: f32,
     pub tyre_compound: TyreCompoundVisual,
+    pub best_sector_1: u16,
+    pub best_sector_2: u16,
+    pub best_sector_3: u16,
+    pub sector_1: u16,
+    pub sector_2: u16,
 }
 
 #[derive(Default)]

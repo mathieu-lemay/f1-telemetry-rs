@@ -62,6 +62,10 @@ fn main() {
                     // 2
                     renderer.switch_view(View::TrackOverview);
                 }
+                ncurses::WchResult::Char(51) => {
+                    // 3
+                    renderer.switch_view(View::LapDetail);
+                }
                 ncurses::WchResult::Char(113) => {
                     // q
                     break;

@@ -7,6 +7,7 @@ use crate::ui::Ui;
 pub enum View {
     Dashboard,
     TrackOverview,
+    LapDetail,
 }
 
 pub struct Renderer {
@@ -37,6 +38,7 @@ impl Renderer {
         self.render_main_view(game_state, packet);
         self.render_dashboard_view(game_state, packet);
         self.render_track_view(game_state, packet);
+        self.render_lap_view(game_state, packet);
     }
 
     fn render_main_view(&mut self, game_state: &GameState, packet: &Packet) {
@@ -66,6 +68,22 @@ impl Renderer {
             Packet::CarTelemetry(_) => self.ui.print_telemetry_info(&game_state),
             Packet::CarStatus(_) => {
                 self.ui.print_car_status(&game_state);
+                self.ui.print_tyres_compounds(&game_state);
+            }
+            _ => {}
+        }
+    }
+    fn render_lap_view(&mut self, game_state: &GameState, packet: &Packet) {
+        if !self.should_render(View::LapDetail) {
+            return;
+        }
+
+        match packet {
+            Packet::Lap(_) => {
+                self.ui.print_lap_details_lap_info(&game_state);
+                self.ui.print_best_sectors_lap_info(&game_state);
+            }
+            Packet::CarStatus(_) => {
                 self.ui.print_tyres_compounds(&game_state);
             }
             _ => {}

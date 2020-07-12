@@ -26,6 +26,9 @@ pub struct Ui {
     lap_times_swnd: WINDOW,
     car_swnd: WINDOW,
     rel_pos_swnd: WINDOW,
+    laps_wnd: WINDOW,
+    lap_details_swnd: WINDOW,
+    best_sectors_swnd: WINDOW,
 }
 
 impl Ui {
@@ -68,6 +71,9 @@ impl Ui {
         let track_wnd = Ui::create_win(win_h, win_w, WINDOW_Y_OFFSET, 1, Some("Track Status"));
         let rel_pos_swnd = derwin(track_wnd, 12, getmaxx(track_wnd) - 4, 15, 2);
 
+        let laps_wnd = Ui::create_win(win_h, win_w, WINDOW_Y_OFFSET, 1, Some("Lap Details"));
+        let lap_details_swnd = derwin(dashboard_wnd, 23, 120, 1, 4);
+        let best_sectors_swnd = derwin(dashboard_wnd, 2, 80, 24, 4);
         let active_wnd = dashboard_wnd;
         wrefresh(active_wnd);
 
@@ -80,6 +86,9 @@ impl Ui {
             lap_times_swnd,
             car_swnd,
             rel_pos_swnd,
+            laps_wnd,
+            lap_details_swnd,
+            best_sectors_swnd,
         }
     }
 
@@ -91,6 +100,7 @@ impl Ui {
         let neww = match view {
             View::Dashboard => self.dashboard_wnd,
             View::TrackOverview => self.track_wnd,
+            View::LapDetail => self.laps_wnd,
         };
 
         if neww == self.active_wnd {
@@ -139,6 +149,103 @@ impl Ui {
             addstr_center(self.mwnd, SESSION_Y_OFFSET + 3, sinfo.safety_car.name());
             fmt::reset();
         }
+    }
+
+    pub fn print_lap_details_lap_info(&self, game_state: &GameState) {
+        let wnd = self.lap_details_swnd;
+
+        werase(wnd);
+        fmt::wset_bold(wnd);
+
+        let header =
+            "  P. NAME            | CURRENT LAP  | LAST LAP     | BEST LAP     | LAST SECTOR 1| LAST SECTOR 2| LAST SECTOR 3| STATUS ";
+
+        mvwaddstr(wnd, 0, 0, header);
+
+        for (idx, li) in game_state.lap_infos.iter().enumerate() {
+            if let ResultStatus::Invalid = li.status {
+                continue;
+            }
+
+            let participant = &game_state.participants[idx];
+
+            let pos = match li.status {
+                ResultStatus::Retired => String::from("RET"),
+                ResultStatus::NotClassified => String::from("N/C"),
+                ResultStatus::Disqualified => String::from("DSQ"),
+                _ => format!("{:3}", li.position),
+            };
+
+            let penalties = if li.penalties > 0 {
+                format!("+{:2}s", li.penalties)
+            } else {
+                format!("{: <4}", "")
+            };
+
+            let s = format!(
+                "{}. {:15} | {} | {} | {} | {} | {} | {} | {}{}{} ",
+                pos,
+                fmt::format_driver_name(&participant.name, participant.driver),
+                fmt::format_time_ms(li.current_lap_time),
+                fmt::format_time_ms(li.last_lap_time),
+                fmt::format_time_ms(li.best_lap_time),
+                fmt::format_time_ms(li.sector_1 as f32 / 1000.0),
+                fmt::format_time_ms(li.sector_2 as f32 / 1000.0),
+                fmt::format_time_ms(li.last_lap_time - li.sector_2 as f32 / 1000.0),
+                if li.in_pit { "P" } else { " " },
+                if li.lap_invalid { "!" } else { " " },
+                penalties,
+            );
+
+            fmt::set_team_color(wnd, participant.team);
+            mvwaddstr(wnd, li.position as i32, 0, s.as_str());
+        }
+
+        self.commit(wnd);
+    }
+
+    pub fn print_best_sectors_lap_info(&self, game_state: &GameState) {
+        let wnd = self.best_sectors_swnd;
+
+        werase(wnd);
+
+        fmt::wset_bold(wnd);
+
+        let header = "  BEST SECTOR 1| BEST SECTOR 2| BEST SECTOR 3| THEORETICAL BEST LAP ";
+
+        mvwaddstr(wnd, 0, 0, header);
+
+        let mut best_s1 = u16::MAX;
+        let mut best_s2 = u16::MAX;
+        let mut best_s3 = u16::MAX;
+
+        for li in game_state.lap_infos.iter() {
+            if 0 < li.best_sector_1 && li.best_sector_1 < best_s1 {
+                best_s1 = li.best_sector_1
+            }
+            if 0 < li.best_sector_2 && li.best_sector_2 < best_s2 {
+                best_s2 = li.best_sector_2
+            }
+            if 0 < li.best_sector_3 && li.best_sector_3 < best_s3 {
+                best_s3 = li.best_sector_3
+            }
+        }
+
+        let mut best_lap = 0;
+        if best_s3 != u16::MAX {
+            best_lap = best_s1 + best_s2 + best_s3
+        }
+
+        let s = format!(
+            "  {} | {} | {} | {}   ",
+            fmt::format_time_ms(best_s1 as f32 / 1000.0),
+            fmt::format_time_ms(best_s2 as f32 / 1000.0),
+            fmt::format_time_ms(best_s3 as f32 / 1000.0),
+            fmt::format_time_ms(best_lap as f32 / 1000.0),
+        );
+        mvwaddstr(wnd, 1, 0, s.as_str());
+
+        self.commit(wnd);
     }
 
     pub fn print_dashboard_lap_info(&self, game_state: &GameState) {
