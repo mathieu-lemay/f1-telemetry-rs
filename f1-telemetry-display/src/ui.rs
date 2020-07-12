@@ -2,9 +2,9 @@ use ncurses::*;
 
 use f1_telemetry::packet::generic::{ResultStatus, TyreCompoundVisual};
 use f1_telemetry::packet::session::SafetyCar;
+use f1_telemetry::packet::Packet;
 
 use crate::models::*;
-use crate::render::View;
 
 mod car;
 pub mod fmt;
@@ -17,6 +17,12 @@ const WINDOW_Y_OFFSET: i32 = 5;
 const LEFT_BORDER_X_OFFSET: i32 = 2;
 const CURRENT_CAR_DATA_Y_OFFSET: i32 = 24;
 
+#[derive(Eq, PartialEq)]
+pub enum View {
+    Dashboard,
+    TrackOverview,
+}
+
 pub struct Ui {
     mwnd: WINDOW,
     active_wnd: WINDOW,
@@ -26,6 +32,7 @@ pub struct Ui {
     lap_times_swnd: WINDOW,
     car_swnd: WINDOW,
     rel_pos_swnd: WINDOW,
+    active_view: View,
 }
 
 impl Ui {
@@ -80,6 +87,7 @@ impl Ui {
             lap_times_swnd,
             car_swnd,
             rel_pos_swnd,
+            active_view: View::Dashboard,
         }
     }
 
@@ -87,19 +95,20 @@ impl Ui {
         endwin();
     }
 
-    pub fn switch_window(&mut self, view: &View) {
-        let neww = match view {
+    pub fn switch_view(&mut self, view: View) {
+        if view == self.active_view {
+            return;
+        }
+
+        let neww = match &view {
             View::Dashboard => self.dashboard_wnd,
             View::TrackOverview => self.track_wnd,
         };
 
-        if neww == self.active_wnd {
-            return;
-        }
-
-        redrawwin(neww);
+        self.active_view = view;
 
         self.active_wnd = neww;
+        redrawwin(neww);
         self.commit(neww);
     }
 
@@ -119,7 +128,64 @@ impl Ui {
         wnd
     }
 
-    pub fn print_session_info(&self, game_state: &GameState) {
+    pub fn render(&mut self, game_state: &GameState, packet: &Packet) {
+        self.render_main_view(game_state, packet);
+        self.render_dashboard_view(game_state, packet);
+        self.render_track_view(game_state, packet);
+    }
+
+    fn render_main_view(&mut self, game_state: &GameState, packet: &Packet) {
+        match packet {
+            Packet::Session(_) => {
+                self.print_session_info(&game_state);
+            }
+            Packet::Event(_) => {
+                self.print_event_info(&game_state);
+            }
+            Packet::Lap(_) => {
+                self.print_session_info(&game_state);
+            }
+            _ => {}
+        }
+    }
+
+    fn render_dashboard_view(&mut self, game_state: &GameState, packet: &Packet) {
+        if !self.should_render(View::Dashboard) {
+            return;
+        }
+
+        match packet {
+            Packet::Lap(_) => {
+                self.print_dashboard_lap_info(&game_state);
+            }
+            Packet::CarTelemetry(_) => self.print_telemetry_info(&game_state),
+            Packet::CarStatus(_) => {
+                self.print_car_status(&game_state);
+                self.print_tyres_compounds(&game_state);
+            }
+            _ => {}
+        }
+    }
+
+    fn render_track_view(&self, game_state: &GameState, packet: &Packet) {
+        if !self.should_render(View::TrackOverview) {
+            return;
+        }
+
+        match packet {
+            Packet::Lap(_) => {
+                self.print_track_status_lap_info(game_state);
+            }
+            Packet::Session(_) => self.print_weather_info(game_state),
+            _ => {}
+        }
+    }
+
+    fn should_render(&self, view: View) -> bool {
+        view == self.active_view
+    }
+
+    fn print_session_info(&self, game_state: &GameState) {
         let sinfo = &game_state.session_info;
 
         let session_name = &format!("{} - {}", sinfo.session_name, sinfo.track_name);
@@ -141,7 +207,7 @@ impl Ui {
         }
     }
 
-    pub fn print_dashboard_lap_info(&self, game_state: &GameState) {
+    fn print_dashboard_lap_info(&self, game_state: &GameState) {
         let wnd = self.lap_times_swnd;
 
         werase(wnd);
@@ -192,7 +258,7 @@ impl Ui {
         self.commit(wnd);
     }
 
-    pub fn print_track_status_lap_info(&self, game_state: &GameState) {
+    fn print_track_status_lap_info(&self, game_state: &GameState) {
         let wnd = self.rel_pos_swnd;
         let w = getmaxx(wnd) - 17;
 
@@ -227,7 +293,7 @@ impl Ui {
         self.commit(wnd);
     }
 
-    pub fn print_event_info(&self, game_state: &GameState) {
+    fn print_event_info(&self, game_state: &GameState) {
         fmt::set_bold();
 
         let event_info = &game_state.event_info;
@@ -252,7 +318,7 @@ impl Ui {
         fmt::reset();
     }
 
-    pub fn print_telemetry_info(&self, game_state: &GameState) {
+    fn print_telemetry_info(&self, game_state: &GameState) {
         let wnd = self.dashboard_wnd;
 
         let telemetry_info = &game_state.telemetry_info;
@@ -298,7 +364,7 @@ impl Ui {
         self.commit(wnd)
     }
 
-    pub fn print_weather_info(&self, game_state: &GameState) {
+    fn print_weather_info(&self, game_state: &GameState) {
         let wnd = self.track_wnd;
 
         let session = &game_state.session_info;
@@ -320,7 +386,7 @@ impl Ui {
         self.commit(wnd);
     }
 
-    pub fn print_car_status(&self, game_state: &GameState) {
+    fn print_car_status(&self, game_state: &GameState) {
         let wnd = self.car_swnd;
 
         let car_status = &game_state.car_status;
@@ -357,7 +423,7 @@ impl Ui {
         self.commit(wnd);
     }
 
-    pub fn print_tyres_compounds(&self, game_state: &GameState) {
+    fn print_tyres_compounds(&self, game_state: &GameState) {
         let wnd = self.tyres_swnd;
 
         werase(wnd);

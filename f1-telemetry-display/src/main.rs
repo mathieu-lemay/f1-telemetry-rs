@@ -10,10 +10,9 @@ use f1_telemetry::Stream;
 use simplelog::*;
 
 use crate::models::GameState;
-use crate::render::{Renderer, View};
+use crate::ui::{Ui, View};
 
 mod models;
-mod render;
 mod ui;
 
 fn init_logger() {
@@ -34,7 +33,7 @@ fn main() {
 
     info!("Listening on {}", stream.socket().local_addr().unwrap());
 
-    let mut renderer = Renderer::new();
+    let mut ui = Ui::init();
     let mut game_state = GameState::default();
 
     loop {
@@ -42,7 +41,7 @@ fn main() {
             Ok(p) => match p {
                 Some(p) => {
                     game_state.parse_packet(&p);
-                    renderer.render(&game_state, &p);
+                    ui.render(&game_state, &p);
                 }
                 None => sleep(Duration::from_millis(5)),
             },
@@ -56,11 +55,11 @@ fn main() {
             match ch {
                 ncurses::WchResult::Char(49) => {
                     // 1
-                    renderer.switch_view(View::Dashboard);
+                    ui.switch_view(View::Dashboard);
                 }
                 ncurses::WchResult::Char(50) => {
                     // 2
-                    renderer.switch_view(View::TrackOverview);
+                    ui.switch_view(View::TrackOverview);
                 }
                 ncurses::WchResult::Char(113) => {
                     // q
@@ -78,5 +77,5 @@ fn main() {
         }
     }
 
-    renderer.destroy();
+    ui.destroy();
 }
