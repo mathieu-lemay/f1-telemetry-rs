@@ -25,16 +25,16 @@ pub enum View {
 }
 
 pub struct Ui {
+    active_view: View,
     mwnd: WINDOW,
     active_wnd: WINDOW,
     dashboard_wnd: WINDOW,
     track_wnd: WINDOW,
+    laps_wnd: WINDOW,
     tyres_swnd: WINDOW,
     lap_times_swnd: WINDOW,
     car_swnd: WINDOW,
     rel_pos_swnd: WINDOW,
-    active_view: View,
-    laps_wnd: WINDOW,
     lap_details_swnd: WINDOW,
     best_sectors_swnd: WINDOW,
 }
@@ -80,24 +80,24 @@ impl Ui {
         let rel_pos_swnd = derwin(track_wnd, 12, getmaxx(track_wnd) - 4, 15, 2);
 
         let laps_wnd = Ui::create_win(win_h, win_w, WINDOW_Y_OFFSET, 1, Some("Lap Details"));
-        let lap_details_swnd = derwin(dashboard_wnd, 23, 123, 1, 4);
-        let best_sectors_swnd = derwin(dashboard_wnd, 2, 80, 24, 3);
+        let lap_details_swnd = derwin(laps_wnd, 23, 123, 1, 4);
+        let best_sectors_swnd = derwin(laps_wnd, 2, 80, 24, 3);
         let active_wnd = dashboard_wnd;
         wrefresh(active_wnd);
 
         Ui {
+            active_view: View::Dashboard,
             mwnd,
             active_wnd,
             dashboard_wnd,
+            laps_wnd,
             track_wnd,
             tyres_swnd,
             lap_times_swnd,
             car_swnd,
             rel_pos_swnd,
-            laps_wnd,
             lap_details_swnd,
             best_sectors_swnd,
-            active_view: View::Dashboard,
         }
     }
 
@@ -195,6 +195,7 @@ impl Ui {
             _ => {}
         }
     }
+
     fn render_track_view(&self, game_state: &GameState, packet: &Packet) {
         if !self.should_render(View::TrackOverview) {
             return;
