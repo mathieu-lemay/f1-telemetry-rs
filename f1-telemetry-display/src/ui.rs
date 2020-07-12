@@ -258,7 +258,7 @@ impl Ui {
         fmt::wset_bold(wnd);
 
         let header =
-            "  P. NAME            | CURRENT LAP  | LAST LAP     | BEST LAP     | LAST SECTOR 1| LAST SECTOR 2| LAST SECTOR 3| STATUS ";
+            "  P. NAME            | CURRENT   | LAST      | BEST      | SECTOR 1  | SECTOR 2  | SECTOR 3  | STATUS ";
 
         mvwaddstr(wnd, 0, 0, header);
 
@@ -286,12 +286,12 @@ impl Ui {
                 "{}. {:15} | {} | {} | {} | {} | {} | {} | {}{}{} ",
                 pos,
                 fmt::format_driver_name(&participant.name, participant.driver),
-                fmt::format_time_ms(li.current_lap_time),
-                fmt::format_time_ms(li.last_lap_time),
-                fmt::format_time_ms(li.best_lap_time),
-                fmt::format_time_ms(li.sector_1 as f32 / 1000.0),
-                fmt::format_time_ms(li.sector_2 as f32 / 1000.0),
-                fmt::format_time_ms(li.last_lap_time - li.sector_2 as f32 / 1000.0),
+                fmt::format_lap_time(li.current_lap_time),
+                fmt::format_lap_time(li.last_lap_time),
+                fmt::format_lap_time(li.best_lap_time),
+                fmt::format_lap_time(li.sector_1 as f32 / 1000.0),
+                fmt::format_lap_time(li.sector_2 as f32 / 1000.0),
+                fmt::format_lap_time(li.last_lap_time - li.sector_2 as f32 / 1000.0),
                 if li.in_pit { "P" } else { " " },
                 if li.lap_invalid { "!" } else { " " },
                 penalties,
@@ -311,9 +311,9 @@ impl Ui {
 
         fmt::wset_bold(wnd);
 
-        let header = "  BEST SECTOR 1| BEST SECTOR 2| BEST SECTOR 3| THEORETICAL BEST LAP ";
+        let header = "BEST SECTOR 1 | BEST SECTOR 2 | BEST SECTOR 3 | THEORETICAL BEST LAP ";
 
-        mvwaddstr(wnd, 0, 0, header);
+        mvwaddstr(wnd, 0, 2, header);
 
         let best_s1 = game_state.best_sector_times.0;
         let best_s2 = game_state.best_sector_times.1;
@@ -326,13 +326,13 @@ impl Ui {
         };
 
         let s = format!(
-            "  {} | {} | {} | {}   ",
-            fmt::format_time_ms(best_s1 as f32 / 1000.0),
-            fmt::format_time_ms(best_s2 as f32 / 1000.0),
-            fmt::format_time_ms(best_s3 as f32 / 1000.0),
-            fmt::format_time_ms(best_lap as f32 / 1000.0),
+            "{}     | {}     | {}     | {}   ",
+            fmt::format_lap_time(best_s1 as f32 / 1000.0),
+            fmt::format_lap_time(best_s2 as f32 / 1000.0),
+            fmt::format_lap_time(best_s3 as f32 / 1000.0),
+            fmt::format_lap_time(best_lap as f32 / 1000.0),
         );
-        mvwaddstr(wnd, 1, 0, s.as_str());
+        mvwaddstr(wnd, 1, 2, s.as_str());
 
         self.commit(wnd);
     }
@@ -344,8 +344,7 @@ impl Ui {
 
         fmt::wset_bold(wnd);
 
-        let header =
-            "  P. NAME                 | CURRENT LAP  | LAST LAP     | BEST LAP     | STATUS";
+        let header = "  P. NAME                 | CURRENT LAP | LAST LAP    | BEST LAP    | STATUS";
 
         mvwaddstr(wnd, 0, 0, header);
 
@@ -370,12 +369,12 @@ impl Ui {
             };
 
             let s = format!(
-                "{}. {:20} | {} | {} | {} | {}{}{} ",
+                "{}. {:20} | {}   | {}   | {}   | {}{}{} ",
                 pos,
                 fmt::format_driver_name(&participant.name, participant.driver),
-                fmt::format_time_ms(li.current_lap_time),
-                fmt::format_time_ms(li.last_lap_time),
-                fmt::format_time_ms(li.best_lap_time),
+                fmt::format_lap_time(li.current_lap_time),
+                fmt::format_lap_time(li.last_lap_time),
+                fmt::format_lap_time(li.best_lap_time),
                 if li.in_pit { "P" } else { " " },
                 if li.lap_invalid { "!" } else { " " },
                 penalties,

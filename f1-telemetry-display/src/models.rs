@@ -179,7 +179,7 @@ impl GameState {
         };
 
         let detail = match evt {
-            Event::FastestLap(f) => Some(fmt::format_time_ms(f.lap_time())),
+            Event::FastestLap(f) => Some(fmt::format_lap_time(f.lap_time())),
             Event::Penalty(p) => Some(format!("{:?}", p.penalty_type())),
             Event::SpeedTrap(s) => Some(format!("{:.1} km/h", s.speed())),
             _ => None,
