@@ -184,12 +184,33 @@ pub fn set_color(w: Option<WINDOW>, c: i16) {
     };
 }
 
+pub fn reset_color(w: Option<WINDOW>) {
+    match w {
+        Some(w) => wattroff(w, A_COLOR()),
+        None => attroff(A_COLOR()),
+    };
+}
+
 pub fn set_damage_color(w: Option<WINDOW>, damage_pct: u8, ok: u8, caution: u8, warning: u8) {
     let c = match damage_pct {
         d if d <= ok => Color::StatusOk,
         d if d <= caution => Color::StatusCaution,
         d if d <= warning => Color::StatusWarning,
         _ => Color::StatusDanger,
+    };
+
+    set_color(w, c as i16);
+}
+
+pub fn set_lap_time_color(w: Option<WINDOW>, last: f32, personal_best: f32, session_best: f32) {
+    let c = if last == 0.0 {
+        Color::White
+    } else if last <= session_best {
+        Color::Magenta
+    } else if last <= personal_best {
+        Color::Green
+    } else {
+        Color::Red
     };
 
     set_color(w, c as i16);

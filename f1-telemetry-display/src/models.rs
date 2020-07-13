@@ -13,11 +13,19 @@ use f1_telemetry::packet::Packet;
 use crate::ui::fmt;
 
 #[derive(Default)]
+pub struct LapAndSectorTimes {
+    pub sector_1: u32,
+    pub sector_2: u32,
+    pub sector_3: u32,
+    pub lap: f32,
+}
+
+#[derive(Default)]
 pub struct GameState {
     pub session_uid: Option<u64>,
     pub session_info: SessionInfo,
     pub lap_infos: Vec<LapInfo>,
-    pub best_sector_times: (u32, u32, u32),
+    pub session_best_times: LapAndSectorTimes,
     pub event_info: EventInfo,
     pub participants: Vec<Participant>,
     pub car_status: CarStatus,
@@ -74,6 +82,11 @@ impl GameState {
     }
 
     fn parse_lap_data_times(&mut self, lap_data: &PacketLapData) {
+        let mut best_s1 = u32::MAX;
+        let mut best_s2 = u32::MAX;
+        let mut best_s3 = u32::MAX;
+        let mut best_lap = f32::MAX;
+
         for idx in 0..self.lap_infos.len() {
             let ld = &lap_data.lap_data()[idx];
             let li = &mut self.lap_infos[idx];
@@ -81,60 +94,67 @@ impl GameState {
             li.position = ld.car_position();
             li.current_lap_time = ld.current_lap_time();
             li.best_lap_time = ld.best_lap_time();
+            li.current_lap_num = ld.current_lap_num();
             li.status = ld.result_status();
             li.in_pit = ld.pit_status() != PitStatus::None;
             li.lap_invalid = ld.current_lap_invalid();
             li.penalties = ld.penalties();
             li.lap_distance = ld.lap_distance();
             li.total_distance = ld.total_distance();
-            li.best_sector_1 = ld.best_overall_sector_1_time();
-            li.best_sector_2 = ld.best_overall_sector_2_time();
-            li.best_sector_3 = ld.best_overall_sector_3_time();
+            li.best_sector_1 = ld.best_overall_sector_1_time() as u32;
+            li.best_sector_2 = ld.best_overall_sector_2_time() as u32;
+            li.best_sector_3 = ld.best_overall_sector_3_time() as u32;
 
-            if ld.sector_1_time() != li.sector_1 && ld.sector_1_time() > 0 {
-                li.sector_1 = ld.sector_1_time();
+            let new_s1 = ld.sector_1_time() as u32;
+            let new_s2 = ld.sector_2_time() as u32;
+
+            if new_s1 != li.sector_1 && new_s1 > 0 {
+                li.sector_1 = new_s1;
                 li.sector_2 = 0;
                 li.sector_3 = 0;
             }
 
-            if ld.sector_2_time() != li.sector_2 && ld.sector_2_time() > 0 {
-                li.sector_2 = ld.sector_2_time();
+            if new_s2 != li.sector_2 && new_s2 > 0 {
+                li.sector_2 = new_s2;
             }
 
             if (ld.last_lap_time() - li.last_lap_time).abs() >= 0.001 {
                 li.last_lap_time = ld.last_lap_time();
 
                 if li.sector_1 != 0 && li.sector_2 != 0 {
-                    li.sector_3 = ((li.last_lap_time * 1000.0) as u32
-                        - li.sector_2 as u32
-                        - li.sector_1 as u32) as u16;
+                    // Hack to prevent inaccuracies with last_lap_time being a float, if possible.
+                    if ld.best_overall_sector_3_lap_num() == li.current_lap_num - 1 {
+                        li.sector_3 = li.best_sector_3;
+                    } else {
+                        li.sector_3 =
+                            (li.last_lap_time * 1000.0).floor() as u32 - li.sector_2 - li.sector_1;
+                    }
                 }
+            }
+
+            if li.best_sector_1 > 0 && li.best_sector_1 < best_s1 {
+                best_s1 = li.best_sector_1;
+            }
+
+            if li.best_sector_2 > 0 && li.best_sector_2 < best_s2 {
+                best_s2 = li.best_sector_2;
+            }
+
+            if li.best_sector_3 > 0 && li.best_sector_3 < best_s3 {
+                best_s3 = li.best_sector_3;
+            }
+
+            if li.best_lap_time > 0.0 && li.best_lap_time < best_lap {
+                best_lap = li.best_lap_time;
             }
         }
 
-        let best_s1 = self
-            .lap_infos
-            .iter()
-            .filter(|li| li.best_sector_1 > 0)
-            .map(|li| li.best_sector_1)
-            .min()
-            .unwrap_or(0) as u32;
-        let best_s2 = self
-            .lap_infos
-            .iter()
-            .filter(|li| li.best_sector_2 > 0)
-            .map(|li| li.best_sector_2)
-            .min()
-            .unwrap_or(0) as u32;
-        let best_s3 = self
-            .lap_infos
-            .iter()
-            .filter(|li| li.best_sector_3 > 0)
-            .map(|li| li.best_sector_3)
-            .min()
-            .unwrap_or(0) as u32;
-
-        self.best_sector_times = (best_s1, best_s2, best_s3);
+        self.session_best_times = LapAndSectorTimes {
+            sector_1: if best_s1 != u32::MAX { best_s1 } else { 0 },
+            sector_2: if best_s2 != u32::MAX { best_s2 } else { 0 },
+            sector_3: if best_s3 != u32::MAX { best_s3 } else { 0 },
+            lap: if best_lap != f32::MAX { best_lap } else { 0.0 },
+        }
     }
 
     fn parse_lap_data_current_lap(&mut self, lap_data: &PacketLapData) {
@@ -270,8 +290,10 @@ impl GameState {
     }
 
     pub(crate) fn compute_theoretical_best_lap(&self) -> u32 {
-        if self.best_sector_times.2 > 0 {
-            self.best_sector_times.0 + self.best_sector_times.1 + self.best_sector_times.2
+        if self.session_best_times.sector_3 > 0 {
+            self.session_best_times.sector_1
+                + self.session_best_times.sector_2
+                + self.session_best_times.sector_3
         } else {
             0
         }
@@ -298,6 +320,7 @@ pub struct LapInfo {
     pub current_lap_time: f32,
     pub last_lap_time: f32,
     pub best_lap_time: f32,
+    pub current_lap_num: u8,
     pub status: ResultStatus,
     pub in_pit: bool,
     pub lap_invalid: bool,
@@ -305,12 +328,12 @@ pub struct LapInfo {
     pub lap_distance: f32,
     pub total_distance: f32,
     pub tyre_compound: TyreCompoundVisual,
-    pub best_sector_1: u16,
-    pub best_sector_2: u16,
-    pub best_sector_3: u16,
-    pub sector_1: u16,
-    pub sector_2: u16,
-    pub sector_3: u16,
+    pub best_sector_1: u32,
+    pub best_sector_2: u32,
+    pub best_sector_3: u32,
+    pub sector_1: u32,
+    pub sector_2: u32,
+    pub sector_3: u32,
 }
 
 #[derive(Default)]

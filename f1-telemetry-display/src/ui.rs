@@ -267,6 +267,8 @@ impl Ui {
                 continue;
             }
 
+            let row = li.position as i32;
+
             let participant = &game_state.participants[idx];
 
             let pos = match li.status {
@@ -283,22 +285,69 @@ impl Ui {
             };
 
             let s = format!(
-                "{}. {:15} | {} | {} | {} | {} | {} | {} | {}{}{} ",
-                pos,
-                fmt::format_driver_name(&participant.name, participant.driver),
+                "                     | {} |           |           |           |           |           | {}{}{} ",
                 fmt::format_lap_time(li.current_lap_time),
-                fmt::format_lap_time(li.last_lap_time),
-                fmt::format_lap_time(li.best_lap_time),
-                fmt::format_lap_time_ms(li.sector_1 as u32),
-                fmt::format_lap_time_ms(li.sector_2 as u32),
-                fmt::format_lap_time_ms(li.sector_3 as u32),
                 if li.in_pit { "P" } else { " " },
                 if li.lap_invalid { "!" } else { " " },
                 penalties,
             );
 
+            mvwaddstr(wnd, li.position as i32, 0, &s);
+
+            let s = format!(
+                "{}. {:15}",
+                pos,
+                fmt::format_driver_name(&participant.name, participant.driver)
+            );
             fmt::set_team_color(wnd, participant.team);
-            mvwaddstr(wnd, li.position as i32, 0, s.as_str());
+            mvwaddstr(wnd, row, 0, &s);
+
+            let s = format!("{}", fmt::format_lap_time(li.last_lap_time));
+            fmt::set_lap_time_color(
+                Some(wnd),
+                li.last_lap_time,
+                li.best_lap_time,
+                game_state.session_best_times.lap,
+            );
+            mvwaddstr(wnd, row, 35, &s);
+
+            let s = format!("{}", fmt::format_lap_time(li.best_lap_time));
+            fmt::set_lap_time_color(
+                Some(wnd),
+                li.best_lap_time,
+                li.best_lap_time,
+                game_state.session_best_times.lap,
+            );
+            mvwaddstr(wnd, row, 47, &s);
+
+            let s = format!("{}", fmt::format_lap_time_ms(li.sector_1));
+            fmt::set_lap_time_color(
+                Some(wnd),
+                li.sector_1 as f32,
+                li.best_sector_1 as f32,
+                game_state.session_best_times.sector_1 as f32,
+            );
+            mvwaddstr(wnd, row, 59, &s);
+
+            let s = format!("{}", fmt::format_lap_time_ms(li.sector_2));
+            fmt::set_lap_time_color(
+                Some(wnd),
+                li.sector_2 as f32,
+                li.best_sector_2 as f32,
+                game_state.session_best_times.sector_2 as f32,
+            );
+            mvwaddstr(wnd, row, 71, &s);
+
+            let s = format!("{}", fmt::format_lap_time_ms(li.sector_3));
+            fmt::set_lap_time_color(
+                Some(wnd),
+                li.sector_3 as f32,
+                li.best_sector_3 as f32,
+                game_state.session_best_times.sector_3 as f32,
+            );
+            mvwaddstr(wnd, row, 83, &s);
+
+            fmt::reset_color(Some(wnd));
         }
 
         self.commit(wnd);
@@ -315,14 +364,14 @@ impl Ui {
 
         mvwaddstr(wnd, 0, 2, header);
 
-        let (best_s1, best_s2, best_s3) = game_state.best_sector_times;
+        let session_best_times = &game_state.session_best_times;
         let best_lap = game_state.compute_theoretical_best_lap();
 
         let s = format!(
             "{}     | {}     | {}     | {}   ",
-            fmt::format_lap_time_ms(best_s1),
-            fmt::format_lap_time_ms(best_s2),
-            fmt::format_lap_time_ms(best_s3),
+            fmt::format_lap_time_ms(session_best_times.sector_1),
+            fmt::format_lap_time_ms(session_best_times.sector_2),
+            fmt::format_lap_time_ms(session_best_times.sector_3),
             fmt::format_lap_time_ms(best_lap),
         );
         mvwaddstr(wnd, 1, 2, s.as_str());
