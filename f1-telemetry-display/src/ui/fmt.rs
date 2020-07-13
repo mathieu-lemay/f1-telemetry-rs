@@ -247,6 +247,14 @@ pub fn format_lap_time(ts: f32) -> String {
     format!("{:02}:{:02}.{:03}", minutes, seconds, millis)
 }
 
+pub fn format_lap_time_ms(ts: u32) -> String {
+    let minutes = ts / 60000;
+    let seconds = (ts - minutes * 60000) / 1000;
+    let millis = ts % 1000;
+
+    format!("{:02}:{:02}.{:03}", minutes, seconds, millis)
+}
+
 pub fn format_gear(gear: i8) -> Cow<'static, str> {
     match gear {
         -1 => "R".into(),

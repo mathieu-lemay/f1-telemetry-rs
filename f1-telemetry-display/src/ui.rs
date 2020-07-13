@@ -289,9 +289,9 @@ impl Ui {
                 fmt::format_lap_time(li.current_lap_time),
                 fmt::format_lap_time(li.last_lap_time),
                 fmt::format_lap_time(li.best_lap_time),
-                fmt::format_lap_time(li.sector_1 as f32 / 1000.0),
-                fmt::format_lap_time(li.sector_2 as f32 / 1000.0),
-                fmt::format_lap_time(li.last_lap_time - li.sector_2 as f32 / 1000.0),
+                fmt::format_lap_time_ms(li.sector_1 as u32),
+                fmt::format_lap_time_ms(li.sector_2 as u32),
+                fmt::format_lap_time_ms(li.sector_3 as u32),
                 if li.in_pit { "P" } else { " " },
                 if li.lap_invalid { "!" } else { " " },
                 penalties,
@@ -320,10 +320,10 @@ impl Ui {
 
         let s = format!(
             "{}     | {}     | {}     | {}   ",
-            fmt::format_lap_time(best_s1 as f32 / 1000.0),
-            fmt::format_lap_time(best_s2 as f32 / 1000.0),
-            fmt::format_lap_time(best_s3 as f32 / 1000.0),
-            fmt::format_lap_time(best_lap as f32 / 1000.0),
+            fmt::format_lap_time_ms(best_s1),
+            fmt::format_lap_time_ms(best_s2),
+            fmt::format_lap_time_ms(best_s3),
+            fmt::format_lap_time_ms(best_lap),
         );
         mvwaddstr(wnd, 1, 2, s.as_str());
 

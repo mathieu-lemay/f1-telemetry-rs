@@ -80,7 +80,6 @@ impl GameState {
 
             li.position = ld.car_position();
             li.current_lap_time = ld.current_lap_time();
-            li.last_lap_time = ld.last_lap_time();
             li.best_lap_time = ld.best_lap_time();
             li.status = ld.result_status();
             li.in_pit = ld.pit_status() != PitStatus::None;
@@ -91,8 +90,26 @@ impl GameState {
             li.best_sector_1 = ld.best_overall_sector_1_time();
             li.best_sector_2 = ld.best_overall_sector_2_time();
             li.best_sector_3 = ld.best_overall_sector_3_time();
-            li.sector_1 = ld.sector_1_time();
-            li.sector_2 = ld.sector_2_time();
+
+            if ld.sector_1_time() != li.sector_1 && ld.sector_1_time() > 0 {
+                li.sector_1 = ld.sector_1_time();
+                li.sector_2 = 0;
+                li.sector_3 = 0;
+            }
+
+            if ld.sector_2_time() != li.sector_2 && ld.sector_2_time() > 0 {
+                li.sector_2 = ld.sector_2_time();
+            }
+
+            if (ld.last_lap_time() - li.last_lap_time).abs() >= 0.001 {
+                li.last_lap_time = ld.last_lap_time();
+
+                if li.sector_1 != 0 && li.sector_2 != 0 {
+                    li.sector_3 = ((li.last_lap_time * 1000.0) as u32
+                        - li.sector_2 as u32
+                        - li.sector_1 as u32) as u16;
+                }
+            }
         }
 
         let best_s1 = self
@@ -202,9 +219,15 @@ impl GameState {
             })
             .collect();
 
-        self.lap_infos = (0..self.participants.len())
-            .map(|_| LapInfo::default())
-            .collect();
+        if self.participants.len() == self.lap_infos.len() {
+            return;
+        } else if self.participants.len() > self.lap_infos.len() {
+            for _ in self.lap_infos.len()..self.participants.len() {
+                self.lap_infos.push(LapInfo::default());
+            }
+        } else {
+            self.lap_infos.truncate(self.participants.len());
+        }
     }
 
     fn parse_telemetry_data(&mut self, telemetry_data: &PacketCarTelemetryData) {
@@ -287,6 +310,7 @@ pub struct LapInfo {
     pub best_sector_3: u16,
     pub sector_1: u16,
     pub sector_2: u16,
+    pub sector_3: u16,
 }
 
 #[derive(Default)]
