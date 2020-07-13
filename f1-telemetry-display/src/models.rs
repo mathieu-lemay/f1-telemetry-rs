@@ -17,7 +17,7 @@ pub struct LapAndSectorTimes {
     pub sector_1: u32,
     pub sector_2: u32,
     pub sector_3: u32,
-    pub lap: f32,
+    pub lap: u32,
 }
 
 #[derive(Default)]
@@ -85,15 +85,15 @@ impl GameState {
         let mut best_s1 = u32::MAX;
         let mut best_s2 = u32::MAX;
         let mut best_s3 = u32::MAX;
-        let mut best_lap = f32::MAX;
+        let mut best_lap = u32::MAX;
 
         for idx in 0..self.lap_infos.len() {
             let ld = &lap_data.lap_data()[idx];
             let li = &mut self.lap_infos[idx];
 
             li.position = ld.car_position();
-            li.current_lap_time = ld.current_lap_time();
-            li.best_lap_time = ld.best_lap_time();
+            li.current_lap_time = seconds_to_ms(ld.current_lap_time());
+            li.best_lap_time = seconds_to_ms(ld.best_lap_time());
             li.current_lap_num = ld.current_lap_num();
             li.status = ld.result_status();
             li.in_pit = ld.pit_status() != PitStatus::None;
@@ -107,6 +107,7 @@ impl GameState {
 
             let new_s1 = ld.sector_1_time() as u32;
             let new_s2 = ld.sector_2_time() as u32;
+            let new_ll = seconds_to_ms(ld.last_lap_time());
 
             if new_s1 != li.sector_1 && new_s1 > 0 {
                 li.sector_1 = new_s1;
@@ -118,16 +119,15 @@ impl GameState {
                 li.sector_2 = new_s2;
             }
 
-            if (ld.last_lap_time() - li.last_lap_time).abs() >= 0.001 {
-                li.last_lap_time = ld.last_lap_time();
+            if new_ll != li.last_lap_time {
+                li.last_lap_time = new_ll;
 
                 if li.sector_1 != 0 && li.sector_2 != 0 {
                     // Hack to prevent inaccuracies with last_lap_time being a float, if possible.
                     if ld.best_overall_sector_3_lap_num() == li.current_lap_num - 1 {
                         li.sector_3 = li.best_sector_3;
                     } else {
-                        li.sector_3 =
-                            (li.last_lap_time * 1000.0).floor() as u32 - li.sector_2 - li.sector_1;
+                        li.sector_3 = li.last_lap_time - li.sector_2 - li.sector_1;
                     }
                 }
             }
@@ -144,7 +144,7 @@ impl GameState {
                 best_s3 = li.best_sector_3;
             }
 
-            if li.best_lap_time > 0.0 && li.best_lap_time < best_lap {
+            if li.best_lap_time > 0 && li.best_lap_time < best_lap {
                 best_lap = li.best_lap_time;
             }
         }
@@ -153,7 +153,7 @@ impl GameState {
             sector_1: if best_s1 != u32::MAX { best_s1 } else { 0 },
             sector_2: if best_s2 != u32::MAX { best_s2 } else { 0 },
             sector_3: if best_s3 != u32::MAX { best_s3 } else { 0 },
-            lap: if best_lap != f32::MAX { best_lap } else { 0.0 },
+            lap: if best_lap != u32::MAX { best_lap } else { 0 },
         }
     }
 
@@ -216,7 +216,7 @@ impl GameState {
         };
 
         let detail = match evt {
-            Event::FastestLap(f) => Some(fmt::format_lap_time(f.lap_time())),
+            Event::FastestLap(f) => Some(fmt::format_lap_time(seconds_to_ms(f.lap_time()))),
             Event::Penalty(p) => Some(format!("{:?}", p.penalty_type())),
             Event::SpeedTrap(s) => Some(format!("{:.1} km/h", s.speed())),
             _ => None,
@@ -317,9 +317,9 @@ pub struct EventInfo {
 #[derive(Default)]
 pub struct LapInfo {
     pub position: u8,
-    pub current_lap_time: f32,
-    pub last_lap_time: f32,
-    pub best_lap_time: f32,
+    pub current_lap_time: u32,
+    pub last_lap_time: u32,
+    pub best_lap_time: u32,
     pub current_lap_num: u8,
     pub status: ResultStatus,
     pub in_pit: bool,
@@ -382,4 +382,9 @@ pub struct RelativePositions {
     pub positions: BTreeMap<Team, Vec<f32>>,
     pub min: f32,
     pub max: f32,
+}
+
+#[inline]
+fn seconds_to_ms(seconds: f32) -> u32 {
+    (seconds * 1000.0).floor() as u32
 }

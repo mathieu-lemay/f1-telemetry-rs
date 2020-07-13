@@ -320,30 +320,30 @@ impl Ui {
             );
             mvwaddstr(wnd, row, 47, &s);
 
-            let s = format!("{}", fmt::format_lap_time_ms(li.sector_1));
+            let s = format!("{}", fmt::format_lap_time(li.sector_1));
             fmt::set_lap_time_color(
                 Some(wnd),
-                li.sector_1 as f32,
-                li.best_sector_1 as f32,
-                game_state.session_best_times.sector_1 as f32,
+                li.sector_1,
+                li.best_sector_1,
+                game_state.session_best_times.sector_1,
             );
             mvwaddstr(wnd, row, 59, &s);
 
-            let s = format!("{}", fmt::format_lap_time_ms(li.sector_2));
+            let s = format!("{}", fmt::format_lap_time(li.sector_2));
             fmt::set_lap_time_color(
                 Some(wnd),
-                li.sector_2 as f32,
-                li.best_sector_2 as f32,
-                game_state.session_best_times.sector_2 as f32,
+                li.sector_2,
+                li.best_sector_2,
+                game_state.session_best_times.sector_2,
             );
             mvwaddstr(wnd, row, 71, &s);
 
-            let s = format!("{}", fmt::format_lap_time_ms(li.sector_3));
+            let s = format!("{}", fmt::format_lap_time(li.sector_3));
             fmt::set_lap_time_color(
                 Some(wnd),
-                li.sector_3 as f32,
-                li.best_sector_3 as f32,
-                game_state.session_best_times.sector_3 as f32,
+                li.sector_3,
+                li.best_sector_3,
+                game_state.session_best_times.sector_3,
             );
             mvwaddstr(wnd, row, 83, &s);
 
@@ -369,10 +369,10 @@ impl Ui {
 
         let s = format!(
             "{}     | {}     | {}     | {}   ",
-            fmt::format_lap_time_ms(session_best_times.sector_1),
-            fmt::format_lap_time_ms(session_best_times.sector_2),
-            fmt::format_lap_time_ms(session_best_times.sector_3),
-            fmt::format_lap_time_ms(best_lap),
+            fmt::format_lap_time(session_best_times.sector_1),
+            fmt::format_lap_time(session_best_times.sector_2),
+            fmt::format_lap_time(session_best_times.sector_3),
+            fmt::format_lap_time(best_lap),
         );
         mvwaddstr(wnd, 1, 2, s.as_str());
 

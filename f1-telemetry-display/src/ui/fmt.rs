@@ -202,8 +202,8 @@ pub fn set_damage_color(w: Option<WINDOW>, damage_pct: u8, ok: u8, caution: u8, 
     set_color(w, c as i16);
 }
 
-pub fn set_lap_time_color(w: Option<WINDOW>, last: f32, personal_best: f32, session_best: f32) {
-    let c = if last == 0.0 {
+pub fn set_lap_time_color(w: Option<WINDOW>, last: u32, personal_best: u32, session_best: u32) {
+    let c = if last == 0 {
         Color::White
     } else if last <= session_best {
         Color::Magenta
@@ -258,17 +258,7 @@ pub fn format_time_ms(ts: f32) -> String {
     format!("{:02}:{:02}:{:02}.{:03}", hours, minutes, seconds, millis)
 }
 
-pub fn format_lap_time(ts: f32) -> String {
-    let seconds = ts as i64;
-    let millis = ((ts - ts.floor()) * 1000.0).floor();
-
-    let minutes = seconds / 60;
-    let seconds = seconds % 60;
-
-    format!("{:02}:{:02}.{:03}", minutes, seconds, millis)
-}
-
-pub fn format_lap_time_ms(ts: u32) -> String {
+pub fn format_lap_time(ts: u32) -> String {
     let minutes = ts / 60000;
     let seconds = (ts - minutes * 60000) / 1000;
     let millis = ts % 1000;
