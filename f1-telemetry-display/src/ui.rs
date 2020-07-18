@@ -196,7 +196,8 @@ impl Ui {
                 self.print_car_status(&game_state);
                 self.print_tyres_compounds(&game_state);
             }
-            Packet::FinalClassification(_) => self.print_final_classification_info(&game_state),
+            Packet::FinalClassification(_) => self
+                .print_final_classification_info(&game_state, self.dashboard_view.lap_times_swnd),
             _ => {}
         }
     }
@@ -210,6 +211,8 @@ impl Ui {
             Packet::CarStatus(_) => {
                 self.print_tyres_compounds(&game_state);
             }
+            Packet::FinalClassification(_) => self
+                .print_final_classification_info(&game_state, self.lap_detail_view.lap_detail_swnd),
             _ => {}
         }
     }
@@ -380,8 +383,8 @@ impl Ui {
 
         self.commit(wnd);
     }
-    fn print_final_classification_info(&self, game_state: &GameState) {
-        let wnd = self.dashboard_view.lap_times_swnd;
+    fn print_final_classification_info(&self, game_state: &GameState, view_to_overwrite: WINDOW) {
+        let wnd = view_to_overwrite;
         werase(wnd);
 
         fmt::wset_bold(wnd);
