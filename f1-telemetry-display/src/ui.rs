@@ -383,6 +383,7 @@ impl Ui {
 
         self.commit(wnd);
     }
+
     fn print_final_classification_info(&self, game_state: &GameState, view_to_overwrite: WINDOW) {
         let wnd = view_to_overwrite;
         werase(wnd);
