@@ -238,7 +238,7 @@ pub fn format_time_delta(position: u8, time: f64, delta_time: f64, delta_laps: u
     } else if delta_laps > 0 {
         format!("+{} laps  ", delta_laps)
     } else {
-        format!("+{}  ", format_lap_time(seconds_to_ms(delta_time as f32)));
+        format!("+{}  ", format_lap_time(seconds_to_ms(delta_time as f32)))
     }
 }
 
