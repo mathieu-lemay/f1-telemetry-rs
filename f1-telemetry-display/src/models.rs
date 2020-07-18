@@ -11,6 +11,8 @@ use f1_telemetry::packet::session::{PacketSessionData, SafetyCar, Weather};
 use f1_telemetry::packet::Packet;
 
 use crate::ui::fmt;
+use f1_telemetry::packet::final_classification::PacketFinalClassificationData;
+use std::cmp::Ordering;
 
 #[derive(Default)]
 pub struct LapAndSectorTimes {
@@ -31,6 +33,7 @@ pub struct GameState {
     pub car_status: CarStatus,
     pub telemetry_info: TelemetryInfo,
     pub relative_positions: RelativePositions,
+    pub final_classifications: Vec<FinalClassificationInfo>,
 }
 
 impl GameState {
@@ -46,6 +49,7 @@ impl GameState {
             // Packet::CarSetups(p) => p.header(),
             Packet::CarTelemetry(p) => self.parse_telemetry_data(&p),
             Packet::CarStatus(p) => self.parse_car_status(&p),
+            Packet::FinalClassification(p) => self.parse_final_classification(&p),
             _ => {}
         }
     }
@@ -239,14 +243,28 @@ impl GameState {
             })
             .collect();
 
-        if self.participants.len() == self.lap_infos.len() {
-            return;
-        } else if self.participants.len() > self.lap_infos.len() {
-            for _ in self.lap_infos.len()..self.participants.len() {
-                self.lap_infos.push(LapInfo::default());
+        match self.participants.len().cmp(&self.lap_infos.len()) {
+            Ordering::Equal => (),
+            Ordering::Greater => {
+                for _ in self.lap_infos.len()..self.participants.len() {
+                    self.lap_infos.push(LapInfo::default());
+                }
             }
-        } else {
-            self.lap_infos.truncate(self.participants.len());
+            Ordering::Less => self.lap_infos.truncate(self.participants.len()),
+        }
+        match self
+            .participants
+            .len()
+            .cmp(&self.final_classifications.len())
+        {
+            Ordering::Equal => (),
+            Ordering::Greater => {
+                for _ in self.final_classifications.len()..self.participants.len() {
+                    self.final_classifications
+                        .push(FinalClassificationInfo::default());
+                }
+            }
+            Ordering::Less => self.final_classifications.truncate(self.participants.len()),
         }
     }
 
@@ -264,6 +282,38 @@ impl GameState {
         self.telemetry_info.engine_temperature = td.engine_temperature();
 
         self.car_status.drs = td.drs();
+    }
+
+    fn parse_final_classification(&mut self, classification_data: &PacketFinalClassificationData) {
+        let mut race_time = 0.0;
+        let mut laps = 0;
+
+        for i in 0..self.final_classifications.len() {
+            let fc = &classification_data.final_classifications()[i];
+            let fi = &mut self.final_classifications[i];
+
+            fi.position = fc.position();
+
+            fi.best_lap_time = fc.best_lap_time();
+            fi.grid_position = fc.grid_position();
+            fi.total_race_time = fc.total_race_time();
+            fi.num_laps = fc.num_laps();
+            fi.num_pit_stops = fc.num_pit_stops();
+            fi.penalties = fc.penalties_time();
+            fi.tyres_visual = fc.tyre_stints_visual().clone();
+            fi.points = fc.points();
+            fi.status = fc.result_status();
+
+            if fi.position == 1 {
+                race_time = fi.total_race_time;
+                laps = fi.num_laps;
+            }
+        }
+
+        for fi in &mut self.final_classifications {
+            fi.delta_time = fi.total_race_time - race_time;
+            fi.delta_laps = laps - fi.num_laps;
+        }
     }
 
     fn parse_car_status(&mut self, car_status_data: &PacketCarStatusData) {
@@ -384,7 +434,23 @@ pub struct RelativePositions {
     pub max: f32,
 }
 
+#[derive(Default)]
+pub struct FinalClassificationInfo {
+    pub position: u8,
+    pub grid_position: u8,
+    pub points: u8,
+    pub num_laps: u8,
+    pub num_pit_stops: u8,
+    pub status: ResultStatus,
+    pub best_lap_time: f32,
+    pub total_race_time: f64,
+    pub penalties: u8,
+    pub tyres_visual: Vec<TyreCompoundVisual>,
+    pub delta_time: f64,
+    pub delta_laps: u8,
+}
+
 #[inline]
-fn seconds_to_ms(seconds: f32) -> u32 {
+pub(crate) fn seconds_to_ms(seconds: f32) -> u32 {
     (seconds * 1000.0).floor() as u32
 }

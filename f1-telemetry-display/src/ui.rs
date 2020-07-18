@@ -5,6 +5,7 @@ use f1_telemetry::packet::session::SafetyCar;
 use f1_telemetry::packet::Packet;
 
 use crate::models::*;
+use std::cmp::Ordering;
 
 mod car;
 pub mod fmt;
@@ -195,6 +196,7 @@ impl Ui {
                 self.print_car_status(&game_state);
                 self.print_tyres_compounds(&game_state);
             }
+            Packet::FinalClassification(_) => self.print_final_classification_info(&game_state),
             _ => {}
         }
     }
@@ -302,7 +304,7 @@ impl Ui {
             fmt::set_team_color(wnd, participant.team);
             mvwaddstr(wnd, row, 0, &s);
 
-            let s = format!("{}", fmt::format_lap_time(li.last_lap_time));
+            let s = fmt::format_lap_time(li.last_lap_time);
             fmt::set_lap_time_color(
                 Some(wnd),
                 li.last_lap_time,
@@ -311,7 +313,7 @@ impl Ui {
             );
             mvwaddstr(wnd, row, 35, &s);
 
-            let s = format!("{}", fmt::format_lap_time(li.best_lap_time));
+            let s = fmt::format_lap_time(li.best_lap_time);
             fmt::set_lap_time_color(
                 Some(wnd),
                 li.best_lap_time,
@@ -320,7 +322,7 @@ impl Ui {
             );
             mvwaddstr(wnd, row, 47, &s);
 
-            let s = format!("{}", fmt::format_lap_time(li.sector_1));
+            let s = fmt::format_lap_time(li.sector_1);
             fmt::set_lap_time_color(
                 Some(wnd),
                 li.sector_1,
@@ -329,7 +331,7 @@ impl Ui {
             );
             mvwaddstr(wnd, row, 59, &s);
 
-            let s = format!("{}", fmt::format_lap_time(li.sector_2));
+            let s = fmt::format_lap_time(li.sector_2);
             fmt::set_lap_time_color(
                 Some(wnd),
                 li.sector_2,
@@ -338,7 +340,7 @@ impl Ui {
             );
             mvwaddstr(wnd, row, 71, &s);
 
-            let s = format!("{}", fmt::format_lap_time(li.sector_3));
+            let s = fmt::format_lap_time(li.sector_3);
             fmt::set_lap_time_color(
                 Some(wnd),
                 li.sector_3,
@@ -376,6 +378,66 @@ impl Ui {
         );
         mvwaddstr(wnd, 1, 2, s.as_str());
 
+        self.commit(wnd);
+    }
+    fn print_final_classification_info(&self, game_state: &GameState) {
+        let wnd = self.dashboard_view.lap_times_swnd;
+        werase(wnd);
+
+        fmt::wset_bold(wnd);
+
+        let header =
+            "  P.    | NAME          | GRID  | BEST LAP    | TIME DELTA   | PENALTIES | TYRES";
+
+        mvwaddstr(wnd, 0, 0, header);
+
+        for (idx, fi) in game_state.final_classifications.iter().enumerate() {
+            if fi.position == 0 {
+                continue;
+            }
+            let participant = &game_state.participants[idx];
+            let pos = match fi.status {
+                ResultStatus::Retired => String::from("RET"),
+                ResultStatus::NotClassified => String::from("N/C"),
+                ResultStatus::Disqualified => String::from("DSQ"),
+                _ => format!("{:3}", fi.position),
+            };
+            let grid = format!("{:3}", fi.grid_position);
+            let change = match fi.grid_position.cmp(&fi.position) {
+                Ordering::Equal => "-",
+                Ordering::Greater => "Λ",
+                Ordering::Less => "V",
+            }
+            .to_string();
+
+            let penalties = if fi.penalties > 0 {
+                format!("+{:2}s", fi.penalties)
+            } else {
+                format!("{: <4}", "")
+            };
+
+            let time_delta = fmt::format_time_delta(
+                fi.position,
+                fi.total_race_time,
+                fi.delta_time,
+                fi.delta_laps,
+            );
+
+            let tyres = "oo  ";
+            let s = format!(
+                "{}. {:2} | {:13} | {}   | {}   | {:12} | {}      | {} ",
+                pos,
+                change,
+                fmt::format_driver_name(&participant.name, participant.driver),
+                grid,
+                fmt::format_lap_time(seconds_to_ms(fi.best_lap_time)),
+                time_delta,
+                penalties,
+                tyres
+            );
+            fmt::set_team_color(wnd, participant.team);
+            mvwaddstr(wnd, fi.position as i32, 0, s.as_str());
+        }
         self.commit(wnd);
     }
 

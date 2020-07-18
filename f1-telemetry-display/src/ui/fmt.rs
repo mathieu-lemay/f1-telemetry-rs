@@ -2,6 +2,7 @@ use std::borrow::Cow;
 
 use ncurses::*;
 
+use crate::models::seconds_to_ms;
 use f1_telemetry::packet::generic::{Team, TyreCompoundVisual};
 use f1_telemetry::packet::participants::Driver;
 use std::time::{SystemTime, UNIX_EPOCH};
@@ -228,6 +229,16 @@ pub fn format_driver_name(name: &str, driver: Driver) -> Cow<str> {
     match driver {
         Driver::Player => Cow::Owned(capitalize_name(name)),
         _ => Cow::Borrowed(name),
+    }
+}
+
+pub fn format_time_delta(position: u8, time: f64, delta_time: f64, delta_laps: u8) -> String {
+    if position == 1 {
+        format_time_ms(time as f32)
+    } else if delta_laps > 0 {
+        format!("+{} laps  ", delta_laps)
+    } else {
+        format!("+{}  ", format_lap_time(seconds_to_ms(delta_time as f32)));
     }
 }
 
