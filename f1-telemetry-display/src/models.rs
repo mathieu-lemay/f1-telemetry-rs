@@ -302,7 +302,12 @@ impl GameState {
             fi.num_laps = fc.num_laps();
             fi.num_pit_stops = fc.num_pit_stops();
             fi.penalties = fc.penalties_time();
-            fi.tyres_visual = fc.tyre_stints_visual().clone();
+            fi.tyres_visual = fc
+                .tyre_stints_visual()
+                .iter()
+                .filter(|&&t| t != TyreCompoundVisual::Invalid)
+                .map(|t| t.clone())
+                .collect();
             fi.points = fc.points();
             fi.status = fc.result_status();
 

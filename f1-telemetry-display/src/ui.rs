@@ -435,9 +435,8 @@ impl Ui {
                 fi.delta_laps,
             );
 
-            let tyres = "oo  ";
             let s = format!(
-                "{}. {:2} | {:13} | {}   | {}   | {:12} | {}      | {} ",
+                "{}. {:2} | {:13} | {}   | {}   | {:12} | {}      |",
                 pos,
                 change,
                 fmt::format_driver_name(
@@ -449,10 +448,14 @@ impl Ui {
                 fmt::format_lap_time(seconds_to_ms(fi.best_lap_time)),
                 time_delta,
                 penalties,
-                tyres
             );
             fmt::set_team_color(wnd, participant.team);
             mvwaddstr(wnd, fi.position as i32, 0, s.as_str());
+
+            for (idx, t) in fi.tyres_visual.iter().enumerate() {
+                fmt::set_tyre_color(wnd, *t);
+                mvwaddstr(wnd, fi.position as i32, idx as i32 + 75, "o");
+            }
         }
         self.commit(wnd);
     }
