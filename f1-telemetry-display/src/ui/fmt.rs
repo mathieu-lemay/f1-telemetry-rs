@@ -225,10 +225,14 @@ pub fn wreset(w: WINDOW) {
     wattrset(w, 0);
 }
 
-pub fn format_driver_name(name: &str, driver: Driver) -> Cow<str> {
-    match driver {
-        Driver::Player => Cow::Owned(capitalize_name(name)),
-        _ => Cow::Borrowed(name),
+pub fn format_driver_name(name: &str, driver: Driver, is_online: bool) -> Cow<str> {
+    if is_online {
+        Cow::Borrowed(name)
+    } else {
+        match driver {
+            Driver::Player => capitalize_name(name),
+            _ => Cow::Borrowed(name),
+        }
     }
 }
 
@@ -242,12 +246,13 @@ pub fn format_time_delta(position: u8, time: f64, delta_time: f64, delta_laps: u
     }
 }
 
-fn capitalize_name(name: &str) -> String {
+fn capitalize_name(name: &str) -> Cow<str> {
     let n: Vec<&str> = name.split_ascii_whitespace().collect();
-    let first = n[0].chars().next().unwrap().to_ascii_uppercase();
-    let last = n[1].to_ascii_uppercase();
-
-    format!("{}. {}", first, last)
+    if n.len() == 2 {
+        Cow::Owned(n[1].to_ascii_uppercase())
+    } else {
+        Cow::Borrowed(name)
+    }
 }
 
 pub fn format_time(ts: u16) -> String {

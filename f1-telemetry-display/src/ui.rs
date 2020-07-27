@@ -301,7 +301,11 @@ impl Ui {
             let s = format!(
                 "{}. {:15}",
                 pos,
-                fmt::format_driver_name(&participant.name, participant.driver)
+                fmt::format_driver_name(
+                    &participant.name,
+                    participant.driver,
+                    game_state.session_info.is_online
+                )
             );
             fmt::set_team_color(wnd, participant.team);
             mvwaddstr(wnd, row, 0, &s);
@@ -436,7 +440,11 @@ impl Ui {
                 "{}. {:2} | {:13} | {}   | {}   | {:12} | {}      | {} ",
                 pos,
                 change,
-                fmt::format_driver_name(&participant.name, participant.driver),
+                fmt::format_driver_name(
+                    &participant.name,
+                    participant.driver,
+                    game_state.session_info.is_online
+                ),
                 grid,
                 fmt::format_lap_time(seconds_to_ms(fi.best_lap_time)),
                 time_delta,
@@ -483,7 +491,11 @@ impl Ui {
             let s = format!(
                 "{}. {:20} | {}   | {}   | {}   | {}{}{} ",
                 pos,
-                fmt::format_driver_name(&participant.name, participant.driver),
+                fmt::format_driver_name(
+                    &participant.name,
+                    participant.driver,
+                    game_state.session_info.is_online
+                ),
                 fmt::format_lap_time(li.current_lap_time),
                 fmt::format_lap_time(li.last_lap_time),
                 fmt::format_lap_time(li.best_lap_time),

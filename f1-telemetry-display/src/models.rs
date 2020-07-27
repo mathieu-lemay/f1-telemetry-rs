@@ -77,6 +77,7 @@ impl GameState {
         self.session_info.weather = session.weather();
         self.session_info.track_temperature = session.track_temperature();
         self.session_info.air_temperature = session.air_temperature();
+        self.session_info.is_online = session.network_game();
     }
 
     fn parse_lap_data(&mut self, lap_data: &PacketLapData) {
@@ -413,6 +414,7 @@ pub struct SessionInfo {
     pub weather: Weather,
     pub track_temperature: i8,
     pub air_temperature: i8,
+    pub is_online: bool,
 }
 
 #[derive(Default)]
