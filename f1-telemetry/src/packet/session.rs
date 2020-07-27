@@ -57,6 +57,12 @@ impl SessionType {
     }
 }
 
+impl Default for SessionType {
+    fn default() -> Self {
+        Self::Unknown
+    }
+}
+
 #[derive(Debug, Clone, Copy, Eq, PartialEq)]
 pub enum Track {
     Melbourne,

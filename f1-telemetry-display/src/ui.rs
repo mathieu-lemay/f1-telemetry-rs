@@ -5,7 +5,6 @@ use f1_telemetry::packet::session::SafetyCar;
 use f1_telemetry::packet::Packet;
 
 use crate::models::*;
-use std::cmp::Ordering;
 
 mod car;
 pub mod fmt;
@@ -406,11 +405,16 @@ impl Ui {
                 ResultStatus::Disqualified => String::from("DSQ"),
                 _ => format!("{:3}", fi.position),
             };
-            let grid = format!("{:3}", fi.grid_position);
-            let change = match fi.grid_position.cmp(&fi.position) {
-                Ordering::Equal => "-",
-                Ordering::Greater => "Λ",
-                Ordering::Less => "V",
+
+            let grid = match fi.grid_position {
+                0 => String::from("N/A"),
+                _ => format!("{:3}", fi.grid_position),
+            };
+
+            let change = match fi.delta_pos {
+                d if d < 0 => "Λ",
+                d if d > 0 => "V",
+                _ => "",
             }
             .to_string();
 

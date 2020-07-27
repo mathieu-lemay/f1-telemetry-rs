@@ -1,18 +1,18 @@
+use std::cmp::Ordering;
 use std::collections::BTreeMap;
 use std::f32::INFINITY;
 
 use f1_telemetry::packet::car_status::PacketCarStatusData;
 use f1_telemetry::packet::car_telemetry::PacketCarTelemetryData;
 use f1_telemetry::packet::event::{Event, PacketEventData};
+use f1_telemetry::packet::final_classification::PacketFinalClassificationData;
 use f1_telemetry::packet::generic::{ResultStatus, Team, TyreCompoundVisual, WheelData};
 use f1_telemetry::packet::lap::{PacketLapData, PitStatus};
 use f1_telemetry::packet::participants::{Driver, PacketParticipantsData};
-use f1_telemetry::packet::session::{PacketSessionData, SafetyCar, Weather};
+use f1_telemetry::packet::session::{PacketSessionData, SafetyCar, SessionType, Weather};
 use f1_telemetry::packet::Packet;
 
 use crate::ui::fmt;
-use f1_telemetry::packet::final_classification::PacketFinalClassificationData;
-use std::cmp::Ordering;
 
 #[derive(Default)]
 pub struct LapAndSectorTimes {
@@ -286,7 +286,8 @@ impl GameState {
 
     fn parse_final_classification(&mut self, classification_data: &PacketFinalClassificationData) {
         let mut race_time = 0.0;
-        let mut laps = 0;
+        let mut best_lap = 0.0;
+        let mut laps: i8 = 0;
 
         for i in 0..self.final_classifications.len() {
             let fc = &classification_data.final_classifications()[i];
@@ -306,13 +307,26 @@ impl GameState {
 
             if fi.position == 1 {
                 race_time = fi.total_race_time;
-                laps = fi.num_laps;
+                best_lap = fi.best_lap_time;
+                laps = fi.num_laps as i8;
             }
         }
 
-        for fi in &mut self.final_classifications {
-            fi.delta_time = fi.total_race_time - race_time;
-            fi.delta_laps = laps - fi.num_laps;
+        match self.session_info.session_type {
+            SessionType::Race | SessionType::Race2 => {
+                for fi in &mut self.final_classifications {
+                    fi.delta_pos = fi.position as i8 - fi.grid_position as i8;
+                    fi.delta_time = fi.total_race_time - race_time;
+                    fi.delta_laps = (laps - fi.num_laps as i8).max(0) as u8;
+                }
+            }
+            _ => {
+                for fi in &mut self.final_classifications {
+                    fi.delta_pos = 0;
+                    fi.delta_time = (fi.best_lap_time - best_lap).into();
+                    fi.delta_laps = 0;
+                }
+            }
         }
     }
 
@@ -388,6 +402,7 @@ pub struct LapInfo {
 
 #[derive(Default)]
 pub struct SessionInfo {
+    pub session_type: SessionType,
     pub session_name: String,
     pub track_name: String,
     pub elapsed_time: u16,
@@ -446,6 +461,7 @@ pub struct FinalClassificationInfo {
     pub total_race_time: f64,
     pub penalties: u8,
     pub tyres_visual: Vec<TyreCompoundVisual>,
+    pub delta_pos: i8,
     pub delta_time: f64,
     pub delta_laps: u8,
 }
