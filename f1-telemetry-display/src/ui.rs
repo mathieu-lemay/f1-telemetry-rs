@@ -229,7 +229,7 @@ impl Ui {
     fn print_session_info(&self, game_state: &GameState) {
         let sinfo = &game_state.session_info;
 
-        let session_name = &format!("{} - {}", sinfo.session_name, sinfo.track_name);
+        let session_name = &format!("{} - {}", sinfo.session_type.name(), sinfo.track_name);
         let lap_info = &format!("Lap {} of {}", sinfo.current_lap, sinfo.number_of_laps);
         let session_time = &format!(
             "{} / {}",

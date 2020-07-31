@@ -68,7 +68,7 @@ impl GameState {
     }
 
     fn parse_session_data(&mut self, session: &PacketSessionData) {
-        self.session_info.session_name = session.session_type().name().into();
+        self.session_info.session_type = session.session_type();
         self.session_info.track_name = session.track().name().into();
         self.session_info.elapsed_time = session.session_duration() - session.session_time_left();
         self.session_info.duration = session.session_duration();
@@ -409,7 +409,6 @@ pub struct LapInfo {
 #[derive(Default)]
 pub struct SessionInfo {
     pub session_type: SessionType,
-    pub session_name: String,
     pub track_name: String,
     pub elapsed_time: u16,
     pub duration: u16,
