@@ -6,11 +6,11 @@ use super::header::PacketHeader;
 #[getset(get_copy = "pub")]
 pub struct FastestLap {
     vehicle_idx: u8,
-    lap_time: f32,
+    lap_time: u32,
 }
 
 impl FastestLap {
-    pub(crate) fn new(vehicle_idx: u8, lap_time: f32) -> Self {
+    pub(crate) fn new(vehicle_idx: u8, lap_time: u32) -> Self {
         Self {
             vehicle_idx,
             lap_time,

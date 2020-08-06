@@ -250,8 +250,8 @@ impl Ui {
         let lap_info = &format!("Lap {} of {}", sinfo.current_lap, sinfo.number_of_laps);
         let session_time = &format!(
             "{} / {}",
-            fmt::format_time(sinfo.elapsed_time),
-            fmt::format_time(sinfo.duration)
+            fmt::format_time_hms(sinfo.elapsed_time),
+            fmt::format_time_hms(sinfo.duration)
         );
 
         addstr_center(self.main_window, SESSION_Y_OFFSET, session_name);
@@ -307,7 +307,7 @@ impl Ui {
 
             let s = format!(
                 "                     | {} |           |           |           |           |           | {}{}{} ",
-                fmt::format_lap_time(li.current_lap_time),
+                fmt::format_time_ms_millis(li.current_lap_time),
                 if li.in_pit { "P" } else { " " },
                 if li.lap_invalid { "!" } else { " " },
                 penalties,
@@ -327,7 +327,7 @@ impl Ui {
             fmt::set_team_color(wnd, participant.team);
             mvwaddstr(wnd, row, 0, &s);
 
-            let s = fmt::format_lap_time(li.last_lap_time);
+            let s = fmt::format_time_ms_millis(li.last_lap_time);
             fmt::set_lap_time_color(
                 Some(wnd),
                 li.last_lap_time,
@@ -336,7 +336,7 @@ impl Ui {
             );
             mvwaddstr(wnd, row, 35, &s);
 
-            let s = fmt::format_lap_time(li.best_lap_time);
+            let s = fmt::format_time_ms_millis(li.best_lap_time);
             fmt::set_lap_time_color(
                 Some(wnd),
                 li.best_lap_time,
@@ -345,7 +345,7 @@ impl Ui {
             );
             mvwaddstr(wnd, row, 47, &s);
 
-            let s = fmt::format_lap_time(li.sector_1);
+            let s = fmt::format_time_ms_millis(li.sector_1);
             fmt::set_lap_time_color(
                 Some(wnd),
                 li.sector_1,
@@ -354,7 +354,7 @@ impl Ui {
             );
             mvwaddstr(wnd, row, 59, &s);
 
-            let s = fmt::format_lap_time(li.sector_2);
+            let s = fmt::format_time_ms_millis(li.sector_2);
             fmt::set_lap_time_color(
                 Some(wnd),
                 li.sector_2,
@@ -363,7 +363,7 @@ impl Ui {
             );
             mvwaddstr(wnd, row, 71, &s);
 
-            let s = fmt::format_lap_time(li.sector_3);
+            let s = fmt::format_time_ms_millis(li.sector_3);
             fmt::set_lap_time_color(
                 Some(wnd),
                 li.sector_3,
@@ -394,10 +394,10 @@ impl Ui {
 
         let s = format!(
             "{}     | {}     | {}     | {}   ",
-            fmt::format_lap_time(session_best_times.sector_1),
-            fmt::format_lap_time(session_best_times.sector_2),
-            fmt::format_lap_time(session_best_times.sector_3),
-            fmt::format_lap_time(best_lap),
+            fmt::format_time_ms_millis(session_best_times.sector_1),
+            fmt::format_time_ms_millis(session_best_times.sector_2),
+            fmt::format_time_ms_millis(session_best_times.sector_3),
+            fmt::format_time_ms_millis(best_lap),
         );
         mvwaddstr(wnd, 1, 2, s.as_str());
 
@@ -462,7 +462,7 @@ impl Ui {
                     game_state.session_info.is_online
                 ),
                 grid,
-                fmt::format_lap_time(seconds_to_ms(fi.best_lap_time)),
+                fmt::format_time_ms_millis(fi.best_lap_time),
                 time_delta,
                 penalties,
             );
@@ -516,9 +516,9 @@ impl Ui {
                     participant.driver,
                     game_state.session_info.is_online
                 ),
-                fmt::format_lap_time(li.current_lap_time),
-                fmt::format_lap_time(li.last_lap_time),
-                fmt::format_lap_time(li.best_lap_time),
+                fmt::format_time_ms_millis(li.current_lap_time),
+                fmt::format_time_ms_millis(li.last_lap_time),
+                fmt::format_time_ms_millis(li.best_lap_time),
                 if li.in_pit { "P" } else { " " },
                 if li.lap_invalid { "!" } else { " " },
                 penalties,
@@ -573,7 +573,7 @@ impl Ui {
 
         let mut msg = format!(
             "{}: {}",
-            fmt::format_time_ms(event_info.timestamp),
+            fmt::format_time_hms_millis(event_info.timestamp),
             event_info.description
         );
 

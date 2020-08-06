@@ -1,6 +1,6 @@
 use std::io::BufRead;
 
-use byteorder::{LittleEndian, ReadBytesExt};
+use byteorder::ReadBytesExt;
 
 use crate::f1_2020::generic::{
     unpack_result_status, unpack_tyre_compound, unpack_tyre_compound_visual,
@@ -8,7 +8,7 @@ use crate::f1_2020::generic::{
 use crate::packet::final_classification::{FinalClassification, PacketFinalClassificationData};
 use crate::packet::header::PacketHeader;
 use crate::packet::UnpackError;
-use crate::utils::assert_packet_size;
+use crate::utils::{assert_packet_size, read_millis_f32, read_millis_f64};
 
 use super::consts::*;
 
@@ -21,8 +21,8 @@ fn parse_final_classification<T: BufRead>(
     let points = reader.read_u8().unwrap();
     let num_pit_stops = reader.read_u8().unwrap();
     let result_status = unpack_result_status(reader.read_u8().unwrap())?;
-    let best_lap_time = reader.read_f32::<LittleEndian>().unwrap();
-    let total_race_time = reader.read_f64::<LittleEndian>().unwrap();
+    let best_lap_time = read_millis_f32(reader);
+    let total_race_time = read_millis_f64(reader);
     let penalties_time = reader.read_u8().unwrap();
     let num_penalties = reader.read_u8().unwrap();
     let num_tyre_stints = reader.read_u8().unwrap();

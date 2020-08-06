@@ -70,11 +70,11 @@ impl Default for DriverStatus {
 #[derive(Debug, Default, CopyGetters)]
 #[getset(get_copy = "pub")]
 pub struct LapData {
-    last_lap_time: f32,
-    current_lap_time: f32,
+    last_lap_time: u32,
+    current_lap_time: u32,
     sector_1_time: u16,
     sector_2_time: u16,
-    best_lap_time: f32,
+    best_lap_time: u32,
     best_lap_num: u8,
     best_lap_sector_1_time: u16,
     best_lap_sector_2_time: u16,
@@ -102,11 +102,11 @@ pub struct LapData {
 impl LapData {
     #[allow(clippy::too_many_arguments)]
     pub(crate) fn from_2019(
-        last_lap_time: f32,
-        current_lap_time: f32,
-        best_lap_time: f32,
-        sector_1_time: f32,
-        sector_2_time: f32,
+        last_lap_time: u32,
+        current_lap_time: u32,
+        best_lap_time: u32,
+        sector_1_time: u32,
+        sector_2_time: u32,
         lap_distance: f32,
         total_distance: f32,
         safety_car_delta: f32,
@@ -120,8 +120,8 @@ impl LapData {
         driver_status: DriverStatus,
         result_status: ResultStatus,
     ) -> LapData {
-        let sector_1_time = (sector_1_time * 1000.0) as u16;
-        let sector_2_time = (sector_2_time * 1000.0) as u16;
+        let sector_1_time = sector_1_time as u16;
+        let sector_2_time = sector_2_time as u16;
 
         LapData {
             last_lap_time,
@@ -147,11 +147,11 @@ impl LapData {
 
     #[allow(clippy::too_many_arguments)]
     pub(crate) fn from_2020(
-        last_lap_time: f32,
-        current_lap_time: f32,
+        last_lap_time: u32,
+        current_lap_time: u32,
         sector_1_time: u16,
         sector_2_time: u16,
-        best_lap_time: f32,
+        best_lap_time: u32,
         best_lap_num: u8,
         best_lap_sector_1_time: u16,
         best_lap_sector_2_time: u16,

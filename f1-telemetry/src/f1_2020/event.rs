@@ -5,7 +5,7 @@ use byteorder::{LittleEndian, ReadBytesExt};
 use crate::packet::event::*;
 use crate::packet::header::PacketHeader;
 use crate::packet::UnpackError;
-use crate::utils::{assert_packet_size, unpack_string};
+use crate::utils::{assert_packet_size, read_millis_f32, unpack_string};
 
 use super::consts::*;
 
@@ -108,7 +108,7 @@ pub(crate) fn parse_event_data<T: BufRead>(
         "SEND" => Ok(Event::SessionEnded),
         "FTLP" => {
             let vehicle_idx = reader.read_u8().unwrap();
-            let lap_time = reader.read_f32::<LittleEndian>().unwrap();
+            let lap_time = read_millis_f32(reader);
 
             let evt_detail = FastestLap::new(vehicle_idx, lap_time);
             Ok(Event::FastestLap(evt_detail))

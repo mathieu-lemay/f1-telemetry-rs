@@ -38,9 +38,9 @@ pub struct FinalClassification {
     #[getset(get_copy = "pub")]
     result_status: ResultStatus,
     #[getset(get_copy = "pub")]
-    best_lap_time: f32,
+    best_lap_time: u32,
     #[getset(get_copy = "pub")]
-    total_race_time: f64,
+    total_race_time: u32,
     #[getset(get_copy = "pub")]
     penalties_time: u8,
     #[getset(get_copy = "pub")]
@@ -62,8 +62,8 @@ impl FinalClassification {
         points: u8,
         num_pit_stops: u8,
         result_status: ResultStatus,
-        best_lap_time: f32,
-        total_race_time: f64,
+        best_lap_time: u32,
+        total_race_time: u32,
         penalties_time: u8,
         num_penalties: u8,
         num_tyre_stints: u8,

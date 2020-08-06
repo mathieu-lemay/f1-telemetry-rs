@@ -97,8 +97,8 @@ impl GameState {
             let li = &mut self.lap_infos[idx];
 
             li.position = ld.car_position();
-            li.current_lap_time = seconds_to_ms(ld.current_lap_time());
-            li.best_lap_time = seconds_to_ms(ld.best_lap_time());
+            li.current_lap_time = ld.current_lap_time();
+            li.best_lap_time = ld.best_lap_time();
             li.current_lap_num = ld.current_lap_num();
             li.status = ld.result_status();
             li.in_pit = ld.pit_status() != PitStatus::None;
@@ -112,7 +112,7 @@ impl GameState {
 
             let new_s1 = ld.sector_1_time() as u32;
             let new_s2 = ld.sector_2_time() as u32;
-            let new_ll = seconds_to_ms(ld.last_lap_time());
+            let new_ll = ld.last_lap_time();
 
             if new_s1 != li.sector_1 && new_s1 > 0 {
                 li.sector_1 = new_s1;
@@ -221,7 +221,7 @@ impl GameState {
         };
 
         let detail = match evt {
-            Event::FastestLap(f) => Some(fmt::format_lap_time(seconds_to_ms(f.lap_time()))),
+            Event::FastestLap(f) => Some(fmt::format_time_ms_millis(f.lap_time())),
             Event::Penalty(p) => Some(format!("{:?}", p.penalty_type())),
             Event::SpeedTrap(s) => Some(format!("{:.1} km/h", s.speed())),
             _ => None,
@@ -286,8 +286,8 @@ impl GameState {
     }
 
     fn parse_final_classification(&mut self, classification_data: &PacketFinalClassificationData) {
-        let mut race_time = 0.0;
-        let mut best_lap = 0.0;
+        let mut race_time = 0;
+        let mut best_lap = 0;
         let mut laps: i8 = 0;
 
         for i in 0..self.final_classifications.len() {
@@ -329,7 +329,7 @@ impl GameState {
             _ => {
                 for fi in &mut self.final_classifications {
                     fi.delta_pos = 0;
-                    fi.delta_time = (fi.best_lap_time - best_lap).into();
+                    fi.delta_time = fi.best_lap_time - best_lap;
                     fi.delta_laps = 0;
                 }
             }
@@ -378,7 +378,7 @@ pub struct Participant {
 
 #[derive(Default)]
 pub struct EventInfo {
-    pub timestamp: f32,
+    pub timestamp: u32,
     pub description: String,
     pub driver_name: Option<String>,
     pub detail: Option<String>,
@@ -463,16 +463,11 @@ pub struct FinalClassificationInfo {
     pub num_laps: u8,
     pub num_pit_stops: u8,
     pub status: ResultStatus,
-    pub best_lap_time: f32,
-    pub total_race_time: f64,
+    pub best_lap_time: u32,
+    pub total_race_time: u32,
     pub penalties: u8,
     pub tyres_visual: Vec<TyreCompoundVisual>,
     pub delta_pos: i8,
-    pub delta_time: f64,
+    pub delta_time: u32,
     pub delta_laps: u8,
-}
-
-#[inline]
-pub(crate) fn seconds_to_ms(seconds: f32) -> u32 {
-    (seconds * 1000.0).floor() as u32
 }

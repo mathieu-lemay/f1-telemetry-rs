@@ -2,7 +2,6 @@ use std::borrow::Cow;
 
 use ncurses::*;
 
-use crate::models::seconds_to_ms;
 use f1_telemetry::packet::generic::{Team, TyreCompoundVisual};
 use f1_telemetry::packet::participants::Driver;
 use std::time::{SystemTime, UNIX_EPOCH};
@@ -236,13 +235,13 @@ pub fn format_driver_name(name: &str, driver: Driver, is_online: bool) -> Cow<st
     }
 }
 
-pub fn format_time_delta(position: u8, time: f64, delta_time: f64, delta_laps: u8) -> String {
+pub fn format_time_delta(position: u8, time: u32, delta_time: u32, delta_laps: u8) -> String {
     if position == 1 {
-        format_time_ms(time as f32)
+        format_time_hms_millis(time)
     } else if delta_laps > 0 {
         format!("+{} laps  ", delta_laps)
     } else {
-        format!("+{}  ", format_lap_time(seconds_to_ms(delta_time as f32)))
+        format!("+{}  ", format_time_ms_millis(delta_time))
     }
 }
 
@@ -255,7 +254,7 @@ fn capitalize_name(name: &str) -> Cow<str> {
     }
 }
 
-pub fn format_time(ts: u16) -> String {
+pub fn format_time_hms(ts: u16) -> String {
     let hours = ts / 3600;
     let minutes = (ts - hours * 3600) / 60;
     let seconds = ts % 60;
@@ -263,10 +262,9 @@ pub fn format_time(ts: u16) -> String {
     format!("{:02}:{:02}:{:02}", hours, minutes, seconds)
 }
 
-pub fn format_time_ms(ts: f32) -> String {
-    let seconds = ts as i64;
-    let millis = ((ts - ts.floor()) * 1000.0).floor();
-
+pub fn format_time_hms_millis(ts: u32) -> String {
+    let millis = ts % 1000;
+    let seconds = ts / 1000;
     let hours = seconds / 3600;
     let minutes = (seconds - hours * 3600) / 60;
     let seconds = seconds % 60;
@@ -274,7 +272,7 @@ pub fn format_time_ms(ts: f32) -> String {
     format!("{:02}:{:02}:{:02}.{:03}", hours, minutes, seconds, millis)
 }
 
-pub fn format_lap_time(ts: u32) -> String {
+pub fn format_time_ms_millis(ts: u32) -> String {
     let minutes = ts / 60000;
     let seconds = (ts - minutes * 60000) / 1000;
     let millis = ts % 1000;

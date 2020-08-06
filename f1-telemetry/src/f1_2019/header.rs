@@ -4,7 +4,7 @@ use byteorder::{LittleEndian, ReadBytesExt};
 
 use crate::packet::header::PacketHeader;
 use crate::packet::UnpackError;
-use crate::utils::assert_packet_at_least_size;
+use crate::utils::{assert_packet_at_least_size, read_millis_f32};
 
 use super::consts::*;
 
@@ -20,7 +20,7 @@ pub(crate) fn parse_header<T: BufRead>(
     let packet_version = reader.read_u8().unwrap();
     let packet_id = reader.read_u8().unwrap();
     let session_uid = reader.read_u64::<LittleEndian>().unwrap();
-    let session_time = reader.read_f32::<LittleEndian>().unwrap();
+    let session_time = read_millis_f32(reader);
     let frame_identifier = reader.read_u32::<LittleEndian>().unwrap();
     let player_car_index = reader.read_u8().unwrap();
 

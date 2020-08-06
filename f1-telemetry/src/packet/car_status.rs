@@ -41,30 +41,30 @@ pub enum ERSDeployMode {
 /// There is some data in the Car Status packets that you may not want other players seeing if you are in a multiplayer game.
 /// This is controlled by the "Your Telemetry" setting in the Telemetry options. The options are:
 ///
-///     Restricted (Default) – other players viewing the UDP data will not see values for your car;
-///     Public – all other players can see all the data for your car.
+///  - Restricted (Default): other players viewing the UDP data will not see values for your car;
+///  - Public: all other players can see all the data for your car.
 ///
 /// Note: You can always see the data for the car you are driving regardless of the setting.
 ///
 /// The following data items are set to zero if the player driving the car in question has their "Your Telemetry" set to "Restricted":
 ///
-///     fuelInTank
-///     fuelCapacity
-///     fuelMix
-///     fuelRemainingLaps
-///     frontBrakeBias
-///     frontLeftWingDamage
-///     frontRightWingDamage
-///     rearWingDamage
-///     engineDamage
-///     gearBoxDamage
-///     tyresWear (All four wheels)
-///     tyresDamage (All four wheels)
-///     ersDeployMode
-///     ersStoreEnergy
-///     ersDeployedThisLap
-///     ersHarvestedThisLapMGUK
-///     ersHarvestedThisLapMGUH
+///  - fuelInTank
+///  - fuelCapacity
+///  - fuelMix
+///  - fuelRemainingLaps
+///  - frontBrakeBias
+///  - frontLeftWingDamage
+///  - frontRightWingDamage
+///  - rearWingDamage
+///  - engineDamage
+///  - gearBoxDamage
+///  - tyresWear (All four wheels)
+///  - tyresDamage (All four wheels)
+///  - ersDeployMode
+///  - ersStoreEnergy
+///  - ersDeployedThisLap
+///  - ersHarvestedThisLapMGUK
+///  - ersHarvestedThisLapMGUH
 ///
 /// ## Specification
 /// ```text
