@@ -1,7 +1,7 @@
 use ncurses::*;
 
 use f1_telemetry::packet::generic::{ResultStatus, TyreCompoundVisual};
-use f1_telemetry::packet::session::SafetyCar;
+use f1_telemetry::packet::session::{SafetyCar, SessionType};
 use f1_telemetry::packet::Packet;
 
 use crate::models::*;
@@ -48,6 +48,7 @@ pub struct Ui {
     dashboard_view: DashboardView,
     track_view: TrackView,
     lap_detail_view: LapDetailView,
+    pub(crate) session_rotation: bool,
 }
 
 impl Ui {
@@ -120,11 +121,27 @@ impl Ui {
             dashboard_view,
             track_view,
             lap_detail_view,
+            session_rotation: false,
         }
     }
 
     pub fn destroy(&self) {
         endwin();
+    }
+
+    pub fn enable_rotation(&mut self) {
+        self.session_rotation = true
+    }
+
+    pub fn disable_rotation(&mut self) {
+        self.session_rotation = false
+    }
+
+    pub fn rotate_view(&mut self, game_state_session: SessionType) {
+        match game_state_session {
+            SessionType::Race => self.switch_view(View::Dashboard),
+            _ => self.switch_view(View::LapDetail),
+        }
     }
 
     pub fn switch_view(&mut self, view: View) {

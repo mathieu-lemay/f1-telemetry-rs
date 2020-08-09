@@ -55,15 +55,22 @@ fn main() {
             match ch {
                 ncurses::WchResult::Char(49) => {
                     // 1
+                    ui.disable_rotation();
                     ui.switch_view(View::Dashboard);
                 }
                 ncurses::WchResult::Char(50) => {
                     // 2
+                    ui.disable_rotation();
                     ui.switch_view(View::TrackOverview);
                 }
                 ncurses::WchResult::Char(51) => {
                     // 3
+                    ui.disable_rotation();
                     ui.switch_view(View::LapDetail);
+                }
+                ncurses::WchResult::Char(52) => {
+                    //4
+                    ui.enable_rotation()
                 }
                 ncurses::WchResult::Char(113) => {
                     // q
@@ -78,6 +85,9 @@ fn main() {
                 // }
                 _ => {}
             }
+        }
+        if ui.session_rotation {
+            ui.rotate_view(game_state.session_info.session_type);
         }
     }
 
