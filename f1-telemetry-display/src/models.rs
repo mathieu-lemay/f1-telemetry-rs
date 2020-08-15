@@ -306,7 +306,7 @@ impl GameState {
                 .tyre_stints_visual()
                 .iter()
                 .filter(|&&t| t != TyreCompoundVisual::Invalid)
-                .map(|t| t.clone())
+                .copied()
                 .collect();
             fi.points = fc.points();
             fi.status = fc.result_status();

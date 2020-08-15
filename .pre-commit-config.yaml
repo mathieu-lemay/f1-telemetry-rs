@@ -3,7 +3,6 @@ repos:
     rev: master
     hooks:
       - id: fmt
-      - id: cargo-check
       - id: clippy
-        
+
 # vim: ts=2 sw=2
