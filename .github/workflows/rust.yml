@@ -18,7 +18,7 @@ jobs:
       - name: Install Dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y --no-install-recommends ncurses-dev
+          sudo apt-get install -y --no-install-recommends ncurses-dev libncursesw5-dev
       - name: Lint
         run: |
           cargo fmt -- --check
