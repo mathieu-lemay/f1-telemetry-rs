@@ -319,3 +319,46 @@ pub fn blink_colour(c1: i16, c2: i16) {
         set_color(None, c2)
     }
 }
+
+#[cfg(test)]
+mod test_fmt_delta_time {
+    use super::*;
+
+    #[test]
+    fn test_first_place_returns_race_time() {
+        let position = 1;
+        let time = 3_601_001;
+        let delta_time = 0;
+        let delta_laps = 0;
+        let expected = format!("01:00:01.001");
+
+        let actual = format_time_delta(position, time, delta_time, delta_laps);
+
+        assert_eq!(expected, actual)
+    }
+
+    #[test]
+    fn test_not_first_place_same_lap_returns_race_time_delta() {
+        let position = 2;
+        let time = 3_601_001;
+        let delta_time = 3_601;
+        let delta_laps = 0;
+        let expected = format!("+00:03.601  ");
+
+        let actual = format_time_delta(position, time, delta_time, delta_laps);
+
+        assert_eq!(expected, actual)
+    }
+    #[test]
+    fn test_not_first_place_2_laps_down_returns_lap_delta() {
+        let position = 2;
+        let time = 3_601_001;
+        let delta_time = 3_601;
+        let delta_laps = 2;
+        let expected = format!("+2 laps  ");
+
+        let actual = format_time_delta(position, time, delta_time, delta_laps);
+
+        assert_eq!(expected, actual)
+    }
+}
