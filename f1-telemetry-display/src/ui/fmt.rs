@@ -235,7 +235,13 @@ pub fn format_driver_name(name: &str, driver: Driver, is_online: bool) -> Cow<st
     }
 }
 
-pub fn format_time_delta(position: u8, time: u32, delta_time: u32, delta_laps: u8, penalties: u8) -> String {
+pub fn format_time_delta(
+    position: u8,
+    time: u32,
+    delta_time: u32,
+    delta_laps: u8,
+    penalties: u8,
+) -> String {
     let p = penalties as u32 * 1000;
 
     if position == 1 {
@@ -381,5 +387,3 @@ mod test_fmt_delta_time {
         assert_eq!(expected, actual)
     }
 }
-
-
