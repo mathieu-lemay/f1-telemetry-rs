@@ -235,13 +235,21 @@ pub fn format_driver_name(name: &str, driver: Driver, is_online: bool) -> Cow<st
     }
 }
 
-pub fn format_time_delta(position: u8, time: u32, delta_time: u32, delta_laps: u8) -> String {
+pub fn format_time_delta(
+    position: u8,
+    time: u32,
+    delta_time: u32,
+    delta_laps: u8,
+    penalties: u8,
+) -> String {
+    let p = penalties as u32 * 1000;
+
     if position == 1 {
-        format_time_hms_millis(time)
+        format_time_hms_millis(time + p)
     } else if delta_laps > 0 {
         format!("+{} laps  ", delta_laps)
     } else {
-        format!("+{}  ", format_time_ms_millis(delta_time))
+        format!("+{}  ", format_time_ms_millis(delta_time + p))
     }
 }
 
@@ -330,9 +338,10 @@ mod test_fmt_delta_time {
         let time = 3_601_001;
         let delta_time = 0;
         let delta_laps = 0;
+        let penalties = 0;
         let expected = format!("01:00:01.001");
 
-        let actual = format_time_delta(position, time, delta_time, delta_laps);
+        let actual = format_time_delta(position, time, delta_time, delta_laps, penalties);
 
         assert_eq!(expected, actual)
     }
@@ -343,9 +352,10 @@ mod test_fmt_delta_time {
         let time = 3_601_001;
         let delta_time = 3_601;
         let delta_laps = 0;
+        let penalties = 0;
         let expected = format!("+00:03.601  ");
 
-        let actual = format_time_delta(position, time, delta_time, delta_laps);
+        let actual = format_time_delta(position, time, delta_time, delta_laps, penalties);
 
         assert_eq!(expected, actual)
     }
@@ -355,9 +365,24 @@ mod test_fmt_delta_time {
         let time = 3_601_001;
         let delta_time = 3_601;
         let delta_laps = 2;
+        let penalties = 0;
         let expected = format!("+2 laps  ");
 
-        let actual = format_time_delta(position, time, delta_time, delta_laps);
+        let actual = format_time_delta(position, time, delta_time, delta_laps, penalties);
+
+        assert_eq!(expected, actual)
+    }
+
+    #[test]
+    fn test_2_delta_time_2_penalties_returns_4_time_delta() {
+        let position = 2;
+        let time = 10_000;
+        let delta_time = 2_000;
+        let delta_laps = 0;
+        let penalties = 2;
+        let expected = format!("+00:04.000  ");
+
+        let actual = format_time_delta(position, time, delta_time, delta_laps, penalties);
 
         assert_eq!(expected, actual)
     }
