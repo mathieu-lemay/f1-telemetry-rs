@@ -11,14 +11,23 @@ env:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-18.04, ubuntu-20.04, ubuntu-latest, macos-latest]
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - name: Install Dependencies
+      - name: Install Dependencies Ubuntu
+        if: ${{contains(runner.os,'Linux')}}
         run: |
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends ncurses-dev libncursesw5-dev
+      - name: Install Dependencies Mac
+        if: ${{contains(runner.os,'macOS')}}
+        run: |
+          rustup component add rustfmt clippy --toolchain stable-x86_64-apple-darwin
+
       - name: Lint
         run: |
           cargo fmt -- --check
