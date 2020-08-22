@@ -450,6 +450,7 @@ impl Ui {
                 fi.total_race_time,
                 fi.delta_time,
                 fi.delta_laps,
+                fi.penalties
             );
 
             let s = format!(
