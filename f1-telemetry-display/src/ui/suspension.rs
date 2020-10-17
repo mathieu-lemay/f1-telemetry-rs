@@ -1,8 +1,5 @@
-use super::car::{render_component, TYRE};
+use super::car::render_component;
 use crate::models::{MotionInfo, TelemetryInfo};
-use crate::ui::fmt;
-use f1_telemetry::packet::generic::WheelData;
-use f1_telemetry::packet::motion::MotionData;
 use ncurses::{mvwaddstr, werase, WINDOW};
 
 const SUSP_RIGHT_NORMAL: &str = "

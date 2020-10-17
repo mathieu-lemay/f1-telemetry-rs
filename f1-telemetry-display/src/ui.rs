@@ -31,12 +31,10 @@ struct DashboardView {
     lap_times_swnd: WINDOW,
     car_swnd: WINDOW,
     rel_pos_swnd: WINDOW,
-    handling_swnd: WINDOW,
 }
 
 struct TrackView {
     win: WINDOW,
-    rel_pos_swnd: WINDOW,
 }
 
 struct LapDetailView {
@@ -107,14 +105,10 @@ impl Ui {
             lap_times_swnd,
             car_swnd,
             rel_pos_swnd,
-            handling_swnd,
         };
 
         let track_wnd = Ui::create_win(win_h, win_w, WINDOW_Y_OFFSET, 1, Some("Track Status"));
-        let track_view = TrackView {
-            win: track_wnd,
-            rel_pos_swnd,
-        };
+        let track_view = TrackView { win: track_wnd };
 
         let laps_wnd = Ui::create_win(win_h, win_w, WINDOW_Y_OFFSET, 1, Some("Lap Details"));
         let lap_detail_swnd = derwin(laps_wnd, 23, 123, 1, 4);
