@@ -3,6 +3,7 @@ use ncurses::*;
 use crate::models::CarStatus;
 
 use super::fmt;
+use super::suspension::TEMPTYRE;
 
 const LEFT_FRONT_WING: &str = "\
 ___________/--
@@ -16,7 +17,7 @@ const RIGHT_FRONT_WING: &str = "\
 |--\\_________|
 |            |";
 
-const TYRE: &str = " _____
+pub(crate) const TYRE: &str = " _____
 |     |
 |     |
 |     |
@@ -86,10 +87,11 @@ pub fn render_car(w: WINDOW, car_status: &CarStatus) {
     render_component(w, TYRE, car_status.tyres_damage.rear_right(), 13, 22);
 }
 
-fn render_component(w: WINDOW, component: &str, damage: u8, y: i32, x: i32) {
+pub(crate) fn render_component(w: WINDOW, component: &str, damage: u8, y: i32, x: i32) {
     let (ok, caution, warning): (u8, u8, u8) = match component {
         ENGINE => (50, 70, 90),
         GEARBOX => (50, 70, 90),
+        TEMPTYRE => (100, 103, 110),
         _ => (30, 60, 80),
     };
     fmt::set_damage_color(Some(w), damage, ok, caution, warning);

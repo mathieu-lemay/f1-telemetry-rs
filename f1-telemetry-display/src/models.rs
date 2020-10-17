@@ -286,6 +286,7 @@ impl GameState {
         self.telemetry_info.engine_temperature = td.engine_temperature();
 
         self.car_status.drs = td.drs();
+        self.telemetry_info.tyre_surface_temperature = td.tyres_surface_temperature();
     }
 
     fn parse_motion_data(&mut self, motion_data: &PacketMotionData) {
@@ -452,6 +453,7 @@ pub struct TelemetryInfo {
     pub drs: bool,
     pub rev_lights_percent: u8,
     pub engine_temperature: u16,
+    pub tyre_surface_temperature: WheelData<u16>,
 }
 
 #[derive(Default)]

@@ -8,6 +8,7 @@ use crate::models::*;
 
 mod car;
 pub mod fmt;
+mod suspension;
 mod weather;
 
 const WIDTH: i32 = 132;
@@ -29,7 +30,8 @@ struct DashboardView {
     tyres_swnd: WINDOW,
     lap_times_swnd: WINDOW,
     car_swnd: WINDOW,
-    motion_swnd: WINDOW,
+    rel_pos_swnd: WINDOW,
+    handling_swnd: WINDOW,
 }
 
 struct TrackView {
@@ -41,6 +43,7 @@ struct LapDetailView {
     win: WINDOW,
     lap_detail_swnd: WINDOW,
     best_sectors_swnd: WINDOW,
+    handling_swnd: WINDOW,
 }
 
 pub struct Ui {
@@ -88,18 +91,26 @@ impl Ui {
         let tyres_swnd = derwin(dashboard_wnd, 23, 2, 1, 2);
         let lap_times_swnd = derwin(dashboard_wnd, 23, 80, 1, 4);
         let car_swnd = derwin(dashboard_wnd, 24, 39, 2, 90);
-        let motion_swnd = derwin(dashboard_wnd, 15, 80, 28, 2);
+        // let motion_swnd = derwin(dashboard_wnd, 15, 80, 28, 2);
+        let rel_pos_swnd = derwin(
+            dashboard_wnd,
+            12,
+            getmaxx(dashboard_wnd) - 4,
+            getmaxy(dashboard_wnd) - 13,
+            2,
+        );
+        let handling_swnd = derwin(dashboard_wnd, 25, 65, 25, 110);
+
         let dashboard_view = DashboardView {
             win: dashboard_wnd,
             tyres_swnd,
             lap_times_swnd,
             car_swnd,
-            motion_swnd,
+            rel_pos_swnd,
+            handling_swnd,
         };
 
         let track_wnd = Ui::create_win(win_h, win_w, WINDOW_Y_OFFSET, 1, Some("Track Status"));
-        let rel_pos_swnd = derwin(track_wnd, 12, getmaxx(track_wnd) - 4, 15, 2);
-
         let track_view = TrackView {
             win: track_wnd,
             rel_pos_swnd,
@@ -113,6 +124,7 @@ impl Ui {
             win: laps_wnd,
             lap_detail_swnd,
             best_sectors_swnd,
+            handling_swnd,
         };
 
         wrefresh(dashboard_wnd);
@@ -208,6 +220,7 @@ impl Ui {
         match packet {
             Packet::Lap(_) => {
                 self.print_dashboard_lap_info(&game_state);
+                self.print_track_status_lap_info(game_state);
             }
             Packet::CarTelemetry(_) => self.print_telemetry_info(&game_state),
             Packet::CarStatus(_) => {
@@ -216,7 +229,8 @@ impl Ui {
             }
             Packet::FinalClassification(_) => self
                 .print_final_classification_info(&game_state, self.dashboard_view.lap_times_swnd),
-            Packet::Motion(_) => self.print_motion_info(&game_state),
+            // Packet::Motion(_) => self.print_motion_info(&game_state),
+            Packet::Motion(_) => self.print_handling_info(game_state),
             _ => {}
         }
     }
@@ -232,6 +246,7 @@ impl Ui {
             }
             Packet::FinalClassification(_) => self
                 .print_final_classification_info(&game_state, self.lap_detail_view.lap_detail_swnd),
+            Packet::Motion(_) => self.print_handling_info(game_state),
             _ => {}
         }
     }
@@ -481,71 +496,71 @@ impl Ui {
         self.commit(wnd);
     }
 
-    fn print_motion_info(&self, game_state: &GameState) {
-        let wnd = self.dashboard_view.motion_swnd;
-        werase(wnd);
-
-        let header = "MOTION";
-
-        mvwaddstr(wnd, 0, 0, header);
-
-        let roll = format!(
-            "Roll        : {:03.3}",
-            game_state.motion_info.roll.to_degrees()
-        );
-        let pitch = format!(
-            "Pitch       : {:03.3}",
-            game_state.motion_info.pitch.to_degrees()
-        );
-        let g_lat = format!(
-            "G-Lat       : {:03.3}",
-            game_state.motion_info.g_force_lateral
-        );
-        let g_long = format!(
-            "G-Long      : {:03.3}",
-            game_state.motion_info.g_force_longitudinal
-        );
-        let angle = format!(
-            "Wheel Angle : {:03.3}",
-            game_state.motion_info.front_wheels_angle.to_degrees()
-        );
-
-        let front_slip = format!(
-            "Front Slip  : {:03.2} --- {:03.2}",
-            game_state.motion_info.wheel_slip.front_left(),
-            game_state.motion_info.wheel_slip.front_right()
-        );
-        let rear_slip = format!(
-            "Rear Slip   : {:03.2} --- {:03.2}",
-            game_state.motion_info.wheel_slip.rear_left(),
-            game_state.motion_info.wheel_slip.rear_right()
-        );
-
-        let front_suspension = format!(
-            "Front Susp  : {:03.2} --- {:03.2}",
-            game_state.motion_info.suspension_position.front_left(),
-            game_state.motion_info.suspension_position.front_right()
-        );
-        let rear_suspension = format!(
-            "Rear Susp   : {:03.2} --- {:03.2}",
-            game_state.motion_info.suspension_position.rear_left(),
-            game_state.motion_info.suspension_position.rear_right()
-        );
-
-        mvwaddstr(wnd, 1, 0, roll.as_str());
-        mvwaddstr(wnd, 2, 0, pitch.as_str());
-        mvwaddstr(wnd, 3, 0, g_lat.as_str());
-        mvwaddstr(wnd, 4, 0, g_long.as_str());
-        mvwaddstr(wnd, 5, 0, angle.as_str());
-
-        mvwaddstr(wnd, 7, 0, front_slip.as_str());
-        mvwaddstr(wnd, 8, 0, rear_slip.as_str());
-
-        mvwaddstr(wnd, 9, 0, front_suspension.as_str());
-        mvwaddstr(wnd, 10, 0, rear_suspension.as_str());
-
-        self.commit(wnd)
-    }
+    // fn print_motion_info(&self, game_state: &GameState) {
+    //     let wnd = self.dashboard_view.motion_swnd;
+    //     werase(wnd);
+    //
+    //     let header = "MOTION";
+    //
+    //     mvwaddstr(wnd, 0, 0, header);
+    //
+    //     let roll = format!(
+    //         "Roll        : {:03.3}",
+    //         game_state.motion_info.roll.to_degrees()
+    //     );
+    //     let pitch = format!(
+    //         "Pitch       : {:03.3}",
+    //         game_state.motion_info.pitch.to_degrees()
+    //     );
+    //     let g_lat = format!(
+    //         "G-Lat       : {:03.3}",
+    //         game_state.motion_info.g_force_lateral
+    //     );
+    //     let g_long = format!(
+    //         "G-Long      : {:03.3}",
+    //         game_state.motion_info.g_force_longitudinal
+    //     );
+    //     let angle = format!(
+    //         "Wheel Angle : {:03.3}",
+    //         game_state.motion_info.front_wheels_angle.to_degrees()
+    //     );
+    //
+    //     let front_slip = format!(
+    //         "Front Slip  : {:03.2} --- {:03.2}",
+    //         game_state.motion_info.wheel_slip.front_left(),
+    //         game_state.motion_info.wheel_slip.front_right()
+    //     );
+    //     let rear_slip = format!(
+    //         "Rear Slip   : {:03.2} --- {:03.2}",
+    //         game_state.motion_info.wheel_slip.rear_left(),
+    //         game_state.motion_info.wheel_slip.rear_right()
+    //     );
+    //
+    //     let front_suspension = format!(
+    //         "Front Susp  : {:03.2} --- {:03.2}",
+    //         game_state.motion_info.suspension_position.front_left(),
+    //         game_state.motion_info.suspension_position.front_right()
+    //     );
+    //     let rear_suspension = format!(
+    //         "Rear Susp   : {:03.2} --- {:03.2}",
+    //         game_state.motion_info.suspension_position.rear_left(),
+    //         game_state.motion_info.suspension_position.rear_right()
+    //     );
+    //
+    //     mvwaddstr(wnd, 1, 0, roll.as_str());
+    //     mvwaddstr(wnd, 2, 0, pitch.as_str());
+    //     mvwaddstr(wnd, 3, 0, g_lat.as_str());
+    //     mvwaddstr(wnd, 4, 0, g_long.as_str());
+    //     mvwaddstr(wnd, 5, 0, angle.as_str());
+    //
+    //     mvwaddstr(wnd, 7, 0, front_slip.as_str());
+    //     mvwaddstr(wnd, 8, 0, rear_slip.as_str());
+    //
+    //     mvwaddstr(wnd, 9, 0, front_suspension.as_str());
+    //     mvwaddstr(wnd, 10, 0, rear_suspension.as_str());
+    //
+    //     self.commit(wnd)
+    // }
 
     fn print_dashboard_lap_info(&self, game_state: &GameState) {
         let wnd = self.dashboard_view.lap_times_swnd;
@@ -602,8 +617,8 @@ impl Ui {
     }
 
     fn print_track_status_lap_info(&self, game_state: &GameState) {
-        let wnd = self.track_view.rel_pos_swnd;
-        let w = getmaxx(wnd) - 17;
+        let wnd = self.dashboard_view.rel_pos_swnd;
+        let w = 79;
 
         let relative_positions = &game_state.relative_positions;
 
@@ -611,7 +626,7 @@ impl Ui {
 
         let header = format!(
             "Last {} First",
-            (0..23).map(|_| "---->").collect::<String>()
+            (0..17).map(|_| "---->").collect::<String>()
         );
         let filler = (0..w).map(|_| " ").collect::<String>();
 
@@ -725,6 +740,15 @@ impl Ui {
             90,
             &format!("Track Temp : {}C", session.track_temperature),
         );
+
+        self.commit(wnd);
+    }
+
+    fn print_handling_info(&self, game_state: &GameState) {
+        let wnd = self.lap_detail_view.handling_swnd;
+
+        suspension::render_suspension(wnd, &game_state.motion_info, &game_state.telemetry_info);
+        wclrtoeol(wnd);
 
         self.commit(wnd);
     }
