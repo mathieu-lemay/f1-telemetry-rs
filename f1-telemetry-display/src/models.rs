@@ -13,6 +13,7 @@ use f1_telemetry::packet::session::{PacketSessionData, SafetyCar, SessionType, W
 use f1_telemetry::packet::Packet;
 
 use crate::ui::fmt;
+use f1_telemetry::packet::motion::PacketMotionData;
 
 #[derive(Default)]
 pub struct LapAndSectorTimes {
@@ -34,6 +35,7 @@ pub struct GameState {
     pub telemetry_info: TelemetryInfo,
     pub relative_positions: RelativePositions,
     pub final_classifications: Vec<FinalClassificationInfo>,
+    pub motion_info: MotionInfo,
 }
 
 impl GameState {
@@ -46,10 +48,11 @@ impl GameState {
             Packet::Lap(p) => self.parse_lap_data(&p),
             Packet::Event(p) => self.parse_event_data(&p),
             Packet::Participants(p) => self.parse_participants(&p),
-            // Packet::CarSetups(p) => p.header(),
+            // Packet::CarqSetups(p) => p.header(),
             Packet::CarTelemetry(p) => self.parse_telemetry_data(&p),
             Packet::CarStatus(p) => self.parse_car_status(&p),
             Packet::FinalClassification(p) => self.parse_final_classification(&p),
+            Packet::Motion(p) => self.parse_motion_data(&p),
             _ => {}
         }
     }
@@ -285,6 +288,24 @@ impl GameState {
         self.car_status.drs = td.drs();
     }
 
+    fn parse_motion_data(&mut self, motion_data: &PacketMotionData) {
+        let player_index = motion_data.header().player_car_index();
+        let md = &motion_data.motion_data()[player_index as usize];
+
+        self.motion_info.suspension_position = motion_data.suspension_position();
+        self.motion_info.suspension_velocity = motion_data.suspension_velocity();
+        self.motion_info.suspension_acceleration = motion_data.suspension_acceleration();
+        self.motion_info.wheel_speed = motion_data.wheel_speed();
+        self.motion_info.wheel_slip = motion_data.wheel_slip();
+        self.motion_info.front_wheels_angle = motion_data.front_wheels_angle();
+        self.motion_info.g_force_lateral = md.g_force_lateral();
+        self.motion_info.g_force_longitudinal = md.g_force_longitudinal();
+        self.motion_info.g_force_vertical = md.g_force_vertical();
+        self.motion_info.yaw = md.yaw();
+        self.motion_info.pitch = md.pitch();
+        self.motion_info.roll = md.roll();
+    }
+
     fn parse_final_classification(&mut self, classification_data: &PacketFinalClassificationData) {
         let mut race_time = 0;
         let mut best_lap = 0;
@@ -431,6 +452,22 @@ pub struct TelemetryInfo {
     pub drs: bool,
     pub rev_lights_percent: u8,
     pub engine_temperature: u16,
+}
+
+#[derive(Default)]
+pub struct MotionInfo {
+    pub suspension_position: WheelData<f32>,
+    pub suspension_velocity: WheelData<f32>,
+    pub suspension_acceleration: WheelData<f32>,
+    pub wheel_speed: WheelData<f32>,
+    pub wheel_slip: WheelData<f32>,
+    pub front_wheels_angle: f32,
+    pub g_force_lateral: f32,
+    pub g_force_longitudinal: f32,
+    pub g_force_vertical: f32,
+    pub yaw: f32,
+    pub pitch: f32,
+    pub roll: f32,
 }
 
 #[derive(Default)]
