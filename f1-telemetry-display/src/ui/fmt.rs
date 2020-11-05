@@ -248,6 +248,8 @@ pub fn format_time_delta(
         format_time_hms_millis(time + p)
     } else if delta_laps > 0 {
         format!("+{} laps  ", delta_laps)
+    } else if delta_time > 1_000_000 {
+        "Invalid Time".to_string()
     } else {
         format!("+{}  ", format_time_ms_millis(delta_time + p))
     }
