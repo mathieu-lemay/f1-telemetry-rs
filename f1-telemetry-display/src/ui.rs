@@ -92,9 +92,9 @@ impl Ui {
         // let motion_swnd = derwin(dashboard_wnd, 15, 80, 28, 2);
         let rel_pos_swnd = derwin(
             dashboard_wnd,
-            12,
+            13,
             getmaxx(dashboard_wnd) - 4,
-            getmaxy(dashboard_wnd) - 13,
+            getmaxy(dashboard_wnd) - 15,
             2,
         );
         let handling_swnd = derwin(dashboard_wnd, 25, 65, 25, 110);
