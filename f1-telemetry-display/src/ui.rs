@@ -88,16 +88,16 @@ impl Ui {
         let dashboard_wnd = Ui::create_win(win_h, win_w, WINDOW_Y_OFFSET, 1, Some("Dashboard"));
         let tyres_swnd = derwin(dashboard_wnd, 23, 2, 1, 2);
         let lap_times_swnd = derwin(dashboard_wnd, 23, 80, 1, 4);
-        let car_swnd = derwin(dashboard_wnd, 24, 39, 2, 90);
-        // let motion_swnd = derwin(dashboard_wnd, 15, 80, 28, 2);
+        let car_swnd = derwin(dashboard_wnd, 24, 39, 1, win_w - 40);
+        // let motion_swnd = derwin(dashboard_wnd, 15, 30, 3, win_w-100);
         let rel_pos_swnd = derwin(
             dashboard_wnd,
             13,
-            getmaxx(dashboard_wnd) - 4,
+            getmaxx(dashboard_wnd) / 2,
             getmaxy(dashboard_wnd) - 15,
             2,
         );
-        let handling_swnd = derwin(dashboard_wnd, 25, 65, 25, 110);
+        let handling_swnd = derwin(dashboard_wnd, 23, 58, win_h - 24, win_w - 60);
 
         let dashboard_view = DashboardView {
             win: dashboard_wnd,
@@ -223,8 +223,10 @@ impl Ui {
             }
             Packet::FinalClassification(_) => self
                 .print_final_classification_info(&game_state, self.dashboard_view.lap_times_swnd),
-            // Packet::Motion(_) => self.print_motion_info(&game_state),
-            Packet::Motion(_) => self.print_handling_info(game_state),
+            Packet::Motion(_) => {
+                // self.print_motion_info(&game_state);
+                self.print_handling_info(game_state);
+            }
             _ => {}
         }
     }
@@ -236,6 +238,7 @@ impl Ui {
                 self.print_best_sectors_lap_info(&game_state);
             }
             Packet::CarStatus(_) => {
+                self.print_car_status(&game_state);
                 self.print_tyres_compounds(&game_state);
             }
             Packet::FinalClassification(_) => self
@@ -742,7 +745,7 @@ impl Ui {
         let wnd = self.lap_detail_view.handling_swnd;
 
         suspension::render_suspension(wnd, &game_state.motion_info, &game_state.telemetry_info);
-        wclrtoeol(wnd);
+        // wclrtoeol(wnd);
 
         self.commit(wnd);
     }

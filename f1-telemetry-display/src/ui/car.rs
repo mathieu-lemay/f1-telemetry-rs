@@ -91,7 +91,7 @@ pub(crate) fn render_component(w: WINDOW, component: &str, damage: u8, y: i32, x
     let (ok, caution, warning): (u8, u8, u8) = match component {
         ENGINE => (50, 70, 90),
         GEARBOX => (50, 70, 90),
-        TEMPTYRE => (100, 103, 110),
+        TEMPTYRE => (103, 106, 110),
         _ => (30, 60, 80),
     };
     fmt::set_damage_color(Some(w), damage, ok, caution, warning);

@@ -113,7 +113,7 @@ pub(crate) fn render_suspension(
     render_component(w, &left_front_susp, 0, 1, 10);
     render_component(w, &right_front_susp, 0, 1, 31);
 
-    render_component(w, TEMPTYRE, front_right_temp as u8, 3, 50);
+    render_component(w, TEMPTYRE, front_right_temp as u8, 3, 49);
 
     let front_right_str = format!("T: {:01.1}", front_right_temp);
     mvwaddstr(w, 3 + temp_offsety, 50 + temp_offsetx, &front_right_str);
@@ -132,7 +132,7 @@ pub(crate) fn render_suspension(
     render_component(w, &left_rear_susp, 0, 1 + offset, 10);
     render_component(w, &right_rear_susp, 0, 1 + offset, 31);
 
-    render_component(w, TEMPTYRE, rear_right_temp as u8, 3 + offset, 50);
+    render_component(w, TEMPTYRE, rear_right_temp as u8, 3 + offset, 49);
 
     let rear_right_str = format!("T: {:01.1}", rear_right_temp);
     mvwaddstr(
