@@ -76,13 +76,6 @@ fn main() {
                     // q
                     break;
                 }
-                // ncurses::WchResult::Char(c) => {
-                //     ncurses::mvaddstr(0, 0, format!("Pressed Char: {}", c).as_str());
-                // }
-                // ncurses::WchResult::KeyCode(c) => {
-                //     ncurses::mvaddstr(0, 0, format!("Pressed Key: {}", c).as_str());
-                //     ncurses::clrtoeol();
-                // }
                 _ => {}
             }
         }
