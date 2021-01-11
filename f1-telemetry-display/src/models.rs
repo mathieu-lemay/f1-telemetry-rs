@@ -12,7 +12,7 @@ use f1_telemetry::packet::participants::{Driver, PacketParticipantsData};
 use f1_telemetry::packet::session::{PacketSessionData, SafetyCar, SessionType, Weather};
 use f1_telemetry::packet::Packet;
 
-use crate::ui::fmt;
+use crate::fmt;
 use f1_telemetry::packet::motion::PacketMotionData;
 
 #[derive(Default)]

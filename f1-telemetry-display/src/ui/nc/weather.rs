@@ -2,11 +2,11 @@ use ncurses::{mvwaddstr, WINDOW};
 
 use f1_telemetry::packet::session::Weather;
 
+use super::fmt;
 use crate::models::SessionInfo;
-use crate::ui::fmt;
 
 const OVERCAST: &str = "
-               _           
+               _
            .:(`  )`.
      .--  `.  (    ) )    .--
   .+(   )   ` _`  ) )  .+(   )
