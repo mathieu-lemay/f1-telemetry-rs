@@ -12,6 +12,14 @@ pub struct Stream {
     socket: UdpSocket,
 }
 
+impl Clone for Stream {
+    fn clone(&self) -> Self {
+        Stream {
+            socket: self.socket().try_clone().expect("Error cloning socket"),
+        }
+    }
+}
+
 impl Stream {
     pub fn new<T: ToSocketAddrs>(addr: T) -> std::io::Result<Stream> {
         let socket = UdpSocket::bind(addr)?;

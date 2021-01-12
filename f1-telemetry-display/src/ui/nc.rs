@@ -1,8 +1,11 @@
-use ncurses::*;
-
 use f1_telemetry::packet::generic::{ResultStatus, TyreCompoundVisual};
 use f1_telemetry::packet::session::{SafetyCar, SessionType};
 use f1_telemetry::packet::Packet;
+use f1_telemetry::Stream;
+use ncurses::*;
+
+use std::thread;
+use std::time::Duration;
 
 use crate::fmt as cfmt;
 use crate::models::*;
@@ -46,17 +49,18 @@ struct LapDetailView {
     handling_swnd: WINDOW,
 }
 
-pub struct NCUi {
+pub(crate) struct NCUi {
     main_window: WINDOW,
     active_view: View,
     dashboard_view: DashboardView,
     track_view: TrackView,
     lap_detail_view: LapDetailView,
-    pub(crate) session_rotation: bool,
+    session_rotation: bool,
+    stream: Stream,
 }
 
 impl Ui for NCUi {
-    fn new() -> Self {
+    fn new(stream: Stream) -> Self {
         setlocale(ncurses::LcCategory::all, "");
 
         let mwnd = initscr();
@@ -132,13 +136,41 @@ impl Ui for NCUi {
             track_view,
             lap_detail_view,
             session_rotation: false,
+            stream,
+        }
+    }
+
+    fn run(&mut self) {
+        let mut game_state = GameState::default();
+
+        loop {
+            match self.stream.next() {
+                Ok(p) => match p {
+                    Some(p) => {
+                        game_state.update(&p);
+                        self.render(&game_state, &p);
+                    }
+                    None => thread::sleep(Duration::from_millis(5)),
+                },
+                Err(_e) => {
+                    error!("{:?}", _e);
+                }
+            }
+
+            let quit = self.process_input();
+
+            if quit {
+                break;
+            }
         }
     }
 
     fn destroy(&self) {
         endwin();
     }
+}
 
+impl NCUi {
     fn render(&mut self, game_state: &GameState, packet: &Packet) {
         self.render_main_view(game_state, packet);
 
@@ -195,9 +227,7 @@ impl Ui for NCUi {
 
         quit
     }
-}
 
-impl NCUi {
     pub fn enable_rotation(&mut self) {
         self.session_rotation = true
     }

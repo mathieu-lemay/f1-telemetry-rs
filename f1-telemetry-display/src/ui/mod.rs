@@ -1,16 +1,22 @@
-use crate::models::GameState;
-use crate::ui::nc::NCUi;
-use f1_telemetry::packet::Packet;
+use f1_telemetry::Stream;
 
+use crate::ui::{gtk::GTKUi, nc::NCUi};
+
+mod gtk;
 mod nc;
 
 pub trait Ui {
-    fn new() -> Self;
+    fn new(stream: Stream) -> Self
+    where
+        Self: Sized;
+    fn run(&mut self);
     fn destroy(&self);
-    fn render(&mut self, game_state: &GameState, packet: &Packet);
-    fn process_input(&mut self) -> bool;
 }
 
-pub fn get_ui() -> impl Ui {
-    NCUi::new()
+pub fn get_ui(stream: Stream, gui: bool) -> Box<dyn Ui> {
+    if gui {
+        Box::new(GTKUi::new(stream))
+    } else {
+        Box::new(NCUi::new(stream))
+    }
 }

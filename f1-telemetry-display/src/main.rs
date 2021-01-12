@@ -3,14 +3,11 @@ extern crate log;
 extern crate simplelog;
 
 use std::fs::OpenOptions;
-use std::thread::sleep;
-use std::time::Duration;
 
 use f1_telemetry::Stream;
 use simplelog::*;
 
-use crate::models::GameState;
-use crate::ui::{get_ui, Ui};
+use crate::ui::get_ui;
 
 mod fmt;
 mod models;
@@ -34,29 +31,9 @@ fn main() {
 
     info!("Listening on {}", stream.socket().local_addr().unwrap());
 
-    let mut ui = get_ui();
-    let mut game_state = GameState::default();
+    let mut ui = get_ui(stream, false);
 
-    loop {
-        match stream.next() {
-            Ok(p) => match p {
-                Some(p) => {
-                    game_state.update(&p);
-                    ui.render(&game_state, &p);
-                }
-                None => sleep(Duration::from_millis(5)),
-            },
-            Err(_e) => {
-                error!("{:?}", _e);
-            }
-        }
-
-        let quit = ui.process_input();
-
-        if quit {
-            break;
-        }
-    }
+    ui.run();
 
     ui.destroy();
 }
