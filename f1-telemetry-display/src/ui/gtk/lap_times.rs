@@ -1,5 +1,5 @@
 use crate::fmt;
-use crate::models::GameState;
+use crate::models::{GameState, LapInfo};
 use f1_telemetry::packet::generic::{ResultStatus, Team};
 use gio::prelude::*;
 use gtk::prelude::*;
@@ -47,12 +47,16 @@ impl LapTimesView {
         .iter()
         .map(|&c| c as u32)
         .collect::<Vec<u32>>();
-        for (idx, li) in game_state
+
+        let mut lap_infos: Vec<(usize, &LapInfo)> = game_state
             .lap_infos
             .iter()
             .filter(|li| li.status != ResultStatus::Invalid)
             .enumerate()
-        {
+            .collect();
+        lap_infos.sort_by_key(|(_, li)| li.position);
+
+        for (idx, li) in lap_infos {
             let participant = &game_state.participants[idx];
 
             let data: [&dyn ToValue; 6] = [
