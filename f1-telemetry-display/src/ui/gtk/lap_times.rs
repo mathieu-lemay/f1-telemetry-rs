@@ -5,6 +5,8 @@ use gio::prelude::*;
 use gtk::prelude::*;
 use gtk::{SortColumn, SortType};
 
+const COLUMN_DEFAULT_WIDTH: i32 = 100;
+
 pub(super) struct LapTimesView {
     _tree_view: gtk::TreeView,
     model: gtk::TreeStore,
@@ -184,19 +186,20 @@ fn create_tree_view(model: &gtk::TreeStore) -> gtk::TreeView {
 }
 
 fn add_lap_info_columns(treeview: &gtk::TreeView) {
-    add_column(treeview, Column::Position, "Position");
-    add_column(treeview, Column::Name, "Player");
-    add_column(treeview, Column::CurrentLapTime, "Current Lap");
-    add_column(treeview, Column::LastLapTime, "Last Lap");
-    add_column(treeview, Column::BestLapTime, "Best Lap");
+    add_column(treeview, Column::Position, "Position", Some(80));
+    add_column(treeview, Column::Name, "Player", Some(150));
+    add_column(treeview, Column::CurrentLapTime, "Current Lap", None);
+    add_column(treeview, Column::LastLapTime, "Last Lap", None);
+    add_column(treeview, Column::BestLapTime, "Best Lap", None);
 }
 
-fn add_column(treeview: &gtk::TreeView, column: Column, title: &str) {
+fn add_column(treeview: &gtk::TreeView, column: Column, title: &str, width: Option<i32>) {
     let renderer = gtk::CellRendererText::new();
     let col = gtk::TreeViewColumn::new();
     col.pack_start(&renderer, true);
     col.set_title(title);
     col.add_attribute(&renderer, "text", column as i32);
     col.add_attribute(&renderer, "background", Column::BackgroundColor as i32);
+    col.set_fixed_width(width.unwrap_or(COLUMN_DEFAULT_WIDTH));
     treeview.append_column(&col);
 }

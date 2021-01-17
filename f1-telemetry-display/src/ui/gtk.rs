@@ -57,7 +57,7 @@ impl Ui for GTKUi {
                             let _ = tx.send(p);
                         }
                         None => {
-                            thread::sleep(Duration::from_millis(500));
+                            thread::sleep(Duration::from_millis(5));
                         }
                     },
                     Err(_e) => {
