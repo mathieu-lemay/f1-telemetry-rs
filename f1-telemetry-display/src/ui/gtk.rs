@@ -18,6 +18,11 @@ pub struct GTKUi {
     app: gtk::Application,
 }
 
+const STYLE: &str = "
+#foo {
+    font-weight: bold;
+}";
+
 impl Ui for GTKUi {
     fn new() -> Self {
         let app = gtk::Application::new(Some("org.acidrain.f1-telemetry-rs"), Default::default())
@@ -30,15 +35,15 @@ impl Ui for GTKUi {
 
     fn run(&mut self, stream: Stream) {
         self.app.connect_startup(move |app| {
-            // let provider = gtk::CssProvider::new();
-            // provider.load_from_data(STYLE.as_bytes()).expect("Failed to load CSS");
+            let provider = gtk::CssProvider::new();
+            provider.load_from_data(STYLE.as_bytes()).expect("Failed to load CSS");
             // // We give the CssProvided to the default screen so the CSS rules we added
             // // can be applied to our window.
-            // gtk::StyleContext::add_provider_for_screen(
-            //     &gdk::Screen::get_default().expect("Error initializing gtk css provider."),
-            //     &provider,
-            //     gtk::STYLE_PROVIDER_PRIORITY_APPLICATION,
-            // );
+            gtk::StyleContext::add_provider_for_screen(
+                &gdk::Screen::get_default().expect("Error initializing gtk css provider."),
+                &provider,
+                gtk::STYLE_PROVIDER_PRIORITY_APPLICATION,
+            );
 
             let (tx, rx) = glib::MainContext::channel(glib::PRIORITY_DEFAULT);
 
