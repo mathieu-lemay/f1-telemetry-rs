@@ -14,57 +14,48 @@ use crate::ui::Ui;
 
 pub struct GTKUi {
     app: gtk::Application,
-    game_state: Rc<RefCell<GameState>>,
 }
 
 impl Ui for GTKUi {
     fn new() -> Self {
-        let app =
-            gtk::Application::new(Some("com.github.gtk-rs.examples.basic"), Default::default())
-                .expect("Initialization failed...");
+        let app = gtk::Application::new(Some("org.acidrain.f1-telemetry-rs"), Default::default())
+            .expect("Initialization failed...");
 
-        let game_state = Rc::new(RefCell::new(GameState::default()));
+        app.connect_activate(|_| {});
 
-        Self { app, game_state }
+        Self { app }
     }
 
     fn run(&mut self, stream: Stream) {
-        self.app.connect_activate(|_| {
-            println!("startup");
-        });
+        self.app.connect_startup(move |app| {
+            let (tx, rx) = glib::MainContext::channel(glib::PRIORITY_DEFAULT);
 
-        self.app.connect_startup(
-            glib::clone!(@weak self.game_state as game_state => move |app| {
-                let widgets = Rc::new(Widgets::new(&app));
-                let (tx, rx) = glib::MainContext::channel(glib::PRIORITY_DEFAULT);
-
-                let stream = stream.clone();
-
-                thread::spawn(move || {
-                    loop {
-                        match stream.next() {
-                            Ok(p) => match p {
-                                Some(p) => {
-                                    let _ = tx.send(p);
-                                }
-                                None => {
-                                    thread::sleep(Duration::from_millis(500));
-                                }
-                            },
-                            Err(_e) => {
-                                error!("{:?}", _e);
-                            }
+            let stream = stream.clone();
+            thread::spawn(move || loop {
+                match stream.next() {
+                    Ok(p) => match p {
+                        Some(p) => {
+                            let _ = tx.send(p);
                         }
+                        None => {
+                            thread::sleep(Duration::from_millis(500));
+                        }
+                    },
+                    Err(_e) => {
+                        error!("{:?}", _e);
                     }
-                });
+                }
+            });
 
-                rx.attach(None, move |packet| {
-                    process_packet(&game_state, &widgets, &packet);
+            let game_state = Rc::new(RefCell::new(GameState::default()));
+            let widgets = Rc::new(Widgets::new(&app));
 
-                    glib::Continue(true)
-                });
-            }),
-        );
+            rx.attach(None, move |packet| {
+                process_packet(&game_state, &widgets, &packet);
+
+                glib::Continue(true)
+            });
+        });
 
         self.app.run(&Vec::new());
     }
