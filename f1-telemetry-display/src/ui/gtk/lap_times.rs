@@ -1,12 +1,13 @@
 use crate::fmt;
-use crate::models::{GameState, LapInfo};
+use crate::models::GameState;
 use f1_telemetry::packet::generic::{ResultStatus, Team};
 use gio::prelude::*;
 use gtk::prelude::*;
+use gtk::{SortColumn, SortType};
 
 pub(super) struct LapTimesView {
     _tree_view: gtk::TreeView,
-    model: gtk::ListStore,
+    model: gtk::TreeStore,
 }
 
 #[derive(Copy, Clone)]
@@ -18,6 +19,7 @@ enum Column {
     BestLapTime,
 
     BackgroundColor,
+    TruePosition,
 }
 
 impl LapTimesView {
@@ -43,23 +45,21 @@ impl LapTimesView {
             Column::LastLapTime,
             Column::BestLapTime,
             Column::BackgroundColor,
+            Column::TruePosition,
         ]
         .iter()
         .map(|&c| c as u32)
         .collect::<Vec<u32>>();
 
-        let mut lap_infos: Vec<(usize, &LapInfo)> = game_state
+        for (idx, li) in game_state
             .lap_infos
             .iter()
             .filter(|li| li.status != ResultStatus::Invalid)
             .enumerate()
-            .collect();
-        lap_infos.sort_by_key(|(_, li)| li.position);
-
-        for (idx, li) in lap_infos {
+        {
             let participant = &game_state.participants[idx];
 
-            let data: [&dyn ToValue; 6] = [
+            let data: [&dyn ToValue; 7] = [
                 &fmt::format_position(li.position, &li.status),
                 &fmt::format_driver_name(&participant, game_state.session_info.is_online)
                     .to_string(),
@@ -67,9 +67,11 @@ impl LapTimesView {
                 &fmt::milliseconds_to_hmsf(li.last_lap_time),
                 &fmt::milliseconds_to_hmsf(li.best_lap_time),
                 &get_team_color(&participant.team),
+                &li.position,
             ];
 
-            self.model.set(&self.model.append(), &col_indices, &data);
+            self.model
+                .set(&self.model.append(None), &col_indices, &data);
         }
     }
 }
@@ -94,7 +96,7 @@ fn get_team_color(team: &Team) -> String {
     String::from(color)
 }
 
-fn create_model() -> gtk::ListStore {
+fn create_model() -> gtk::TreeStore {
     let col_types = [
         glib::Type::String,
         glib::Type::String,
@@ -102,9 +104,10 @@ fn create_model() -> gtk::ListStore {
         glib::Type::String,
         glib::Type::String,
         glib::Type::String,
+        glib::Type::I8,
     ];
 
-    let model = gtk::ListStore::new(&col_types);
+    let model = gtk::TreeStore::new(&col_types);
 
     let col_indices = [
         Column::Position,
@@ -113,6 +116,7 @@ fn create_model() -> gtk::ListStore {
         Column::LastLapTime,
         Column::BestLapTime,
         Column::BackgroundColor,
+        Column::TruePosition,
     ]
     .iter()
     .map(|&c| c as u32)
@@ -131,35 +135,42 @@ fn create_model() -> gtk::ListStore {
         Team::Williams,
     ];
     for (i, t) in teams.iter().enumerate() {
-        let data: [&dyn ToValue; 6] = [
+        let data: [&dyn ToValue; 7] = [
             &format!("{}", i * 2 + 1),
             &format!("Player {}", i * 2),
             &fmt::milliseconds_to_hmsf(0),
             &fmt::milliseconds_to_hmsf(0),
             &fmt::milliseconds_to_hmsf(0),
             &get_team_color(t),
+            &1,
         ];
 
-        model.set(&model.append(), &col_indices, &data);
+        model.set(&model.append(None), &col_indices, &data);
 
-        let data: [&dyn ToValue; 6] = [
+        let data: [&dyn ToValue; 7] = [
             &format!("{}", i * 2 + 2),
             &format!("Player {}", i * 2 + 1),
             &fmt::milliseconds_to_hmsf(0),
             &fmt::milliseconds_to_hmsf(0),
             &fmt::milliseconds_to_hmsf(0),
             &get_team_color(t),
+            &1,
         ];
 
-        model.set(&model.append(), &col_indices, &data);
+        model.set(&model.append(None), &col_indices, &data);
     }
 
     model
 }
 
-fn create_tree_view(model: &gtk::ListStore) -> gtk::TreeView {
-    let tree_view = gtk::TreeView::with_model(model);
-    tree_view.set_widget_name("lap-times");
+fn create_tree_view(model: &gtk::TreeStore) -> gtk::TreeView {
+    let sortable_store = gtk::TreeModelSort::new(model);
+    sortable_store.set_sort_column_id(
+        SortColumn::Index(Column::TruePosition as u32),
+        SortType::Ascending,
+    );
+    let tree_view = gtk::TreeView::with_model(&sortable_store);
+    tree_view.set_widget_name("laptimes");
     tree_view.set_vexpand(true);
 
     tree_view.set_hover_selection(false);
