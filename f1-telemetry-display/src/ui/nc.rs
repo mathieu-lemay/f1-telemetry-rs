@@ -56,11 +56,10 @@ pub(crate) struct NCUi {
     track_view: TrackView,
     lap_detail_view: LapDetailView,
     session_rotation: bool,
-    stream: Stream,
 }
 
 impl Ui for NCUi {
-    fn new(stream: Stream) -> Self {
+    fn new() -> Self {
         setlocale(ncurses::LcCategory::all, "");
 
         let mwnd = initscr();
@@ -136,15 +135,14 @@ impl Ui for NCUi {
             track_view,
             lap_detail_view,
             session_rotation: false,
-            stream,
         }
     }
 
-    fn run(&mut self) {
+    fn run(&mut self, stream: Stream) {
         let mut game_state = GameState::default();
 
         loop {
-            match self.stream.next() {
+            match stream.next() {
                 Ok(p) => match p {
                     Some(p) => {
                         game_state.update(&p);

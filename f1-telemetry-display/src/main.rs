@@ -31,9 +31,9 @@ fn main() {
 
     info!("Listening on {}", stream.socket().local_addr().unwrap());
 
-    let mut ui = get_ui(stream, false);
+    let mut ui = get_ui(true);
 
-    ui.run();
+    ui.run(stream);
 
     ui.destroy();
 }
