@@ -9,6 +9,17 @@ pub(super) struct LapTimesView {
     model: gtk::ListStore,
 }
 
+#[derive(Copy, Clone)]
+enum Column {
+    Position = 0,
+    Name,
+    CurrentLapTime,
+    LastLapTime,
+    BestLapTime,
+
+    BackgroundColor,
+}
+
 impl LapTimesView {
     pub(super) fn new(parent: &gtk::ApplicationWindow) -> Self {
         let model = create_model();
@@ -25,7 +36,17 @@ impl LapTimesView {
     pub(super) fn update(&self, game_state: &GameState) {
         self.model.clear();
 
-        let col_indices = [0, 1, 2, 3];
+        let col_indices = [
+            Column::Position,
+            Column::Name,
+            Column::CurrentLapTime,
+            Column::LastLapTime,
+            Column::BestLapTime,
+            Column::BackgroundColor,
+        ]
+        .iter()
+        .map(|&c| c as u32)
+        .collect::<Vec<u32>>();
         for (idx, li) in game_state
             .lap_infos
             .iter()
@@ -34,12 +55,15 @@ impl LapTimesView {
         {
             let participant = &game_state.participants[idx];
 
-            let pos = fmt::format_position(li.position, &li.status);
-            let name = fmt::format_driver_name(&participant, game_state.session_info.is_online);
-            let lap_time = fmt::milliseconds_to_msf(li.current_lap_time);
-            let color = get_team_color(&participant.team);
-
-            let data: [&dyn ToValue; 4] = [&pos, &name.to_string(), &lap_time, &color];
+            let data: [&dyn ToValue; 6] = [
+                &fmt::format_position(li.position, &li.status),
+                &fmt::format_driver_name(&participant, game_state.session_info.is_online)
+                    .to_string(),
+                &fmt::milliseconds_to_hmsf(li.current_lap_time),
+                &fmt::milliseconds_to_hmsf(li.last_lap_time),
+                &fmt::milliseconds_to_hmsf(li.best_lap_time),
+                &get_team_color(&participant.team),
+            ];
 
             self.model.set(&self.model.append(), &col_indices, &data);
         }
@@ -48,18 +72,18 @@ impl LapTimesView {
 
 fn get_team_color(team: &Team) -> String {
     let color = match team {
-        Team::Mercedes => "rgb(0, 210, 190)",
-        Team::Ferrari => "rgb(220, 0, 0)",
-        Team::RedBullRacing => "rgb(60, 0, 255)",
-        Team::Williams => "rgb(0, 128, 255)",
-        Team::RacingPoint => "rgb(245, 150, 200)",
-        Team::Renault => "rgb(255, 245, 0)",
-        Team::ToroRosso => "rgb(70, 155, 255)",
-        Team::Haas => "rgb(119, 119, 119)",
-        Team::McLaren => "rgb(255, 135, 0)",
-        Team::AlfaRomeo => "rgb(155, 0, 0)",
-        Team::AlphaTauri => "rgb(255, 255, 255)",
-        Team::MyTeam => "rgb(118, 0, 218)",
+        Team::Mercedes => "rgb(0, 53, 48)",
+        Team::Ferrari => "rgb(56, 0, 0)",
+        Team::RedBullRacing => "rgb(15, 0, 65)",
+        Team::Williams => "rgb(0, 33, 65)",
+        Team::RacingPoint => "rgb(62, 38, 51)",
+        Team::Renault => "rgb(65, 62, 0)",
+        Team::ToroRosso => "rgb(18, 40, 65)",
+        Team::Haas => "rgb(30, 30, 30)",
+        Team::McLaren => "rgb(65, 34, 0)",
+        Team::AlfaRomeo => "rgb(40, 0, 0)",
+        Team::AlphaTauri => "rgb(65, 65, 65)",
+        Team::MyTeam => "rgb(30, 0, 65)",
         _ => "",
     };
 
@@ -72,17 +96,55 @@ fn create_model() -> gtk::ListStore {
         glib::Type::String,
         glib::Type::String,
         glib::Type::String,
+        glib::Type::String,
+        glib::Type::String,
     ];
 
     let model = gtk::ListStore::new(&col_types);
 
-    let col_indices = [0, 1, 2, 3];
-    for i in 0..20 {
-        let data: [&dyn ToValue; 4] = [
-            &format!("{}", i + 1),
-            &format!("Player {}", i),
+    let col_indices = [
+        Column::Position,
+        Column::Name,
+        Column::CurrentLapTime,
+        Column::LastLapTime,
+        Column::BestLapTime,
+        Column::BackgroundColor,
+    ]
+    .iter()
+    .map(|&c| c as u32)
+    .collect::<Vec<u32>>();
+
+    let teams = [
+        Team::Mercedes,
+        Team::RedBullRacing,
+        Team::McLaren,
+        Team::RacingPoint,
+        Team::Renault,
+        Team::Ferrari,
+        Team::AlphaTauri,
+        Team::AlfaRomeo,
+        Team::Haas,
+        Team::Williams,
+    ];
+    for (i, t) in teams.iter().enumerate() {
+        let data: [&dyn ToValue; 6] = [
+            &format!("{}", i * 2 + 1),
+            &format!("Player {}", i * 2),
             &fmt::milliseconds_to_hmsf(0),
-            if i % 2 == 0 { &"#323232" } else { &"#484848" },
+            &fmt::milliseconds_to_hmsf(0),
+            &fmt::milliseconds_to_hmsf(0),
+            &get_team_color(t),
+        ];
+
+        model.set(&model.append(), &col_indices, &data);
+
+        let data: [&dyn ToValue; 6] = [
+            &format!("{}", i * 2 + 2),
+            &format!("Player {}", i * 2 + 1),
+            &fmt::milliseconds_to_hmsf(0),
+            &fmt::milliseconds_to_hmsf(0),
+            &fmt::milliseconds_to_hmsf(0),
+            &get_team_color(t),
         ];
 
         model.set(&model.append(), &col_indices, &data);
@@ -101,80 +163,25 @@ fn create_tree_view(model: &gtk::ListStore) -> gtk::TreeView {
     let selection = tree_view.get_selection();
     selection.set_select_function(Some(Box::new(|_, _, _, _| false)));
 
-    add_columns(model, &tree_view);
+    add_lap_info_columns(&tree_view);
 
     tree_view
 }
 
-fn add_columns(_model: &gtk::ListStore, treeview: &gtk::TreeView) {
-    // Column for fixed toggles
-    {
-        let renderer = gtk::CellRendererText::new();
-        let column = gtk::TreeViewColumn::new();
-        column.pack_start(&renderer, true);
-        column.set_title("Position");
-        column.add_attribute(&renderer, "text", 0);
-        column.add_attribute(&renderer, "background", 3);
-        // column.set_sizing(gtk::TreeViewColumnSizing::Fixed);
-        // column.set_fixed_width(50);
-        treeview.append_column(&column);
-    }
+fn add_lap_info_columns(treeview: &gtk::TreeView) {
+    add_column(treeview, Column::Position, "Position");
+    add_column(treeview, Column::Name, "Player");
+    add_column(treeview, Column::CurrentLapTime, "Current Lap");
+    add_column(treeview, Column::LastLapTime, "Last Lap");
+    add_column(treeview, Column::BestLapTime, "Best Lap");
+}
 
-    // Column for bug numbers
-    {
-        let renderer = gtk::CellRendererText::new();
-        let column = gtk::TreeViewColumn::new();
-        column.pack_start(&renderer, true);
-        column.set_title("Player");
-        column.add_attribute(&renderer, "text", 1);
-        column.add_attribute(&renderer, "background", 3);
-        // column.set_sort_column_id(1);
-        treeview.append_column(&column);
-    }
-
-    // Column for severities
-    {
-        let renderer = gtk::CellRendererText::new();
-        let column = gtk::TreeViewColumn::new();
-        column.pack_start(&renderer, true);
-        column.set_title("Lap Time");
-        column.add_attribute(&renderer, "text", 2);
-        column.add_attribute(&renderer, "background", 3);
-        // column.set_sort_column_id(2);
-        treeview.append_column(&column);
-    }
-
-    // // Column for description
-    // {
-    //     let renderer = gtk::CellRendererText::new();
-    //     let column = gtk::TreeViewColumn::new();
-    //     column.pack_start(&renderer, true);
-    //     column.set_title("Description");
-    //     column.add_attribute(&renderer, "text", Columns::Description as i32);
-    //     column.set_sort_column_id(Columns::Description as i32);
-    //     treeview.append_column(&column);
-    // }
-    //
-    // // Column for spinner
-    // {
-    //     let renderer = gtk::CellRendererSpinner::new();
-    //     let column = gtk::TreeViewColumn::new();
-    //     column.pack_start(&renderer, true);
-    //     column.set_title("Spinning");
-    //     column.add_attribute(&renderer, "pulse", Columns::Pulse as i32);
-    //     column.add_attribute(&renderer, "active", Columns::Active as i32);
-    //     treeview.append_column(&column);
-    // }
-    //
-    // // Column for symbolic icon
-    // {
-    //     let renderer = gtk::CellRendererPixbuf::new();
-    //     let column = gtk::TreeViewColumn::new();
-    //     column.pack_start(&renderer, true);
-    //     column.set_title("Symbolic icon");
-    //     column.add_attribute(&renderer, "icon-name", Columns::Icon as i32);
-    //     column.add_attribute(&renderer, "sensitive", Columns::Sensitive as i32);
-    //     column.set_sort_column_id(Columns::Icon as i32);
-    //     treeview.append_column(&column);
-    // }
+fn add_column(treeview: &gtk::TreeView, column: Column, title: &str) {
+    let renderer = gtk::CellRendererText::new();
+    let col = gtk::TreeViewColumn::new();
+    col.pack_start(&renderer, true);
+    col.set_title(title);
+    col.add_attribute(&renderer, "text", column as i32);
+    col.add_attribute(&renderer, "background", Column::BackgroundColor as i32);
+    treeview.append_column(&col);
 }
