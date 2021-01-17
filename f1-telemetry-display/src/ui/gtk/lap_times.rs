@@ -170,7 +170,7 @@ fn create_tree_view(model: &gtk::TreeStore) -> gtk::TreeView {
         SortType::Ascending,
     );
     let tree_view = gtk::TreeView::with_model(&sortable_store);
-    tree_view.set_widget_name("laptimes");
+    tree_view.set_widget_name("lap-times");
     tree_view.set_vexpand(true);
 
     tree_view.set_hover_selection(false);
