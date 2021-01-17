@@ -8,9 +8,11 @@ use std::rc::Rc;
 use std::thread;
 use std::time::Duration;
 
-use crate::fmt;
 use crate::models::*;
+use crate::ui::gtk::lap_times::LapTimesView;
 use crate::ui::Ui;
+
+mod lap_times;
 
 pub struct GTKUi {
     app: gtk::Application,
@@ -28,6 +30,16 @@ impl Ui for GTKUi {
 
     fn run(&mut self, stream: Stream) {
         self.app.connect_startup(move |app| {
+            // let provider = gtk::CssProvider::new();
+            // provider.load_from_data(STYLE.as_bytes()).expect("Failed to load CSS");
+            // // We give the CssProvided to the default screen so the CSS rules we added
+            // // can be applied to our window.
+            // gtk::StyleContext::add_provider_for_screen(
+            //     &gdk::Screen::get_default().expect("Error initializing gtk css provider."),
+            //     &provider,
+            //     gtk::STYLE_PROVIDER_PRIORITY_APPLICATION,
+            // );
+
             let (tx, rx) = glib::MainContext::channel(glib::PRIORITY_DEFAULT);
 
             let stream = stream.clone();
@@ -47,11 +59,13 @@ impl Ui for GTKUi {
                 }
             });
 
+            let mut session_uid: Option<u64> = None;
             let game_state = Rc::new(RefCell::new(GameState::default()));
             let widgets = Rc::new(Widgets::new(&app));
 
             rx.attach(None, move |packet| {
-                process_packet(&game_state, &widgets, &packet);
+                process_packet(&session_uid, &game_state, &widgets, &packet);
+                session_uid = game_state.borrow().session_uid;
 
                 glib::Continue(true)
             });
@@ -63,16 +77,36 @@ impl Ui for GTKUi {
     fn destroy(&self) {}
 }
 
-fn process_packet(game_state: &Rc<RefCell<GameState>>, widgets: &Rc<Widgets>, packet: &Packet) {
+fn process_packet(
+    _session_uid: &Option<u64>,
+    game_state: &Rc<RefCell<GameState>>,
+    widgets: &Rc<Widgets>,
+    packet: &Packet,
+) {
     game_state.borrow_mut().update(&packet);
-    let ts = game_state.borrow().session_info.elapsed_time;
-    widgets.button.set_label(&fmt::format_time_hms(ts));
-    widgets.mwnd.show_all();
+    let game_state = game_state.borrow();
+
+    if let Packet::Lap(_) = packet {
+        widgets.lap_times_view.update(&game_state);
+    }
+
+    // widgets.lap_times_view.show_all();
+    // widgets.mwnd.show_all();
 }
 
+/*
+const STYLE: &str = "
+GtkTreeView row { background-color: shade(@base_color, 0.0); }
+#foo row { background-color: shade(@base_color, 0.0); }
+#foo row:nth-child(even) { background-color: shade(@base_color, 0.9); }
+#foo row:nth-child(odd) { background-color: shade(@base_color, 1.0); }
+treeview { background-color: #0000ff; }
+";
+ */
+
 struct Widgets {
-    mwnd: gtk::ApplicationWindow,
-    button: gtk::Button,
+    _mwnd: gtk::ApplicationWindow,
+    lap_times_view: LapTimesView,
 }
 
 impl Widgets {
@@ -80,20 +114,18 @@ impl Widgets {
         let window = gtk::ApplicationWindow::new(app);
 
         window.set_title("F1 Telemetry");
-        window.set_icon_name(Some("package-x-generic"));
+        window.set_icon_name(Some("application-default-icon"));
         window.set_border_width(10);
         window.set_position(gtk::WindowPosition::Center);
-        window.set_default_size(350, 70);
+        // window.set_default_size(350, 70);
 
-        let button = gtk::Button::with_label("Click me!");
-        button.connect_clicked(|b| println!("Button clicked: {:?}", b));
-        window.add(&button);
+        let lap_times_view = LapTimesView::new(&window);
 
         window.show_all();
 
         Self {
-            mwnd: window,
-            button,
+            _mwnd: window,
+            lap_times_view,
         }
     }
 }

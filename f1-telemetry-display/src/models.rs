@@ -224,7 +224,7 @@ impl GameState {
         };
 
         let detail = match evt {
-            Event::FastestLap(f) => Some(fmt::format_time_ms_millis(f.lap_time())),
+            Event::FastestLap(f) => Some(fmt::milliseconds_to_msf(f.lap_time())),
             Event::Penalty(p) => Some(format!("{:?}", p.penalty_type())),
             Event::SpeedTrap(s) => Some(format!("{:.1} km/h", s.speed())),
             _ => None,

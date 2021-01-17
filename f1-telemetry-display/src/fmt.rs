@@ -1,15 +1,26 @@
 use std::borrow::Cow;
 
+use crate::models::Participant;
+use f1_telemetry::packet::generic::ResultStatus;
 use f1_telemetry::packet::participants::Driver;
 
-pub fn format_driver_name(name: &str, driver: Driver, is_online: bool) -> Cow<str> {
+pub fn format_driver_name(participant: &Participant, is_online: bool) -> Cow<str> {
     if is_online {
-        Cow::Borrowed(name)
+        Cow::Borrowed(&participant.name)
     } else {
-        match driver {
-            Driver::Player => capitalize_name(name),
-            _ => Cow::Borrowed(name),
+        match participant.driver {
+            Driver::Player => capitalize_name(&participant.name),
+            _ => Cow::Borrowed(&participant.name),
         }
+    }
+}
+
+pub fn format_position(position: u8, status: &ResultStatus) -> String {
+    match status {
+        ResultStatus::Retired => String::from("RET"),
+        ResultStatus::NotClassified => String::from("N/C"),
+        ResultStatus::Disqualified => String::from("DSQ"),
+        _ => format!("{:3}", position),
     }
 }
 
@@ -23,13 +34,13 @@ pub fn format_time_delta(
     let p = penalties as u32 * 1000;
 
     if position == 1 {
-        format_time_hms_millis(time + p)
+        milliseconds_to_hmsf(time + p)
     } else if delta_laps > 0 {
         format!("+{} laps  ", delta_laps)
     } else if delta_time > 1_000_000 {
         "Invalid Time".to_string()
     } else {
-        format!("+{}  ", format_time_ms_millis(delta_time + p))
+        format!("+{}  ", milliseconds_to_msf(delta_time + p))
     }
 }
 
@@ -42,7 +53,7 @@ fn capitalize_name(name: &str) -> Cow<str> {
     }
 }
 
-pub fn format_time_hms(ts: u16) -> String {
+pub fn seconds_to_hms(ts: u16) -> String {
     let hours = ts / 3600;
     let minutes = (ts - hours * 3600) / 60;
     let seconds = ts % 60;
@@ -50,7 +61,7 @@ pub fn format_time_hms(ts: u16) -> String {
     format!("{:02}:{:02}:{:02}", hours, minutes, seconds)
 }
 
-pub fn format_time_hms_millis(ts: u32) -> String {
+pub fn milliseconds_to_hmsf(ts: u32) -> String {
     let millis = ts % 1000;
     let seconds = ts / 1000;
     let hours = seconds / 3600;
@@ -60,7 +71,7 @@ pub fn format_time_hms_millis(ts: u32) -> String {
     format!("{:02}:{:02}:{:02}.{:03}", hours, minutes, seconds, millis)
 }
 
-pub fn format_time_ms_millis(ts: u32) -> String {
+pub fn milliseconds_to_msf(ts: u32) -> String {
     let minutes = ts / 60000;
     let seconds = (ts - minutes * 60000) / 1000;
     let millis = ts % 1000;

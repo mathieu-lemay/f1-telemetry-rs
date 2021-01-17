@@ -118,6 +118,7 @@ name = "f1-telemetry-display"
 version = "0.1.0"
 dependencies = [
  "f1-telemetry",
+ "gdk",
  "gio",
  "glib",
  "gtk",

@@ -344,8 +344,8 @@ impl NCUi {
         let lap_info = &format!("Lap {} of {}", sinfo.current_lap, sinfo.number_of_laps);
         let session_time = &format!(
             "{} / {}",
-            cfmt::format_time_hms(sinfo.elapsed_time),
-            cfmt::format_time_hms(sinfo.duration)
+            cfmt::seconds_to_hms(sinfo.elapsed_time),
+            cfmt::seconds_to_hms(sinfo.duration)
         );
 
         addstr_center(self.main_window, SESSION_Y_OFFSET, session_name);
@@ -401,7 +401,7 @@ impl NCUi {
 
             let s = format!(
                 "                     | {} |           |           |           |           |           | {}{}{} ",
-                cfmt::format_time_ms_millis(li.current_lap_time),
+                cfmt::milliseconds_to_msf(li.current_lap_time),
                 if li.in_pit { "P" } else { " " },
                 if li.lap_invalid { "!" } else { " " },
                 penalties,
@@ -412,16 +412,12 @@ impl NCUi {
             let s = format!(
                 "{}. {:15}",
                 pos,
-                cfmt::format_driver_name(
-                    &participant.name,
-                    participant.driver,
-                    game_state.session_info.is_online
-                )
+                cfmt::format_driver_name(&participant, game_state.session_info.is_online)
             );
             fmt::set_team_color(wnd, participant.team);
             mvwaddstr(wnd, row, 0, &s);
 
-            let s = cfmt::format_time_ms_millis(li.last_lap_time);
+            let s = cfmt::milliseconds_to_msf(li.last_lap_time);
             fmt::set_lap_time_color(
                 Some(wnd),
                 li.last_lap_time,
@@ -430,7 +426,7 @@ impl NCUi {
             );
             mvwaddstr(wnd, row, 35, &s);
 
-            let s = cfmt::format_time_ms_millis(li.best_lap_time);
+            let s = cfmt::milliseconds_to_msf(li.best_lap_time);
             fmt::set_lap_time_color(
                 Some(wnd),
                 li.best_lap_time,
@@ -439,7 +435,7 @@ impl NCUi {
             );
             mvwaddstr(wnd, row, 47, &s);
 
-            let s = cfmt::format_time_ms_millis(li.sector_1);
+            let s = cfmt::milliseconds_to_msf(li.sector_1);
             fmt::set_lap_time_color(
                 Some(wnd),
                 li.sector_1,
@@ -448,7 +444,7 @@ impl NCUi {
             );
             mvwaddstr(wnd, row, 59, &s);
 
-            let s = cfmt::format_time_ms_millis(li.sector_2);
+            let s = cfmt::milliseconds_to_msf(li.sector_2);
             fmt::set_lap_time_color(
                 Some(wnd),
                 li.sector_2,
@@ -457,7 +453,7 @@ impl NCUi {
             );
             mvwaddstr(wnd, row, 71, &s);
 
-            let s = cfmt::format_time_ms_millis(li.sector_3);
+            let s = cfmt::milliseconds_to_msf(li.sector_3);
             fmt::set_lap_time_color(
                 Some(wnd),
                 li.sector_3,
@@ -488,10 +484,10 @@ impl NCUi {
 
         let s = format!(
             "{}     | {}     | {}     | {}   ",
-            cfmt::format_time_ms_millis(session_best_times.sector_1),
-            cfmt::format_time_ms_millis(session_best_times.sector_2),
-            cfmt::format_time_ms_millis(session_best_times.sector_3),
-            cfmt::format_time_ms_millis(best_lap),
+            cfmt::milliseconds_to_msf(session_best_times.sector_1),
+            cfmt::milliseconds_to_msf(session_best_times.sector_2),
+            cfmt::milliseconds_to_msf(session_best_times.sector_3),
+            cfmt::milliseconds_to_msf(best_lap),
         );
         mvwaddstr(wnd, 1, 2, s.as_str());
 
@@ -514,12 +510,7 @@ impl NCUi {
                 continue;
             }
             let participant = &game_state.participants[idx];
-            let pos = match fi.status {
-                ResultStatus::Retired => String::from("RET"),
-                ResultStatus::NotClassified => String::from("N/C"),
-                ResultStatus::Disqualified => String::from("DSQ"),
-                _ => format!("{:3}", fi.position),
-            };
+            let pos = cfmt::format_position(fi.position, &fi.status);
 
             let grid = match fi.grid_position {
                 0 => String::from("N/A"),
@@ -551,13 +542,9 @@ impl NCUi {
                 "{}. {:2} | {:13} | {}   | {}   | {:12} | {}      |",
                 pos,
                 change,
-                cfmt::format_driver_name(
-                    &participant.name,
-                    participant.driver,
-                    game_state.session_info.is_online
-                ),
+                cfmt::format_driver_name(&participant, game_state.session_info.is_online),
                 grid,
-                cfmt::format_time_ms_millis(fi.best_lap_time),
+                cfmt::milliseconds_to_msf(fi.best_lap_time),
                 time_delta,
                 penalties,
             );
@@ -656,12 +643,7 @@ impl NCUi {
 
             let participant = &game_state.participants[idx];
 
-            let pos = match li.status {
-                ResultStatus::Retired => String::from("RET"),
-                ResultStatus::NotClassified => String::from("N/C"),
-                ResultStatus::Disqualified => String::from("DSQ"),
-                _ => format!("{:3}", li.position),
-            };
+            let pos = cfmt::format_position(li.position, &li.status);
 
             let penalties = if li.penalties > 0 {
                 format!("+{:2}s", li.penalties)
@@ -672,14 +654,10 @@ impl NCUi {
             let s = format!(
                 "{}. {:20} | {}   | {}   | {}   | {}{}{} ",
                 pos,
-                cfmt::format_driver_name(
-                    &participant.name,
-                    participant.driver,
-                    game_state.session_info.is_online
-                ),
-                cfmt::format_time_ms_millis(li.current_lap_time),
-                cfmt::format_time_ms_millis(li.last_lap_time),
-                cfmt::format_time_ms_millis(li.best_lap_time),
+                cfmt::format_driver_name(&participant, game_state.session_info.is_online),
+                cfmt::milliseconds_to_msf(li.current_lap_time),
+                cfmt::milliseconds_to_msf(li.last_lap_time),
+                cfmt::milliseconds_to_msf(li.best_lap_time),
                 if li.in_pit { "P" } else { " " },
                 if li.lap_invalid { "!" } else { " " },
                 penalties,
@@ -734,7 +712,7 @@ impl NCUi {
 
         let mut msg = format!(
             "{}: {}",
-            cfmt::format_time_hms_millis(event_info.timestamp),
+            cfmt::milliseconds_to_hmsf(event_info.timestamp),
             event_info.description
         );
 
