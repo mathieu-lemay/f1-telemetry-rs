@@ -10,9 +10,11 @@ use std::time::Duration;
 
 use crate::models::*;
 use crate::ui::gtk::lap_times::LapTimesView;
+use crate::ui::gtk::throttle_view::ThrottleView;
 use crate::ui::Ui;
 
 mod lap_times;
+mod throttle_view;
 
 pub struct GTKUi {
     app: gtk::Application,
@@ -93,14 +95,17 @@ fn process_packet(
     game_state.borrow_mut().update(&packet);
     let game_state = game_state.borrow();
 
-    if let Packet::Lap(_) = packet {
-        widgets.lap_times_view.update(&game_state);
+    match packet {
+        Packet::Lap(_) => widgets.lap_times_view.update(&game_state),
+        Packet::CarTelemetry(_) => widgets.throttle_view.update(&game_state),
+        _ => {}
     }
 }
 
 struct Widgets {
     _mwnd: gtk::ApplicationWindow,
     lap_times_view: LapTimesView,
+    throttle_view: ThrottleView,
 }
 
 impl Widgets {
@@ -113,12 +118,13 @@ impl Widgets {
         window.set_position(gtk::WindowPosition::Center);
 
         let lap_times_view = LapTimesView::new(&window);
-
+        let throttle_view = ThrottleView::new(&window);
         window.show_all();
 
         Self {
             _mwnd: window,
             lap_times_view,
+            throttle_view,
         }
     }
 }
