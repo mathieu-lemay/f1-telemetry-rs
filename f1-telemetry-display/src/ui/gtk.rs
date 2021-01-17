@@ -19,7 +19,7 @@ pub struct GTKUi {
 }
 
 const STYLE: &str = "
-#foo {
+#lap-times {
     font-weight: bold;
 }";
 
@@ -36,7 +36,9 @@ impl Ui for GTKUi {
     fn run(&mut self, stream: Stream) {
         self.app.connect_startup(move |app| {
             let provider = gtk::CssProvider::new();
-            provider.load_from_data(STYLE.as_bytes()).expect("Failed to load CSS");
+            provider
+                .load_from_data(STYLE.as_bytes())
+                .expect("Failed to load CSS");
             // // We give the CssProvided to the default screen so the CSS rules we added
             // // can be applied to our window.
             gtk::StyleContext::add_provider_for_screen(
@@ -94,20 +96,7 @@ fn process_packet(
     if let Packet::Lap(_) = packet {
         widgets.lap_times_view.update(&game_state);
     }
-
-    // widgets.lap_times_view.show_all();
-    // widgets.mwnd.show_all();
 }
-
-/*
-const STYLE: &str = "
-GtkTreeView row { background-color: shade(@base_color, 0.0); }
-#foo row { background-color: shade(@base_color, 0.0); }
-#foo row:nth-child(even) { background-color: shade(@base_color, 0.9); }
-#foo row:nth-child(odd) { background-color: shade(@base_color, 1.0); }
-treeview { background-color: #0000ff; }
-";
- */
 
 struct Widgets {
     _mwnd: gtk::ApplicationWindow,
@@ -122,7 +111,6 @@ impl Widgets {
         window.set_icon_name(Some("application-default-icon"));
         window.set_border_width(10);
         window.set_position(gtk::WindowPosition::Center);
-        // window.set_default_size(350, 70);
 
         let lap_times_view = LapTimesView::new(&window);
 

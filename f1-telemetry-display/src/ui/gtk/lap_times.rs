@@ -159,7 +159,7 @@ fn create_model() -> gtk::ListStore {
 
 fn create_tree_view(model: &gtk::ListStore) -> gtk::TreeView {
     let tree_view = gtk::TreeView::with_model(model);
-    tree_view.set_widget_name("foo");
+    tree_view.set_widget_name("lap-times");
     tree_view.set_vexpand(true);
 
     tree_view.set_hover_selection(false);
