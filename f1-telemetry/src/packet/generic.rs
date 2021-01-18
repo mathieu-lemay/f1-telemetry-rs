@@ -120,6 +120,12 @@ impl Default for ResultStatus {
     }
 }
 
+impl ResultStatus {
+    pub fn is_valid(&self) -> bool {
+        self != &Self::Invalid
+    }
+}
+
 #[derive(Debug, Clone, Copy, Eq, PartialEq, Hash, Ord, PartialOrd)]
 pub enum Team {
     Mercedes,

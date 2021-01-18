@@ -390,6 +390,14 @@ impl GameState {
             0
         }
     }
+
+    pub(crate) fn get_valid_lap_info(&self) -> impl Iterator<Item = (&Participant, &LapInfo)> {
+        self.lap_infos
+            .iter()
+            .enumerate()
+            .map(move |(idx, li)| (self.participants.get(idx).unwrap(), li))
+            .filter(|(_, li)| li.status.is_valid())
+    }
 }
 
 pub struct Participant {

@@ -1,6 +1,6 @@
 use crate::fmt;
 use crate::models::GameState;
-use f1_telemetry::packet::generic::{ResultStatus, Team};
+use f1_telemetry::packet::generic::Team;
 use gio::prelude::*;
 use gtk::prelude::*;
 use gtk::{SortColumn, SortType};
@@ -32,10 +32,9 @@ impl LapTimesView {
         Self { tree_view, model }
     }
 
-    pub(super) fn update(&self, game_state: &GameState) {
+    pub(super) fn set_participants(&self, game_state: &GameState) {
         self.model.clear();
 
-        // Dummy data
         let col_indices = [
             Column::Position,
             Column::Name,
@@ -49,14 +48,7 @@ impl LapTimesView {
         .map(|&c| c as u32)
         .collect::<Vec<u32>>();
 
-        for (idx, li) in game_state
-            .lap_infos
-            .iter()
-            .filter(|li| li.status != ResultStatus::Invalid)
-            .enumerate()
-        {
-            let participant = &game_state.participants[idx];
-
+        for (participant, li) in game_state.get_valid_lap_info() {
             let data: [&dyn ToValue; 7] = [
                 &fmt::format_position(li.position, &li.status),
                 &fmt::format_driver_name(&participant, game_state.session_info.is_online)
@@ -70,6 +62,37 @@ impl LapTimesView {
 
             self.model
                 .set(&self.model.append(None), &col_indices, &data);
+        }
+    }
+
+    pub(super) fn update(&self, game_state: &GameState) {
+        let iter = match self.model.get_iter_first() {
+            Some(i) => i,
+            None => return,
+        };
+
+        let col_indices = [
+            Column::Position,
+            Column::CurrentLapTime,
+            Column::LastLapTime,
+            Column::BestLapTime,
+            Column::TruePosition,
+        ]
+        .iter()
+        .map(|&c| c as u32)
+        .collect::<Vec<u32>>();
+
+        for (_, li) in game_state.get_valid_lap_info() {
+            let data: [&dyn ToValue; 5] = [
+                &fmt::format_position(li.position, &li.status),
+                &fmt::milliseconds_to_hmsf(li.current_lap_time),
+                &fmt::milliseconds_to_hmsf(li.last_lap_time),
+                &fmt::milliseconds_to_hmsf(li.best_lap_time),
+                &li.position,
+            ];
+
+            self.model.set(&iter, &col_indices, &data);
+            self.model.iter_next(&iter);
         }
     }
 }

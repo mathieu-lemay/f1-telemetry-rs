@@ -125,6 +125,7 @@ fn process_packet(
     let game_state = game_state.borrow();
 
     match packet {
+        Packet::Participants(_) => widgets.lap_times_view.set_participants(&game_state),
         Packet::Lap(_) => widgets.lap_times_view.update(&game_state),
         Packet::CarTelemetry(_) => {
             widgets.throttle_view.update(&game_state);
