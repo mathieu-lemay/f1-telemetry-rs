@@ -13,10 +13,10 @@ pub trait Ui {
     fn destroy(&self);
 }
 
-pub fn get_ui(gui: bool) -> Box<dyn Ui> {
-    if gui {
-        Box::new(GTKUi::new())
-    } else {
-        Box::new(NCUi::new())
+pub fn get_ui(ui: &str) -> Box<dyn Ui> {
+    match ui {
+        "gtk" => Box::new(GTKUi::new()),
+        "ncurses" => Box::new(NCUi::new()),
+        _ => panic!("Invalid ui: {}", ui),
     }
 }
