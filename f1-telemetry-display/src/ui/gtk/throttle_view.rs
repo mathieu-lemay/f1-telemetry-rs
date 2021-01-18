@@ -1,26 +1,24 @@
 use crate::models::GameState;
-use gtk::{GridExt, ProgressBarExt, StateFlags, WidgetExt};
+use gtk::{GridExt, ProgressBarExt, WidgetExt};
 
 pub(super) struct ThrottleView {
-    pub(crate) container: gtk::Grid,
-    _throttle_bar: gtk::ProgressBar,
-    _brake_bar: gtk::ProgressBar,
+    pub(super) container: gtk::Grid,
+    throttle_bar: gtk::ProgressBar,
+    brake_bar: gtk::ProgressBar,
 }
 
 impl ThrottleView {
-    pub(super) fn new(_parent: &gtk::ApplicationWindow) -> Self {
+    pub(super) fn new() -> Self {
         let throttle = gtk::ProgressBar::new();
-        throttle.set_widget_name("throttle");
         throttle.set_text(Some("Throttle"));
+        throttle.set_widget_name("throttle");
         throttle.set_show_text(true);
-        throttle.override_color(StateFlags::NORMAL, Some(&gdk::RGBA::green()));
         throttle.set_hexpand(true);
 
         let brake = gtk::ProgressBar::new();
         brake.set_text(Some("Brake"));
         brake.set_widget_name("brake");
         brake.set_show_text(true);
-        brake.override_color(StateFlags::NORMAL, Some(&gdk::RGBA::red()));
         brake.set_hexpand(true);
 
         let container = gtk::Grid::new();
@@ -30,19 +28,22 @@ impl ThrottleView {
         container.set_vexpand(true);
         container.set_hexpand(true);
 
-        // parent.add(&container);
+        // Dummy data
+        throttle.set_fraction(0.75);
+        brake.set_fraction(0.25);
+
         Self {
             container,
-            _throttle_bar: throttle,
-            _brake_bar: brake,
+            throttle_bar: throttle,
+            brake_bar: brake,
         }
     }
 
     pub(super) fn update(&self, games_state: &GameState) {
         let throttle = games_state.telemetry_info.throttle;
-        self._throttle_bar.set_fraction(throttle as f64);
+        self.throttle_bar.set_fraction(throttle as f64);
 
         let brake = games_state.telemetry_info.brake;
-        self._brake_bar.set_fraction(brake as f64);
+        self.brake_bar.set_fraction(brake as f64);
     }
 }

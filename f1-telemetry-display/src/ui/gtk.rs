@@ -24,12 +24,18 @@ const STYLE: &str = "
 #lap-times {
     font-weight: bold;
 }
+
+progressbar > text {
+    font-size: 1.2em;
+    font-weight: bold;
+    margin-bottom: 0.2em;
+}
+
 #throttle > trough > progress {
-    background-image: None;
     background-color: green;
 }
+
 #brake > trough > progress {
-    background-image: None;
     background-color: red;
 }";
 
@@ -127,11 +133,11 @@ impl Widgets {
         window.set_border_width(10);
         window.set_position(gtk::WindowPosition::Center);
 
-        let lap_times_view = LapTimesView::new(&window);
-        let throttle_view = ThrottleView::new(&window);
+        let lap_times_view = LapTimesView::new();
+        let throttle_view = ThrottleView::new();
 
         let container = gtk::Grid::new();
-        container.attach(&lap_times_view._tree_view, 0, 0, 1, 1);
+        container.attach(&lap_times_view.tree_view, 0, 0, 1, 1);
         container.attach(&throttle_view.container, 0, 1, 1, 1);
         container.set_row_spacing(12);
         // container.set_border_width(6);

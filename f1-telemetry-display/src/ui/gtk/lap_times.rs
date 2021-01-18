@@ -8,7 +8,7 @@ use gtk::{SortColumn, SortType};
 const COLUMN_DEFAULT_WIDTH: i32 = 100;
 
 pub(super) struct LapTimesView {
-    pub(crate) _tree_view: gtk::TreeView,
+    pub(super) tree_view: gtk::TreeView,
     model: gtk::TreeStore,
 }
 
@@ -25,21 +25,17 @@ enum Column {
 }
 
 impl LapTimesView {
-    pub(super) fn new(_parent: &gtk::ApplicationWindow) -> Self {
+    pub(super) fn new() -> Self {
         let model = create_model();
         let tree_view = create_tree_view(&model);
 
-        // parent.add(&tree_view);
-
-        Self {
-            _tree_view: tree_view,
-            model,
-        }
+        Self { tree_view, model }
     }
 
     pub(super) fn update(&self, game_state: &GameState) {
         self.model.clear();
 
+        // Dummy data
         let col_indices = [
             Column::Position,
             Column::Name,
