@@ -23,6 +23,14 @@ pub struct GTKUi {
 const STYLE: &str = "
 #lap-times {
     font-weight: bold;
+}
+#throttle > trough > progress {
+    background-image: None;
+    background-color: green;
+}
+#brake > trough > progress {
+    background-image: None;
+    background-color: red;
 }";
 
 impl Ui for GTKUi {
@@ -97,7 +105,9 @@ fn process_packet(
 
     match packet {
         Packet::Lap(_) => widgets.lap_times_view.update(&game_state),
-        Packet::CarTelemetry(_) => widgets.throttle_view.update(&game_state),
+        Packet::CarTelemetry(_) => {
+            widgets.throttle_view.update(&game_state);
+        }
         _ => {}
     }
 }
@@ -119,6 +129,17 @@ impl Widgets {
 
         let lap_times_view = LapTimesView::new(&window);
         let throttle_view = ThrottleView::new(&window);
+
+        let container = gtk::Grid::new();
+        container.attach(&lap_times_view._tree_view, 0, 0, 1, 1);
+        container.attach(&throttle_view.container, 0, 1, 1, 1);
+        container.set_row_spacing(12);
+        // container.set_border_width(6);
+        container.set_vexpand(true);
+        container.set_hexpand(true);
+
+        window.add(&container);
+
         window.show_all();
 
         Self {
