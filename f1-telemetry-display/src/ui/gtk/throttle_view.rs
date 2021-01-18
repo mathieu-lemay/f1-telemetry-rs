@@ -1,5 +1,6 @@
 use crate::models::GameState;
 use gtk::prelude::*;
+use gtk::Align;
 
 pub(super) struct ThrottleView {
     pub(super) container: gtk::Grid,
@@ -9,10 +10,10 @@ pub(super) struct ThrottleView {
 
 impl ThrottleView {
     pub(super) fn new() -> Self {
-        let throttle_lbl = gtk::LabelBuilder::new().label("Throttle").build();
+        let throttle_lbl = create_pedal_lbl("Throttle");
         let throttle_bar = create_pedal_bar("throttle");
 
-        let brake_lbl = gtk::LabelBuilder::new().label("Brake").build();
+        let brake_lbl = create_pedal_lbl("Brake");
         let brake_bar = create_pedal_bar("brake");
 
         let container = gtk::GridBuilder::new()
@@ -46,6 +47,13 @@ impl ThrottleView {
         let brake = games_state.telemetry_info.brake;
         self.brake_bar.set_value(brake as f64);
     }
+}
+
+fn create_pedal_lbl(label: &str) -> gtk::Label {
+    gtk::LabelBuilder::new()
+        .label(label)
+        .halign(Align::Start)
+        .build()
 }
 
 fn create_pedal_bar(name: &str) -> gtk::LevelBar {
