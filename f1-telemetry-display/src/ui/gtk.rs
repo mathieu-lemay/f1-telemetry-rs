@@ -25,19 +25,26 @@ const STYLE: &str = "
     font-weight: bold;
 }
 
-progressbar > text {
-    font-size: 1.2em;
+.pedal_input > label {
     font-weight: bold;
-    margin-bottom: 0.2em;
 }
 
-#throttle > trough > progress {
-    background-color: green;
+.pedal_input block  {
+    margin: 5px 0px;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;
 }
 
-#brake > trough > progress {
-    background-color: red;
-}";
+#throttle .filled {
+    background-color: #00A000;
+}
+
+#brake .filled {
+    background-color: #A00000;
+}
+";
 
 impl Ui for GTKUi {
     fn new() -> Self {
