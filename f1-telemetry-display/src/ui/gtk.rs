@@ -102,13 +102,11 @@ impl Ui for GTKUi {
                 }
             });
 
-            let mut session_uid: Option<u64> = None;
             let game_state = RefCell::new(GameState::default());
             let widgets = Rc::new(Widgets::new(&app));
 
             rx.attach(None, move |packet| {
-                process_packet(&session_uid, &game_state, &widgets, &packet);
-                session_uid = game_state.borrow().session_uid;
+                process_packet(&game_state, &widgets, &packet);
 
                 glib::Continue(true)
             });
@@ -120,12 +118,7 @@ impl Ui for GTKUi {
     fn destroy(&self) {}
 }
 
-fn process_packet(
-    _session_uid: &Option<u64>,
-    game_state: &RefCell<GameState>,
-    widgets: &Rc<Widgets>,
-    packet: &Packet,
-) {
+fn process_packet(game_state: &RefCell<GameState>, widgets: &Rc<Widgets>, packet: &Packet) {
     game_state.borrow_mut().update(&packet);
     let game_state = game_state.borrow();
 
