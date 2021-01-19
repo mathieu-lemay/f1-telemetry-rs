@@ -103,7 +103,7 @@ impl Ui for GTKUi {
             });
 
             let mut session_uid: Option<u64> = None;
-            let game_state = Rc::new(RefCell::new(GameState::default()));
+            let game_state = RefCell::new(GameState::default());
             let widgets = Rc::new(Widgets::new(&app));
 
             rx.attach(None, move |packet| {
@@ -122,7 +122,7 @@ impl Ui for GTKUi {
 
 fn process_packet(
     _session_uid: &Option<u64>,
-    game_state: &Rc<RefCell<GameState>>,
+    game_state: &RefCell<GameState>,
     widgets: &Rc<Widgets>,
     packet: &Packet,
 ) {
