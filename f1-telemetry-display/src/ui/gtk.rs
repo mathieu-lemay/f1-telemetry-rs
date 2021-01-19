@@ -49,6 +49,10 @@ const STYLE: &str = "
 #brake .filled {
     background-color: #A00000;
 }
+
+#gear {
+    font-size: 3em;
+}
 ";
 
 impl Ui for GTKUi {

@@ -1,13 +1,14 @@
-use crate::fmt::format_gear;
+use crate::fmt;
 use crate::models::GameState;
 use gtk::prelude::*;
-use gtk::Align;
+use gtk::{Align, Orientation};
 
 pub(super) struct ThrottleView {
     pub(super) container: gtk::Grid,
     throttle_bar: gtk::LevelBar,
     brake_bar: gtk::LevelBar,
-    gear_value_lbl: gtk::Label,
+    speed_lbl: gtk::Label,
+    gear_lbl: gtk::Label,
 }
 
 impl ThrottleView {
@@ -18,8 +19,18 @@ impl ThrottleView {
         let brake_lbl = create_pedal_lbl("Brake");
         let brake_bar = create_pedal_bar("brake");
 
-        let gear_lbl = create_pedal_lbl("Gear");
-        let gear_value_lbl = create_pedal_lbl("N");
+        let gear_speed_box = gtk::BoxBuilder::new()
+            .orientation(Orientation::Vertical)
+            .valign(Align::Center)
+            .build();
+        let speed_lbl = gtk::LabelBuilder::new()
+            .name("speed")
+            .halign(Align::Center)
+            .build();
+        let gear_lbl = gtk::LabelBuilder::new()
+            .name("gear")
+            .halign(Align::Center)
+            .build();
 
         let container = gtk::GridBuilder::new()
             .row_spacing(12)
@@ -33,18 +44,23 @@ impl ThrottleView {
         container.attach(&throttle_bar, 1, 0, 1, 1);
         container.attach(&brake_lbl, 0, 1, 1, 1);
         container.attach(&brake_bar, 1, 1, 1, 1);
-        container.attach(&gear_lbl, 0, 2, 1, 1);
-        container.attach(&gear_value_lbl, 1, 2, 1, 1);
+        container.attach(&gear_speed_box, 2, 0, 1, 2);
+
+        gear_speed_box.pack_start(&speed_lbl, false, false, 0);
+        gear_speed_box.pack_start(&gear_lbl, false, false, 0);
 
         // Dummy data
         throttle_bar.set_value(0.75);
         brake_bar.set_value(0.25);
+        speed_lbl.set_text(&fmt::format_speed(420));
+        gear_lbl.set_text(&fmt::format_gear(8));
 
         Self {
             container,
             throttle_bar,
             brake_bar,
-            gear_value_lbl,
+            speed_lbl,
+            gear_lbl,
         }
     }
 
@@ -55,8 +71,10 @@ impl ThrottleView {
         let brake = games_state.telemetry_info.brake;
         self.brake_bar.set_value(brake as f64);
 
-        let gear = games_state.telemetry_info.gear;
-        self.gear_value_lbl.set_text(&format_gear(gear))
+        self.speed_lbl
+            .set_text(&fmt::format_speed(games_state.telemetry_info.speed));
+        self.gear_lbl
+            .set_text(&fmt::format_gear(games_state.telemetry_info.gear));
     }
 }
 
