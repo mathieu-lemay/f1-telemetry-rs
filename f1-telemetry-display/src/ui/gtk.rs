@@ -25,16 +25,21 @@ const STYLE: &str = "
     font-weight: bold;
 }
 
-.pedal_input > label {
+.pedal_input label {
     font-weight: bold;
 }
 
-.pedal_input block  {
-    margin: 5px 0px;
+.pedal_input block {
+    border-style: none;
     border-top-left-radius: 5px;
     border-top-right-radius: 5px;
     border-bottom-left-radius: 5px;
     border-bottom-right-radius: 5px;
+}
+
+.pedal_input trough {
+    border-style: none;
+    margin: 5px 0px;
 }
 
 #throttle .filled {
