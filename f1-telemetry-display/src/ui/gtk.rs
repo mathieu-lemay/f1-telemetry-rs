@@ -9,12 +9,14 @@ use std::thread;
 use std::time::Duration;
 
 use crate::models::*;
+use crate::ui::gtk::car_view::CarView;
 use crate::ui::gtk::header::HeaderView;
 use crate::ui::gtk::lap_times::LapTimesView;
 use crate::ui::gtk::throttle_view::ThrottleView;
 use crate::ui::Ui;
 
 mod header;
+mod car_view;
 mod lap_times;
 mod throttle_view;
 
@@ -168,6 +170,7 @@ impl Widgets {
 
         let lap_times_view = LapTimesView::new();
         let throttle_view = ThrottleView::new();
+        let car_view = CarView::new();
 
         let widgets_grid = gtk::GridBuilder::new()
             .row_spacing(12)
@@ -177,6 +180,7 @@ impl Widgets {
 
         widgets_grid.attach(&lap_times_view.tree_view, 0, 0, 1, 1);
         widgets_grid.attach(&throttle_view.container, 0, 1, 1, 1);
+        widgets_grid.attach(&car_view.container, 1, 0, 1, 1);
 
         let main_view_box = gtk::BoxBuilder::new()
             .orientation(gtk::Orientation::Vertical)
