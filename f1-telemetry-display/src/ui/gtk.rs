@@ -9,10 +9,12 @@ use std::thread;
 use std::time::Duration;
 
 use crate::models::*;
+use crate::ui::gtk::header::HeaderView;
 use crate::ui::gtk::lap_times::LapTimesView;
 use crate::ui::gtk::throttle_view::ThrottleView;
 use crate::ui::Ui;
 
+mod header;
 mod lap_times;
 mod throttle_view;
 
@@ -21,6 +23,10 @@ pub struct GTKUi {
 }
 
 const STYLE: &str = "
+#session_name {
+    font-weight: bold;
+}
+
 #lap-times {
     font-weight: bold;
 }
@@ -127,8 +133,14 @@ fn process_packet(game_state: &RefCell<GameState>, widgets: &Rc<Widgets>, packet
     let game_state = game_state.borrow();
 
     match packet {
+        Packet::Session(_) => {
+            widgets.header.update(&game_state);
+        }
         Packet::Participants(_) => widgets.lap_times_view.set_participants(&game_state),
-        Packet::Lap(_) => widgets.lap_times_view.update(&game_state),
+        Packet::Lap(_) => {
+            widgets.header.update(&game_state);
+            widgets.lap_times_view.update(&game_state);
+        }
         Packet::CarTelemetry(_) => {
             widgets.throttle_view.update(&game_state);
         }
@@ -138,6 +150,7 @@ fn process_packet(game_state: &RefCell<GameState>, widgets: &Rc<Widgets>, packet
 
 struct Widgets {
     _mwnd: gtk::ApplicationWindow,
+    header: HeaderView,
     lap_times_view: LapTimesView,
     throttle_view: ThrottleView,
 }
@@ -151,23 +164,35 @@ impl Widgets {
         window.set_border_width(10);
         window.set_position(gtk::WindowPosition::Center);
 
+        let header = HeaderView::new();
+
         let lap_times_view = LapTimesView::new();
         let throttle_view = ThrottleView::new();
 
-        let container = gtk::Grid::new();
-        container.attach(&lap_times_view.tree_view, 0, 0, 1, 1);
-        container.attach(&throttle_view.container, 0, 1, 1, 1);
-        container.set_row_spacing(12);
-        // container.set_border_width(6);
-        container.set_vexpand(true);
-        container.set_hexpand(true);
+        let widgets_grid = gtk::GridBuilder::new()
+            .row_spacing(12)
+            .vexpand(true)
+            .hexpand(true)
+            .build();
 
-        window.add(&container);
+        widgets_grid.attach(&lap_times_view.tree_view, 0, 0, 1, 1);
+        widgets_grid.attach(&throttle_view.container, 0, 1, 1, 1);
+
+        let main_view_box = gtk::BoxBuilder::new()
+            .orientation(gtk::Orientation::Vertical)
+            .spacing(12)
+            .build();
+
+        main_view_box.pack_start(&header.container, false, false, 0);
+        main_view_box.pack_start(&widgets_grid, false, false, 0);
+
+        window.add(&main_view_box);
 
         window.show_all();
 
         Self {
             _mwnd: window,
+            header,
             lap_times_view,
             throttle_view,
         }

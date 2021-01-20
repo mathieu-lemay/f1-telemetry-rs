@@ -340,17 +340,13 @@ impl NCUi {
     fn print_session_info(&self, game_state: &GameState) {
         let sinfo = &game_state.session_info;
 
-        let session_name = &format!("{} - {}", sinfo.session_type.name(), sinfo.track_name);
-        let lap_info = &format!("Lap {} of {}", sinfo.current_lap, sinfo.number_of_laps);
-        let session_time = &format!(
-            "{} / {}",
-            cfmt::seconds_to_hms(sinfo.elapsed_time),
-            cfmt::seconds_to_hms(sinfo.duration)
-        );
+        let session_name = cfmt::get_session_name(sinfo);
+        let lap_info = cfmt::get_lap_count(sinfo);
+        let session_time = cfmt::get_session_time(sinfo);
 
-        addstr_center(self.main_window, SESSION_Y_OFFSET, session_name);
-        addstr_center(self.main_window, SESSION_Y_OFFSET + 1, lap_info);
-        addstr_center(self.main_window, SESSION_Y_OFFSET + 2, session_time);
+        addstr_center(self.main_window, SESSION_Y_OFFSET, &session_name);
+        addstr_center(self.main_window, SESSION_Y_OFFSET + 1, &lap_info);
+        addstr_center(self.main_window, SESSION_Y_OFFSET + 2, &session_time);
 
         if sinfo.safety_car == SafetyCar::Virtual || sinfo.safety_car == SafetyCar::Full {
             fmt::blink_colour(COLOR_WHITE, COLOR_YELLOW);

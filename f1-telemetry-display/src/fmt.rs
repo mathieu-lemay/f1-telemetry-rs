@@ -1,8 +1,24 @@
 use std::borrow::Cow;
 
-use crate::models::Participant;
+use crate::models::{Participant, SessionInfo};
 use f1_telemetry::packet::generic::ResultStatus;
 use f1_telemetry::packet::participants::Driver;
+
+pub fn get_session_name(sinfo: &SessionInfo) -> String {
+    format!("{} - {}", sinfo.session_type.name(), sinfo.track_name)
+}
+
+pub fn get_lap_count(sinfo: &SessionInfo) -> String {
+    format!("Lap {} of {}", sinfo.current_lap, sinfo.number_of_laps)
+}
+
+pub fn get_session_time(sinfo: &SessionInfo) -> String {
+    format!(
+        "{} / {}",
+        seconds_to_hms(sinfo.elapsed_time),
+        seconds_to_hms(sinfo.duration)
+    )
+}
 
 pub fn format_driver_name(participant: &Participant, is_online: bool) -> Cow<str> {
     if is_online {
