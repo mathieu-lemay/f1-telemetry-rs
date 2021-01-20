@@ -85,9 +85,9 @@ impl LapTimesView {
                 &fmt::format_position(li.position, &li.status),
                 &fmt::format_driver_name(&participant, game_state.session_info.is_online)
                     .to_string(),
-                &fmt::milliseconds_to_hmsf(li.current_lap_time),
-                &fmt::milliseconds_to_hmsf(li.last_lap_time),
-                &fmt::milliseconds_to_hmsf(li.best_lap_time),
+                &fmt::milliseconds_to_msf(li.current_lap_time),
+                &fmt::milliseconds_to_msf(li.last_lap_time),
+                &fmt::milliseconds_to_msf(li.best_lap_time),
                 &get_team_color(&participant.team),
                 &li.position,
             ];
@@ -119,9 +119,9 @@ impl LapTimesView {
         for (_, li) in game_state.get_valid_lap_info() {
             let data: [&dyn ToValue; 7] = [
                 &fmt::format_position(li.position, &li.status),
-                &fmt::milliseconds_to_hmsf(li.current_lap_time),
-                &fmt::milliseconds_to_hmsf(li.last_lap_time),
-                &fmt::milliseconds_to_hmsf(li.best_lap_time),
+                &fmt::milliseconds_to_msf(li.current_lap_time),
+                &fmt::milliseconds_to_msf(li.last_lap_time),
+                &fmt::milliseconds_to_msf(li.best_lap_time),
                 &FastestLapType::from(
                     li.last_lap_time,
                     li.best_lap_time,
@@ -207,9 +207,9 @@ fn create_model() -> gtk::TreeStore {
         let data: [&dyn ToValue; 7] = [
             &format!("{}", i * 2 + 1),
             &format!("Player {}", i * 2),
-            &fmt::milliseconds_to_hmsf(0),
-            &fmt::milliseconds_to_hmsf(0),
-            &fmt::milliseconds_to_hmsf(0),
+            &fmt::milliseconds_to_msf(0),
+            &fmt::milliseconds_to_msf(0),
+            &fmt::milliseconds_to_msf(0),
             &get_team_color(t),
             &1,
         ];
@@ -219,9 +219,9 @@ fn create_model() -> gtk::TreeStore {
         let data: [&dyn ToValue; 7] = [
             &format!("{}", i * 2 + 2),
             &format!("Player {}", i * 2 + 1),
-            &fmt::milliseconds_to_hmsf(0),
-            &fmt::milliseconds_to_hmsf(0),
-            &fmt::milliseconds_to_hmsf(0),
+            &fmt::milliseconds_to_msf(0),
+            &fmt::milliseconds_to_msf(0),
+            &fmt::milliseconds_to_msf(0),
             &get_team_color(t),
             &1,
         ];
