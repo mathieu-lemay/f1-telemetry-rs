@@ -15,10 +15,13 @@ use crate::ui::gtk::lap_times::LapTimesView;
 use crate::ui::gtk::throttle_view::ThrottleView;
 use crate::ui::Ui;
 
-mod header;
+mod car;
 mod car_view;
+mod header;
 mod lap_times;
 mod throttle_view;
+
+extern crate cairo;
 
 pub struct GTKUi {
     app: gtk::Application,
@@ -146,6 +149,7 @@ fn process_packet(game_state: &RefCell<GameState>, widgets: &Rc<Widgets>, packet
         Packet::CarTelemetry(_) => {
             widgets.throttle_view.update(&game_state);
         }
+        Packet::CarStatus(_) => widgets.car_view.update(&game_state),
         _ => {}
     }
 }
@@ -155,6 +159,7 @@ struct Widgets {
     header: HeaderView,
     lap_times_view: LapTimesView,
     throttle_view: ThrottleView,
+    car_view: CarView,
 }
 
 impl Widgets {
@@ -199,6 +204,7 @@ impl Widgets {
             header,
             lap_times_view,
             throttle_view,
+            car_view,
         }
     }
 }

@@ -39,7 +39,7 @@ const BODY: &str = "      /  \\
    |        |   ";
 
 const ENGINE: &str = "__--__
-|    |
+|     |
 \\    /
  \\__/";
 

@@ -152,9 +152,11 @@ dependencies = [
 name = "f1-telemetry-display"
 version = "0.1.0"
 dependencies = [
+ "cairo-rs",
  "clap",
  "f1-telemetry",
  "gdk",
+ "gdk-pixbuf",
  "gio",
  "glib",
  "gtk",
