@@ -52,6 +52,7 @@ impl CarView {
 }
 
 fn init_car(ctx: &Context) {
+    car::draw_full_body(ctx, None);
     car::draw_tyres(ctx, 0.0, 0.0, 0.0, 0.0);
     car::draw_right_wing(ctx, 0.0);
     car::draw_left_wing(ctx, 0.0);

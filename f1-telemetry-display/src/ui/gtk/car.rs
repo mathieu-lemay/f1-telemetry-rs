@@ -29,7 +29,7 @@ const LEFT_WING_HEIGHT: f64 = 50.0;
 const LEFT_WING_WIDTH: f64 = (WHEELTRACK + TYRE_WIDTH) / 2.0;
 const LEFT_WING_X: f64 = LEFT_FRONT_TYRE_X;
 const LEFT_WING_Y: f64 = LEFT_FRONT_TYRE_Y - LEFT_WING_HEIGHT - 10.0;
-const LEFT_WING_NOSE_RADIUS: f64 = 10.0;
+const LEFT_WING_NOSE_RADIUS: f64 = 15.0;
 
 const YELLOW_WING_DAMAGE: f64 = 30.0;
 
@@ -123,6 +123,192 @@ pub(crate) fn draw_right_wing(ctx: &Context, damage: f64) {
     draw_right_wing_shape(ctx);
 
     ctx.fill()
+}
+
+pub(crate) fn draw_full_body(ctx: &Context, team_colour: Option<(f64, f64, f64)>) {
+    draw_suspension(ctx);
+    draw_body(ctx, team_colour);
+}
+
+pub(crate) fn draw_body(ctx: &Context, team_colour: Option<(f64, f64, f64)>) {
+    let (r, g, b) = team_colour.unwrap_or((1.0, 1.0, 1.0));
+    ctx.set_source_rgb(r, g, b);
+    draw_body_shape(ctx);
+
+    ctx.fill();
+}
+
+fn draw_suspension(ctx: &Context) {
+    ctx.set_source_rgb(1.0, 1.0, 1.0);
+    draw_suspension_shape(ctx);
+    ctx.fill();
+}
+
+fn draw_suspension_shape(ctx: &Context) {
+    //TOP SUS BAR
+    ctx.new_sub_path();
+    ctx.move_to(LEFT_FRONT_TYRE_X, LEFT_FRONT_TYRE_Y + TYRE_HEIGHT * 0.4);
+    ctx.rel_line_to(LEFT_WING_WIDTH, -TYRE_HEIGHT * 0.2);
+    ctx.rel_line_to(0.0, TYRE_HEIGHT * 0.2);
+    ctx.rel_line_to(-LEFT_WING_WIDTH, TYRE_HEIGHT * 0.2);
+    ctx.close_path();
+
+    ctx.new_sub_path();
+    ctx.move_to(
+        RIGHT_FRONT_TYRE_X + TYRE_WIDTH,
+        LEFT_FRONT_TYRE_Y + TYRE_HEIGHT * 0.4,
+    );
+    ctx.rel_line_to(-LEFT_WING_WIDTH, -TYRE_HEIGHT * 0.2);
+    ctx.rel_line_to(0.0, TYRE_HEIGHT * 0.2);
+    ctx.rel_line_to(LEFT_WING_WIDTH, TYRE_HEIGHT * 0.2);
+    ctx.close_path();
+
+    //BOTTOM SUS BAR
+    ctx.new_sub_path();
+    ctx.move_to(
+        LEFT_FRONT_TYRE_X + TYRE_WIDTH,
+        LEFT_FRONT_TYRE_Y + TYRE_HEIGHT * 0.4,
+    );
+    ctx.line_to(
+        LEFT_FRONT_TYRE_X + LEFT_WING_WIDTH / 2.0,
+        LEFT_FRONT_TYRE_Y + TYRE_HEIGHT * 0.8,
+    );
+    ctx.rel_line_to(LEFT_WING_WIDTH / 2.0, 0.0);
+    ctx.rel_line_to(0.0, TYRE_HEIGHT * 0.2);
+    ctx.rel_line_to(-LEFT_WING_WIDTH / 2.0 - 2.0, 0.0);
+    ctx.line_to(
+        LEFT_FRONT_TYRE_X + TYRE_WIDTH,
+        LEFT_FRONT_TYRE_Y + TYRE_HEIGHT * 0.6,
+    );
+
+    ctx.close_path();
+
+    ctx.new_sub_path();
+    ctx.move_to(RIGHT_FRONT_TYRE_X, LEFT_FRONT_TYRE_Y + TYRE_HEIGHT * 0.4);
+    ctx.line_to(
+        LEFT_FRONT_TYRE_X + LEFT_WING_WIDTH * 3.0 / 2.0,
+        LEFT_FRONT_TYRE_Y + TYRE_HEIGHT * 0.8,
+    );
+    ctx.rel_line_to(-LEFT_WING_WIDTH / 2.0, 0.0);
+    ctx.rel_line_to(0.0, TYRE_HEIGHT * 0.2);
+    ctx.rel_line_to(LEFT_WING_WIDTH / 2.0 + 2.0, 0.0);
+    ctx.line_to(RIGHT_FRONT_TYRE_X, LEFT_FRONT_TYRE_Y + TYRE_HEIGHT * 0.6);
+
+    ctx.close_path();
+
+    //MID SUS BAR
+
+    ctx.new_sub_path();
+    ctx.move_to(
+        LEFT_FRONT_TYRE_X + TYRE_WIDTH,
+        LEFT_FRONT_TYRE_Y + TYRE_HEIGHT * 0.4,
+    );
+    ctx.line_to(
+        LEFT_FRONT_TYRE_X + LEFT_WING_WIDTH,
+        LEFT_FRONT_TYRE_Y + TYRE_HEIGHT * 0.8,
+    );
+    ctx.rel_line_to(0.0, TYRE_HEIGHT * 0.2);
+    ctx.line_to(
+        LEFT_FRONT_TYRE_X + TYRE_WIDTH,
+        LEFT_FRONT_TYRE_Y + TYRE_HEIGHT * 0.6,
+    );
+
+    ctx.close_path();
+
+    ctx.new_sub_path();
+    ctx.move_to(RIGHT_FRONT_TYRE_X, LEFT_FRONT_TYRE_Y + TYRE_HEIGHT * 0.4);
+    ctx.line_to(
+        LEFT_FRONT_TYRE_X + LEFT_WING_WIDTH,
+        LEFT_FRONT_TYRE_Y + TYRE_HEIGHT * 0.8,
+    );
+    ctx.rel_line_to(0.0, TYRE_HEIGHT * 0.2);
+    ctx.line_to(RIGHT_FRONT_TYRE_X, LEFT_FRONT_TYRE_Y + TYRE_HEIGHT * 0.6);
+
+    ctx.close_path();
+
+    //REAR SUS BAR
+
+    ctx.new_sub_path();
+    ctx.move_to(
+        LEFT_FRONT_TYRE_X + TYRE_WIDTH,
+        LEFT_REAR_TYRE_Y + TYRE_HEIGHT * 0.4,
+    );
+    ctx.line_to(RIGHT_REAR_TYRE_X, LEFT_REAR_TYRE_Y + TYRE_HEIGHT * 0.4);
+    ctx.rel_line_to(0.0, TYRE_HEIGHT * 0.2);
+    ctx.line_to(
+        LEFT_FRONT_TYRE_X + TYRE_WIDTH,
+        LEFT_REAR_TYRE_Y + TYRE_HEIGHT * 0.6,
+    );
+    ctx.close_path()
+}
+
+fn draw_body_shape(ctx: &Context) {
+    ctx.new_sub_path();
+    //LEFT NOSE
+    ctx.move_to(
+        LEFT_WING_X + LEFT_WING_WIDTH - LEFT_WING_NOSE_RADIUS,
+        LEFT_WING_Y,
+    );
+    ctx.line_to(
+        LEFT_WING_X + LEFT_WING_WIDTH - LEFT_WING_NOSE_RADIUS - 3.0,
+        LEFT_FRONT_TYRE_Y + TYRE_HEIGHT / 3.0,
+    );
+    ctx.line_to(
+        LEFT_WING_X + LEFT_WING_WIDTH - LEFT_WING_NOSE_RADIUS - 10.0,
+        LEFT_FRONT_TYRE_Y + TYRE_HEIGHT * 1.5,
+    );
+
+    //LEFT BARGEBOARD
+    ctx.line_to(LEFT_WING_X, LEFT_FRONT_TYRE_Y + TYRE_HEIGHT * 2.0);
+    ctx.line_to(LEFT_WING_X, LEFT_REAR_TYRE_Y - TYRE_HEIGHT * 0.5);
+
+    //LEFT REAR
+    ctx.line_to(
+        LEFT_WING_X + TYRE_WIDTH * 1.5,
+        LEFT_REAR_TYRE_Y - TYRE_HEIGHT * 0.5,
+    );
+    ctx.line_to(
+        LEFT_WING_X + TYRE_WIDTH * 1.5,
+        LEFT_REAR_TYRE_Y + TYRE_HEIGHT * 0.75,
+    );
+
+    //REAR
+    ctx.line_to(
+        RIGHT_REAR_TYRE_X - TYRE_WIDTH * 0.5,
+        LEFT_REAR_TYRE_Y + TYRE_HEIGHT * 0.75,
+    );
+
+    //RIGHT REAR
+    ctx.line_to(
+        RIGHT_REAR_TYRE_X - TYRE_WIDTH * 0.5,
+        LEFT_REAR_TYRE_Y - TYRE_HEIGHT * 0.5,
+    );
+    ctx.line_to(
+        RIGHT_REAR_TYRE_X + TYRE_WIDTH,
+        LEFT_REAR_TYRE_Y - TYRE_HEIGHT * 0.5,
+    );
+
+    //RIGHT BARGEBOARD
+    ctx.line_to(
+        RIGHT_REAR_TYRE_X + TYRE_WIDTH,
+        LEFT_FRONT_TYRE_Y + TYRE_HEIGHT * 2.0,
+    );
+    ctx.line_to(
+        LEFT_WING_X + LEFT_WING_WIDTH + LEFT_WING_NOSE_RADIUS + 10.0,
+        LEFT_FRONT_TYRE_Y + TYRE_HEIGHT * 1.5,
+    );
+
+    //RIGHT NOSE
+    ctx.line_to(
+        LEFT_WING_X + LEFT_WING_WIDTH + LEFT_WING_NOSE_RADIUS + 3.0,
+        LEFT_FRONT_TYRE_Y + TYRE_HEIGHT / 3.0,
+    );
+    ctx.line_to(
+        LEFT_WING_X + LEFT_WING_WIDTH + LEFT_WING_NOSE_RADIUS,
+        LEFT_WING_Y,
+    );
+
+    ctx.close_path();
 }
 
 fn get_wing_damage_colour(damage: f64) -> (f64, f64, f64) {
