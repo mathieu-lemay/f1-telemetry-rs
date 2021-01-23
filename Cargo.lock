@@ -156,7 +156,6 @@ dependencies = [
  "clap",
  "f1-telemetry",
  "gdk",
- "gdk-pixbuf",
  "gio",
  "glib",
  "gtk",
