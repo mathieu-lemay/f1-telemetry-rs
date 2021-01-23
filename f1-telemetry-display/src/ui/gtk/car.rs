@@ -10,17 +10,144 @@ const TYRE_WIDTH: f64 = 50.0;
 const TYRE_HEIGHT: f64 = 75.0;
 const TYRE_RADIUS: f64 = 10.0;
 
+const WHEELBASE: f64 = 400.0;
+const WHEELTRACK: f64 = 200.0;
+
 const LEFT_FRONT_TYRE_X: f64 = 20.0;
-const LEFT_FRONT_TYRE_Y: f64 = 50.0;
+const LEFT_FRONT_TYRE_Y: f64 = 100.0;
 
-const RIGHT_FRONT_TYRE_X: f64 = 220.0;
-const RIGHT_FRONT_TYRE_Y: f64 = 50.0;
+const RIGHT_FRONT_TYRE_X: f64 = LEFT_FRONT_TYRE_X + WHEELTRACK;
+const RIGHT_FRONT_TYRE_Y: f64 = LEFT_FRONT_TYRE_Y;
 
-const LEFT_REAR_TYRE_X: f64 = 20.0;
-const LEFT_REAR_TYRE_Y: f64 = 450.0;
+const LEFT_REAR_TYRE_X: f64 = LEFT_FRONT_TYRE_X;
+const LEFT_REAR_TYRE_Y: f64 = LEFT_FRONT_TYRE_Y + WHEELBASE;
 
-const RIGHT_REAR_TYRE_X: f64 = 220.0;
-const RIGHT_REAR_TYRE_Y: f64 = 450.0;
+const RIGHT_REAR_TYRE_X: f64 = LEFT_FRONT_TYRE_X + WHEELTRACK;
+const RIGHT_REAR_TYRE_Y: f64 = LEFT_FRONT_TYRE_Y + WHEELBASE;
+
+const LEFT_WING_HEIGHT: f64 = 50.0;
+const LEFT_WING_WIDTH: f64 = (WHEELTRACK + TYRE_WIDTH) / 2.0;
+const LEFT_WING_X: f64 = LEFT_FRONT_TYRE_X;
+const LEFT_WING_Y: f64 = LEFT_FRONT_TYRE_Y - LEFT_WING_HEIGHT - 10.0;
+const LEFT_WING_NOSE_RADIUS: f64 = 10.0;
+
+const YELLOW_WING_DAMAGE: f64 = 30.0;
+
+fn draw_left_wing_shape(ctx: &Context) {
+    ctx.new_sub_path();
+    let angle_90 = 90.0_f64.to_radians();
+    let angle_180 = 180.0_f64.to_radians();
+
+    ctx.move_to(LEFT_WING_X, LEFT_WING_Y);
+    ctx.line_to(
+        LEFT_WING_X + LEFT_WING_WIDTH - LEFT_WING_NOSE_RADIUS,
+        LEFT_WING_Y,
+    );
+    ctx.arc(
+        LEFT_WING_X + LEFT_WING_WIDTH,
+        LEFT_WING_Y,
+        LEFT_WING_NOSE_RADIUS,
+        angle_180,
+        -angle_90,
+    );
+    ctx.line_to(
+        LEFT_WING_X + LEFT_WING_WIDTH,
+        LEFT_WING_Y + LEFT_WING_HEIGHT / 3.0,
+    );
+    ctx.line_to(
+        LEFT_WING_X + LEFT_WING_WIDTH * 0.8,
+        LEFT_WING_Y + LEFT_WING_HEIGHT / 3.0,
+    );
+    ctx.line_to(
+        LEFT_WING_X + LEFT_WING_WIDTH * 0.4,
+        LEFT_WING_Y + LEFT_WING_HEIGHT,
+    );
+    ctx.line_to(LEFT_WING_X, LEFT_WING_Y + LEFT_WING_HEIGHT);
+    ctx.line_to(LEFT_WING_X, LEFT_WING_Y);
+    ctx.close_path();
+}
+
+fn draw_right_wing_shape(ctx: &Context) {
+    ctx.new_sub_path();
+    let angle_180 = 180.0_f64.to_radians();
+
+    ctx.move_to(LEFT_WING_X + 2.0 * LEFT_WING_WIDTH, LEFT_WING_Y);
+    ctx.line_to(
+        LEFT_WING_X + LEFT_WING_WIDTH - LEFT_WING_NOSE_RADIUS,
+        LEFT_WING_Y,
+    );
+    ctx.arc(
+        LEFT_WING_X + LEFT_WING_WIDTH,
+        LEFT_WING_Y,
+        LEFT_WING_NOSE_RADIUS,
+        angle_180,
+        0.0,
+    );
+    ctx.move_to(
+        LEFT_WING_X + LEFT_WING_WIDTH - LEFT_WING_NOSE_RADIUS,
+        LEFT_WING_Y,
+    );
+    ctx.line_to(
+        LEFT_WING_X + LEFT_WING_WIDTH,
+        LEFT_WING_Y + LEFT_WING_HEIGHT / 3.0,
+    );
+    ctx.line_to(
+        LEFT_WING_X + LEFT_WING_WIDTH * 1.2,
+        LEFT_WING_Y + LEFT_WING_HEIGHT / 3.0,
+    );
+    ctx.line_to(
+        LEFT_WING_X + LEFT_WING_WIDTH * 1.6,
+        LEFT_WING_Y + LEFT_WING_HEIGHT,
+    );
+    ctx.line_to(
+        LEFT_WING_X + 2.0 * LEFT_WING_WIDTH,
+        LEFT_WING_Y + LEFT_WING_HEIGHT,
+    );
+    ctx.line_to(LEFT_WING_X + 2.0 * LEFT_WING_WIDTH, LEFT_WING_Y);
+
+    ctx.close_path();
+}
+
+pub(crate) fn draw_left_wing(ctx: &Context, damage: f64) {
+    let (r, g, b) = get_wing_damage_colour(damage);
+    ctx.set_source_rgb(r, g, b);
+
+    draw_left_wing_shape(ctx);
+
+    ctx.fill()
+}
+pub(crate) fn draw_right_wing(ctx: &Context, damage: f64) {
+    let (r, g, b) = get_wing_damage_colour(damage);
+    ctx.set_source_rgb(r, g, b);
+
+    draw_right_wing_shape(ctx);
+
+    ctx.fill()
+}
+
+fn get_wing_damage_colour(damage: f64) -> (f64, f64, f64) {
+    get_damage_color(damage, YELLOW_WING_DAMAGE, 100.0)
+}
+
+fn get_damage_color(
+    damage: f64,
+    yellow_damage_level: f64,
+    red_damage_level: f64,
+) -> (f64, f64, f64) {
+    let r: f64;
+    let mut g: f64 = GREEN_DAMAGE_COLOR.1;
+    let b = 0.0;
+
+    if damage <= yellow_damage_level {
+        let marker = damage / yellow_damage_level;
+        r = YELLOW_DAMAGE_COLOR.0 * marker;
+    } else {
+        let marker = (damage - yellow_damage_level) / (red_damage_level - yellow_damage_level);
+        r = YELLOW_DAMAGE_COLOR.0;
+        g = YELLOW_DAMAGE_COLOR.1 * (1.0 - marker);
+    }
+    (r, g, b)
+}
 
 pub(crate) fn draw_rounded_rectangle(
     ctx: &Context,
@@ -81,19 +208,7 @@ fn draw_tyre(ctx: &Context, x_: f64, y_: f64, damage: f64) {
 }
 
 fn get_tyre_damage_colour(damage: f64) -> (f64, f64, f64) {
-    let r: f64;
-    let mut g: f64 = GREEN_DAMAGE_COLOR.1;
-    let b = 0.0;
-
-    if damage <= YELLOW_TYRE_DAMAGE {
-        let marker = damage / YELLOW_TYRE_DAMAGE;
-        r = YELLOW_DAMAGE_COLOR.0 * marker;
-    } else {
-        let marker = (damage - YELLOW_TYRE_DAMAGE) / (RED_TYRE_DAMAGE - YELLOW_TYRE_DAMAGE);
-        r = YELLOW_DAMAGE_COLOR.0;
-        g = YELLOW_DAMAGE_COLOR.1 * (1.0 - marker);
-    }
-    (r, g, b)
+    get_damage_color(damage, YELLOW_TYRE_DAMAGE, RED_TYRE_DAMAGE)
 }
 
 #[cfg(test)]

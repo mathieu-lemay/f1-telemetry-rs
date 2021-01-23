@@ -16,7 +16,7 @@ impl CarView {
             .valign(Align::Center)
             .build();
 
-        let surface = ImageSurface::create(Format::ARgb32, 350, 550).expect("Can't create surface");
+        let surface = ImageSurface::create(Format::ARgb32, 350, 600).expect("Can't create surface");
         let cr = Context::new(&surface);
 
         init_car(&cr);
@@ -36,13 +36,16 @@ impl CarView {
         let front_right = cs.tyres_damage.front_right();
         let rear_left = cs.tyres_damage.rear_left();
         let rear_right = cs.tyres_damage.rear_right();
-
+        let left_wing = cs.left_front_wing_damage;
+        let right_wing = cs.right_front_wing_damage;
         update_car(
             &self._car,
             front_left as f64,
             front_right as f64,
             rear_left as f64,
             rear_right as f64,
+            left_wing as f64,
+            right_wing as f64,
         );
         self.container.queue_draw();
     }
@@ -50,8 +53,20 @@ impl CarView {
 
 fn init_car(ctx: &Context) {
     car::draw_tyres(ctx, 0.0, 0.0, 0.0, 0.0);
+    car::draw_right_wing(ctx, 0.0);
+    car::draw_left_wing(ctx, 0.0);
 }
 
-fn update_car(ctx: &Context, fl_damage: f64, fr_damage: f64, rl_damage: f64, rr_damage: f64) {
+fn update_car(
+    ctx: &Context,
+    fl_damage: f64,
+    fr_damage: f64,
+    rl_damage: f64,
+    rr_damage: f64,
+    left_wing_damage: f64,
+    right_wing_damage: f64,
+) {
     car::draw_tyres(ctx, fl_damage, fr_damage, rl_damage, rr_damage);
+    car::draw_right_wing(ctx, right_wing_damage);
+    car::draw_left_wing(ctx, left_wing_damage);
 }
