@@ -4,8 +4,7 @@ extern crate simplelog;
 
 use std::fs::OpenOptions;
 
-use clap::{App, Arg, ArgMatches};
-use f1_telemetry::Stream;
+use clap::{App, Arg};
 use simplelog::*;
 
 use crate::ui::get_ui;
@@ -14,7 +13,7 @@ mod fmt;
 mod models;
 mod ui;
 
-fn init_logger() {
+fn init_logger(log_level: LevelFilter) {
     let file = OpenOptions::new()
         .create(true)
         .append(true)
@@ -22,11 +21,32 @@ fn init_logger() {
         .expect("Unable to open log file.");
     let config = ConfigBuilder::new().set_time_to_local(true).build();
 
-    WriteLogger::init(LevelFilter::Debug, config, file).expect("Unable to initialize logger.");
+    WriteLogger::init(log_level, config, file).expect("Unable to initialize logger.");
 }
 
-fn get_cli_args<'a>() -> ArgMatches<'a> {
-    App::new("F1 Telemetry Display")
+struct AppArgs {
+    host: String,
+    port: u16,
+    ui: String,
+    log_level: LevelFilter,
+}
+
+fn is_valid_port(val: String) -> Result<(), String> {
+    match val.parse::<u16>() {
+        Ok(_) => Ok(()),
+        Err(_) => Err(format!("Invalid port: {}", val)),
+    }
+}
+
+fn is_valid_log_level(val: String) -> Result<(), String> {
+    match val.parse::<LevelFilter>() {
+        Ok(_) => Ok(()),
+        Err(_) => Err(format!("Invalid log level: {}", val)),
+    }
+}
+
+fn get_cli_args() -> AppArgs {
+    let args = App::new("F1 Telemetry Display")
         .version("1.0")
         .about("Display telemetry info from F1 games")
         .arg(
@@ -41,6 +61,7 @@ fn get_cli_args<'a>() -> ArgMatches<'a> {
                 .long("port")
                 .short("p")
                 .default_value("20777")
+                .validator(is_valid_port)
                 .help("Port to bind on"),
         )
         .arg(
@@ -49,26 +70,48 @@ fn get_cli_args<'a>() -> ArgMatches<'a> {
                 .short("u")
                 .possible_values(&["ncurses", "gtk"])
                 .default_value("gtk")
-                .help("Choose the user interfaec"),
+                .help("Choose the user interface"),
         )
-        .get_matches()
+        .arg(
+            Arg::with_name("log_level")
+                .long("log-level")
+                .short("l")
+                .default_value("info")
+                .validator(is_valid_log_level)
+                .help("Set the log level"),
+        )
+        .get_matches();
+
+    let host = args.value_of("host").unwrap().to_string();
+    let port = args
+        .value_of("port")
+        .unwrap()
+        .parse::<u16>()
+        .expect("Invalid port");
+    let ui = args.value_of("ui").unwrap().to_string();
+    let log_level = args
+        .value_of("log_level")
+        .unwrap()
+        .parse::<LevelFilter>()
+        .unwrap();
+
+    AppArgs {
+        host,
+        port,
+        ui,
+        log_level,
+    }
 }
 
-fn main() {
-    init_logger();
+#[tokio::main]
+async fn main() {
     let args = get_cli_args();
 
-    let host = args.value_of("host").unwrap();
-    let port = args.value_of("port").unwrap();
-    let ui = args.value_of("ui").unwrap();
+    init_logger(args.log_level);
 
-    let stream = Stream::new(format!("{}:{}", host, port)).expect("Unable to bind socket");
+    let mut ui = get_ui(&args.ui);
 
-    info!("Listening on {}", stream.socket().local_addr().unwrap());
-
-    let mut ui = get_ui(ui);
-
-    ui.run(stream);
+    ui.run(args.host, args.port).await;
 
     ui.destroy();
 }

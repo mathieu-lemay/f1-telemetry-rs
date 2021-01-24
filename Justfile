@@ -1,6 +1,16 @@
 run *args:
 	cargo run -- {{ args }}
 
+nc *args:
+	#! /bin/sh
+	cargo build
+	ret=$?
+	[[ ${ret} -ne 0 ]] && exit ${ret}
+	cargo run -- --ui=ncurses {{ args }}
+	ret=$?
+	[[ ${ret} -ne 0 ]] && reset
+	exit ${ret}
+
 gtk-debug *args:
 	GTK_DEBUG=interactive just run {{ args }}
 
