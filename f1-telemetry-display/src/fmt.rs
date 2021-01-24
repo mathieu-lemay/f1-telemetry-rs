@@ -1,6 +1,6 @@
 use std::borrow::Cow;
 
-use crate::models::{Participant, SessionInfo};
+use crate::models::{EventInfo, Participant, SessionInfo};
 use f1_telemetry::packet::generic::ResultStatus;
 use f1_telemetry::packet::participants::Driver;
 
@@ -105,6 +105,24 @@ pub fn format_gear(gear: i8) -> Cow<'static, str> {
 
 pub fn format_speed(speed: u16) -> String {
     format!("{:3} km/h", speed)
+}
+
+pub fn format_event_info(event_info: &EventInfo) -> String {
+    let mut msg = format!(
+        "{}: {}",
+        milliseconds_to_hmsf(event_info.timestamp),
+        event_info.description
+    );
+
+    if let Some(driver) = &event_info.driver_name {
+        msg.push_str(&format!(": {}", driver));
+    }
+
+    if let Some(detail) = &event_info.detail {
+        msg.push_str(&format!(" ({})", detail));
+    }
+
+    msg
 }
 
 #[cfg(test)]

@@ -234,6 +234,7 @@ impl GameState {
         self.event_info.description = evt.description().to_string();
         self.event_info.driver_name = driver_name;
         self.event_info.detail = detail;
+        self.event_info.event = *evt;
     }
 
     fn parse_participants(&mut self, ppd: &PacketParticipantsData) {
@@ -406,12 +407,24 @@ pub struct Participant {
     pub team: Team,
 }
 
-#[derive(Default)]
 pub struct EventInfo {
     pub timestamp: u32,
     pub description: String,
     pub driver_name: Option<String>,
     pub detail: Option<String>,
+    pub event: Event,
+}
+
+impl Default for EventInfo {
+    fn default() -> Self {
+        Self {
+            timestamp: 0,
+            description: Default::default(),
+            driver_name: None,
+            detail: None,
+            event: Event::SessionStarted,
+        }
+    }
 }
 
 #[derive(Default)]

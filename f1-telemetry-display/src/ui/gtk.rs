@@ -10,6 +10,7 @@ use std::time::Duration;
 
 use crate::models::*;
 use crate::ui::gtk::car_view::CarView;
+use crate::ui::gtk::events::EventsView;
 use crate::ui::gtk::header::HeaderView;
 use crate::ui::gtk::lap_times::LapTimesView;
 use crate::ui::gtk::throttle_view::ThrottleView;
@@ -17,6 +18,7 @@ use crate::ui::Ui;
 
 mod car;
 mod car_view;
+mod events;
 mod header;
 mod lap_times;
 mod throttle_view;
@@ -150,6 +152,7 @@ fn process_packet(game_state: &RefCell<GameState>, widgets: &Rc<Widgets>, packet
             widgets.throttle_view.update(&game_state);
         }
         Packet::CarStatus(_) => widgets.car_view.update(&game_state),
+        Packet::Event(_) => widgets.events_view.update(&game_state),
         _ => {}
     }
 }
@@ -160,6 +163,7 @@ struct Widgets {
     lap_times_view: LapTimesView,
     throttle_view: ThrottleView,
     car_view: CarView,
+    events_view: EventsView,
 }
 
 impl Widgets {
@@ -176,6 +180,7 @@ impl Widgets {
         let lap_times_view = LapTimesView::new();
         let throttle_view = ThrottleView::new();
         let car_view = CarView::new();
+        let events_view = EventsView::new();
 
         let widgets_grid = gtk::GridBuilder::new()
             .row_spacing(12)
@@ -194,6 +199,7 @@ impl Widgets {
 
         main_view_box.pack_start(&header.container, false, false, 0);
         main_view_box.pack_start(&widgets_grid, false, false, 0);
+        main_view_box.pack_start(&events_view.info_bar, false, false, 0);
 
         window.add(&main_view_box);
 
@@ -205,6 +211,7 @@ impl Widgets {
             lap_times_view,
             throttle_view,
             car_view,
+            events_view,
         }
     }
 }

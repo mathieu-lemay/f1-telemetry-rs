@@ -706,19 +706,7 @@ impl NCUi {
 
         let event_info = &game_state.event_info;
 
-        let mut msg = format!(
-            "{}: {}",
-            cfmt::milliseconds_to_hmsf(event_info.timestamp),
-            event_info.description
-        );
-
-        if let Some(driver) = &event_info.driver_name {
-            msg += &format!(": {}", driver);
-        }
-
-        if let Some(detail) = &event_info.detail {
-            msg += &format!(" ({})", detail);
-        }
+        let msg = cfmt::format_event_info(event_info);
 
         mvaddstr(getmaxy(self.main_window) - 1, LEFT_BORDER_X_OFFSET, &msg);
         clrtoeol();
