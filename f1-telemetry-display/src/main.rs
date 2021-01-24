@@ -1,4 +1,6 @@
 #[macro_use]
+extern crate lazy_static;
+#[macro_use]
 extern crate log;
 extern crate simplelog;
 
@@ -8,6 +10,11 @@ use clap::{App, Arg};
 use simplelog::*;
 
 use crate::ui::get_ui;
+use f1_telemetry::packet::Packet;
+use f1_telemetry::Stream;
+use tokio::sync::mpsc;
+use tokio::sync::mpsc::{UnboundedReceiver, UnboundedSender};
+use tokio::sync::RwLock;
 
 mod fmt;
 mod models;
@@ -103,15 +110,52 @@ fn get_cli_args() -> AppArgs {
     }
 }
 
+struct StaticChannel {
+    tx: UnboundedSender<Packet>,
+    rx: RwLock<UnboundedReceiver<Packet>>,
+}
+
+lazy_static! {
+    pub(crate) static ref CHANNEL: StaticChannel = {
+        let (tx, rx) = mpsc::unbounded_channel();
+
+        StaticChannel {
+            tx,
+            rx: RwLock::new(rx),
+        }
+    };
+}
+
 #[tokio::main]
 async fn main() {
     let args = get_cli_args();
 
     init_logger(args.log_level);
+    start_stream(args.host, args.port).await;
+    run(&args.ui).await;
+}
 
-    let mut ui = get_ui(&args.ui);
+async fn start_stream(host: String, port: u16) {
+    let stream = Stream::new(format!("{}:{}", host, port))
+        .await
+        .expect("Unable to bind socket");
 
-    ui.run(args.host, args.port).await;
+    tokio::spawn(async move {
+        loop {
+            match stream.next().await {
+                Ok(p) => {
+                    let _ = CHANNEL.tx.send(p);
+                }
+                Err(_e) => {
+                    error!("{:?}", _e);
+                }
+            }
+        }
+    });
+}
 
+async fn run(ui_type: &str) {
+    let mut ui = get_ui(ui_type);
+    ui.run().await;
     ui.destroy();
 }

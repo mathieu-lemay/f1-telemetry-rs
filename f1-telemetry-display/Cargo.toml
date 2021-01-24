@@ -8,6 +8,7 @@ edition = "2018"
 f1-telemetry = { path = "../f1-telemetry" }
 tokio = { version = "1", features = ["full"] }
 async-trait = "^0.1"
+lazy_static = "^1.4.0"
 clap = "^2.33"
 log = "^0.4"
 simplelog = "^0.9"

@@ -1,3 +1,5 @@
+extern crate cairo;
+
 use std::cell::RefCell;
 use std::rc::Rc;
 
@@ -6,7 +8,6 @@ use gio::prelude::*;
 use gtk::prelude::*;
 
 use f1_telemetry::packet::Packet;
-use f1_telemetry::Stream;
 
 use crate::models::*;
 use crate::ui::Ui;
@@ -26,8 +27,6 @@ mod lap_times;
 mod style;
 mod throttle_view;
 
-extern crate cairo;
-
 pub struct GTKUi {
     app: gtk::Application,
 }
@@ -43,7 +42,7 @@ impl Ui for GTKUi {
         Self { app }
     }
 
-    async fn run(&mut self, host: String, port: u16) {
+    async fn run(&mut self) {
         self.app.connect_startup(move |_| {
             let provider = gtk::CssProvider::new();
             provider.load_from_path("custom.css").unwrap_or_default();
@@ -70,21 +69,9 @@ impl Ui for GTKUi {
 
             let (tx, rx) = glib::MainContext::channel(glib::PRIORITY_DEFAULT);
 
-            let host = host.clone();
             tokio::spawn(async move {
-                let stream = Stream::new(format!("{}:{}", host, port))
-                    .await
-                    .expect("Unable to bind socket");
-
-                loop {
-                    match stream.next().await {
-                        Ok(p) => {
-                            let _ = tx.send(p);
-                        }
-                        Err(_e) => {
-                            error!("{:?}", _e);
-                        }
-                    }
+                while let Some(p) = crate::CHANNEL.rx.write().await.recv().await {
+                    let _ = tx.send(p);
                 }
             });
 

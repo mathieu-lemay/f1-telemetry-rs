@@ -1,9 +1,8 @@
 #[macro_use]
 extern crate log;
 
-use std::net::SocketAddr;
-
 use tokio::net::{ToSocketAddrs, UdpSocket};
+use tokio::runtime::Runtime;
 
 use packet::{parse_packet, Packet, UnpackError};
 
@@ -33,8 +32,22 @@ impl Stream {
             Err(e) => Err(UnpackError(format!("Error reading from socket: {:?}", e))),
         }
     }
+}
 
-    pub fn addr(&self) -> SocketAddr {
-        self.socket.local_addr().unwrap()
+pub struct SyncStream {
+    stream: Stream,
+    rt: Runtime,
+}
+
+impl SyncStream {
+    pub fn new<T: ToSocketAddrs>(addr: T) -> std::io::Result<Self> {
+        let rt = Runtime::new().unwrap();
+        let stream = rt.block_on(Stream::new(addr))?;
+
+        Ok(SyncStream { stream, rt })
+    }
+
+    pub fn next(&self) -> Result<Packet, UnpackError> {
+        self.rt.block_on(self.stream.next())
     }
 }
