@@ -8,7 +8,6 @@ use gio::prelude::*;
 use gtk::prelude::*;
 
 use f1_telemetry::packet::Packet;
-use f1_telemetry::Stream;
 
 use crate::models::*;
 use crate::ui::Ui;
@@ -48,7 +47,7 @@ impl Ui for GtkUi {
         Self { app }
     }
 
-    async fn run(&mut self, host: String, port: u16) {
+    async fn run(&mut self) {
         self.app.connect_startup(move |_| {
             let provider = gtk::CssProvider::new();
             provider.load_from_path("custom.css").unwrap_or_default();
@@ -71,32 +70,20 @@ impl Ui for GtkUi {
 
         self.app.connect_activate(move |app| {
             let game_state = RefCell::new(GameState::default());
-            let widgets = Rc::new(Widgets::new(&app));
+            let widgets = Rc::new(Widgets::new(app));
 
             let (tx, rx) = glib::MainContext::channel(glib::PRIORITY_DEFAULT);
 
-            let host = host.clone();
             tokio::spawn(async move {
-                let stream = Stream::new(format!("{}:{}", host, port))
-                    .await
-                    .expect("Unable to bind socket");
-
-                loop {
-                    match stream.next().await {
-                        Ok(p) => {
-                            let _ = tx.send(p);
-                        }
-                        Err(_e) => {
-                            error!("{:?}", _e);
-                        }
-                    }
+                while let Some(p) = crate::CHANNEL.rx.write().await.recv().await {
+                    let _ = tx.send(p);
                 }
             });
 
             rx.attach(None, move |packet| {
                 process_packet(&game_state, &widgets, &packet);
 
-                glib::Continue(true)
+                Continue(true)
             });
         });
 

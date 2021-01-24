@@ -10,7 +10,6 @@ use tokio::time::sleep;
 use f1_telemetry::packet::generic::{ResultStatus, TyreCompoundVisual};
 use f1_telemetry::packet::session::{SafetyCar, SessionType};
 use f1_telemetry::packet::Packet;
-use f1_telemetry::Stream;
 
 use crate::fmt as cfmt;
 use crate::models::*;
@@ -151,24 +150,13 @@ impl Ui for NcursesUi {
         }
     }
 
-    async fn run(&mut self, host: String, port: u16) {
+    async fn run(&mut self) {
         let (tx, mut rx) = mpsc::unbounded_channel();
 
         let sender = tx.clone();
         let stream_thread = tokio::spawn(async move {
-            let stream = Stream::new(format!("{}:{}", host, port))
-                .await
-                .expect("Unable to bind socket");
-
-            loop {
-                match stream.next().await {
-                    Ok(p) => {
-                        let _ = sender.send(Event::UpdateGame(p));
-                    }
-                    Err(_e) => {
-                        error!("{:?}", _e);
-                    }
-                }
+            while let Some(p) = crate::CHANNEL.rx.write().await.recv().await {
+                let _ = sender.send(Event::UpdateGame(p));
             }
         });
 

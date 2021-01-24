@@ -1,4 +1,5 @@
 use tokio::net::{ToSocketAddrs, UdpSocket};
+use tokio::runtime::Runtime;
 
 use packet::{parse_packet, Packet, UnpackError};
 
@@ -31,5 +32,23 @@ impl Stream {
 
     pub fn socket(&self) -> &UdpSocket {
         &self.socket
+    }
+}
+
+pub struct SyncStream {
+    stream: Stream,
+    rt: Runtime,
+}
+
+impl SyncStream {
+    pub fn new<T: ToSocketAddrs>(addr: T) -> std::io::Result<Self> {
+        let rt = Runtime::new().unwrap();
+        let stream = rt.block_on(Stream::new(addr))?;
+
+        Ok(SyncStream { stream, rt })
+    }
+
+    pub fn next(&self) -> Result<Packet, UnpackError> {
+        self.rt.block_on(self.stream.next())
     }
 }
