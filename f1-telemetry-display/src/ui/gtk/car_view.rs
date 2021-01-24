@@ -1,11 +1,12 @@
-use gtk::{Align, BoxExt, Orientation, WidgetExt};
+use cairo::{Context, Format, ImageSurface};
+use gtk::prelude::*;
+use gtk::{Align, Orientation, Widget};
 
 use crate::models::GameState;
 use crate::ui::gtk::car;
-use cairo::{Context, Format, ImageSurface};
 
 pub struct CarView {
-    pub(crate) container: gtk::Box,
+    container: gtk::Box,
     _car: Context,
 }
 
@@ -48,6 +49,10 @@ impl CarView {
             right_wing as f64,
         );
         self.container.queue_draw();
+    }
+
+    pub(super) fn widget(&self) -> &impl IsA<Widget> {
+        &self.container
     }
 }
 

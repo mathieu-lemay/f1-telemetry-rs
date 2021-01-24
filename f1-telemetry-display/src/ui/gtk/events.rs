@@ -1,5 +1,5 @@
 use gtk::prelude::*;
-use gtk::{InfoBarBuilder, LabelBuilder, MessageType, ResponseType};
+use gtk::{InfoBar, InfoBarBuilder, Label, LabelBuilder, MessageType, ResponseType, Widget};
 
 use f1_telemetry::packet::event::Event;
 
@@ -7,8 +7,8 @@ use crate::fmt;
 use crate::models::GameState;
 
 pub(super) struct EventsView {
-    pub(super) info_bar: gtk::InfoBar,
-    message_label: gtk::Label,
+    info_bar: InfoBar,
+    message_label: Label,
 }
 
 impl EventsView {
@@ -45,6 +45,10 @@ impl EventsView {
 
         self.message_label.show();
         self.info_bar.show();
+    }
+
+    pub(super) fn widget(&self) -> &impl IsA<Widget> {
+        &self.info_bar
     }
 }
 

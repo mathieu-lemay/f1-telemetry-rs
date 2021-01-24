@@ -1,9 +1,11 @@
-use crate::fmt;
-use crate::models::GameState;
-use f1_telemetry::packet::generic::Team;
 use gio::prelude::*;
 use gtk::prelude::*;
-use gtk::{SortColumn, SortType};
+use gtk::{SortColumn, SortType, Widget};
+
+use f1_telemetry::packet::generic::Team;
+
+use crate::fmt;
+use crate::models::GameState;
 
 const COLUMN_DEFAULT_WIDTH: i32 = 100;
 
@@ -52,7 +54,7 @@ impl FastestLapType {
 }
 
 pub(super) struct LapTimesView {
-    pub(super) tree_view: gtk::TreeView,
+    tree_view: gtk::TreeView,
     model: gtk::TreeStore,
 }
 
@@ -95,6 +97,10 @@ impl LapTimesView {
             self.model
                 .set(&self.model.append(None), &col_indices, &data);
         }
+    }
+
+    pub(super) fn widget(&self) -> &impl IsA<Widget> {
+        &self.tree_view
     }
 
     pub(super) fn update(&self, game_state: &GameState) {

@@ -1,10 +1,11 @@
+use gtk::prelude::*;
+use gtk::{Align, Orientation, Widget};
+
 use crate::fmt;
 use crate::models::GameState;
-use gtk::prelude::*;
-use gtk::{Align, Orientation};
 
 pub(super) struct ThrottleView {
-    pub(super) container: gtk::Grid,
+    container: gtk::Grid,
     throttle_bar: gtk::LevelBar,
     brake_bar: gtk::LevelBar,
     speed_lbl: gtk::Label,
@@ -75,6 +76,10 @@ impl ThrottleView {
             .set_text(&fmt::format_speed(games_state.telemetry_info.speed));
         self.gear_lbl
             .set_text(&fmt::format_gear(games_state.telemetry_info.gear));
+    }
+
+    pub(super) fn widget(&self) -> &impl IsA<Widget> {
+        &self.container
     }
 }
 

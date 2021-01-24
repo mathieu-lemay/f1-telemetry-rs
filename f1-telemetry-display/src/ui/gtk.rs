@@ -188,18 +188,18 @@ impl Widgets {
             .hexpand(true)
             .build();
 
-        widgets_grid.attach(&lap_times_view.tree_view, 0, 0, 1, 1);
-        widgets_grid.attach(&throttle_view.container, 0, 1, 1, 1);
-        widgets_grid.attach(&car_view.container, 1, 0, 1, 1);
+        widgets_grid.attach(lap_times_view.widget(), 0, 0, 1, 1);
+        widgets_grid.attach(throttle_view.widget(), 0, 1, 1, 1);
+        widgets_grid.attach(car_view.widget(), 1, 0, 1, 1);
 
         let main_view_box = gtk::BoxBuilder::new()
             .orientation(gtk::Orientation::Vertical)
             .spacing(12)
             .build();
 
-        main_view_box.pack_start(&header.container, false, false, 0);
+        main_view_box.pack_start(header.widget(), false, false, 0);
         main_view_box.pack_start(&widgets_grid, false, false, 0);
-        main_view_box.pack_start(&events_view.info_bar, false, false, 0);
+        main_view_box.pack_start(events_view.widget(), false, false, 0);
 
         window.add(&main_view_box);
 

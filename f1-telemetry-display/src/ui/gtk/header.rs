@@ -1,11 +1,11 @@
 use gtk::prelude::*;
-use gtk::{Align, Orientation};
+use gtk::{Align, Orientation, Widget};
 
 use crate::fmt;
 use crate::models::GameState;
 
 pub(super) struct HeaderView {
-    pub(super) container: gtk::Box,
+    container: gtk::Box,
     session_name: gtk::Label,
     lap_info: gtk::Label,
     session_time: gtk::Label,
@@ -43,6 +43,10 @@ impl HeaderView {
         self.session_name.set_label(&fmt::get_session_name(sinfo));
         self.lap_info.set_label(&fmt::get_lap_count(sinfo));
         self.session_time.set_label(&fmt::get_session_time(sinfo));
+    }
+
+    pub(super) fn widget(&self) -> &impl IsA<Widget> {
+        &self.container
     }
 }
 
