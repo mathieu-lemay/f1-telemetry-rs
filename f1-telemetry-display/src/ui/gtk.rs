@@ -9,18 +9,21 @@ use std::thread;
 use std::time::Duration;
 
 use crate::models::*;
-use crate::ui::gtk::car_view::CarView;
-use crate::ui::gtk::events::EventsView;
-use crate::ui::gtk::header::HeaderView;
-use crate::ui::gtk::lap_times::LapTimesView;
-use crate::ui::gtk::throttle_view::ThrottleView;
 use crate::ui::Ui;
+
+use self::car_view::CarView;
+use self::events::EventsView;
+use self::header::HeaderView;
+use self::lap_times::LapTimesView;
+use self::style::BASE_STYLE;
+use self::throttle_view::ThrottleView;
 
 mod car;
 mod car_view;
 mod events;
 mod header;
 mod lap_times;
+mod style;
 mod throttle_view;
 
 extern crate cairo;
@@ -28,45 +31,6 @@ extern crate cairo;
 pub struct GTKUi {
     app: gtk::Application,
 }
-
-const STYLE: &str = "
-#session_name {
-    font-weight: bold;
-}
-
-#lap-times {
-    font-weight: bold;
-}
-
-.pedal_input label {
-    font-weight: bold;
-}
-
-.pedal_input block {
-    border-style: none;
-    border-top-left-radius: 5px;
-    border-top-right-radius: 5px;
-    border-bottom-left-radius: 5px;
-    border-bottom-right-radius: 5px;
-}
-
-.pedal_input trough {
-    border-style: none;
-    margin: 5px 0px;
-}
-
-#throttle .filled {
-    background-color: #00A000;
-}
-
-#brake .filled {
-    background-color: #A00000;
-}
-
-#gear {
-    font-size: 3em;
-}
-";
 
 impl Ui for GTKUi {
     fn new() -> Self {
@@ -90,7 +54,7 @@ impl Ui for GTKUi {
 
             let provider = gtk::CssProvider::new();
             provider
-                .load_from_data(STYLE.as_bytes())
+                .load_from_data(BASE_STYLE.as_bytes())
                 .expect("Failed to load CSS");
             // // We give the CssProvided to the default screen so the CSS rules we added
             // // can be applied to our window.
