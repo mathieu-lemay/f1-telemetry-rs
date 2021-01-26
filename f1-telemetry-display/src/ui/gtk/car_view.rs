@@ -4,6 +4,7 @@ use gtk::{Align, Orientation, Widget};
 
 use crate::models::GameState;
 use crate::ui::gtk::car;
+use f1_telemetry::packet::generic::Team;
 
 pub struct CarView {
     container: gtk::Box,
@@ -62,7 +63,25 @@ impl CarView {
 }
 
 fn get_color_from_team(team: &Team) -> (f64, f64, f64) {
-    get_cairo_team_color(team)
+    let color = match team {
+        Team::Mercedes => (0, 53, 48),
+        Team::Ferrari => (56, 0, 0),
+        Team::RedBullRacing => (15, 0, 65),
+        Team::Williams => (0, 33, 65),
+        Team::RacingPoint => (62, 38, 51),
+        Team::Renault => (65, 62, 0),
+        Team::ToroRosso => (18, 40, 65),
+        Team::Haas => (30, 30, 30),
+        Team::McLaren => (65, 34, 0),
+        Team::AlfaRomeo => (40, 0, 0),
+        Team::AlphaTauri => (65, 65, 65),
+        Team::MyTeam => (30, 0, 65),
+        _ => (255, 255, 255),
+    };
+    let r = color.0 as f64 / 255.0;
+    let g = color.1 as f64 / 255.0;
+    let b = color.2 as f64 / 255.0;
+    (r, g, b)
 }
 
 fn init_car(ctx: &Context) {
