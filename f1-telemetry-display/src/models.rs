@@ -36,6 +36,7 @@ pub struct GameState {
     pub relative_positions: RelativePositions,
     pub final_classifications: Vec<FinalClassificationInfo>,
     pub motion_info: MotionInfo,
+    pub player_index: u8,
 }
 
 impl GameState {
@@ -81,6 +82,7 @@ impl GameState {
         self.session_info.track_temperature = session.track_temperature();
         self.session_info.air_temperature = session.air_temperature();
         self.session_info.is_online = session.network_game();
+        self.player_index = session.header().player_car_index()
     }
 
     fn parse_lap_data(&mut self, lap_data: &PacketLapData) {

@@ -2,8 +2,8 @@ use super::cairo::Context;
 
 const YELLOW_TYRE_DAMAGE: f64 = 30.0;
 const RED_TYRE_DAMAGE: f64 = 100.0;
-const GREEN_DAMAGE_COLOR: (f64, f64, f64) = (0.0, 1.0, 0.0);
-const YELLOW_DAMAGE_COLOR: (f64, f64, f64) = (1.0, 1.0, 0.0);
+const GREEN_DAMAGE_COLOR: (f64, f64, f64) = (0.0, 0.8, 0.0);
+const YELLOW_DAMAGE_COLOR: (f64, f64, f64) = (0.8, 0.8, 0.0);
 // const RED_DAMAGE_COLOR: (f64, f64, f64) = (1.0, 0.0, 0.0);
 
 const TYRE_WIDTH: f64 = 50.0;
@@ -131,15 +131,19 @@ pub(crate) fn draw_full_body(ctx: &Context, team_colour: Option<(f64, f64, f64)>
 }
 
 pub(crate) fn draw_body(ctx: &Context, team_colour: Option<(f64, f64, f64)>) {
-    let (r, g, b) = team_colour.unwrap_or((1.0, 1.0, 1.0));
+    let (r, g, b) = (1.0, 1.0, 1.0);
     ctx.set_source_rgb(r, g, b);
     draw_body_shape(ctx);
 
-    ctx.fill();
+    ctx.fill_preserve();
+    let (r, g, b) = team_colour.unwrap_or((0.8, 0.8, 0.8));
+    ctx.set_source_rgb(r * 3.0, g * 3.0, b * 3.0);
+    ctx.set_line_width(5.0);
+    ctx.stroke();
 }
 
 fn draw_suspension(ctx: &Context) {
-    ctx.set_source_rgb(1.0, 1.0, 1.0);
+    ctx.set_source_rgb(0.8, 0.8, 0.8);
     draw_suspension_shape(ctx);
     ctx.fill();
 }
@@ -247,7 +251,7 @@ fn draw_body_shape(ctx: &Context) {
     //LEFT NOSE
     ctx.move_to(
         LEFT_WING_X + LEFT_WING_WIDTH - LEFT_WING_NOSE_RADIUS,
-        LEFT_WING_Y,
+        LEFT_WING_Y + 3.0,
     );
     ctx.line_to(
         LEFT_WING_X + LEFT_WING_WIDTH - LEFT_WING_NOSE_RADIUS - 3.0,
@@ -305,7 +309,7 @@ fn draw_body_shape(ctx: &Context) {
     );
     ctx.line_to(
         LEFT_WING_X + LEFT_WING_WIDTH + LEFT_WING_NOSE_RADIUS,
-        LEFT_WING_Y,
+        LEFT_WING_Y + 3.0,
     );
 
     ctx.close_path();

@@ -39,6 +39,10 @@ impl CarView {
         let rear_right = cs.tyres_damage.rear_right();
         let left_wing = cs.left_front_wing_damage;
         let right_wing = cs.right_front_wing_damage;
+        let player = game_state.player_index as usize;
+        let team = &game_state.participants[player].team;
+
+        let color = get_color_from_team(team);
         update_car(
             &self._car,
             front_left as f64,
@@ -47,6 +51,7 @@ impl CarView {
             rear_right as f64,
             left_wing as f64,
             right_wing as f64,
+            color,
         );
         self.container.queue_draw();
     }
@@ -54,6 +59,10 @@ impl CarView {
     pub(super) fn widget(&self) -> &impl IsA<Widget> {
         &self.container
     }
+}
+
+fn get_color_from_team(team: &Team) -> (f64, f64, f64) {
+    get_cairo_team_color(team)
 }
 
 fn init_car(ctx: &Context) {
@@ -71,8 +80,10 @@ fn update_car(
     rr_damage: f64,
     left_wing_damage: f64,
     right_wing_damage: f64,
+    team_colour: (f64, f64, f64),
 ) {
     car::draw_tyres(ctx, fl_damage, fr_damage, rl_damage, rr_damage);
+    car::draw_body(ctx, Some(team_colour));
     car::draw_right_wing(ctx, right_wing_damage);
     car::draw_left_wing(ctx, left_wing_damage);
 }

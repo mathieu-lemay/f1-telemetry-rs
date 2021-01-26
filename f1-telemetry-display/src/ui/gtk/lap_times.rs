@@ -169,27 +169,27 @@ fn get_team_color(team: &Team) -> String {
     String::from(color)
 }
 
-// pub fn get_cairo_team_color(team:&Team) -> (f64,f64,f64) {
-//     let color = match team {
-//         Team::Mercedes => (0, 53, 48),
-//         Team::Ferrari => (56, 0, 0),
-//         Team::RedBullRacing => (15, 0, 65),
-//         Team::Williams => (0, 33, 65),
-//         Team::RacingPoint => (62, 38, 51),
-//         Team::Renault => (65, 62, 0),
-//         Team::ToroRosso => (18, 40, 65),
-//         Team::Haas => (30, 30, 30),
-//         Team::McLaren => (65, 34, 0),
-//         Team::AlfaRomeo => (40, 0, 0),
-//         Team::AlphaTauri => (65, 65, 65),
-//         Team::MyTeam => (30, 0, 65),
-//         _ => (255, 255, 255)
-//     };
-//     let r = color.0 as f64 / 255.0;
-//     let g = color.1 as f64 / 255.0;
-//     let b = color.2 as f64 / 255.0;
-//     (r,g,b)
-// }
+pub fn get_cairo_team_color(team: &Team) -> (f64, f64, f64) {
+    let color = match team {
+        Team::Mercedes => (0, 53, 48),
+        Team::Ferrari => (56, 0, 0),
+        Team::RedBullRacing => (15, 0, 65),
+        Team::Williams => (0, 33, 65),
+        Team::RacingPoint => (62, 38, 51),
+        Team::Renault => (65, 62, 0),
+        Team::ToroRosso => (18, 40, 65),
+        Team::Haas => (30, 30, 30),
+        Team::McLaren => (65, 34, 0),
+        Team::AlfaRomeo => (40, 0, 0),
+        Team::AlphaTauri => (65, 65, 65),
+        Team::MyTeam => (30, 0, 65),
+        _ => (255, 255, 255),
+    };
+    let r = color.0 as f64 / 255.0;
+    let g = color.1 as f64 / 255.0;
+    let b = color.2 as f64 / 255.0;
+    (r, g, b)
+}
 
 fn create_model() -> gtk::TreeStore {
     let col_types = [
