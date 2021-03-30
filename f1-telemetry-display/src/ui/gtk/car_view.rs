@@ -41,7 +41,11 @@ impl CarView {
         let left_wing = cs.left_front_wing_damage;
         let right_wing = cs.right_front_wing_damage;
         let player = game_state.player_index as usize;
-        let team = &game_state.participants[player].team;
+        let team = if let Some(p) = &game_state.participants.get(player) {
+            &p.team
+        } else {
+            &Team::Unknown
+        };
 
         let color = get_color_from_team(team);
         update_car(
