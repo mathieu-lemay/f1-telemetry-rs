@@ -162,7 +162,7 @@ fn get_team_color(team: &Team) -> String {
         Team::McLaren => "rgb(65, 34, 0)",
         Team::AlfaRomeo => "rgb(40, 0, 0)",
         Team::AlphaTauri => "rgb(65, 65, 65)",
-        Team::MyTeam => "rgb(30, 0, 65)",
+        Team::MyTeam => "rgb(0, 150, 0)",
         _ => "",
     };
 
