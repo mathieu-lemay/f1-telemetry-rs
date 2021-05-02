@@ -17,6 +17,7 @@ use self::header::HeaderView;
 use self::lap_times::LapTimesView;
 use self::style::BASE_STYLE;
 use self::throttle_view::ThrottleView;
+use self::tyre_temp_view::TyreTempView;
 
 mod car;
 mod car_view;
@@ -25,6 +26,8 @@ mod header;
 mod lap_times;
 mod style;
 mod throttle_view;
+mod tyre_temp;
+mod tyre_temp_view;
 
 extern crate cairo;
 
@@ -114,6 +117,7 @@ fn process_packet(game_state: &RefCell<GameState>, widgets: &Rc<Widgets>, packet
         }
         Packet::CarTelemetry(_) => {
             widgets.throttle_view.update(&game_state);
+            widgets.tyre_temp_view.update(&game_state);
         }
         Packet::CarStatus(_) => widgets.car_view.update(&game_state),
         Packet::Event(_) => widgets.events_view.update(&game_state),
@@ -128,6 +132,7 @@ struct Widgets {
     throttle_view: ThrottleView,
     car_view: CarView,
     events_view: EventsView,
+    tyre_temp_view: TyreTempView,
 }
 
 impl Widgets {
@@ -145,6 +150,7 @@ impl Widgets {
         let throttle_view = ThrottleView::new();
         let car_view = CarView::new();
         let events_view = EventsView::new();
+        let tyre_temp_view = TyreTempView::new();
 
         let widgets_grid = gtk::GridBuilder::new()
             .row_spacing(12)
@@ -155,6 +161,7 @@ impl Widgets {
         widgets_grid.attach(lap_times_view.widget(), 0, 0, 1, 1);
         widgets_grid.attach(throttle_view.widget(), 0, 1, 1, 1);
         widgets_grid.attach(car_view.widget(), 1, 0, 1, 1);
+        widgets_grid.attach(tyre_temp_view.widget(), 2, 0, 1, 1);
 
         let main_view_box = gtk::BoxBuilder::new()
             .orientation(gtk::Orientation::Vertical)
@@ -176,6 +183,7 @@ impl Widgets {
             throttle_view,
             car_view,
             events_view,
+            tyre_temp_view,
         }
     }
 }

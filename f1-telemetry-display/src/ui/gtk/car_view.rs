@@ -79,7 +79,7 @@ fn get_color_from_team(team: &Team) -> (f64, f64, f64) {
         Team::McLaren => (65, 34, 0),
         Team::AlfaRomeo => (40, 0, 0),
         Team::AlphaTauri => (65, 65, 65),
-        Team::MyTeam => (30, 0, 65),
+        Team::MyTeam => (0, 150, 0),
         _ => (255, 255, 255),
     };
     let r = color.0 as f64 / 255.0;
@@ -95,6 +95,7 @@ fn init_car(ctx: &Context) {
     car::draw_left_wing(ctx, 0.0);
 }
 
+#[allow(clippy::too_many_arguments)]
 fn update_car(
     ctx: &Context,
     fl_damage: f64,
