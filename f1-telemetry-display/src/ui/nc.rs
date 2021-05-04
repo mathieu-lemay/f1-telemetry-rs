@@ -1,13 +1,18 @@
-use ncurses::*;
-
 use f1_telemetry::packet::generic::{ResultStatus, TyreCompoundVisual};
 use f1_telemetry::packet::session::{SafetyCar, SessionType};
 use f1_telemetry::packet::Packet;
+use f1_telemetry::Stream;
+use ncurses::*;
 
+use std::thread;
+use std::time::Duration;
+
+use crate::fmt as cfmt;
 use crate::models::*;
+use crate::ui::Ui;
 
 mod car;
-pub mod fmt;
+mod fmt;
 mod suspension;
 mod weather;
 
@@ -44,17 +49,17 @@ struct LapDetailView {
     handling_swnd: WINDOW,
 }
 
-pub struct Ui {
+pub(crate) struct NCUi {
     main_window: WINDOW,
     active_view: View,
     dashboard_view: DashboardView,
     track_view: TrackView,
     lap_detail_view: LapDetailView,
-    pub(crate) session_rotation: bool,
+    session_rotation: bool,
 }
 
-impl Ui {
-    pub fn init() -> Ui {
+impl Ui for NCUi {
+    fn new() -> Self {
         setlocale(ncurses::LcCategory::all, "");
 
         let mwnd = initscr();
@@ -85,7 +90,7 @@ impl Ui {
         let win_w = w - 2;
         let win_h = h - WINDOW_Y_OFFSET - 2;
 
-        let dashboard_wnd = Ui::create_win(win_h, win_w, WINDOW_Y_OFFSET, 1, Some("Dashboard"));
+        let dashboard_wnd = Self::create_win(win_h, win_w, WINDOW_Y_OFFSET, 1, Some("Dashboard"));
         let tyres_swnd = derwin(dashboard_wnd, 23, 2, 1, 2);
         let lap_times_swnd = derwin(dashboard_wnd, 23, 80, 1, 4);
         let car_swnd = derwin(dashboard_wnd, 24, 39, 1, win_w - 40);
@@ -107,10 +112,10 @@ impl Ui {
             rel_pos_swnd,
         };
 
-        let track_wnd = Ui::create_win(win_h, win_w, WINDOW_Y_OFFSET, 1, Some("Track Status"));
+        let track_wnd = Self::create_win(win_h, win_w, WINDOW_Y_OFFSET, 1, Some("Track Status"));
         let track_view = TrackView { win: track_wnd };
 
-        let laps_wnd = Ui::create_win(win_h, win_w, WINDOW_Y_OFFSET, 1, Some("Lap Details"));
+        let laps_wnd = Self::create_win(win_h, win_w, WINDOW_Y_OFFSET, 1, Some("Lap Details"));
         let lap_detail_swnd = derwin(laps_wnd, 23, 123, 1, 4);
         let best_sectors_swnd = derwin(laps_wnd, 2, 80, 24, 3);
 
@@ -123,7 +128,7 @@ impl Ui {
 
         wrefresh(dashboard_wnd);
 
-        Ui {
+        Self {
             main_window: mwnd,
             active_view: View::Dashboard,
             dashboard_view,
@@ -133,8 +138,92 @@ impl Ui {
         }
     }
 
-    pub fn destroy(&self) {
+    fn run(&mut self, stream: Stream) {
+        let mut game_state = GameState::default();
+
+        loop {
+            match stream.next() {
+                Ok(p) => match p {
+                    Some(p) => {
+                        game_state.update(&p);
+                        self.render(&game_state, &p);
+                    }
+                    None => thread::sleep(Duration::from_millis(5)),
+                },
+                Err(_e) => {
+                    error!("{:?}", _e);
+                }
+            }
+
+            let quit = self.process_input();
+
+            if quit {
+                break;
+            }
+        }
+    }
+
+    fn destroy(&self) {
         endwin();
+    }
+}
+
+impl NCUi {
+    fn render(&mut self, game_state: &GameState, packet: &Packet) {
+        self.render_main_view(game_state, packet);
+
+        if self.session_rotation {
+            self.rotate_view(game_state.session_info.session_type);
+        }
+
+        match self.active_view {
+            View::Dashboard => self.render_dashboard_view(game_state, packet),
+            View::TrackOverview => self.render_track_view(game_state, packet),
+            View::LapDetail => self.render_lap_view(game_state, packet),
+        };
+    }
+
+    fn process_input(&mut self) -> bool {
+        let ch = ncurses::get_wch();
+        let mut quit = false;
+
+        if let Some(ch) = ch {
+            match ch {
+                ncurses::WchResult::Char(49) => {
+                    // 1
+                    self.disable_rotation();
+                    self.switch_view(View::Dashboard);
+                }
+                ncurses::WchResult::Char(50) => {
+                    // 2
+                    self.disable_rotation();
+                    self.switch_view(View::TrackOverview);
+                }
+                ncurses::WchResult::Char(51) => {
+                    // 3
+                    self.disable_rotation();
+                    self.switch_view(View::LapDetail);
+                }
+                ncurses::WchResult::Char(52) => {
+                    //4
+                    self.enable_rotation()
+                }
+                ncurses::WchResult::Char(113) => {
+                    // q
+                    quit = true;
+                }
+                // ncurses::WchResult::Char(c) => {
+                //     ncurses::mvaddstr(0, 0, format!("Pressed Char: {}", c).as_str());
+                // }
+                // ncurses::WchResult::KeyCode(c) => {
+                //     ncurses::mvaddstr(0, 0, format!("Pressed Key: {}", c).as_str());
+                //     ncurses::clrtoeol();
+                // }
+                _ => {}
+            }
+        };
+
+        quit
     }
 
     pub fn enable_rotation(&mut self) {
@@ -183,16 +272,6 @@ impl Ui {
         };
 
         wnd
-    }
-
-    pub fn render(&mut self, game_state: &GameState, packet: &Packet) {
-        self.render_main_view(game_state, packet);
-
-        match self.active_view {
-            View::Dashboard => self.render_dashboard_view(game_state, packet),
-            View::TrackOverview => self.render_track_view(game_state, packet),
-            View::LapDetail => self.render_lap_view(game_state, packet),
-        };
     }
 
     fn render_main_view(&mut self, game_state: &GameState, packet: &Packet) {
@@ -261,17 +340,13 @@ impl Ui {
     fn print_session_info(&self, game_state: &GameState) {
         let sinfo = &game_state.session_info;
 
-        let session_name = &format!("{} - {}", sinfo.session_type.name(), sinfo.track_name);
-        let lap_info = &format!("Lap {} of {}", sinfo.current_lap, sinfo.number_of_laps);
-        let session_time = &format!(
-            "{} / {}",
-            fmt::format_time_hms(sinfo.elapsed_time),
-            fmt::format_time_hms(sinfo.duration)
-        );
+        let session_name = cfmt::get_session_name(sinfo);
+        let lap_info = cfmt::get_lap_count(sinfo);
+        let session_time = cfmt::get_session_time(sinfo);
 
-        addstr_center(self.main_window, SESSION_Y_OFFSET, session_name);
-        addstr_center(self.main_window, SESSION_Y_OFFSET + 1, lap_info);
-        addstr_center(self.main_window, SESSION_Y_OFFSET + 2, session_time);
+        addstr_center(self.main_window, SESSION_Y_OFFSET, &session_name);
+        addstr_center(self.main_window, SESSION_Y_OFFSET + 1, &lap_info);
+        addstr_center(self.main_window, SESSION_Y_OFFSET + 2, &session_time);
 
         if sinfo.safety_car == SafetyCar::Virtual || sinfo.safety_car == SafetyCar::Full {
             fmt::blink_colour(COLOR_WHITE, COLOR_YELLOW);
@@ -322,7 +397,7 @@ impl Ui {
 
             let s = format!(
                 "                     | {} |           |           |           |           |           | {}{}{} ",
-                fmt::format_time_ms_millis(li.current_lap_time),
+                cfmt::milliseconds_to_msf(li.current_lap_time),
                 if li.in_pit { "P" } else { " " },
                 if li.lap_invalid { "!" } else { " " },
                 penalties,
@@ -333,16 +408,12 @@ impl Ui {
             let s = format!(
                 "{}. {:15}",
                 pos,
-                fmt::format_driver_name(
-                    &participant.name,
-                    participant.driver,
-                    game_state.session_info.is_online
-                )
+                cfmt::format_driver_name(&participant, game_state.session_info.is_online)
             );
             fmt::set_team_color(wnd, participant.team);
             mvwaddstr(wnd, row, 0, &s);
 
-            let s = fmt::format_time_ms_millis(li.last_lap_time);
+            let s = cfmt::milliseconds_to_msf(li.last_lap_time);
             fmt::set_lap_time_color(
                 Some(wnd),
                 li.last_lap_time,
@@ -351,7 +422,7 @@ impl Ui {
             );
             mvwaddstr(wnd, row, 35, &s);
 
-            let s = fmt::format_time_ms_millis(li.best_lap_time);
+            let s = cfmt::milliseconds_to_msf(li.best_lap_time);
             fmt::set_lap_time_color(
                 Some(wnd),
                 li.best_lap_time,
@@ -360,7 +431,7 @@ impl Ui {
             );
             mvwaddstr(wnd, row, 47, &s);
 
-            let s = fmt::format_time_ms_millis(li.sector_1);
+            let s = cfmt::milliseconds_to_msf(li.sector_1);
             fmt::set_lap_time_color(
                 Some(wnd),
                 li.sector_1,
@@ -369,7 +440,7 @@ impl Ui {
             );
             mvwaddstr(wnd, row, 59, &s);
 
-            let s = fmt::format_time_ms_millis(li.sector_2);
+            let s = cfmt::milliseconds_to_msf(li.sector_2);
             fmt::set_lap_time_color(
                 Some(wnd),
                 li.sector_2,
@@ -378,7 +449,7 @@ impl Ui {
             );
             mvwaddstr(wnd, row, 71, &s);
 
-            let s = fmt::format_time_ms_millis(li.sector_3);
+            let s = cfmt::milliseconds_to_msf(li.sector_3);
             fmt::set_lap_time_color(
                 Some(wnd),
                 li.sector_3,
@@ -409,10 +480,10 @@ impl Ui {
 
         let s = format!(
             "{}     | {}     | {}     | {}   ",
-            fmt::format_time_ms_millis(session_best_times.sector_1),
-            fmt::format_time_ms_millis(session_best_times.sector_2),
-            fmt::format_time_ms_millis(session_best_times.sector_3),
-            fmt::format_time_ms_millis(best_lap),
+            cfmt::milliseconds_to_msf(session_best_times.sector_1),
+            cfmt::milliseconds_to_msf(session_best_times.sector_2),
+            cfmt::milliseconds_to_msf(session_best_times.sector_3),
+            cfmt::milliseconds_to_msf(best_lap),
         );
         mvwaddstr(wnd, 1, 2, s.as_str());
 
@@ -435,12 +506,7 @@ impl Ui {
                 continue;
             }
             let participant = &game_state.participants[idx];
-            let pos = match fi.status {
-                ResultStatus::Retired => String::from("RET"),
-                ResultStatus::NotClassified => String::from("N/C"),
-                ResultStatus::Disqualified => String::from("DSQ"),
-                _ => format!("{:3}", fi.position),
-            };
+            let pos = cfmt::format_position(fi.position, &fi.status);
 
             let grid = match fi.grid_position {
                 0 => String::from("N/A"),
@@ -460,7 +526,7 @@ impl Ui {
                 format!("{: <4}", "")
             };
 
-            let time_delta = fmt::format_time_delta(
+            let time_delta = cfmt::format_time_delta(
                 fi.position,
                 fi.total_race_time,
                 fi.delta_time,
@@ -472,13 +538,9 @@ impl Ui {
                 "{}. {:2} | {:13} | {}   | {}   | {:12} | {}      |",
                 pos,
                 change,
-                fmt::format_driver_name(
-                    &participant.name,
-                    participant.driver,
-                    game_state.session_info.is_online
-                ),
+                cfmt::format_driver_name(&participant, game_state.session_info.is_online),
                 grid,
-                fmt::format_time_ms_millis(fi.best_lap_time),
+                cfmt::milliseconds_to_msf(fi.best_lap_time),
                 time_delta,
                 penalties,
             );
@@ -577,12 +639,7 @@ impl Ui {
 
             let participant = &game_state.participants[idx];
 
-            let pos = match li.status {
-                ResultStatus::Retired => String::from("RET"),
-                ResultStatus::NotClassified => String::from("N/C"),
-                ResultStatus::Disqualified => String::from("DSQ"),
-                _ => format!("{:3}", li.position),
-            };
+            let pos = cfmt::format_position(li.position, &li.status);
 
             let penalties = if li.penalties > 0 {
                 format!("+{:2}s", li.penalties)
@@ -593,14 +650,10 @@ impl Ui {
             let s = format!(
                 "{}. {:20} | {}   | {}   | {}   | {}{}{} ",
                 pos,
-                fmt::format_driver_name(
-                    &participant.name,
-                    participant.driver,
-                    game_state.session_info.is_online
-                ),
-                fmt::format_time_ms_millis(li.current_lap_time),
-                fmt::format_time_ms_millis(li.last_lap_time),
-                fmt::format_time_ms_millis(li.best_lap_time),
+                cfmt::format_driver_name(&participant, game_state.session_info.is_online),
+                cfmt::milliseconds_to_msf(li.current_lap_time),
+                cfmt::milliseconds_to_msf(li.last_lap_time),
+                cfmt::milliseconds_to_msf(li.best_lap_time),
                 if li.in_pit { "P" } else { " " },
                 if li.lap_invalid { "!" } else { " " },
                 penalties,
@@ -653,19 +706,7 @@ impl Ui {
 
         let event_info = &game_state.event_info;
 
-        let mut msg = format!(
-            "{}: {}",
-            fmt::format_time_hms_millis(event_info.timestamp),
-            event_info.description
-        );
-
-        if let Some(driver) = &event_info.driver_name {
-            msg += &format!(": {}", driver);
-        }
-
-        if let Some(detail) = &event_info.detail {
-            msg += &format!(" ({})", detail);
-        }
+        let msg = cfmt::format_event_info(event_info);
 
         mvaddstr(getmaxy(self.main_window) - 1, LEFT_BORDER_X_OFFSET, &msg);
         clrtoeol();
@@ -682,8 +723,8 @@ impl Ui {
 
         let gear_msg = format!(
             "Gear     : {}    Speed : {}",
-            fmt::format_gear(telemetry_info.gear),
-            fmt::format_speed(telemetry_info.speed)
+            cfmt::format_gear(telemetry_info.gear),
+            cfmt::format_speed(telemetry_info.speed)
         );
 
         mvwaddstr(

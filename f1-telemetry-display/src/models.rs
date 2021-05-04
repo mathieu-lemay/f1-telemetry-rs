@@ -12,7 +12,7 @@ use f1_telemetry::packet::participants::{Driver, PacketParticipantsData};
 use f1_telemetry::packet::session::{PacketSessionData, SafetyCar, SessionType, Weather};
 use f1_telemetry::packet::Packet;
 
-use crate::ui::fmt;
+use crate::fmt;
 use f1_telemetry::packet::motion::PacketMotionData;
 
 #[derive(Default)]
@@ -36,6 +36,7 @@ pub struct GameState {
     pub relative_positions: RelativePositions,
     pub final_classifications: Vec<FinalClassificationInfo>,
     pub motion_info: MotionInfo,
+    pub player_index: u8,
 }
 
 impl GameState {
@@ -81,6 +82,7 @@ impl GameState {
         self.session_info.track_temperature = session.track_temperature();
         self.session_info.air_temperature = session.air_temperature();
         self.session_info.is_online = session.network_game();
+        self.player_index = session.header().player_car_index()
     }
 
     fn parse_lap_data(&mut self, lap_data: &PacketLapData) {
@@ -224,7 +226,7 @@ impl GameState {
         };
 
         let detail = match evt {
-            Event::FastestLap(f) => Some(fmt::format_time_ms_millis(f.lap_time())),
+            Event::FastestLap(f) => Some(fmt::milliseconds_to_msf(f.lap_time())),
             Event::Penalty(p) => Some(format!("{:?}", p.penalty_type())),
             Event::SpeedTrap(s) => Some(format!("{:.1} km/h", s.speed())),
             _ => None,
@@ -234,6 +236,7 @@ impl GameState {
         self.event_info.description = evt.description().to_string();
         self.event_info.driver_name = driver_name;
         self.event_info.detail = detail;
+        self.event_info.event = *evt;
     }
 
     fn parse_participants(&mut self, ppd: &PacketParticipantsData) {
@@ -286,7 +289,8 @@ impl GameState {
         self.telemetry_info.engine_temperature = td.engine_temperature();
 
         self.car_status.drs = td.drs();
-        self.telemetry_info.tyre_temperature = td.tyres_inner_temperature();
+        self.telemetry_info.tyre_inner_temperature = td.tyres_inner_temperature();
+        self.telemetry_info.tyre_surface_temperature = td.tyres_surface_temperature();
     }
 
     fn parse_motion_data(&mut self, motion_data: &PacketMotionData) {
@@ -390,6 +394,14 @@ impl GameState {
             0
         }
     }
+
+    pub(crate) fn get_valid_lap_info(&self) -> impl Iterator<Item = (&Participant, &LapInfo)> {
+        self.lap_infos
+            .iter()
+            .enumerate()
+            .map(move |(idx, li)| (self.participants.get(idx).unwrap(), li))
+            .filter(|(_, li)| li.status.is_valid())
+    }
 }
 
 pub struct Participant {
@@ -398,12 +410,24 @@ pub struct Participant {
     pub team: Team,
 }
 
-#[derive(Default)]
 pub struct EventInfo {
     pub timestamp: u32,
     pub description: String,
     pub driver_name: Option<String>,
     pub detail: Option<String>,
+    pub event: Event,
+}
+
+impl Default for EventInfo {
+    fn default() -> Self {
+        Self {
+            timestamp: 0,
+            description: Default::default(),
+            driver_name: None,
+            detail: None,
+            event: Event::SessionStarted,
+        }
+    }
 }
 
 #[derive(Default)]
@@ -453,7 +477,8 @@ pub struct TelemetryInfo {
     pub drs: bool,
     pub rev_lights_percent: u8,
     pub engine_temperature: u16,
-    pub tyre_temperature: WheelData<u16>,
+    pub tyre_inner_temperature: WheelData<u16>,
+    pub tyre_surface_temperature: WheelData<u16>,
 }
 
 #[derive(Default)]

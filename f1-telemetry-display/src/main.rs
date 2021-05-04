@@ -3,15 +3,14 @@ extern crate log;
 extern crate simplelog;
 
 use std::fs::OpenOptions;
-use std::thread::sleep;
-use std::time::Duration;
 
+use clap::{App, Arg, ArgMatches};
 use f1_telemetry::Stream;
 use simplelog::*;
 
-use crate::models::GameState;
-use crate::ui::{Ui, View};
+use crate::ui::get_ui;
 
+mod fmt;
 mod models;
 mod ui;
 
@@ -26,63 +25,50 @@ fn init_logger() {
     WriteLogger::init(LevelFilter::Debug, config, file).expect("Unable to initialize logger.");
 }
 
+fn get_cli_args<'a>() -> ArgMatches<'a> {
+    App::new("F1 Telemetry Display")
+        .version("1.0")
+        .about("Display telemetry info from F1 games")
+        .arg(
+            Arg::with_name("host")
+                .long("host")
+                .short("h")
+                .default_value("0.0.0.0")
+                .help("Host to bind on"),
+        )
+        .arg(
+            Arg::with_name("port")
+                .long("port")
+                .short("p")
+                .default_value("20777")
+                .help("Port to bind on"),
+        )
+        .arg(
+            Arg::with_name("ui")
+                .long("ui")
+                .short("u")
+                .possible_values(&["ncurses", "gtk"])
+                .default_value("gtk")
+                .help("Choose the user interfaec"),
+        )
+        .get_matches()
+}
+
 fn main() {
     init_logger();
+    let args = get_cli_args();
 
-    let stream = Stream::new("0.0.0.0:20777").expect("Unable to bind socket");
+    let host = args.value_of("host").unwrap();
+    let port = args.value_of("port").unwrap();
+    let ui = args.value_of("ui").unwrap();
+
+    let stream = Stream::new(format!("{}:{}", host, port)).expect("Unable to bind socket");
 
     info!("Listening on {}", stream.socket().local_addr().unwrap());
 
-    let mut ui = Ui::init();
-    let mut game_state = GameState::default();
+    let mut ui = get_ui(ui);
 
-    loop {
-        match stream.next() {
-            Ok(p) => match p {
-                Some(p) => {
-                    game_state.update(&p);
-                    ui.render(&game_state, &p);
-                }
-                None => sleep(Duration::from_millis(5)),
-            },
-            Err(_e) => {
-                error!("{:?}", _e);
-            }
-        }
-
-        let ch = ncurses::get_wch();
-        if let Some(ch) = ch {
-            match ch {
-                ncurses::WchResult::Char(49) => {
-                    // 1
-                    ui.disable_rotation();
-                    ui.switch_view(View::Dashboard);
-                }
-                ncurses::WchResult::Char(50) => {
-                    // 2
-                    ui.disable_rotation();
-                    ui.switch_view(View::TrackOverview);
-                }
-                ncurses::WchResult::Char(51) => {
-                    // 3
-                    ui.disable_rotation();
-                    ui.switch_view(View::LapDetail);
-                }
-                ncurses::WchResult::Char(52) => {
-                    //4
-                    ui.enable_rotation()
-                }
-                ncurses::WchResult::Char(113) => {
-                    // q
-                    break;
-                }
-                _ => {}
-            }
-        }
-        if ui.session_rotation {
-            ui.rotate_view(game_state.session_info.session_type);
-        }
-    }
+    ui.run(stream);
 
     ui.destroy();
 }
