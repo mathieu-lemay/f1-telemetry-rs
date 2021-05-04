@@ -19,6 +19,7 @@ pub enum FuelMix {
     Max,
 }
 
+#[allow(clippy::upper_case_acronyms)]
 #[derive(Debug, Clone, Copy, Eq, PartialEq)]
 pub enum DRS {
     NotAllowed,
@@ -26,6 +27,7 @@ pub enum DRS {
     Unknown,
 }
 
+#[allow(clippy::upper_case_acronyms)]
 #[derive(Debug, Clone, Copy, Eq, PartialEq)]
 pub enum ERSDeployMode {
     None,

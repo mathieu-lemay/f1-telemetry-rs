@@ -207,6 +207,7 @@ impl SpeedTrap {
 /// Penalty:        A penalty has been issued
 /// RaceWinner:     Speed trap has been triggered by fastest speed
 /// ```
+#[allow(clippy::upper_case_acronyms)]
 #[derive(Debug, Copy, Clone)]
 pub enum Event {
     SessionStarted,

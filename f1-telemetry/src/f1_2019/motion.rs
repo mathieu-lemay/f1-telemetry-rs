@@ -10,7 +10,7 @@ use crate::utils::assert_packet_size;
 
 use super::consts::*;
 
-fn parse_motion<T: BufRead>(reader: &mut T) -> Result<MotionData, UnpackError> {
+fn parse_motion<T: BufRead>(reader: &mut T) -> MotionData {
     let world_position_x = reader.read_f32::<LittleEndian>().unwrap();
     let world_position_y = reader.read_f32::<LittleEndian>().unwrap();
     let world_position_z = reader.read_f32::<LittleEndian>().unwrap();
@@ -30,7 +30,7 @@ fn parse_motion<T: BufRead>(reader: &mut T) -> Result<MotionData, UnpackError> {
     let pitch = reader.read_f32::<LittleEndian>().unwrap();
     let roll = reader.read_f32::<LittleEndian>().unwrap();
 
-    Ok(MotionData::new(
+    MotionData::new(
         world_position_x,
         world_position_y,
         world_position_z,
@@ -49,7 +49,7 @@ fn parse_motion<T: BufRead>(reader: &mut T) -> Result<MotionData, UnpackError> {
         yaw,
         pitch,
         roll,
-    ))
+    )
 }
 
 pub(crate) fn parse_motion_data<T: BufRead>(
@@ -61,7 +61,7 @@ pub(crate) fn parse_motion_data<T: BufRead>(
 
     let mut motion_data = Vec::with_capacity(NUMBER_CARS);
     for _ in 0..NUMBER_CARS {
-        let md = parse_motion(&mut reader)?;
+        let md = parse_motion(&mut reader);
         motion_data.push(md);
     }
 

@@ -122,6 +122,7 @@ pub enum ButtonFlag {
     RightStickClick = 0x4000,
 }
 
+#[allow(clippy::upper_case_acronyms)]
 #[derive(Debug, Copy, Clone)]
 pub enum MFDPanel {
     CarSetup,

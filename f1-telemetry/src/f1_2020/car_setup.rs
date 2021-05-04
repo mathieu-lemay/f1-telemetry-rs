@@ -10,7 +10,7 @@ use crate::utils::assert_packet_size;
 
 use super::consts::*;
 
-fn parse_car_setup<T: BufRead>(reader: &mut T) -> Result<CarSetupData, UnpackError> {
+fn parse_car_setup<T: BufRead>(reader: &mut T) -> CarSetupData {
     let front_wing = reader.read_u8().unwrap();
     let rear_wing = reader.read_u8().unwrap();
     let on_throttle = reader.read_u8().unwrap();
@@ -36,7 +36,7 @@ fn parse_car_setup<T: BufRead>(reader: &mut T) -> Result<CarSetupData, UnpackErr
     let ballast = reader.read_u8().unwrap();
     let fuel_load = reader.read_f32::<LittleEndian>().unwrap();
 
-    Ok(CarSetupData::from_2020(
+    CarSetupData::from_2020(
         front_wing,
         rear_wing,
         on_throttle,
@@ -56,7 +56,7 @@ fn parse_car_setup<T: BufRead>(reader: &mut T) -> Result<CarSetupData, UnpackErr
         tyre_pressures,
         ballast,
         fuel_load,
-    ))
+    )
 }
 
 pub(crate) fn parse_car_setup_data<T: BufRead>(
@@ -68,7 +68,7 @@ pub(crate) fn parse_car_setup_data<T: BufRead>(
 
     let mut car_setups = Vec::with_capacity(NUMBER_CARS);
     for _ in 0..NUMBER_CARS {
-        let csd = parse_car_setup(&mut reader)?;
+        let csd = parse_car_setup(&mut reader);
         car_setups.push(csd);
     }
 

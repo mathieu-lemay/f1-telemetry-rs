@@ -126,6 +126,7 @@ impl ResultStatus {
     }
 }
 
+#[allow(clippy::upper_case_acronyms)]
 #[derive(Debug, Clone, Copy, Eq, PartialEq, Hash, Ord, PartialOrd)]
 pub enum Team {
     Mercedes,
