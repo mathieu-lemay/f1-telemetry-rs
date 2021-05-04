@@ -70,10 +70,10 @@ impl Ui for NcursesUi {
         if w < WIDTH || h < HEIGHT {
             endwin();
 
-            panic!(format!(
+            panic!(
                 "Terminal must be at least {}x{}. Current size: {}x{}",
                 WIDTH, HEIGHT, w, h
-            ));
+            );
         }
 
         curs_set(CURSOR_VISIBILITY::CURSOR_INVISIBLE);
