@@ -422,12 +422,12 @@ mod test_get_tyre_damage_colour {
     #[test]
     fn test_15_damage_returns_greeny_yelllow_color() {
         let d = get_tyre_damage_colour(15.0);
-        assert_eq!(d, (0.5, 1.0, 0.0))
+        assert_eq!(d, (0.4, 0.8, 0.0))
     }
 
     #[test]
     fn test_65_damage_returns_yellowy_red_color() {
         let d = get_tyre_damage_colour(65.0);
-        assert_eq!(d, (1.0, 0.5, 0.0))
+        assert_eq!(d, (0.8, 0.4, 0.0))
     }
 }
