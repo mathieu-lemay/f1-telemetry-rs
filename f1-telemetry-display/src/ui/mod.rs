@@ -1,6 +1,6 @@
 use f1_telemetry::Stream;
 
-use crate::ui::{gtk::GTKUi, nc::NCUi};
+use crate::ui::{gtk::GtkUi, nc::NcursesUi};
 
 mod gtk;
 mod nc;
@@ -15,8 +15,8 @@ pub trait Ui {
 
 pub fn get_ui(ui: &str) -> Box<dyn Ui> {
     match ui {
-        "gtk" => Box::new(GTKUi::new()),
-        "ncurses" => Box::new(NCUi::new()),
+        "gtk" => Box::new(GtkUi::new()),
+        "ncurses" => Box::new(NcursesUi::new()),
         _ => panic!("Invalid ui: {}", ui),
     }
 }

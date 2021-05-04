@@ -49,7 +49,7 @@ struct LapDetailView {
     handling_swnd: WINDOW,
 }
 
-pub(crate) struct NCUi {
+pub(crate) struct NcursesUi {
     main_window: WINDOW,
     active_view: View,
     dashboard_view: DashboardView,
@@ -58,7 +58,7 @@ pub(crate) struct NCUi {
     session_rotation: bool,
 }
 
-impl Ui for NCUi {
+impl Ui for NcursesUi {
     fn new() -> Self {
         setlocale(ncurses::LcCategory::all, "");
 
@@ -168,7 +168,7 @@ impl Ui for NCUi {
     }
 }
 
-impl NCUi {
+impl NcursesUi {
     fn render(&mut self, game_state: &GameState, packet: &Packet) {
         self.render_main_view(game_state, packet);
 

@@ -31,11 +31,11 @@ mod tyre_temp_view;
 
 extern crate cairo;
 
-pub struct GTKUi {
+pub(crate) struct GtkUi {
     app: gtk::Application,
 }
 
-impl Ui for GTKUi {
+impl Ui for GtkUi {
     fn new() -> Self {
         let app = gtk::Application::new(Some("org.acidrain.f1-telemetry-rs"), Default::default())
             .expect("Initialization failed...");
