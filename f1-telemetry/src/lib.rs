@@ -1,5 +1,4 @@
-use std::io::ErrorKind;
-use std::net::{ToSocketAddrs, UdpSocket};
+use tokio::net::{ToSocketAddrs, UdpSocket};
 
 use packet::{parse_packet, Packet, UnpackError};
 
@@ -14,37 +13,19 @@ pub struct Stream {
     socket: UdpSocket,
 }
 
-impl Clone for Stream {
-    fn clone(&self) -> Self {
-        Stream {
-            socket: self.socket().try_clone().expect("Error cloning socket"),
-        }
-    }
-}
-
 impl Stream {
-    pub fn new<T: ToSocketAddrs>(addr: T) -> std::io::Result<Stream> {
-        let socket = UdpSocket::bind(addr)?;
-        socket.set_nonblocking(true)?;
+    pub async fn new<T: ToSocketAddrs>(addr: T) -> std::io::Result<Stream> {
+        let socket = UdpSocket::bind(addr).await?;
 
         Ok(Stream { socket })
     }
 
-    pub fn next(&self) -> Result<Option<Packet>, UnpackError> {
+    pub async fn next(&self) -> Result<Packet, UnpackError> {
         let mut buf = [0; 2048]; // All packets fit in 2048 bytes
 
-        match self.socket.recv(&mut buf) {
-            Ok(len) => match parse_packet(len, &buf) {
-                Ok(p) => Ok(Some(p)),
-                Err(e) => Err(e),
-            },
-            Err(e) => {
-                if e.kind() == ErrorKind::WouldBlock {
-                    Ok(None)
-                } else {
-                    Err(UnpackError(format!("Error reading from socket: {:?}", e)))
-                }
-            }
+        match self.socket.recv(&mut buf).await {
+            Ok(len) => parse_packet(len, &buf),
+            Err(e) => Err(UnpackError(format!("Error reading from socket: {:?}", e))),
         }
     }
 

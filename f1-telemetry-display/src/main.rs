@@ -4,7 +4,6 @@ extern crate log;
 use clap::{Parser, ValueEnum};
 use simplelog::*;
 
-use f1_telemetry::Stream;
 use f1_telemetry_common::logging::LogBuilder;
 
 use crate::ui::get_ui;
@@ -34,7 +33,8 @@ struct AppArgs {
     ui: UserInterface,
 }
 
-fn main() {
+#[tokio::main]
+async fn main() {
     let args = AppArgs::parse();
 
     LogBuilder::new()
@@ -43,17 +43,12 @@ fn main() {
         .build()
         .expect("Error initializing loggger.");
 
-    let stream =
-        Stream::new(format!("{}:{}", args.host, args.port)).expect("Unable to bind socket");
-
-    info!("Listening on {}", stream.socket().local_addr().unwrap());
-
     let mut ui = get_ui(match args.ui {
         UserInterface::Gtk => "gtk",
         UserInterface::Ncurses => "ncurses",
     });
 
-    ui.run(stream);
+    ui.run(args.host, args.port).await;
 
     ui.destroy();
 }

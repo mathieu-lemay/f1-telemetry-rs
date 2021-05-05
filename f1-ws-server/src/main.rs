@@ -1,5 +1,4 @@
 use std::net::SocketAddr;
-use std::time::Duration;
 
 use clap::Parser;
 use futures_util::{SinkExt, StreamExt};
@@ -44,25 +43,21 @@ async fn main() {
         .expect("Error initializing loggger.");
 
     let addr = format!("{}:{}", args.host, args.port);
-    let packet_stream = Stream::new(&addr).expect("Unable to bind packet socket");
+    let packet_stream = Stream::new(&addr)
+        .await
+        .expect("Unable to bind packet socket");
     info!("Listening for telemetry packets on: {}", addr);
 
     let (tx, _) = broadcast::channel(32);
-    let mut interval = tokio::time::interval(Duration::from_millis(5));
 
     let packet_tx = tx.clone();
     tokio::spawn(async move {
         loop {
-            match packet_stream.next() {
-                Ok(p) => match p {
-                    Some(p) => {
-                        let value = serde_json::to_string(&p).unwrap();
-                        let _ = packet_tx.send(value);
-                    }
-                    None => {
-                        interval.tick().await;
-                    }
-                },
+            match packet_stream.next().await {
+                Ok(p) => {
+                    let value = serde_json::to_string(&p).unwrap();
+                    let _ = packet_tx.send(value);
+                }
                 Err(err) => {
                     error!("{:?}", err);
                 }

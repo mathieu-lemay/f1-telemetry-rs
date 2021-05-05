@@ -2,9 +2,8 @@ extern crate cairo;
 
 use std::cell::RefCell;
 use std::rc::Rc;
-use std::thread;
-use std::time::Duration;
 
+use async_trait::async_trait;
 use gio::prelude::*;
 use gtk::prelude::*;
 
@@ -38,18 +37,19 @@ pub(crate) struct GtkUi {
     app: gtk::Application,
 }
 
+unsafe impl Send for GtkUi {}
+
+#[async_trait]
 impl Ui for GtkUi {
     fn new() -> Self {
         let app = gtk::Application::new(Some("org.acidrain.f1-telemetry-rs"), Default::default())
             .expect("Initialization failed...");
 
-        app.connect_activate(|_| {});
-
         Self { app }
     }
 
-    fn run(&mut self, stream: Stream) {
-        self.app.connect_startup(move |app| {
+    async fn run(&mut self, host: String, port: u16) {
+        self.app.connect_startup(move |_| {
             let provider = gtk::CssProvider::new();
             provider.load_from_path("custom.css").unwrap_or_default();
             gtk::StyleContext::add_provider_for_screen(
@@ -62,35 +62,36 @@ impl Ui for GtkUi {
             provider
                 .load_from_data(BASE_STYLE.as_bytes())
                 .expect("Failed to load CSS");
-            // // We give the CssProvided to the default screen so the CSS rules we added
-            // // can be applied to our window.
             gtk::StyleContext::add_provider_for_screen(
                 &gdk::Screen::get_default().expect("Error initializing gtk css provider."),
                 &provider,
                 gtk::STYLE_PROVIDER_PRIORITY_APPLICATION,
             );
+        });
+
+        self.app.connect_activate(move |app| {
+            let game_state = RefCell::new(GameState::default());
+            let widgets = Rc::new(Widgets::new(&app));
 
             let (tx, rx) = glib::MainContext::channel(glib::PRIORITY_DEFAULT);
 
-            let stream = stream.clone();
-            thread::spawn(move || loop {
-                match stream.next() {
-                    Ok(p) => match p {
-                        Some(p) => {
+            let host = host.clone();
+            tokio::spawn(async move {
+                let stream = Stream::new(format!("{}:{}", host, port))
+                    .await
+                    .expect("Unable to bind socket");
+
+                loop {
+                    match stream.next().await {
+                        Ok(p) => {
                             let _ = tx.send(p);
                         }
-                        None => {
-                            thread::sleep(Duration::from_millis(5));
+                        Err(_e) => {
+                            error!("{:?}", _e);
                         }
-                    },
-                    Err(_e) => {
-                        error!("{:?}", _e);
                     }
                 }
             });
-
-            let game_state = RefCell::new(GameState::default());
-            let widgets = Rc::new(Widgets::new(app));
 
             rx.attach(None, move |packet| {
                 process_packet(&game_state, &widgets, &packet);
@@ -132,7 +133,6 @@ fn process_packet(game_state: &RefCell<GameState>, widgets: &Rc<Widgets>, packet
 }
 
 struct Widgets {
-    _mwnd: gtk::ApplicationWindow,
     header: HeaderView,
     lap_times_view: LapTimesView,
     throttle_view: ThrottleView,
@@ -186,7 +186,6 @@ impl Widgets {
         window.show_all();
 
         Self {
-            _mwnd: window,
             header,
             lap_times_view,
             throttle_view,
