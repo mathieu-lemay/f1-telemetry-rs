@@ -4,17 +4,43 @@ use crate::models::{EventInfo, Participant, SessionInfo};
 use f1_telemetry::packet::generic::ResultStatus;
 use f1_telemetry::packet::participants::Driver;
 
-pub trait AsTimeString {
-    fn as_time_string(&self) -> String;
+pub trait AsMinuteTimeString {
+    fn as_minute_time_string(&self) -> String;
 }
 
-impl AsTimeString for u32 {
-    fn as_time_string(&self) -> String {
+impl AsMinuteTimeString for u32 {
+    fn as_minute_time_string(&self) -> String {
         let minutes = self / 60000;
         let seconds = self % 60000 / 1000;
         let millis = self % 1000;
 
         format!("{:02}:{:02}.{:03}", minutes, seconds, millis)
+    }
+}
+
+pub trait AsHourTimeString {
+    fn as_hour_time_string(&self) -> String;
+}
+
+impl AsHourTimeString for u32 {
+    fn as_hour_time_string(&self) -> String {
+        let millis = self % 1000;
+        let seconds = self / 1000;
+        let hours = seconds / 3600;
+        let minutes = (seconds - hours * 3600) / 60;
+        let seconds = seconds % 60;
+
+        format!("{:02}:{:02}:{:02}.{:03}", hours, minutes, seconds, millis)
+    }
+}
+
+impl AsHourTimeString for u16 {
+    fn as_hour_time_string(&self) -> String {
+        let hours = self / 3600;
+        let minutes = (self - hours * 3600) / 60;
+        let seconds = self % 60;
+
+        format!("{:02}:{:02}:{:02}", hours, minutes, seconds)
     }
 }
 
@@ -29,8 +55,8 @@ pub fn get_lap_count(sinfo: &SessionInfo) -> String {
 pub fn get_session_time(sinfo: &SessionInfo) -> String {
     format!(
         "{} / {}",
-        seconds_to_hms(sinfo.elapsed_time),
-        seconds_to_hms(sinfo.duration)
+        sinfo.elapsed_time.as_hour_time_string(),
+        sinfo.duration.as_hour_time_string()
     )
 }
 
@@ -64,13 +90,13 @@ pub fn format_time_delta(
     let p = penalties as u32 * 1000;
 
     if position == 1 {
-        milliseconds_to_hmsf(time + p)
+        (time + p).as_hour_time_string()
     } else if delta_laps > 0 {
         format!("+{} laps  ", delta_laps)
     } else if delta_time > 1_000_000 {
         "Invalid Time".to_string()
     } else {
-        format!("+{}  ", (delta_time + p).as_time_string())
+        format!("+{}  ", (delta_time + p).as_minute_time_string())
     }
 }
 
@@ -81,24 +107,6 @@ fn capitalize_name(name: &str) -> Cow<str> {
     } else {
         Cow::Borrowed(name)
     }
-}
-
-pub fn seconds_to_hms(ts: u16) -> String {
-    let hours = ts / 3600;
-    let minutes = (ts - hours * 3600) / 60;
-    let seconds = ts % 60;
-
-    format!("{:02}:{:02}:{:02}", hours, minutes, seconds)
-}
-
-pub fn milliseconds_to_hmsf(ts: u32) -> String {
-    let millis = ts % 1000;
-    let seconds = ts / 1000;
-    let hours = seconds / 3600;
-    let minutes = (seconds - hours * 3600) / 60;
-    let seconds = seconds % 60;
-
-    format!("{:02}:{:02}:{:02}.{:03}", hours, minutes, seconds, millis)
 }
 
 pub fn milliseconds_to_msf(ts: u32) -> String {
@@ -124,7 +132,7 @@ pub fn format_speed(speed: u16) -> String {
 pub fn format_event_info(event_info: &EventInfo) -> String {
     let mut msg = format!(
         "{}: {}",
-        milliseconds_to_hmsf(event_info.timestamp),
+        event_info.timestamp.as_hour_time_string(),
         event_info.description
     );
 

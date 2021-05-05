@@ -5,7 +5,7 @@ use gtk::{SortColumn, SortType, Widget};
 use f1_telemetry::packet::generic::Team;
 
 use crate::fmt;
-use crate::fmt::AsTimeString;
+use crate::fmt::AsMinuteTimeString;
 use crate::models::GameState;
 
 const COLUMN_DEFAULT_WIDTH: i32 = 100;
@@ -88,9 +88,9 @@ impl LapTimesView {
                 &fmt::format_position(li.position, &li.status),
                 &fmt::format_driver_name(&participant, game_state.session_info.is_online)
                     .to_string(),
-                &li.current_lap_time.as_time_string(),
-                &li.last_lap_time.as_time_string(),
-                &li.best_lap_time.as_time_string(),
+                &li.current_lap_time.as_minute_time_string(),
+                &li.last_lap_time.as_minute_time_string(),
+                &li.best_lap_time.as_minute_time_string(),
                 &get_team_color(&participant.team),
                 &li.position,
             ];
@@ -126,9 +126,9 @@ impl LapTimesView {
         for (_, li) in game_state.get_valid_lap_info() {
             let data: [&dyn ToValue; 7] = [
                 &fmt::format_position(li.position, &li.status),
-                &li.current_lap_time.as_time_string(),
-                &li.last_lap_time.as_time_string(),
-                &li.best_lap_time.as_time_string(),
+                &li.current_lap_time.as_minute_time_string(),
+                &li.last_lap_time.as_minute_time_string(),
+                &li.best_lap_time.as_minute_time_string(),
                 &FastestLapType::from(
                     li.last_lap_time,
                     li.best_lap_time,
@@ -214,9 +214,9 @@ fn create_model() -> gtk::TreeStore {
         let data: [&dyn ToValue; 7] = [
             &format!("{}", i * 2 + 1),
             &format!("Player {}", i * 2),
-            &0.as_time_string(),
-            &0.as_time_string(),
-            &0.as_time_string(),
+            &0.as_minute_time_string(),
+            &0.as_minute_time_string(),
+            &0.as_minute_time_string(),
             &get_team_color(t),
             &1,
         ];
@@ -226,9 +226,9 @@ fn create_model() -> gtk::TreeStore {
         let data: [&dyn ToValue; 7] = [
             &format!("{}", i * 2 + 2),
             &format!("Player {}", i * 2 + 1),
-            &0.as_time_string(),
-            &0.as_time_string(),
-            &0.as_time_string(),
+            &0.as_minute_time_string(),
+            &0.as_minute_time_string(),
+            &0.as_minute_time_string(),
             &get_team_color(t),
             &1,
         ];
