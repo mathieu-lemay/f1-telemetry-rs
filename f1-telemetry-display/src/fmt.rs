@@ -4,6 +4,20 @@ use crate::models::{EventInfo, Participant, SessionInfo};
 use f1_telemetry::packet::generic::ResultStatus;
 use f1_telemetry::packet::participants::Driver;
 
+pub trait AsTimeString {
+    fn as_time_string(&self) -> String;
+}
+
+impl AsTimeString for u32 {
+    fn as_time_string(&self) -> String {
+        let minutes = self / 60000;
+        let seconds = self % 60000 / 1000;
+        let millis = self % 1000;
+
+        format!("{:02}:{:02}.{:03}", minutes, seconds, millis)
+    }
+}
+
 pub fn get_session_name(sinfo: &SessionInfo) -> String {
     format!("{} - {}", sinfo.session_type.name(), sinfo.track_name)
 }
@@ -56,7 +70,7 @@ pub fn format_time_delta(
     } else if delta_time > 1_000_000 {
         "Invalid Time".to_string()
     } else {
-        format!("+{}  ", milliseconds_to_msf(delta_time + p))
+        format!("+{}  ", (delta_time + p).as_time_string())
     }
 }
 
