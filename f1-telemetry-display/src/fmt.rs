@@ -4,6 +4,26 @@ use crate::models::{EventInfo, Participant, SessionInfo};
 use f1_telemetry::packet::generic::ResultStatus;
 use f1_telemetry::packet::participants::Driver;
 
+pub trait AsPercentage {
+    fn as_percentage(&self) -> String;
+}
+
+impl AsPercentage for f32 {
+    fn as_percentage(&self) -> String {
+        format!("{0:.2}%", self)
+    }
+}
+
+pub trait AsWeight {
+    fn as_weight(&self) -> String;
+}
+
+impl AsWeight for f32 {
+    fn as_weight(&self) -> String {
+        format!("{0:.2}kg", self)
+    }
+}
+
 pub trait AsMinuteTimeString {
     fn as_minute_time_string(&self) -> String;
 }

@@ -37,12 +37,17 @@ pub struct GameState {
     pub final_classifications: Vec<FinalClassificationInfo>,
     pub motion_info: MotionInfo,
     pub player_index: u8,
+    pub historical_race_data: HistoricalRaceData,
 }
 
 impl GameState {
     pub fn update(&mut self, packet: &Packet) {
         self.validate_session(packet);
 
+        self.parse(packet);
+    }
+
+    fn parse(&mut self, packet: &Packet) {
         match packet {
             // Packet::Motion(p) => p.header(),
             Packet::Session(p) => self.parse_session_data(&p),
@@ -55,7 +60,7 @@ impl GameState {
             Packet::FinalClassification(p) => self.parse_final_classification(&p),
             Packet::Motion(p) => self.parse_motion_data(&p),
             _ => {}
-        }
+        };
     }
 
     fn validate_session(&mut self, packet: &Packet) {
@@ -383,6 +388,44 @@ impl GameState {
         self.car_status.fuel_remaining_laps = csd.fuel_remaining_laps();
         self.car_status.tyre_compound = csd.visual_tyre_compound();
         self.car_status.tyre_age_laps = csd.tyre_age_laps();
+
+        let lap = self.lap_infos[player_index as usize].current_lap_num as u8;
+        let last_tyre_entry = &self.historical_race_data.tyre_damage.last();
+        let new_tyre_entry = TimedWheelData {
+            lap,
+            tyre_damage: csd.tyres_damage(),
+        };
+        if let Some(last) = last_tyre_entry {
+            if last.sum() > new_tyre_entry.sum() {
+                self.historical_race_data.tyre_damage.clear();
+                self.historical_race_data.tyre_damage.push(new_tyre_entry);
+            } else if last.lap > lap {
+                self.historical_race_data.tyre_damage.clear();
+            } else if last.lap < lap {
+                self.historical_race_data.tyre_damage.push(new_tyre_entry)
+            }
+        } else {
+            self.historical_race_data.tyre_damage.push(new_tyre_entry)
+        }
+
+        let last_fuel_entry = &self.historical_race_data.fuel_in_tank.last();
+        let new_fuel_entry = TimedFuelData {
+            lap,
+            fuel_remaining: csd.fuel_in_tank(),
+        };
+
+        if let Some(last) = last_fuel_entry {
+            if last.lap > lap {
+                self.historical_race_data.fuel_in_tank.clear();
+            } else if last.fuel_remaining < new_fuel_entry.fuel_remaining {
+                self.historical_race_data.fuel_in_tank.clear();
+                self.historical_race_data.fuel_in_tank.push(new_fuel_entry);
+            } else if last.lap < lap {
+                self.historical_race_data.fuel_in_tank.push(new_fuel_entry);
+            }
+        } else {
+            self.historical_race_data.fuel_in_tank.push(new_fuel_entry)
+        }
     }
 
     pub(crate) fn compute_theoretical_best_lap(&self) -> u32 {
@@ -510,6 +553,32 @@ pub struct CarStatus {
     pub tyre_compound: TyreCompoundVisual,
     pub tyre_age_laps: u8,
     pub drs: bool,
+}
+
+#[derive(Default)]
+pub struct HistoricalRaceData {
+    pub tyre_damage: Vec<TimedWheelData>,
+    pub fuel_in_tank: Vec<TimedFuelData>,
+}
+
+#[derive(Default, Clone, Copy)]
+pub struct TimedWheelData {
+    pub lap: u8,
+    pub tyre_damage: WheelData<u8>,
+}
+
+impl TimedWheelData {
+    pub(crate) fn sum(&self) -> u16 {
+        (self.tyre_damage.front_left()
+            + self.tyre_damage.front_right()
+            + self.tyre_damage.rear_left()
+            + self.tyre_damage.rear_right()) as u16
+    }
+}
+#[derive(Default, Clone, Copy)]
+pub struct TimedFuelData {
+    pub lap: u8,
+    pub fuel_remaining: f32,
 }
 
 #[derive(Default)]

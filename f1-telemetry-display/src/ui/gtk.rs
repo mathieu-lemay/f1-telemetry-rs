@@ -15,6 +15,7 @@ use self::car_view::CarView;
 use self::events::EventsView;
 use self::header::HeaderView;
 use self::lap_times::LapTimesView;
+use self::race_data_view::RaceDataView;
 use self::style::BASE_STYLE;
 use self::throttle_view::ThrottleView;
 use self::tyre_temp_view::TyreTempView;
@@ -24,6 +25,7 @@ mod car_view;
 mod events;
 mod header;
 mod lap_times;
+mod race_data_view;
 mod style;
 mod throttle_view;
 mod tyre_temp;
@@ -119,7 +121,10 @@ fn process_packet(game_state: &RefCell<GameState>, widgets: &Rc<Widgets>, packet
             widgets.throttle_view.update(&game_state);
             widgets.tyre_temp_view.update(&game_state);
         }
-        Packet::CarStatus(_) => widgets.car_view.update(&game_state),
+        Packet::CarStatus(_) => {
+            widgets.car_view.update(&game_state);
+            widgets.race_data_view.update(&game_state)
+        }
         Packet::Event(_) => widgets.events_view.update(&game_state),
         _ => {}
     }
@@ -133,6 +138,7 @@ struct Widgets {
     car_view: CarView,
     events_view: EventsView,
     tyre_temp_view: TyreTempView,
+    race_data_view: RaceDataView,
 }
 
 impl Widgets {
@@ -151,6 +157,7 @@ impl Widgets {
         let car_view = CarView::new();
         let events_view = EventsView::new();
         let tyre_temp_view = TyreTempView::new();
+        let race_data_view = RaceDataView::new();
 
         let widgets_grid = gtk::GridBuilder::new()
             .row_spacing(12)
@@ -162,6 +169,7 @@ impl Widgets {
         widgets_grid.attach(throttle_view.widget(), 0, 1, 1, 1);
         widgets_grid.attach(car_view.widget(), 1, 0, 1, 1);
         widgets_grid.attach(tyre_temp_view.widget(), 2, 0, 1, 1);
+        widgets_grid.attach(race_data_view.widget(), 1, 1, 1, 1);
 
         let main_view_box = gtk::BoxBuilder::new()
             .orientation(gtk::Orientation::Vertical)
@@ -184,6 +192,7 @@ impl Widgets {
             car_view,
             events_view,
             tyre_temp_view,
+            race_data_view,
         }
     }
 }

@@ -54,4 +54,8 @@ infobar.warning {
 infobar.error {
     background-color: #734848;
 }
+
+.race_data label{
+    font-weight: bold;
+}
 ";
