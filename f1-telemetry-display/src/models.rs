@@ -389,6 +389,9 @@ impl GameState {
         self.car_status.tyre_compound = csd.visual_tyre_compound();
         self.car_status.tyre_age_laps = csd.tyre_age_laps();
 
+        if self.lap_infos.is_empty() {
+            return;
+        }
         let lap = self.lap_infos[player_index as usize].current_lap_num as u8;
         let last_tyre_entry = &self.historical_race_data.tyre_damage.last();
         let new_tyre_entry = TimedWheelData {

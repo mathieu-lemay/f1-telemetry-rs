@@ -126,9 +126,9 @@ impl LapData {
         LapData {
             last_lap_time,
             current_lap_time,
-            best_lap_time,
             sector_1_time,
             sector_2_time,
+            best_lap_time,
             lap_distance,
             total_distance,
             safety_car_delta,
