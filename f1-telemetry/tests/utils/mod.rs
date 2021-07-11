@@ -18,6 +18,7 @@ pub fn get_connected_socket(stream: &Stream) -> &UdpSocket {
     s
 }
 
+#[allow(dead_code)]
 pub fn send_raw_data(stream: &Stream, data: &str) {
     let data = hex::decode(data).unwrap();
     let socket = get_connected_socket(stream);

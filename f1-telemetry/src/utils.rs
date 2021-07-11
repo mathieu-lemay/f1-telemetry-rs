@@ -4,13 +4,17 @@ use byteorder::{LittleEndian, ReadBytesExt};
 
 use crate::packet::UnpackError;
 
-pub(crate) fn unpack_string<T: BufRead>(reader: &mut T, n: usize) -> Result<String, UnpackError> {
+pub(crate) fn read_string<T: BufRead>(reader: &mut T, n: usize) -> Result<String, UnpackError> {
     let mut chars: Vec<u8> = (0..n).map(|_| reader.read_u8().unwrap()).collect();
     let nb_chars = chars.iter().position(|&c| c == 0).unwrap_or(chars.len());
     chars.truncate(nb_chars);
 
-    match String::from_utf8(chars) {
-        Ok(v) => Ok(v),
+    unpack_string(&chars)
+}
+
+pub(crate) fn unpack_string(chars: &[u8]) -> Result<String, UnpackError> {
+    match std::str::from_utf8(chars) {
+        Ok(v) => Ok(v.trim_end_matches(char::from(0)).to_string()),
         Err(e) => Err(UnpackError(format!("Error decoding name: {}", e))),
     }
 }

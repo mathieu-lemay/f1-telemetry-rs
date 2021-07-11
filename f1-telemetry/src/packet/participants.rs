@@ -102,25 +102,20 @@ pub enum Telemetry {
     Public,
 }
 
-/// This type is used for the 20-element `participants` array of the `PacketParticipantsData` type.
-///
-/// Size: 54 bytes
-///
-/// Version: 1
+/// This type is used for the `participants` array of the `PacketParticipantsData` type.
 ///
 /// ## Specification
 /// ```text
-/// ai_controlled:  Whether the vehicle is AI (1) or Human (0) controlled
-/// driver_id:      Driver id - see appendix
-/// team_id:        Team id - see appendix
-/// race_number:    Race number of the car
-/// nationality:    Nationality of the driver
-/// name:           Name of participant in UTF-8 format – null terminated
-///                 Will be truncated with … (U+2026) if too long
-/// your_telemetry: The player's UDP setting, 0 = restricted, 1 = public
+/// ai_controlled:  Set to true if the vehicle is AI controlled.
+/// driver:         Driver. See [`Driver`].
+/// team:           Team. See [`Team`].
+/// race_number:    Race number of the car.
+/// nationality:    Nationality of the driver.
+/// name:           Name of participant.
+/// your_telemetry: The player's UDP setting. See [`Telemetry`].
 /// ```
 ///
-/// [`PacketParticipantsData`]: ./struct.PacketParticipantsData.html
+/// See also [`Driver`], [`Team`] and [`Telemetry`]
 #[derive(Debug, Clone, PartialEq, CopyGetters, Getters)]
 pub struct ParticipantData {
     #[getset(get_copy = "pub")]
@@ -161,25 +156,23 @@ impl ParticipantData {
     }
 }
 
-/// This is a list of participants in the race.
+/// This is a list of participants in the race. If the vehicle is controlled by AI, then the name
+/// will be the driver name. If this is a multiplayer game, the names will be the Steam Id on PC, or
+/// the LAN name if appropriate.
 ///
-/// If the vehicle is controlled by AI, then the name will be the driver name.
-/// If this is a multiplayer game, the names will be the Steam Id on PC, or the LAN name if appropriate.
-/// On Xbox One, the names will always be the driver name, on PS4 the name will be the LAN name if playing a LAN game,
-/// otherwise it will be the driver name.
+/// N.B. on Xbox One, the names will always be the driver name, on PS4 the name will be the LAN name
+/// if playing a LAN game, otherwise it will be the driver name.
+///
+/// The array should be indexed by vehicle index.
 ///
 /// Frequency: Every 5 seconds
-///
-/// Size: 1104 bytes
-///
-/// Version: 1
 ///
 /// ## Specification
 /// ```text
 /// header:          Header
 /// num_active_cars: Number of active cars in the data – should match number of
 ///                  cars on HUD
-/// participants:    List of participants, max 20.
+/// participants:    List of participants
 /// ```
 #[derive(Debug, Clone, PartialEq, Getters, CopyGetters)]
 pub struct PacketParticipantsData {

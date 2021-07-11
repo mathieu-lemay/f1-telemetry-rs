@@ -1,4 +1,5 @@
 use getset::CopyGetters;
+use serde::Deserialize;
 
 #[derive(Debug, Clone, Copy, Eq, PartialEq)]
 pub enum Flag {
@@ -281,16 +282,16 @@ impl TyreCompoundVisual {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Default, CopyGetters)]
+#[derive(Debug, Clone, Copy, PartialEq, Default, CopyGetters, Deserialize)]
 #[getset(get_copy = "pub")]
 pub struct WheelData<T>
 where
     T: Clone + Copy,
 {
-    rear_left: T,
-    rear_right: T,
-    front_left: T,
-    front_right: T,
+    pub(crate) rear_left: T,
+    pub(crate) rear_right: T,
+    pub(crate) front_left: T,
+    pub(crate) front_right: T,
 }
 
 impl<T> WheelData<T>

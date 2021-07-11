@@ -32,9 +32,7 @@ pub(crate) fn parse_packet(size: usize, packet: &[u8]) -> Result<Packet, UnpackE
     let mut cursor = Cursor::new(packet);
     let header = parse_header(&mut cursor, size)?;
 
-    let packet_id: PacketType = parse_packet_type(header.packet_id())?;
-
-    match packet_id {
+    match header.packet_type() {
         PacketType::Motion => {
             let packet = parse_motion_data(&mut cursor, header, size)?;
 
@@ -85,21 +83,5 @@ pub(crate) fn parse_packet(size: usize, packet: &[u8]) -> Result<Packet, UnpackE
 
             Ok(Packet::LobbyInfo(packet))
         }
-    }
-}
-
-fn parse_packet_type(value: u8) -> Result<PacketType, UnpackError> {
-    match value {
-        0 => Ok(PacketType::Motion),
-        1 => Ok(PacketType::Session),
-        2 => Ok(PacketType::LapData),
-        3 => Ok(PacketType::Event),
-        4 => Ok(PacketType::Participants),
-        5 => Ok(PacketType::CarSetups),
-        6 => Ok(PacketType::CarTelemetry),
-        7 => Ok(PacketType::CarStatus),
-        8 => Ok(PacketType::FinalClassification),
-        9 => Ok(PacketType::LobbyInfo),
-        _ => Err(UnpackError(format!("Invalid PacketType: {}", value))),
     }
 }

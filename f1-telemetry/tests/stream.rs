@@ -1,8 +1,8 @@
-mod utils;
-
 use serial_test::serial;
 
 use f1_telemetry::packet::UnpackError;
+
+mod utils;
 
 #[test]
 #[serial]

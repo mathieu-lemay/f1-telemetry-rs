@@ -36,11 +36,11 @@ impl Default for DriverStatus {
 ///
 /// ## Specification
 /// ```text
-/// last_lap_time:                 Last lap time in seconds
-/// current_lap_time:              Current time around the lap in seconds
+/// last_lap_time:                 Last lap time in milliseconds
+/// current_lap_time:              Current time around the lap in milliseconds
 /// sector_1_time:                 Sector 1 time in milliseconds
 /// sector_2_time:                 Sector 2 time in milliseconds
-/// best_lap_time:                 Best lap time of the session in seconds
+/// best_lap_time:                 Best lap time of the session in milliseconds
 /// best_lap_num:                  Lap number best time achieved on
 /// best_lap_sector_1_time:        Sector 1 time of best lap in the session in milliseconds
 /// best_lap_sector_2_time:        Sector 2 time of best lap in the session in milliseconds
@@ -60,13 +60,13 @@ impl Default for DriverStatus {
 /// current_lap_num:               Current lap number
 /// pit_status:                    Pitting status. See [`PitStatus`].
 /// sector:                        0 = sector1, 1 = sector2, 2 = sector3
-/// current_lap_invalid:           Current lap invalid - 0 = valid, 1 = invalid
+/// current_lap_invalid:           Current lap invalid
 /// penalties:                     Accumulated time penalties in seconds to be added
 /// grid_position:                 Grid position the vehicle started the race in
 /// driver_status:                 Status of driver. See [`DriverStatus`].
 /// result_status:                 Result status. See [`ResultStatus`].
 /// ```
-/// [`PacketLapData`]: ./struct.PacketLapData.html
+/// See also: [`DriverStatus`], [`PitStatus`], [`ResultStatus`]
 #[derive(Debug, PartialEq, Default, CopyGetters)]
 #[getset(get_copy = "pub")]
 pub struct LapData {
@@ -162,51 +162,6 @@ impl LapData {
     }
 
     #[allow(clippy::too_many_arguments)]
-    pub(crate) fn from_2019(
-        last_lap_time: u32,
-        current_lap_time: u32,
-        best_lap_time: u32,
-        sector_1_time: u32,
-        sector_2_time: u32,
-        lap_distance: f32,
-        total_distance: f32,
-        safety_car_delta: f32,
-        car_position: u8,
-        current_lap_num: u8,
-        pit_status: PitStatus,
-        sector: u8,
-        current_lap_invalid: bool,
-        penalties: u8,
-        grid_position: u8,
-        driver_status: DriverStatus,
-        result_status: ResultStatus,
-    ) -> LapData {
-        let sector_1_time = sector_1_time as u16;
-        let sector_2_time = sector_2_time as u16;
-
-        LapData {
-            last_lap_time,
-            current_lap_time,
-            sector_1_time,
-            sector_2_time,
-            best_lap_time,
-            lap_distance,
-            total_distance,
-            safety_car_delta,
-            car_position,
-            current_lap_num,
-            pit_status,
-            sector,
-            current_lap_invalid,
-            penalties,
-            grid_position,
-            driver_status,
-            result_status,
-            ..Default::default()
-        }
-    }
-
-    #[allow(clippy::too_many_arguments)]
     pub(crate) fn from_2020(
         last_lap_time: u32,
         current_lap_time: u32,
@@ -271,10 +226,6 @@ impl LapData {
 /// The lap data packet gives details of all the cars in the session.
 ///
 /// Frequency: Rate as specified in menus
-///
-/// Size: 843 bytes
-///
-/// Version: 1
 ///
 /// ## Specification
 /// ```text

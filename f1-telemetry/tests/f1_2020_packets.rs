@@ -17,7 +17,7 @@ use f1_telemetry::packet::generic::{
 };
 use f1_telemetry::packet::lap::{DriverStatus, LapData, PacketLapData, PitStatus};
 use f1_telemetry::packet::lobby_info::{PacketLobbyInfoData, Player, ReadyStatus};
-use f1_telemetry::packet::motion::{MotionData, PacketMotionData};
+use f1_telemetry::packet::motion::{CarMotionData, PacketMotionData};
 use f1_telemetry::packet::participants::{
     Driver, PacketParticipantsData, ParticipantData, Telemetry,
 };
@@ -48,7 +48,7 @@ fn test_parse_2020_motion_packet() {
     let expected = PacketMotionData::new(
         actual.header().clone(),
         vec![
-            MotionData::new(
+            CarMotionData::new(
                 68.111565,
                 6.4782367,
                 -940.7386,
@@ -68,7 +68,7 @@ fn test_parse_2020_motion_packet() {
                 -0.0046157837,
                 -0.004656054,
             ),
-            MotionData::new(
+            CarMotionData::new(
                 -406.49005,
                 -5.6787024,
                 1043.1368,
@@ -88,7 +88,7 @@ fn test_parse_2020_motion_packet() {
                 -0.020454645,
                 0.018945012,
             ),
-            MotionData::new(
+            CarMotionData::new(
                 -579.7224,
                 -2.989061,
                 513.41046,
@@ -108,7 +108,7 @@ fn test_parse_2020_motion_packet() {
                 -0.007919908,
                 -0.00086891005,
             ),
-            MotionData::new(
+            CarMotionData::new(
                 -213.35669,
                 0.83168185,
                 -127.25428,
@@ -128,7 +128,7 @@ fn test_parse_2020_motion_packet() {
                 0.00021731853,
                 -0.0048980303,
             ),
-            MotionData::new(
+            CarMotionData::new(
                 -579.05066,
                 -2.9893997,
                 506.72238,
@@ -148,7 +148,7 @@ fn test_parse_2020_motion_packet() {
                 -0.007741332,
                 0.0008689102,
             ),
-            MotionData::new(
+            CarMotionData::new(
                 -577.6127,
                 -2.9898326,
                 492.75476,
@@ -168,7 +168,7 @@ fn test_parse_2020_motion_packet() {
                 -0.007741332,
                 0.0008689102,
             ),
-            MotionData::new(
+            CarMotionData::new(
                 -239.38239,
                 0.14758898,
                 -7.944747,
@@ -188,7 +188,7 @@ fn test_parse_2020_motion_packet() {
                 -0.003693223,
                 0.0029044987,
             ),
-            MotionData::new(
+            CarMotionData::new(
                 -340.12906,
                 -2.6053755,
                 467.50528,
@@ -208,7 +208,7 @@ fn test_parse_2020_motion_packet() {
                 0.0015214682,
                 -0.0019000613,
             ),
-            MotionData::new(
+            CarMotionData::new(
                 259.2397,
                 6.0584145,
                 -1004.86914,
@@ -228,7 +228,7 @@ fn test_parse_2020_motion_packet() {
                 0.006111026,
                 0.00573563,
             ),
-            MotionData::new(
+            CarMotionData::new(
                 -573.08167,
                 -2.9894044,
                 450.8941,
@@ -248,7 +248,7 @@ fn test_parse_2020_motion_packet() {
                 -0.007741332,
                 0.0008689102,
             ),
-            MotionData::new(
+            CarMotionData::new(
                 -577.0796,
                 -5.446889,
                 1038.086,
@@ -268,7 +268,7 @@ fn test_parse_2020_motion_packet() {
                 0.029269814,
                 0.03373675,
             ),
-            MotionData::new(
+            CarMotionData::new(
                 -569.31726,
                 -2.9894044,
                 415.68448,
@@ -288,7 +288,7 @@ fn test_parse_2020_motion_packet() {
                 -0.007919908,
                 -0.00086891005,
             ),
-            MotionData::new(
+            CarMotionData::new(
                 -570.09595,
                 -2.9894044,
                 422.968,
@@ -308,7 +308,7 @@ fn test_parse_2020_motion_packet() {
                 -0.007741332,
                 0.0008689102,
             ),
-            MotionData::new(
+            CarMotionData::new(
                 -631.4252,
                 -4.38542,
                 830.4979,
@@ -328,7 +328,7 @@ fn test_parse_2020_motion_packet() {
                 0.005382061,
                 0.005432054,
             ),
-            MotionData::new(
+            CarMotionData::new(
                 -581.474,
                 -3.0770118,
                 374.77502,
@@ -348,7 +348,7 @@ fn test_parse_2020_motion_packet() {
                 -0.0018174648,
                 -0.001875642,
             ),
-            MotionData::new(
+            CarMotionData::new(
                 -578.27124,
                 -3.061144,
                 499.44073,
@@ -368,7 +368,7 @@ fn test_parse_2020_motion_packet() {
                 1.1920929e-7,
                 0.0,
             ),
-            MotionData::new(
+            CarMotionData::new(
                 -354.47418,
                 -3.5963354,
                 644.90576,
@@ -388,7 +388,7 @@ fn test_parse_2020_motion_packet() {
                 -0.00023984909,
                 -5.035988e-5,
             ),
-            MotionData::new(
+            CarMotionData::new(
                 187.88406,
                 6.4731326,
                 -949.56946,
@@ -408,7 +408,7 @@ fn test_parse_2020_motion_packet() {
                 0.0053635836,
                 0.002184287,
             ),
-            MotionData::new(
+            CarMotionData::new(
                 -572.303,
                 -2.9894044,
                 443.6106,
@@ -428,7 +428,7 @@ fn test_parse_2020_motion_packet() {
                 -0.007919908,
                 -0.00086891005,
             ),
-            MotionData::new(
+            CarMotionData::new(
                 -571.60187,
                 -3.0861602,
                 429.54834,
@@ -448,10 +448,10 @@ fn test_parse_2020_motion_packet() {
                 -0.0005390644,
                 0.00014833135,
             ),
-            MotionData::new(
+            CarMotionData::new(
                 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0, 0, 0, 0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
             ),
-            MotionData::new(
+            CarMotionData::new(
                 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0, 0, 0, 0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
             ),
         ],

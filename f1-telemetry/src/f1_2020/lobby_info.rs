@@ -6,7 +6,7 @@ use crate::f1_2020::generic::{unpack_nationality, unpack_team};
 use crate::packet::header::PacketHeader;
 use crate::packet::lobby_info::{PacketLobbyInfoData, Player, ReadyStatus};
 use crate::packet::UnpackError;
-use crate::utils::{assert_packet_size, unpack_string};
+use crate::utils::{assert_packet_size, read_string};
 
 use super::consts::*;
 
@@ -23,7 +23,7 @@ fn parse_player<T: BufRead>(reader: &mut T) -> Result<Player, UnpackError> {
     let ai_controlled = reader.read_u8().unwrap() == 1;
     let team = unpack_team(reader.read_u8().unwrap())?;
     let nationality = unpack_nationality(reader.read_u8().unwrap())?;
-    let name = unpack_string(reader, 48)?;
+    let name = read_string(reader, 48)?;
     let ready_status = unpack_ready_status(reader.read_u8().unwrap())?;
 
     Ok(Player::new(

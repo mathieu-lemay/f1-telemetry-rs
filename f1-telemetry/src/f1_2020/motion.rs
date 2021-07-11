@@ -4,13 +4,13 @@ use byteorder::{LittleEndian, ReadBytesExt};
 
 use crate::packet::generic::WheelData;
 use crate::packet::header::PacketHeader;
-use crate::packet::motion::{MotionData, PacketMotionData};
+use crate::packet::motion::{CarMotionData, PacketMotionData};
 use crate::packet::UnpackError;
 use crate::utils::assert_packet_size;
 
 use super::consts::*;
 
-fn parse_motion<T: BufRead>(reader: &mut T) -> MotionData {
+fn parse_motion<T: BufRead>(reader: &mut T) -> CarMotionData {
     let world_position_x = reader.read_f32::<LittleEndian>().unwrap();
     let world_position_y = reader.read_f32::<LittleEndian>().unwrap();
     let world_position_z = reader.read_f32::<LittleEndian>().unwrap();
@@ -30,7 +30,7 @@ fn parse_motion<T: BufRead>(reader: &mut T) -> MotionData {
     let pitch = reader.read_f32::<LittleEndian>().unwrap();
     let roll = reader.read_f32::<LittleEndian>().unwrap();
 
-    MotionData::new(
+    CarMotionData::new(
         world_position_x,
         world_position_y,
         world_position_z,

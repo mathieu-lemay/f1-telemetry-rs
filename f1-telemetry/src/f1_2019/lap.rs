@@ -1,14 +1,14 @@
 use std::io::BufRead;
 
-use byteorder::{LittleEndian, ReadBytesExt};
+use serde::Deserialize;
 
-use crate::f1_2019::generic::unpack_result_status;
 use crate::packet::header::PacketHeader;
 use crate::packet::lap::{DriverStatus, LapData, PacketLapData, PitStatus};
 use crate::packet::UnpackError;
-use crate::utils::{assert_packet_size, read_millis_f32};
+use crate::utils::{assert_packet_size, seconds_to_millis};
 
 use super::consts::*;
+use super::generic::unpack_result_status;
 
 fn unpack_pit_status(value: u8) -> Result<PitStatus, UnpackError> {
     match value {
@@ -33,59 +33,111 @@ fn unpack_driver_status(value: u8) -> Result<DriverStatus, UnpackError> {
     }
 }
 
-fn parse_lap<T: BufRead>(reader: &mut T) -> Result<LapData, UnpackError> {
-    let last_lap_time = read_millis_f32(reader);
-    let current_lap_time = read_millis_f32(reader);
-    let best_lap_time = read_millis_f32(reader);
-    let sector_1_time = read_millis_f32(reader);
-    let sector_2_time = read_millis_f32(reader);
-    let lap_distance = reader.read_f32::<LittleEndian>().unwrap();
-    let total_distance = reader.read_f32::<LittleEndian>().unwrap();
-    let safety_car_delta = reader.read_f32::<LittleEndian>().unwrap();
-    let car_position = reader.read_u8().unwrap();
-    let current_lap_num = reader.read_u8().unwrap();
-    let pit_status = unpack_pit_status(reader.read_u8().unwrap())?;
-    let sector = reader.read_u8().unwrap();
-    let current_lap_invalid = reader.read_u8().unwrap() == 1;
-    let penalties = reader.read_u8().unwrap();
-    let grid_position = reader.read_u8().unwrap();
-    let driver_status = unpack_driver_status(reader.read_u8().unwrap())?;
-    let result_status = unpack_result_status(reader.read_u8().unwrap())?;
+/// The lap data packet gives details of all the cars in the session.
+///
+/// Frequency: Rate as specified in menus
+/// Size: 843 bytes
+/// Version: 1
+///
+/// ## Specification
+/// ```text
+/// last_lap_time:                 Last lap time in seconds
+/// current_lap_time:              Current time around the lap in seconds
+/// best_lap_time:                 Best lap time of the session in seconds
+/// sector_1_time:                 Sector 1 time in seconds
+/// sector_2_time:                 Sector 2 time in seconds
+/// lap_distance:                  Distance vehicle is around current lap in metres – could
+///                                be negative if line hasn’t been crossed yet
+/// total_distance:                Total distance travelled in session in metres – could
+///                                be negative if line hasn’t been crossed yet
+/// safety_car_delta:              Delta in seconds for safety car
+/// car_position:                  Car race position
+/// current_lap_num:               Current lap number
+/// pit_status:                    Pitting status - 0 = none, 1 = pitting, 2 = in pit area
+/// sector:                        0 = sector1, 1 = sector2, 2 = sector3
+/// current_lap_invalid:           Current lap invalid - 0 = valid, 1 = invalid
+/// penalties:                     Accumulated time penalties in seconds to be added
+/// grid_position:                 Grid position the vehicle started the race in
+/// driver_status:                 Status of driver - 0 = in garage, 1 = flying lap
+//                                 2 = in lap, 3 = out lap, 4 = on track
+/// result_status:                 Result status - 0 = invalid, 1 = inactive, 2 = active
+//                                 3 = finished, 4 = disqualified, 5 = not classified
+//                                 6 = retired
+/// ```
+#[derive(Deserialize)]
+struct RawLapData {
+    last_lap_time: f32,
+    current_lap_time: f32,
+    best_lap_time: f32,
+    sector_1_time: f32,
+    sector_2_time: f32,
+    lap_distance: f32,
+    total_distance: f32,
+    safety_car_delta: f32,
+    car_position: u8,
+    current_lap_num: u8,
+    pit_status: u8,
+    sector: u8,
+    current_lap_invalid: bool,
+    penalties: u8,
+    grid_position: u8,
+    driver_status: u8,
+    result_status: u8,
+}
 
-    Ok(LapData::from_2019(
-        last_lap_time,
-        current_lap_time,
-        best_lap_time,
-        sector_1_time,
-        sector_2_time,
-        lap_distance,
-        total_distance,
-        safety_car_delta,
-        car_position,
-        current_lap_num,
-        pit_status,
-        sector,
-        current_lap_invalid,
-        penalties,
-        grid_position,
-        driver_status,
-        result_status,
-    ))
+impl LapData {
+    fn from(car_lap_data: &RawLapData) -> Result<Self, UnpackError> {
+        let last_lap_time = seconds_to_millis(car_lap_data.last_lap_time as f64);
+        let current_lap_time = seconds_to_millis(car_lap_data.current_lap_time as f64);
+        let sector_1_time = seconds_to_millis(car_lap_data.sector_1_time as f64) as u16;
+        let sector_2_time = seconds_to_millis(car_lap_data.sector_2_time as f64) as u16;
+        let best_lap_time = seconds_to_millis(car_lap_data.best_lap_time as f64);
+
+        Ok(Self::new(
+            last_lap_time,
+            current_lap_time,
+            sector_1_time,
+            sector_2_time,
+            best_lap_time,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            car_lap_data.lap_distance,
+            car_lap_data.total_distance,
+            car_lap_data.safety_car_delta,
+            car_lap_data.car_position,
+            car_lap_data.current_lap_num,
+            unpack_pit_status(car_lap_data.pit_status)?,
+            car_lap_data.sector,
+            car_lap_data.current_lap_invalid,
+            car_lap_data.penalties,
+            car_lap_data.grid_position,
+            unpack_driver_status(car_lap_data.driver_status)?,
+            unpack_result_status(car_lap_data.result_status)?,
+        ))
+    }
 }
 
 pub(crate) fn parse_lap_data<T: BufRead>(
-    mut reader: &mut T,
+    reader: &mut T,
     header: PacketHeader,
     size: usize,
 ) -> Result<PacketLapData, UnpackError> {
     assert_packet_size(size, LAP_DATA_PACKET_SIZE)?;
 
-    let mut lap_data = Vec::with_capacity(NUMBER_CARS);
+    let lap_data: [RawLapData; NUMBER_CARS] = bincode::deserialize_from(reader)?;
 
-    for _ in 0..NUMBER_CARS {
-        let ld = parse_lap(&mut reader)?;
-        lap_data.push(ld);
-    }
+    let lap_data = lap_data
+        .iter()
+        .map(LapData::from)
+        .collect::<Result<Vec<LapData>, UnpackError>>()?;
 
     Ok(PacketLapData::new(header, lap_data))
 }

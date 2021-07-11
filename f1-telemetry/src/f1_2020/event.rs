@@ -5,7 +5,7 @@ use byteorder::{LittleEndian, ReadBytesExt};
 use crate::packet::event::*;
 use crate::packet::header::PacketHeader;
 use crate::packet::UnpackError;
-use crate::utils::{assert_packet_size, read_millis_f32, unpack_string};
+use crate::utils::{assert_packet_size, read_millis_f32, read_string};
 
 use super::consts::*;
 
@@ -101,7 +101,7 @@ pub(crate) fn parse_event_data<T: BufRead>(
 ) -> Result<PacketEventData, UnpackError> {
     assert_packet_size(size, EVENT_PACKET_SIZE)?;
 
-    let event_code = unpack_string(reader, 4)?;
+    let event_code = read_string(reader, 4)?;
 
     let event = match event_code.as_str() {
         "SSTA" => Ok(Event::SessionStarted),

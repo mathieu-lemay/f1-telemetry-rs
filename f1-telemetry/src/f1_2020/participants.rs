@@ -6,7 +6,7 @@ use crate::f1_2020::generic::{unpack_nationality, unpack_team};
 use crate::packet::header::PacketHeader;
 use crate::packet::participants::{Driver, PacketParticipantsData, ParticipantData, Telemetry};
 use crate::packet::UnpackError;
-use crate::utils::{assert_packet_size, unpack_string};
+use crate::utils::{assert_packet_size, read_string};
 
 use super::consts::*;
 
@@ -109,7 +109,7 @@ fn parse_participant<T: BufRead>(reader: &mut T) -> Result<ParticipantData, Unpa
     let team = unpack_team(reader.read_u8().unwrap())?;
     let race_number = reader.read_u8().unwrap();
     let nationality = unpack_nationality(reader.read_u8().unwrap())?;
-    let name = unpack_string(reader, 48)?;
+    let name = read_string(reader, 48)?;
     let telemetry_access = unpack_telemetry(reader.read_u8().unwrap())?;
 
     Ok(ParticipantData::new(

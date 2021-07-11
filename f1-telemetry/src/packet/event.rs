@@ -255,11 +255,15 @@ impl Event {
 
 /// This packet gives details of events that happen during the course of a session.
 ///
+/// Frequency: When the event occurs
+///
 /// ## Specification
 /// ```text
 /// header: Header
 /// event:  See [`Event`]
 /// ```
+///
+/// See also [`Event`]
 #[derive(Debug, PartialEq, Getters)]
 #[getset(get = "pub")]
 pub struct PacketEventData {

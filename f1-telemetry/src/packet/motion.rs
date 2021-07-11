@@ -4,7 +4,11 @@ use crate::packet::generic::WheelData;
 
 use super::header::PacketHeader;
 
-/// This type is used for the 20-element `motion_data` array of the [`PacketMotionData`] type.
+/// This type is used for the `car_motion_data` array of the [`PacketMotionData`] type.
+///
+/// N.B. For the normalised vectors below, to convert to float values divide by 32767.0f – 16-bit
+/// signed values are used to pack the data and on the assumption that direction values are always
+/// between -1.0f and 1.0f.
 ///
 /// ## Specification
 /// ```text
@@ -27,11 +31,9 @@ use super::header::PacketHeader;
 /// pitch:                Pitch angle in radians
 /// roll:                 Roll angle in radians
 /// ```
-///
-/// [`PacketMotionData`]: ./struct.MotionData.html
 #[derive(Debug, PartialEq, CopyGetters)]
 #[getset(get_copy = "pub")]
-pub struct MotionData {
+pub struct CarMotionData {
     world_position_x: f32,
     world_position_y: f32,
     world_position_z: f32,
@@ -52,7 +54,7 @@ pub struct MotionData {
     roll: f32,
 }
 
-impl MotionData {
+impl CarMotionData {
     #[allow(clippy::too_many_arguments)]
     pub fn new(
         world_position_x: f32,
@@ -73,8 +75,8 @@ impl MotionData {
         yaw: f32,
         pitch: f32,
         roll: f32,
-    ) -> MotionData {
-        MotionData {
+    ) -> CarMotionData {
+        CarMotionData {
             world_position_x,
             world_position_y,
             world_position_z,
@@ -97,23 +99,15 @@ impl MotionData {
     }
 }
 
-/// The motion packet gives physics data for all the cars being driven.
-///
-/// There is additional data for the car being driven with the goal of being able to drive a motion platform setup.
-///
-/// N.B. For the normalised vectors below, to convert to float values divide by 32767.0f – 16-bit signed values are
-/// used to pack the data and on the assumption that direction values are always between -1.0f and 1.0f.
+/// The motion packet gives physics data for all the cars being driven. There is additional data for
+/// the car being driven with the goal of being able to drive a motion platform setup.
 ///
 /// Frequency: Rate as specified in menus
 ///
-/// Size: 1343 bytes
-///
-/// Version: 1
-///
 /// ## Specification
 /// ```text
-/// header:          Header
-/// motion_data: List of motion data (20)
+/// header:                 Header
+/// motion_data:            List of motion data
 ///
 /// # Extra player car ONLY data
 /// suspension_position:     Note: All wheel arrays have the following order:
@@ -137,7 +131,7 @@ pub struct PacketMotionData {
     #[getset(get = "pub")]
     header: PacketHeader,
     #[getset(get = "pub")]
-    motion_data: Vec<MotionData>,
+    motion_data: Vec<CarMotionData>,
 
     // Extra player car ONLY data
     #[getset(get_copy = "pub")]
@@ -176,7 +170,7 @@ impl PacketMotionData {
     #[allow(clippy::too_many_arguments)]
     pub fn new(
         header: PacketHeader,
-        motion_data: Vec<MotionData>,
+        motion_data: Vec<CarMotionData>,
         suspension_position: WheelData<f32>,
         suspension_velocity: WheelData<f32>,
         suspension_acceleration: WheelData<f32>,

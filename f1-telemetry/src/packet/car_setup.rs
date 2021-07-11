@@ -75,57 +75,7 @@ impl CarSetupData {
         ballast: u8,
         fuel_load: f32,
     ) -> Self {
-        CarSetupData {
-            front_wing,
-            rear_wing,
-            on_throttle,
-            off_throttle,
-            front_camber,
-            rear_camber,
-            front_toe,
-            rear_toe,
-            front_suspension,
-            rear_suspension,
-            front_anti_roll_bar,
-            rear_anti_roll_bar,
-            front_suspension_height,
-            rear_suspension_height,
-            brake_pressure,
-            brake_bias,
-            tyres_pressure,
-            ballast,
-            fuel_load,
-        }
-    }
-    pub(crate) fn from_2019(
-        front_wing: u8,
-        rear_wing: u8,
-        on_throttle: u8,
-        off_throttle: u8,
-        front_camber: f32,
-        rear_camber: f32,
-        front_toe: f32,
-        rear_toe: f32,
-        front_suspension: u8,
-        rear_suspension: u8,
-        front_anti_roll_bar: u8,
-        rear_anti_roll_bar: u8,
-        front_suspension_height: u8,
-        rear_suspension_height: u8,
-        brake_pressure: u8,
-        brake_bias: u8,
-        front_tyre_pressure: f32,
-        rear_tyre_pressure: f32,
-        ballast: u8,
-        fuel_load: f32,
-    ) -> CarSetupData {
-        let tyres_pressure = WheelData::new(
-            rear_tyre_pressure,
-            rear_tyre_pressure,
-            front_tyre_pressure,
-            front_tyre_pressure,
-        );
-        CarSetupData {
+        Self {
             front_wing,
             rear_wing,
             on_throttle,
@@ -199,14 +149,10 @@ impl CarSetupData {
 ///
 /// Frequency: 2 per second
 ///
-/// Size: 843 bytes
-///
-/// Version: 1
-///
 /// ## Specification
 /// ```text
 /// header:     Header
-/// car_setups: List of car setups (20)
+/// car_setups: List of car setups
 /// ```
 #[derive(Debug, PartialEq, Getters)]
 #[getset(get = "pub")]

@@ -1,14 +1,14 @@
 use std::io::BufRead;
 
-use byteorder::{LittleEndian, ReadBytesExt};
+use serde::{Deserialize, Serialize};
 
-use crate::f1_2019::generic::unpack_flag;
 use crate::packet::header::PacketHeader;
 use crate::packet::session::*;
 use crate::packet::UnpackError;
 use crate::utils::assert_packet_size;
 
 use super::consts::*;
+use super::generic::unpack_flag;
 
 fn unpack_weather(value: u8) -> Result<Weather, UnpackError> {
     match value {
@@ -92,66 +92,132 @@ fn unpack_safety_car(value: u8) -> Result<SafetyCar, UnpackError> {
     }
 }
 
-fn parse_marshal_zone<T: BufRead>(reader: &mut T) -> Result<MarshalZone, UnpackError> {
-    let zone_start = reader.read_f32::<LittleEndian>().unwrap();
-    let zone_flag = unpack_flag(reader.read_i8().unwrap())?;
+/// The session packet includes details about the current session in progress.
+///
+/// Frequency: 2 per second
+/// Size: 149 bytes
+/// Version: 1
+///
+/// ## Specification
+/// ```text
+/// header:                 Header
+/// weather:                Weather - 0 = clear, 1 = light cloud, 2 = overcast
+///                         3 = light rain, 4 = heavy rain, 5 = storm
+/// track_temperature:      Track temp. in degrees celsius
+/// air_temperature:        Air temp. in degrees celsius
+/// total_laps:             Total number of laps in this race
+/// track_length:           Track length in metres
+/// session_type:           0 = unknown, 1 = P1, 2 = P2, 3 = P3, 4 = Short P
+///                         5 = Q1, 6 = Q2, 7 = Q3, 8 = Short Q, 9 = OSQ
+///                         10 = R, 11 = R2, 12 = Time Trial
+/// track_id:               -1 for unknown, 0-21 for tracks, see appendix
+/// formula:                Formula, 0 = F1 Modern, 1 = F1 Classic, 2 = F2,
+///                         3 = F1 Generic
+/// session_time_left:      Time left in session in seconds
+/// session_duration:       Session duration in seconds
+/// pit_speed_limit:        Pit speed limit in kilometres per hour
+/// game_paused:            Whether the game is paused
+/// is_spectating:          Whether the player is spectating
+/// spectator_car_index:    Index of the car being spectated
+/// sli_pro_native_support: SLI Pro support, 0 = inactive, 1 = active
+/// num_marshal_zones:      Number of marshal zones to follow
+/// marshal_zones:          List of marshal zones – max 21
+/// safety_car_status:      0 = no safety car, 1 = full safety car
+///                         2 = virtual safety car
+/// network_game:           0 = offline, 1 = online
+/// ```
+#[derive(Serialize, Deserialize)]
+struct RawSessionData {
+    weather: u8,
+    track_temperature: i8,
+    air_temperature: i8,
+    total_laps: u8,
+    track_length: u16,
+    session_type: u8,
+    track: i8,
+    formula: u8,
+    session_time_left: u16,
+    session_duration: u16,
+    pit_speed_limit: u8,
+    game_paused: bool,
+    is_spectating: bool,
+    spectator_car_index: u8,
+    sli_pro_native_support: bool,
+    num_marshal_zones: u8,
+    marshal_zones: [RawMarshalZone; NUMBER_MARSHAL_ZONES],
+    safety_car_status: u8,
+    network_game: bool,
+}
 
-    Ok(MarshalZone::new(zone_start, zone_flag))
+impl PacketSessionData {
+    fn from(header: PacketHeader, session_data: RawSessionData) -> Result<Self, UnpackError> {
+        let weather = unpack_weather(session_data.weather)?;
+        let session_type = unpack_session_type(session_data.session_type)?;
+        let track = unpack_track(session_data.track)?;
+        let formula = unpack_formula(session_data.formula)?;
+        let marshal_zones: Vec<MarshalZone> = session_data
+            .marshal_zones
+            .iter()
+            .map(|mz| MarshalZone::from(*mz))
+            .collect::<Result<Vec<MarshalZone>, UnpackError>>()?;
+        let safety_car_status = unpack_safety_car(session_data.safety_car_status)?;
+
+        Ok(Self::new(
+            header,
+            weather,
+            session_data.track_temperature,
+            session_data.air_temperature,
+            session_data.total_laps,
+            session_data.track_length,
+            session_type,
+            track,
+            formula,
+            session_data.session_time_left,
+            session_data.session_duration,
+            session_data.pit_speed_limit,
+            session_data.game_paused,
+            session_data.is_spectating,
+            session_data.spectator_car_index,
+            session_data.sli_pro_native_support,
+            session_data.num_marshal_zones,
+            marshal_zones,
+            safety_car_status,
+            session_data.network_game,
+            None,
+            None,
+        ))
+    }
+}
+
+/// Description of a marshal zone
+///
+/// ## Specification
+/// ```text
+/// zone_start: Fraction (0..1) of way through the lap the marshal zone starts
+/// zone_flag:  -1 = invalid/unknown, 0 = none, 1 = green, 2 = blue, 3 = yellow, 4 = red
+/// ```
+#[derive(Serialize, Deserialize, Copy, Clone)]
+struct RawMarshalZone {
+    zone_start: f32,
+    zone_flag: i8,
+}
+
+impl MarshalZone {
+    fn from(mz: RawMarshalZone) -> Result<MarshalZone, UnpackError> {
+        let flag = unpack_flag(mz.zone_flag)?;
+        Ok(MarshalZone::new(mz.zone_start, flag))
+    }
 }
 
 pub(crate) fn parse_session_data<T: BufRead>(
-    mut reader: &mut T,
+    reader: &mut T,
     header: PacketHeader,
     size: usize,
 ) -> Result<PacketSessionData, UnpackError> {
     assert_packet_size(size, SESSION_PACKET_SIZE)?;
 
-    let weather = unpack_weather(reader.read_u8().unwrap())?;
-    let track_temperature = reader.read_i8().unwrap();
-    let air_temperature = reader.read_i8().unwrap();
-    let total_laps = reader.read_u8().unwrap();
-    let track_length = reader.read_u16::<LittleEndian>().unwrap();
-    let session_type = unpack_session_type(reader.read_u8().unwrap())?;
-    let track = unpack_track(reader.read_i8().unwrap())?;
-    let formula = unpack_formula(reader.read_u8().unwrap())?;
-    let session_time_left = reader.read_u16::<LittleEndian>().unwrap();
-    let session_duration = reader.read_u16::<LittleEndian>().unwrap();
-    let pit_speed_limit = reader.read_u8().unwrap();
-    let game_paused = reader.read_u8().unwrap() == 1;
-    let is_spectating = reader.read_u8().unwrap() == 1;
-    let spectator_car_index = reader.read_u8().unwrap();
-    let sli_pro_native_support = reader.read_u8().unwrap() == 1;
-    let num_marshal_zones = reader.read_u8().unwrap();
+    let session_data: RawSessionData = bincode::deserialize_from(reader)?;
+    let packet = PacketSessionData::from(header, session_data)?;
 
-    let mut marshal_zones = Vec::with_capacity(NUMBER_MARSHAL_ZONES);
-    for _ in 0..NUMBER_MARSHAL_ZONES {
-        let mz = parse_marshal_zone(&mut reader)?;
-        marshal_zones.push(mz);
-    }
-
-    let safety_car_status = unpack_safety_car(reader.read_u8().unwrap())?;
-    let network_game = reader.read_u8().unwrap() == 1;
-
-    Ok(PacketSessionData::from_2019(
-        header,
-        weather,
-        track_temperature,
-        air_temperature,
-        total_laps,
-        track_length,
-        session_type,
-        track,
-        formula,
-        session_time_left,
-        session_duration,
-        pit_speed_limit,
-        game_paused,
-        is_spectating,
-        spectator_car_index,
-        sli_pro_native_support,
-        num_marshal_zones,
-        marshal_zones,
-        safety_car_status,
-        network_game,
-    ))
+    Ok(packet)
 }

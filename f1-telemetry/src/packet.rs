@@ -28,6 +28,12 @@ pub mod session;
 #[derive(Debug, Eq, PartialEq)]
 pub struct UnpackError(pub String);
 
+impl From<Box<bincode::ErrorKind>> for UnpackError {
+    fn from(e: Box<bincode::ErrorKind>) -> Self {
+        UnpackError(e.to_string())
+    }
+}
+
 #[derive(Debug)]
 pub enum Packet {
     Motion(PacketMotionData),
@@ -59,8 +65,8 @@ impl Packet {
     }
 }
 
-#[derive(Debug)]
-pub(crate) enum PacketType {
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+pub enum PacketType {
     Motion,
     Session,
     LapData,

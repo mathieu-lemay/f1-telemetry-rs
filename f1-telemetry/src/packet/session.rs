@@ -1,10 +1,11 @@
 use getset::{CopyGetters, Getters};
+use serde::Deserialize;
 
 use crate::packet::generic::Flag;
 
 use super::header::PacketHeader;
 
-#[derive(Debug, Clone, Copy, Eq, PartialEq)]
+#[derive(Debug, Clone, Copy, Eq, PartialEq, Deserialize)]
 pub enum Weather {
     Clear,
     LightCloud,
@@ -204,18 +205,14 @@ impl WeatherForecastSample {
     }
 }
 
-/// This type is used for the 21-element `marshal_zones` array of the [`PacketSessionData`] type.
-///
-/// Size: 5 bytes
-///
-/// Version: 1
+/// This type is used for the `marshal_zones` array of the [`PacketSessionData`] type.
 ///
 /// ## Specification
 /// ```text
-/// zone_start: Fraction (0..1) of way through the lap the marshal zone starts
-/// zone_flag:  -1 = invalid/unknown, 0 = none, 1 = green, 2 = blue, 3 = yellow, 4 = red
+/// zone_start: Fraction (0..1) of way through the lap the marshal zone starts.
+/// zone_flag:  Flag active in the zone. See [`Flag`].
 /// ```
-/// [`PacketSessionData`]: ./struct.PacketSessionData.html
+/// See also [`Flag`].
 #[derive(Debug, PartialEq, Clone, Copy, CopyGetters)]
 #[getset(get_copy = "pub")]
 pub struct MarshalZone {
@@ -236,38 +233,33 @@ impl MarshalZone {
 ///
 /// Frequency: 2 per second
 ///
-/// Size: 149 bytes
-///
-/// Version: 1
-///
 /// ## Specification
 /// ```text
-/// header:                 Header
-/// weather:                Weather - 0 = clear, 1 = light cloud, 2 = overcast
-///                         3 = light rain, 4 = heavy rain, 5 = storm
-/// track_temperature:      Track temp. in degrees celsius
-/// air_temperature:        Air temp. in degrees celsius
-/// total_laps:             Total number of laps in this race
-/// track_length:           Track length in metres
-/// session_type:           0 = unknown, 1 = P1, 2 = P2, 3 = P3, 4 = Short P
-///                         5 = Q1, 6 = Q2, 7 = Q3, 8 = Short Q, 9 = OSQ
-///                         10 = R, 11 = R2, 12 = Time Trial
-/// track_id:               -1 for unknown, 0-21 for tracks, see appendix
-/// formula:                Formula, 0 = F1 Modern, 1 = F1 Classic, 2 = F2,
-///                         3 = F1 Generic
-/// session_time_left:      Time left in session in seconds
-/// session_duration:       Session duration in seconds
-/// pit_speed_limit:        Pit speed limit in kilometres per hour
-/// game_paused:            Whether the game is paused
-/// is_spectating:          Whether the player is spectating
-/// spectator_car_index:    Index of the car being spectated
-/// sli_pro_native_support: SLI Pro support, 0 = inactive, 1 = active
-/// num_marshal_zones:      Number of marshal zones to follow
-/// marshal_zones:          List of marshal zones – max 21
-/// safety_car_status:      0 = no safety car, 1 = full safety car
-///                         2 = virtual safety car
-/// network_game:           0 = offline, 1 = online
+/// header:                         Header.
+/// weather:                        Current weather. See [`Weather`].
+/// track_temperature:              Track temperature in celsius.
+/// air_temperature:                Air temperature in celsius.
+/// total_laps:                     Total number of laps in this race.
+/// track_length:                   Track length in metres.
+/// session_type:                   Type of session. See [`SessionType`].
+/// track_id:                       Current track. See [`Track`].
+/// formula:                        Current formula. See [`Formula`].
+/// session_time_left:              Time left in session in seconds.
+/// session_duration:               Session duration in seconds.
+/// pit_speed_limit:                Pit speed limit in kilometres per hour.
+/// game_paused:                    Whether the game is paused.
+/// is_spectating:                  Whether the player is spectating.
+/// spectator_car_index:            Index of the car being spectated.
+/// sli_pro_native_support:         Whether SLI pro is active.
+/// num_marshal_zones:              Number of marshal zones to follow.
+/// marshal_zones:                  List of marshal zones. See [`MarshalZone`].
+/// safety_car_status               Safety car status. See [`SafetyCar`].
+/// network_game:                   Whether the game is online or not.
+/// num_weather_forecast_samples    Number of weather samples to follow.
+/// weather_forecast_samples        List of weather forecast samples. See [`WeatherForecastSample`].
 /// ```
+/// See also: [`Formula`], [`MarshalZone`], [`SafetyCar`], [`SessionType`], [`Track`],
+/// [`WeatherForecastSample`] and [`Weather`]
 #[derive(Debug, PartialEq, CopyGetters, Getters)]
 pub struct PacketSessionData {
     #[getset(get = "pub")]
@@ -342,7 +334,7 @@ impl PacketSessionData {
         num_weather_forecast_samples: Option<u8>,
         weather_forecast_samples: Option<Vec<WeatherForecastSample>>,
     ) -> Self {
-        PacketSessionData {
+        Self {
             header,
             weather,
             track_temperature,
@@ -365,54 +357,6 @@ impl PacketSessionData {
             network_game,
             num_weather_forecast_samples: num_weather_forecast_samples.unwrap_or_default(),
             weather_forecast_samples: weather_forecast_samples.unwrap_or_default(),
-        }
-    }
-
-    pub(crate) fn from_2019(
-        header: PacketHeader,
-        weather: Weather,
-        track_temperature: i8,
-        air_temperature: i8,
-        total_laps: u8,
-        track_length: u16,
-        session_type: SessionType,
-        track: Track,
-        formula: Formula,
-        session_time_left: u16,
-        session_duration: u16,
-        pit_speed_limit: u8,
-        game_paused: bool,
-        is_spectating: bool,
-        spectator_car_index: u8,
-        sli_pro_native_support: bool,
-        num_marshal_zones: u8,
-        marshal_zones: Vec<MarshalZone>,
-        safety_car_status: SafetyCar,
-        network_game: bool,
-    ) -> Self {
-        PacketSessionData {
-            header,
-            weather,
-            track_temperature,
-            air_temperature,
-            total_laps,
-            track_length,
-            session_type,
-            track,
-            formula,
-            session_time_left,
-            session_duration,
-            pit_speed_limit,
-            game_paused,
-            is_spectating,
-            spectator_car_index,
-            sli_pro_native_support,
-            num_marshal_zones,
-            marshal_zones,
-            safety_car_status,
-            network_game,
-            num_weather_forecast_samples: 0,
-            weather_forecast_samples: Vec::new(),
         }
     }
 

@@ -1,6 +1,6 @@
 use std::io::BufRead;
 
-use byteorder::ReadBytesExt;
+use serde::Deserialize;
 
 use crate::packet::generic::{Nationality, Team};
 use crate::packet::header::PacketHeader;
@@ -256,44 +256,96 @@ fn unpack_telemetry(value: u8) -> Result<Telemetry, UnpackError> {
     }
 }
 
-fn parse_participant<T: BufRead>(reader: &mut T) -> Result<ParticipantData, UnpackError> {
-    let ai_controlled = reader.read_u8().unwrap() == 1;
-    let driver = unpack_driver(reader.read_u8().unwrap())?;
-    let team = unpack_team(reader.read_u8().unwrap())?;
-    let race_number = reader.read_u8().unwrap();
-    let nationality = unpack_nationality(reader.read_u8().unwrap())?;
-    let name = unpack_string(reader, 48)?;
-    let telemetry = unpack_telemetry(reader.read_u8().unwrap())?;
+/// This is a list of participants in the race. If the vehicle is controlled by AI, then the name
+/// will be the driver name. If this is a multiplayer game, the names will be the Steam Id on PC, or
+/// the LAN name if appropriate.
+///
+/// N.B. on Xbox One, the names will always be the driver name, on PS4 the name will be the LAN name
+/// if playing a LAN game, otherwise it will be the driver name.
+///
+/// The array should be indexed by vehicle index.
+///
+/// Frequency: Every 5 seconds
+/// Size: 1104 bytes
+/// Version: 1
+///
+/// ## Specification
+/// ```text
+/// header:          Header
+/// num_active_cars: Number of active cars in the data – should match number of
+///                  cars on HUD
+/// participants:    List of participants (20)
+/// ```
+#[derive(Deserialize)]
+struct RawParticipantData {
+    num_active_cars: u8,
+    participants: [RawParticipant; NUMBER_CARS],
+}
 
-    Ok(ParticipantData::new(
-        ai_controlled,
-        driver,
-        team,
-        race_number,
-        nationality,
-        name,
-        telemetry,
-    ))
+/// ## Specification
+/// ```text
+/// ai_controlled:  Whether the vehicle is AI (1) or Human (0) controlled
+/// driver_id:      Driver id - see appendix
+/// team_id:        Team id - see appendix
+/// race_number:    Race number of the car
+/// nationality:    Nationality of the driver
+/// name:           Name of participant in UTF-8 format – null terminated
+///                 Will be truncated with … (U+2026) if too long
+/// your_telemetry: The player's UDP setting, 0 = restricted, 1 = public
+/// ```
+///
+/// [`PacketParticipantsData`]: ./struct.PacketParticipantsData.html
+#[derive(Deserialize)]
+struct RawParticipant {
+    ai_controlled: bool,
+    driver: u8,
+    team: u8,
+    race_number: u8,
+    nationality: u8,
+    name1: [u8; 32], // FIXME: Ugly hack
+    name2: [u8; 16],
+    telemetry: u8,
+}
+
+impl ParticipantData {
+    fn from(participant: &RawParticipant) -> Result<Self, UnpackError> {
+        let name: [u8; 48] = {
+            let mut whole: [u8; 48] = [0; 48];
+            let (part1, part2) = whole.split_at_mut(participant.name1.len());
+            part1.copy_from_slice(&participant.name1);
+            part2.copy_from_slice(&participant.name2);
+            whole
+        };
+
+        Ok(ParticipantData::new(
+            participant.ai_controlled,
+            unpack_driver(participant.driver)?,
+            unpack_team(participant.team)?,
+            participant.race_number,
+            unpack_nationality(participant.nationality)?,
+            unpack_string(&name)?,
+            unpack_telemetry(participant.telemetry)?,
+        ))
+    }
 }
 
 pub(crate) fn parse_participants_data<T: BufRead>(
-    mut reader: &mut T,
+    reader: &mut T,
     header: PacketHeader,
     size: usize,
 ) -> Result<PacketParticipantsData, UnpackError> {
     assert_packet_size(size, PARTICIPANTS_PACKET_SIZE)?;
 
-    let num_active_cars = reader.read_u8().unwrap();
-
-    let mut participants = Vec::with_capacity(NUMBER_CARS);
-    for _ in 0..NUMBER_CARS {
-        let p = parse_participant(&mut reader)?;
-        participants.push(p);
-    }
+    let participant_data: RawParticipantData = bincode::deserialize_from(reader)?;
+    let participants: Vec<ParticipantData> = participant_data
+        .participants
+        .iter()
+        .map(ParticipantData::from)
+        .collect::<Result<Vec<ParticipantData>, UnpackError>>()?;
 
     Ok(PacketParticipantsData::new(
         header,
-        num_active_cars,
+        participant_data.num_active_cars,
         participants,
     ))
 }

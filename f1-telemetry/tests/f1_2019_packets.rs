@@ -12,7 +12,7 @@ use f1_telemetry::packet::generic::{
     Flag, Nationality, ResultStatus, Team, TyreCompound, TyreCompoundVisual, WheelData,
 };
 use f1_telemetry::packet::lap::{DriverStatus, LapData, PacketLapData, PitStatus};
-use f1_telemetry::packet::motion::{MotionData, PacketMotionData};
+use f1_telemetry::packet::motion::{CarMotionData, PacketMotionData};
 use f1_telemetry::packet::participants::{
     Driver, PacketParticipantsData, ParticipantData, Telemetry,
 };
@@ -42,7 +42,7 @@ fn test_parse_2019_motion_packet() {
     let expected = PacketMotionData::new(
         actual.header().clone(),
         vec![
-            MotionData::new(
+            CarMotionData::new(
                 -322.17596,
                 -72.408966,
                 435.44742,
@@ -62,7 +62,7 @@ fn test_parse_2019_motion_packet() {
                 0.04217279,
                 -0.04309993,
             ),
-            MotionData::new(
+            CarMotionData::new(
                 -300.60294,
                 -64.99633,
                 283.46466,
@@ -82,7 +82,7 @@ fn test_parse_2019_motion_packet() {
                 -0.027225375,
                 0.01727907,
             ),
-            MotionData::new(
+            CarMotionData::new(
                 -256.5254,
                 -63.661755,
                 143.7791,
@@ -102,7 +102,7 @@ fn test_parse_2019_motion_packet() {
                 -0.030226946,
                 0.028596058,
             ),
-            MotionData::new(
+            CarMotionData::new(
                 -351.52408,
                 -66.82555,
                 352.30118,
@@ -122,7 +122,7 @@ fn test_parse_2019_motion_packet() {
                 -0.010683298,
                 -0.0077672657,
             ),
-            MotionData::new(
+            CarMotionData::new(
                 -254.10265,
                 -63.59966,
                 204.5926,
@@ -142,7 +142,7 @@ fn test_parse_2019_motion_packet() {
                 -0.015757203,
                 0.014958185,
             ),
-            MotionData::new(
+            CarMotionData::new(
                 -252.82158,
                 -63.54137,
                 152.4316,
@@ -162,7 +162,7 @@ fn test_parse_2019_motion_packet() {
                 -0.025322318,
                 0.02474659,
             ),
-            MotionData::new(
+            CarMotionData::new(
                 -250.69095,
                 -63.52145,
                 195.12375,
@@ -182,7 +182,7 @@ fn test_parse_2019_motion_packet() {
                 -0.015738368,
                 0.015233586,
             ),
-            MotionData::new(
+            CarMotionData::new(
                 -258.31543,
                 -63.70416,
                 214.0479,
@@ -202,7 +202,7 @@ fn test_parse_2019_motion_packet() {
                 -0.016305685,
                 0.014663911,
             ),
-            MotionData::new(
+            CarMotionData::new(
                 -249.2389,
                 -63.490063,
                 183.98901,
@@ -222,7 +222,7 @@ fn test_parse_2019_motion_packet() {
                 -0.012398481,
                 0.012399486,
             ),
-            MotionData::new(
+            CarMotionData::new(
                 -256.66116,
                 -63.645226,
                 216.80931,
@@ -242,7 +242,7 @@ fn test_parse_2019_motion_packet() {
                 -0.01639688,
                 0.014757999,
             ),
-            MotionData::new(
+            CarMotionData::new(
                 -259.74652,
                 -63.745884,
                 135.94911,
@@ -262,7 +262,7 @@ fn test_parse_2019_motion_packet() {
                 -0.029495955,
                 0.027056819,
             ),
-            MotionData::new(
+            CarMotionData::new(
                 -251.47688,
                 -63.53306,
                 174.72476,
@@ -282,7 +282,7 @@ fn test_parse_2019_motion_packet() {
                 -0.0131073,
                 0.013109886,
             ),
-            MotionData::new(
+            CarMotionData::new(
                 -290.39957,
                 -64.63039,
                 270.21426,
@@ -302,7 +302,7 @@ fn test_parse_2019_motion_packet() {
                 -0.024872422,
                 0.014370073,
             ),
-            MotionData::new(
+            CarMotionData::new(
                 -362.08615,
                 -67.43944,
                 369.87872,
@@ -322,7 +322,7 @@ fn test_parse_2019_motion_packet() {
                 -0.011187911,
                 -0.004446125,
             ),
-            MotionData::new(
+            CarMotionData::new(
                 -260.72015,
                 -63.736458,
                 224.29468,
@@ -342,7 +342,7 @@ fn test_parse_2019_motion_packet() {
                 -0.017885089,
                 0.016330905,
             ),
-            MotionData::new(
+            CarMotionData::new(
                 -250.78748,
                 -63.52066,
                 163.29286,
@@ -362,7 +362,7 @@ fn test_parse_2019_motion_packet() {
                 -0.017284274,
                 0.017088499,
             ),
-            MotionData::new(
+            CarMotionData::new(
                 -249.04572,
                 -63.488277,
                 172.05106,
@@ -382,7 +382,7 @@ fn test_parse_2019_motion_packet() {
                 -0.01435554,
                 0.01435215,
             ),
-            MotionData::new(
+            CarMotionData::new(
                 -251.94476,
                 -63.556206,
                 185.83305,
@@ -402,7 +402,7 @@ fn test_parse_2019_motion_packet() {
                 -0.012889743,
                 0.01290321,
             ),
-            MotionData::new(
+            CarMotionData::new(
                 -253.42844,
                 -63.597466,
                 195.89497,
@@ -422,7 +422,7 @@ fn test_parse_2019_motion_packet() {
                 -0.016366243,
                 0.015683101,
             ),
-            MotionData::new(
+            CarMotionData::new(
                 -272.36404,
                 -64.045296,
                 238.6034,

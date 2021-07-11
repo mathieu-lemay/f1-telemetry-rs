@@ -1,4 +1,3 @@
-use std::convert::TryFrom;
 use std::io::Cursor;
 
 use car_setup::parse_car_setup_data;
@@ -29,9 +28,7 @@ pub(crate) fn parse_packet(size: usize, packet: &[u8]) -> Result<Packet, UnpackE
     let mut cursor = Cursor::new(packet);
     let header = parse_header(&mut cursor, size)?;
 
-    let packet_id: PacketType = PacketType::try_from(header.packet_id())?;
-
-    match packet_id {
+    match header.packet_type() {
         PacketType::Motion => {
             let packet = parse_motion_data(&mut cursor, header, size)?;
 
@@ -73,23 +70,5 @@ pub(crate) fn parse_packet(size: usize, packet: &[u8]) -> Result<Packet, UnpackE
             Ok(Packet::CarStatus(packet))
         }
         p => Err(UnpackError(format!("Unsupported packet type: {:?}", p))),
-    }
-}
-
-impl TryFrom<u8> for PacketType {
-    type Error = UnpackError;
-
-    fn try_from(value: u8) -> Result<Self, Self::Error> {
-        match value {
-            0 => Ok(PacketType::Motion),
-            1 => Ok(PacketType::Session),
-            2 => Ok(PacketType::LapData),
-            3 => Ok(PacketType::Event),
-            4 => Ok(PacketType::Participants),
-            5 => Ok(PacketType::CarSetups),
-            6 => Ok(PacketType::CarTelemetry),
-            7 => Ok(PacketType::CarStatus),
-            _ => Err(UnpackError(format!("Invalid PacketType: {}", value))),
-        }
     }
 }
