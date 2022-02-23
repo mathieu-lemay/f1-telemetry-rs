@@ -152,7 +152,7 @@ impl LapTimesView {
 
 fn get_team_color(team: &Team) -> String {
     let color = match team {
-        Team::Mercedes => "rgb(0, 53, 48)",
+        Team::Mercedes => "rgb(0, 80, 72)",
         Team::Ferrari => "rgb(56, 0, 0)",
         Team::RedBullRacing => "rgb(15, 0, 65)",
         Team::Williams => "rgb(0, 33, 65)",
