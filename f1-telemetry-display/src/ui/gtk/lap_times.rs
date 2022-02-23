@@ -152,18 +152,18 @@ impl LapTimesView {
 
 fn get_team_color(team: &Team) -> String {
     let color = match team {
-        Team::Mercedes => "rgb(0, 80, 72)",
-        Team::Ferrari => "rgb(56, 0, 0)",
-        Team::RedBullRacing => "rgb(15, 0, 65)",
-        Team::Williams => "rgb(0, 33, 65)",
-        Team::RacingPoint => "rgb(62, 38, 51)",
-        Team::Renault => "rgb(65, 62, 0)",
-        Team::ToroRosso => "rgb(18, 40, 65)",
-        Team::Haas => "rgb(30, 30, 30)",
-        Team::McLaren => "rgb(65, 34, 0)",
-        Team::AlfaRomeo => "rgb(40, 0, 0)",
-        Team::AlphaTauri => "rgb(65, 65, 65)",
-        Team::MyTeam => "rgb(0, 150, 0)",
+        Team::Mercedes => "rgb(0, 106, 96)",
+        Team::Ferrari => "rgb(112, 0, 0)",
+        Team::RedBullRacing => "rgb(30, 0, 130)",
+        Team::Williams => "rgb(0, 66, 130)",
+        Team::RacingPoint => "rgb(124, 74, 102)",
+        Team::Renault => "rgb(130, 124, 0)",
+        Team::ToroRosso => "rgb(36, 80, 130)",
+        Team::Haas => "rgb(60, 60, 60)",
+        Team::McLaren => "rgb(130, 68, 0)",
+        Team::AlfaRomeo => "rgb(80, 0, 0)",
+        Team::AlphaTauri => "rgb(130, 130, 130)",
+        Team::MyTeam => "rgb(0, 255, 0)",
         _ => "",
     };
 
