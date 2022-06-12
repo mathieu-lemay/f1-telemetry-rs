@@ -50,15 +50,15 @@ impl GameState {
     fn parse(&mut self, packet: &Packet) {
         match packet {
             // Packet::Motion(p) => p.header(),
-            Packet::Session(p) => self.parse_session_data(&p),
-            Packet::Lap(p) => self.parse_lap_data(&p),
-            Packet::Event(p) => self.parse_event_data(&p),
-            Packet::Participants(p) => self.parse_participants(&p),
+            Packet::Session(p) => self.parse_session_data(p),
+            Packet::Lap(p) => self.parse_lap_data(p),
+            Packet::Event(p) => self.parse_event_data(p),
+            Packet::Participants(p) => self.parse_participants(p),
             // Packet::CarqSetups(p) => p.header(),
-            Packet::CarTelemetry(p) => self.parse_telemetry_data(&p),
-            Packet::CarStatus(p) => self.parse_car_status(&p),
-            Packet::FinalClassification(p) => self.parse_final_classification(&p),
-            Packet::Motion(p) => self.parse_motion_data(&p),
+            Packet::CarTelemetry(p) => self.parse_telemetry_data(p),
+            Packet::CarStatus(p) => self.parse_car_status(p),
+            Packet::FinalClassification(p) => self.parse_final_classification(p),
+            Packet::Motion(p) => self.parse_motion_data(p),
             _ => {}
         };
     }

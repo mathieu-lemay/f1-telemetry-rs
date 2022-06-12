@@ -277,13 +277,13 @@ impl NcursesUi {
     fn render_main_view(&mut self, game_state: &GameState, packet: &Packet) {
         match packet {
             Packet::Session(_) => {
-                self.print_session_info(&game_state);
+                self.print_session_info(game_state);
             }
             Packet::Event(_) => {
-                self.print_event_info(&game_state);
+                self.print_event_info(game_state);
             }
             Packet::Lap(_) => {
-                self.print_session_info(&game_state);
+                self.print_session_info(game_state);
             }
             _ => {}
         }
@@ -292,16 +292,17 @@ impl NcursesUi {
     fn render_dashboard_view(&mut self, game_state: &GameState, packet: &Packet) {
         match packet {
             Packet::Lap(_) => {
-                self.print_dashboard_lap_info(&game_state);
+                self.print_dashboard_lap_info(game_state);
                 self.print_track_status_lap_info(game_state);
             }
-            Packet::CarTelemetry(_) => self.print_telemetry_info(&game_state),
+            Packet::CarTelemetry(_) => self.print_telemetry_info(game_state),
             Packet::CarStatus(_) => {
-                self.print_car_status(&game_state);
-                self.print_tyres_compounds(&game_state);
+                self.print_car_status(game_state);
+                self.print_tyres_compounds(game_state);
             }
-            Packet::FinalClassification(_) => self
-                .print_final_classification_info(&game_state, self.dashboard_view.lap_times_swnd),
+            Packet::FinalClassification(_) => {
+                self.print_final_classification_info(game_state, self.dashboard_view.lap_times_swnd)
+            }
             Packet::Motion(_) => {
                 // self.print_motion_info(&game_state);
                 self.print_handling_info(game_state);
@@ -313,15 +314,15 @@ impl NcursesUi {
     fn render_lap_view(&mut self, game_state: &GameState, packet: &Packet) {
         match packet {
             Packet::Lap(_) => {
-                self.print_lap_details_lap_info(&game_state);
-                self.print_best_sectors_lap_info(&game_state);
+                self.print_lap_details_lap_info(game_state);
+                self.print_best_sectors_lap_info(game_state);
             }
             Packet::CarStatus(_) => {
-                self.print_car_status(&game_state);
-                self.print_tyres_compounds(&game_state);
+                self.print_car_status(game_state);
+                self.print_tyres_compounds(game_state);
             }
             Packet::FinalClassification(_) => self
-                .print_final_classification_info(&game_state, self.lap_detail_view.lap_detail_swnd),
+                .print_final_classification_info(game_state, self.lap_detail_view.lap_detail_swnd),
             Packet::Motion(_) => self.print_handling_info(game_state),
             _ => {}
         }
@@ -408,7 +409,7 @@ impl NcursesUi {
             let s = format!(
                 "{}. {:15}",
                 pos,
-                cfmt::format_driver_name(&participant, game_state.session_info.is_online)
+                cfmt::format_driver_name(participant, game_state.session_info.is_online)
             );
             fmt::set_team_color(wnd, participant.team);
             mvwaddstr(wnd, row, 0, &s);
@@ -538,7 +539,7 @@ impl NcursesUi {
                 "{}. {:2} | {:13} | {}   | {}   | {:12} | {}      |",
                 pos,
                 change,
-                cfmt::format_driver_name(&participant, game_state.session_info.is_online),
+                cfmt::format_driver_name(participant, game_state.session_info.is_online),
                 grid,
                 cfmt::milliseconds_to_msf(fi.best_lap_time),
                 time_delta,
@@ -650,7 +651,7 @@ impl NcursesUi {
             let s = format!(
                 "{}. {:20} | {}   | {}   | {}   | {}{}{} ",
                 pos,
-                cfmt::format_driver_name(&participant, game_state.session_info.is_online),
+                cfmt::format_driver_name(participant, game_state.session_info.is_online),
                 cfmt::milliseconds_to_msf(li.current_lap_time),
                 cfmt::milliseconds_to_msf(li.last_lap_time),
                 cfmt::milliseconds_to_msf(li.best_lap_time),

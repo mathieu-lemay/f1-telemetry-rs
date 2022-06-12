@@ -86,7 +86,7 @@ impl LapTimesView {
         for (participant, li) in game_state.get_valid_lap_info() {
             let data: [&dyn ToValue; 7] = [
                 &fmt::format_position(li.position, &li.status),
-                &fmt::format_driver_name(&participant, game_state.session_info.is_online)
+                &fmt::format_driver_name(participant, game_state.session_info.is_online)
                     .to_string(),
                 &li.current_lap_time.as_minute_time_string(),
                 &li.last_lap_time.as_minute_time_string(),

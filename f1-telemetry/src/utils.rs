@@ -6,10 +6,7 @@ use crate::packet::UnpackError;
 
 pub(crate) fn unpack_string<T: BufRead>(reader: &mut T, n: usize) -> Result<String, UnpackError> {
     let mut chars: Vec<u8> = (0..n).map(|_| reader.read_u8().unwrap()).collect();
-    let nb_chars = chars
-        .iter()
-        .position(|&c| c == 0)
-        .unwrap_or_else(|| chars.len());
+    let nb_chars = chars.iter().position(|&c| c == 0).unwrap_or(chars.len());
     chars.truncate(nb_chars);
 
     match String::from_utf8(chars) {

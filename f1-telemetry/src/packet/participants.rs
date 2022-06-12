@@ -123,6 +123,7 @@ pub enum Telemetry {
 /// [`PacketParticipantsData`]: ./struct.PacketParticipantsData.html
 #[derive(Debug, CopyGetters, Getters, Clone)]
 pub struct ParticipantData {
+    #[getset(get_copy = "pub")]
     ai_controlled: bool,
     #[getset(get_copy = "pub")]
     driver: Driver,
