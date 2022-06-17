@@ -295,7 +295,7 @@ pub struct PacketSessionData {
     #[getset(get_copy = "pub")]
     pit_speed_limit: u8,
     #[getset(get_copy = "pub")]
-    game_paused: u8,
+    game_paused: bool,
     #[getset(get_copy = "pub")]
     is_spectating: bool,
     #[getset(get_copy = "pub")]
@@ -331,7 +331,7 @@ impl PacketSessionData {
         session_time_left: u16,
         session_duration: u16,
         pit_speed_limit: u8,
-        game_paused: u8,
+        game_paused: bool,
         is_spectating: bool,
         spectator_car_index: u8,
         sli_pro_native_support: bool,
@@ -339,7 +339,7 @@ impl PacketSessionData {
         marshal_zones: Vec<MarshalZone>,
         safety_car_status: SafetyCar,
         network_game: bool,
-    ) -> PacketSessionData {
+    ) -> Self {
         PacketSessionData {
             header,
             weather,
@@ -379,7 +379,7 @@ impl PacketSessionData {
         session_time_left: u16,
         session_duration: u16,
         pit_speed_limit: u8,
-        game_paused: u8,
+        game_paused: bool,
         is_spectating: bool,
         spectator_car_index: u8,
         sli_pro_native_support: bool,
@@ -389,7 +389,7 @@ impl PacketSessionData {
         network_game: bool,
         num_weather_forecast_samples: u8,
         weather_forecast_samples: Vec<WeatherForecastSample>,
-    ) -> PacketSessionData {
+    ) -> Self {
         PacketSessionData {
             header,
             weather,

@@ -117,7 +117,7 @@ pub(crate) fn parse_session_data<T: BufRead>(
     let session_time_left = reader.read_u16::<LittleEndian>().unwrap();
     let session_duration = reader.read_u16::<LittleEndian>().unwrap();
     let pit_speed_limit = reader.read_u8().unwrap();
-    let game_paused = reader.read_u8().unwrap();
+    let game_paused = reader.read_u8().unwrap() == 1;
     let is_spectating = reader.read_u8().unwrap() == 1;
     let spectator_car_index = reader.read_u8().unwrap();
     let sli_pro_native_support = reader.read_u8().unwrap() == 1;
