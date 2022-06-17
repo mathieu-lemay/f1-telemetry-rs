@@ -25,7 +25,7 @@ pub mod motion;
 pub mod participants;
 pub mod session;
 
-#[derive(Debug)]
+#[derive(Debug, Eq, PartialEq)]
 pub struct UnpackError(pub String);
 
 #[derive(Debug)]
