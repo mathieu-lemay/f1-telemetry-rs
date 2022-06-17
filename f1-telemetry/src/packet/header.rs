@@ -18,7 +18,7 @@ use getset::CopyGetters;
 /// Possible `packet_id` values: [`PacketType`].
 ///
 /// [`PacketType`]: ../enum.PacketType.html
-#[derive(Debug, CopyGetters, Clone)]
+#[derive(Debug, PartialEq, CopyGetters, Clone)]
 #[getset(get_copy = "pub")]
 pub struct PacketHeader {
     packet_format: u16,

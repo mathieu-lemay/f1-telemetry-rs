@@ -176,7 +176,7 @@ impl Default for SafetyCar {
 /// air_temperature:   Air temp. in degrees celsius.
 /// ```
 /// [`PacketSessionData`]: ./struct.PacketSessionData.html
-#[derive(Debug, CopyGetters)]
+#[derive(Debug, Eq, PartialEq, CopyGetters)]
 #[getset(get_copy = "pub")]
 pub struct WeatherForecastSample {
     session_type: SessionType,
@@ -216,7 +216,7 @@ impl WeatherForecastSample {
 /// zone_flag:  -1 = invalid/unknown, 0 = none, 1 = green, 2 = blue, 3 = yellow, 4 = red
 /// ```
 /// [`PacketSessionData`]: ./struct.PacketSessionData.html
-#[derive(Debug, Clone, Copy, CopyGetters)]
+#[derive(Debug, PartialEq, Clone, Copy, CopyGetters)]
 #[getset(get_copy = "pub")]
 pub struct MarshalZone {
     zone_start: f32,
@@ -224,7 +224,7 @@ pub struct MarshalZone {
 }
 
 impl MarshalZone {
-    pub(crate) fn new(zone_start: f32, zone_flag: Flag) -> MarshalZone {
+    pub fn new(zone_start: f32, zone_flag: Flag) -> MarshalZone {
         MarshalZone {
             zone_start,
             zone_flag,
@@ -268,7 +268,7 @@ impl MarshalZone {
 ///                         2 = virtual safety car
 /// network_game:           0 = offline, 1 = online
 /// ```
-#[derive(Debug, CopyGetters, Getters)]
+#[derive(Debug, PartialEq, CopyGetters, Getters)]
 pub struct PacketSessionData {
     #[getset(get = "pub")]
     header: PacketHeader,
@@ -318,6 +318,56 @@ pub struct PacketSessionData {
 
 #[allow(clippy::too_many_arguments)]
 impl PacketSessionData {
+    pub fn new(
+        header: PacketHeader,
+        weather: Weather,
+        track_temperature: i8,
+        air_temperature: i8,
+        total_laps: u8,
+        track_length: u16,
+        session_type: SessionType,
+        track: Track,
+        formula: Formula,
+        session_time_left: u16,
+        session_duration: u16,
+        pit_speed_limit: u8,
+        game_paused: bool,
+        is_spectating: bool,
+        spectator_car_index: u8,
+        sli_pro_native_support: bool,
+        num_marshal_zones: u8,
+        marshal_zones: Vec<MarshalZone>,
+        safety_car_status: SafetyCar,
+        network_game: bool,
+        num_weather_forecast_samples: Option<u8>,
+        weather_forecast_samples: Option<Vec<WeatherForecastSample>>,
+    ) -> Self {
+        PacketSessionData {
+            header,
+            weather,
+            track_temperature,
+            air_temperature,
+            total_laps,
+            track_length,
+            session_type,
+            track,
+            formula,
+            session_time_left,
+            session_duration,
+            pit_speed_limit,
+            game_paused,
+            is_spectating,
+            spectator_car_index,
+            sli_pro_native_support,
+            num_marshal_zones,
+            marshal_zones,
+            safety_car_status,
+            network_game,
+            num_weather_forecast_samples: num_weather_forecast_samples.unwrap_or_default(),
+            weather_forecast_samples: weather_forecast_samples.unwrap_or_default(),
+        }
+    }
+
     pub(crate) fn from_2019(
         header: PacketHeader,
         weather: Weather,

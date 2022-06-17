@@ -3,6 +3,10 @@ mod utils;
 use hex;
 use serial_test::serial;
 
+use f1_telemetry::packet::generic::Flag;
+use f1_telemetry::packet::session::{
+    Formula, MarshalZone, PacketSessionData, SafetyCar, SessionType, Track, Weather,
+};
 use f1_telemetry::packet::Packet;
 
 #[test]
@@ -28,7 +32,7 @@ fn test_parse_2019_session_packet() {
     let stream = utils::get_stream();
     let socket = utils::get_connected_socket(&stream);
 
-    let data = hex::decode("e30701160101fcc796d4ce430d49000a3042690300001301211a052a120a0400fb1b201c500000ff00126a46783f0076db943d009c7f1b3e00d0f75d3e009aa3763e00fb8aa83e00dc2ec13e0050dcd83e00bddf043f00074e0f3f00591b1b3f008fb6243f0010a6383f00e3f0473f000bea4d3f00ef595a3f001301623f00f39e683f000000000000000000000000000000000000").unwrap();
+    let data = hex::decode("e30701160101fcc796d4ce430d49000a3042690300001301211a052a120a0400fb1b201c500000ff00126a46783f0076db943d019c7f1b3e02d0f75d3e039aa3763e04fb8aa83e00dc2ec13e0050dcd83e00bddf043f00074e0f3f00591b1b3f008fb6243f0010a6383f00e3f0473f000bea4d3f00ef595a3f001301623f00f39e683f000000000000000000000000000000000000").unwrap();
     let res = socket.send(&data);
 
     assert!(res.is_ok());
@@ -36,7 +40,59 @@ fn test_parse_2019_session_packet() {
 
     let p = stream.next().unwrap().unwrap();
 
-    assert!(matches!(p, Packet::Session(_)));
+    let actual = match p {
+        Packet::Session(s) => s,
+        _ => panic!("Invalid packet. Expected Session, got {:?}", &p),
+    };
+
+    let expected = PacketSessionData::new(
+        actual.header().clone(),
+        Weather::LightCloud,
+        33,
+        26,
+        5,
+        4650,
+        SessionType::Race,
+        Track::Catalunya,
+        Formula::F1Modern,
+        7163,
+        7200,
+        80,
+        false,
+        false,
+        255,
+        false,
+        18,
+        vec![
+            MarshalZone::new(0.96982443, Flag::None),
+            MarshalZone::new(0.07268421, Flag::Green),
+            MarshalZone::new(0.15185398, Flag::Blue),
+            MarshalZone::new(0.21676564, Flag::Yellow),
+            MarshalZone::new(0.24085847, Flag::Red),
+            MarshalZone::new(0.32918534, Flag::None),
+            MarshalZone::new(0.37731063, Flag::None),
+            MarshalZone::new(0.42355585, Flag::None),
+            MarshalZone::new(0.519039, Flag::None),
+            MarshalZone::new(0.55978435, Flag::None),
+            MarshalZone::new(0.60588604, Flag::None),
+            MarshalZone::new(0.6434106, Flag::None),
+            MarshalZone::new(0.7212839, Flag::None),
+            MarshalZone::new(0.7810194, Flag::None),
+            MarshalZone::new(0.80435246, Flag::None),
+            MarshalZone::new(0.8529348, Flag::None),
+            MarshalZone::new(0.8828289, Flag::None),
+            MarshalZone::new(0.9086754, Flag::None),
+            MarshalZone::new(0.0, Flag::None),
+            MarshalZone::new(0.0, Flag::None),
+            MarshalZone::new(0.0, Flag::None),
+        ],
+        SafetyCar::None,
+        false,
+        None,
+        None,
+    );
+
+    assert_eq!(actual, expected);
 }
 
 #[test]
