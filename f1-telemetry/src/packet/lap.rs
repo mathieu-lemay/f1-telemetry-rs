@@ -67,7 +67,7 @@ impl Default for DriverStatus {
 /// result_status:                 Result status. See [`ResultStatus`].
 /// ```
 /// [`PacketLapData`]: ./struct.PacketLapData.html
-#[derive(Debug, Default, CopyGetters)]
+#[derive(Debug, PartialEq, Default, CopyGetters)]
 #[getset(get_copy = "pub")]
 pub struct LapData {
     last_lap_time: u32,
@@ -100,6 +100,67 @@ pub struct LapData {
 }
 
 impl LapData {
+    #[allow(clippy::too_many_arguments)]
+    pub fn new(
+        last_lap_time: u32,
+        current_lap_time: u32,
+        sector_1_time: u16,
+        sector_2_time: u16,
+        best_lap_time: u32,
+        best_lap_num: u8,
+        best_lap_sector_1_time: u16,
+        best_lap_sector_2_time: u16,
+        best_lap_sector_3_time: u16,
+        best_overall_sector_1_time: u16,
+        best_overall_sector_1_lap_num: u8,
+        best_overall_sector_2_time: u16,
+        best_overall_sector_2_lap_num: u8,
+        best_overall_sector_3_time: u16,
+        best_overall_sector_3_lap_num: u8,
+        lap_distance: f32,
+        total_distance: f32,
+        safety_car_delta: f32,
+        car_position: u8,
+        current_lap_num: u8,
+        pit_status: PitStatus,
+        sector: u8,
+        current_lap_invalid: bool,
+        penalties: u8,
+        grid_position: u8,
+        driver_status: DriverStatus,
+        result_status: ResultStatus,
+    ) -> LapData {
+        LapData {
+            last_lap_time,
+            current_lap_time,
+            sector_1_time,
+            sector_2_time,
+            best_lap_time,
+            best_lap_num,
+            best_lap_sector_1_time,
+            best_lap_sector_2_time,
+            best_lap_sector_3_time,
+            best_overall_sector_1_time,
+            best_overall_sector_1_lap_num,
+            best_overall_sector_2_time,
+            best_overall_sector_2_lap_num,
+            best_overall_sector_3_time,
+            best_overall_sector_3_lap_num,
+            lap_distance,
+            total_distance,
+            safety_car_delta,
+            car_position,
+            current_lap_num,
+            pit_status,
+            sector,
+            current_lap_invalid,
+            penalties,
+            grid_position,
+            driver_status,
+            result_status,
+        }
+    }
+
     #[allow(clippy::too_many_arguments)]
     pub(crate) fn from_2019(
         last_lap_time: u32,
@@ -220,7 +281,7 @@ impl LapData {
 /// header:   Header
 /// lap_data: Lap data for all cars on track
 /// ```
-#[derive(Debug, Getters)]
+#[derive(Debug, PartialEq, Getters)]
 #[getset(get = "pub")]
 pub struct PacketLapData {
     header: PacketHeader,
@@ -228,7 +289,7 @@ pub struct PacketLapData {
 }
 
 impl PacketLapData {
-    pub(crate) fn new(header: PacketHeader, lap_data: Vec<LapData>) -> PacketLapData {
+    pub fn new(header: PacketHeader, lap_data: Vec<LapData>) -> PacketLapData {
         PacketLapData { header, lap_data }
     }
 }
