@@ -281,7 +281,7 @@ impl TyreCompoundVisual {
     }
 }
 
-#[derive(Debug, Clone, Copy, Default, CopyGetters)]
+#[derive(Debug, Clone, Copy, PartialEq, Default, CopyGetters)]
 #[getset(get_copy = "pub")]
 pub struct WheelData<T>
 where

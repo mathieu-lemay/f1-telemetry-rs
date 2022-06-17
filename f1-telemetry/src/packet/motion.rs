@@ -29,7 +29,7 @@ use super::header::PacketHeader;
 /// ```
 ///
 /// [`PacketMotionData`]: ./struct.MotionData.html
-#[derive(Debug, CopyGetters)]
+#[derive(Debug, PartialEq, CopyGetters)]
 #[getset(get_copy = "pub")]
 pub struct MotionData {
     world_position_x: f32,
@@ -54,7 +54,7 @@ pub struct MotionData {
 
 impl MotionData {
     #[allow(clippy::too_many_arguments)]
-    pub(crate) fn new(
+    pub fn new(
         world_position_x: f32,
         world_position_y: f32,
         world_position_z: f32,
@@ -132,7 +132,7 @@ impl MotionData {
 /// angular_acceleration_z:  Angular acceleration z-component
 /// front_wheels_angle:      Current front wheels angle in radians
 /// ```
-#[derive(Debug, CopyGetters, Getters)]
+#[derive(Debug, PartialEq, CopyGetters, Getters)]
 pub struct PacketMotionData {
     #[getset(get = "pub")]
     header: PacketHeader,
@@ -174,7 +174,7 @@ pub struct PacketMotionData {
 
 impl PacketMotionData {
     #[allow(clippy::too_many_arguments)]
-    pub(crate) fn new(
+    pub fn new(
         header: PacketHeader,
         motion_data: Vec<MotionData>,
         suspension_position: WheelData<f32>,
