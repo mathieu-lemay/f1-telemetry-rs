@@ -1,9 +1,9 @@
 use hex;
 use serial_test::serial;
 
+use f1_telemetry::packet::event::{Event, FastestLap, PacketEventData};
 use f1_telemetry::packet::generic::{Flag, ResultStatus, WheelData};
-use f1_telemetry::packet::lap::DriverStatus;
-use f1_telemetry::packet::lap::{LapData, PacketLapData, PitStatus};
+use f1_telemetry::packet::lap::{DriverStatus, LapData, PacketLapData, PitStatus};
 use f1_telemetry::packet::motion::{MotionData, PacketMotionData};
 use f1_telemetry::packet::session::{
     Formula, MarshalZone, PacketSessionData, SafetyCar, SessionType, Track, Weather,
@@ -1147,7 +1147,17 @@ fn test_parse_2019_event_packet() {
 
     let p = stream.next().unwrap().unwrap();
 
-    assert!(matches!(p, Packet::Event(_)));
+    let actual = match p {
+        Packet::Event(s) => s,
+        _ => panic!("Invalid packet. Expected Event, got {:?}", &p),
+    };
+
+    let expected = PacketEventData::new(
+        actual.header().clone(),
+        Event::FastestLap(FastestLap::new(0, 82915)),
+    );
+
+    assert_eq!(actual, expected);
 }
 
 #[test]

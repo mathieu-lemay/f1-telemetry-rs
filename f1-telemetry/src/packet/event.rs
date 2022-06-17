@@ -2,7 +2,7 @@ use getset::{CopyGetters, Getters};
 
 use super::header::PacketHeader;
 
-#[derive(Debug, Copy, Clone, CopyGetters)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq, CopyGetters)]
 #[getset(get_copy = "pub")]
 pub struct FastestLap {
     vehicle_idx: u8,
@@ -10,7 +10,7 @@ pub struct FastestLap {
 }
 
 impl FastestLap {
-    pub(crate) fn new(vehicle_idx: u8, lap_time: u32) -> Self {
+    pub fn new(vehicle_idx: u8, lap_time: u32) -> Self {
         Self {
             vehicle_idx,
             lap_time,
@@ -18,43 +18,43 @@ impl FastestLap {
     }
 }
 
-#[derive(Debug, Copy, Clone, CopyGetters)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq, CopyGetters)]
 #[getset(get_copy = "pub")]
 pub struct Retirement {
     vehicle_idx: u8,
 }
 
 impl Retirement {
-    pub(crate) fn new(vehicle_idx: u8) -> Self {
+    pub fn new(vehicle_idx: u8) -> Self {
         Self { vehicle_idx }
     }
 }
 
-#[derive(Debug, Copy, Clone, CopyGetters)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq, CopyGetters)]
 #[getset(get_copy = "pub")]
 pub struct TeamMateInPits {
     vehicle_idx: u8,
 }
 
 impl TeamMateInPits {
-    pub(crate) fn new(vehicle_idx: u8) -> Self {
+    pub fn new(vehicle_idx: u8) -> Self {
         Self { vehicle_idx }
     }
 }
 
-#[derive(Debug, Copy, Clone, CopyGetters)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq, CopyGetters)]
 #[getset(get_copy = "pub")]
 pub struct RaceWinner {
     vehicle_idx: u8,
 }
 
 impl RaceWinner {
-    pub(crate) fn new(vehicle_idx: u8) -> Self {
+    pub fn new(vehicle_idx: u8) -> Self {
         Self { vehicle_idx }
     }
 }
 
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
 pub enum PenaltyType {
     DriveThrough,
     StopGo,
@@ -76,7 +76,7 @@ pub enum PenaltyType {
     BlackFlagTimer,
 }
 
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
 pub enum InfringementType {
     BlockingBySlowDriving,
     BlockingByWrongWayDriving,
@@ -144,7 +144,7 @@ pub enum InfringementType {
 /// lap_num:           Lap the penalty occurred on
 /// places_gained:     Number of places gained by this
 /// ```
-#[derive(Debug, Copy, Clone, CopyGetters)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq, CopyGetters)]
 #[getset(get_copy = "pub")]
 pub struct Penalty {
     vehicle_idx: u8,
@@ -157,7 +157,7 @@ pub struct Penalty {
 }
 
 impl Penalty {
-    pub(crate) fn new(
+    pub fn new(
         vehicle_idx: u8,
         penalty_type: PenaltyType,
         infringement_type: InfringementType,
@@ -178,7 +178,7 @@ impl Penalty {
     }
 }
 
-#[derive(Debug, Copy, Clone, CopyGetters)]
+#[derive(Debug, Copy, Clone, PartialEq, CopyGetters)]
 #[getset(get_copy = "pub")]
 pub struct SpeedTrap {
     vehicle_idx: u8,
@@ -186,7 +186,7 @@ pub struct SpeedTrap {
 }
 
 impl SpeedTrap {
-    pub(crate) fn new(vehicle_idx: u8, speed: f32) -> Self {
+    pub fn new(vehicle_idx: u8, speed: f32) -> Self {
         Self { vehicle_idx, speed }
     }
 }
@@ -208,7 +208,7 @@ impl SpeedTrap {
 /// RaceWinner:     Speed trap has been triggered by fastest speed
 /// ```
 #[allow(clippy::upper_case_acronyms)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, PartialEq)]
 pub enum Event {
     SessionStarted,
     SessionEnded,
@@ -260,7 +260,7 @@ impl Event {
 /// header: Header
 /// event:  See [`Event`]
 /// ```
-#[derive(Debug, Getters)]
+#[derive(Debug, PartialEq, Getters)]
 #[getset(get = "pub")]
 pub struct PacketEventData {
     header: PacketHeader,
@@ -268,7 +268,7 @@ pub struct PacketEventData {
 }
 
 impl PacketEventData {
-    pub(crate) fn new(header: PacketHeader, event: Event) -> PacketEventData {
+    pub fn new(header: PacketHeader, event: Event) -> PacketEventData {
         PacketEventData { header, event }
     }
 }
