@@ -23,7 +23,7 @@ use super::header::PacketHeader;
 /// tyre_stints_visual: Visual tyres used by this driver
 /// ```
 /// [`PacketFinalClassificationData`]: ./struct.PacketFinalClassificationData.html
-#[derive(Debug, Getters, CopyGetters)]
+#[derive(Debug, PartialEq, Getters, CopyGetters)]
 pub struct FinalClassification {
     #[getset(get_copy = "pub")]
     position: u8,
@@ -55,7 +55,7 @@ pub struct FinalClassification {
 
 impl FinalClassification {
     #[allow(clippy::too_many_arguments)]
-    pub(crate) fn new(
+    pub fn new(
         position: u8,
         num_laps: u8,
         grid_position: u8,
@@ -98,7 +98,7 @@ impl FinalClassification {
 /// num_cars:              Number of cars in the final classification
 /// final_classifications: List of final classifications.
 /// ```
-#[derive(Debug, CopyGetters, Getters)]
+#[derive(Debug, PartialEq, CopyGetters, Getters)]
 pub struct PacketFinalClassificationData {
     #[getset(get = "pub")]
     header: PacketHeader,
@@ -109,7 +109,7 @@ pub struct PacketFinalClassificationData {
 }
 
 impl PacketFinalClassificationData {
-    pub(crate) fn new(
+    pub fn new(
         header: PacketHeader,
         num_cars: u8,
         final_classifications: Vec<FinalClassification>,

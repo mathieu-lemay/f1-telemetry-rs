@@ -187,7 +187,7 @@ pub struct WeatherForecastSample {
 }
 
 impl WeatherForecastSample {
-    pub(crate) fn new(
+    pub fn new(
         session_type: SessionType,
         time_offset: u8,
         weather: Weather,

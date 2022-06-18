@@ -4,7 +4,7 @@ use crate::packet::generic::{Nationality, Team};
 
 use super::header::PacketHeader;
 
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, PartialEq)]
 pub enum ReadyStatus {
     NotReady,
     Ready,
@@ -22,7 +22,7 @@ pub enum ReadyStatus {
 /// ready_status:  Player's ready status
 /// ```
 /// [`PacketLobbyInfoData`]: ./struct.PacketLobbyInfoData.html
-#[derive(Debug, Getters, CopyGetters)]
+#[derive(Debug, PartialEq, Getters, CopyGetters)]
 pub struct Player {
     #[getset(get_copy = "pub")]
     ai_controlled: bool,
@@ -37,7 +37,7 @@ pub struct Player {
 }
 
 impl Player {
-    pub(crate) fn new(
+    pub fn new(
         ai_controlled: bool,
         team: Team,
         nationality: Nationality,
@@ -63,7 +63,7 @@ impl Player {
 /// num_players: Number of players in the lobby data
 /// players:     List of Players
 /// ```
-#[derive(Debug, CopyGetters, Getters)]
+#[derive(Debug, PartialEq, CopyGetters, Getters)]
 pub struct PacketLobbyInfoData {
     #[getset(get = "pub")]
     header: PacketHeader,
@@ -74,7 +74,7 @@ pub struct PacketLobbyInfoData {
 }
 
 impl PacketLobbyInfoData {
-    pub(crate) fn new(header: PacketHeader, num_players: u8, players: Vec<Player>) -> Self {
+    pub fn new(header: PacketHeader, num_players: u8, players: Vec<Player>) -> Self {
         Self {
             header,
             num_players,
