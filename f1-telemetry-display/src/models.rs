@@ -387,7 +387,7 @@ impl GameState {
         self.car_status.fuel_in_tank = csd.fuel_in_tank();
         self.car_status.fuel_remaining_laps = csd.fuel_remaining_laps();
         self.car_status.tyre_compound = csd.visual_tyre_compound();
-        self.car_status.tyre_age_laps = csd.tyre_age_laps();
+        self.car_status.tyre_age_laps = csd.tyre_age_laps().unwrap_or_default();
 
         if self.lap_infos.is_empty() {
             return;

@@ -109,7 +109,7 @@ pub enum ERSDeployMode {
 /// ```
 ///
 /// [`PacketCarStatusData`]: ./struct.CarStatusData.html
-#[derive(Debug, CopyGetters)]
+#[derive(Debug, PartialEq, CopyGetters)]
 #[getset(get_copy = "pub")]
 pub struct CarStatusData {
     traction_control: TractionControl,
@@ -124,11 +124,11 @@ pub struct CarStatusData {
     idle_rpm: u16,
     max_gears: u8,
     drs_allowed: DRS,
-    drs_activation_distance: u16,
+    drs_activation_distance: Option<u16>,
     tyres_wear: WheelData<u8>,
     actual_tyre_compound: TyreCompound,
     visual_tyre_compound: TyreCompoundVisual,
-    tyre_age_laps: u8,
+    tyre_age_laps: Option<u8>,
     tyres_damage: WheelData<u8>,
     front_left_wing_damage: u8,
     front_right_wing_damage: u8,
@@ -146,6 +146,72 @@ pub struct CarStatusData {
 
 #[allow(clippy::too_many_arguments)]
 impl CarStatusData {
+    pub fn new(
+        traction_control: TractionControl,
+        anti_lock_brakes: bool,
+        fuel_mix: FuelMix,
+        front_brake_bias: u8,
+        pit_limiter: bool,
+        fuel_in_tank: f32,
+        fuel_capacity: f32,
+        fuel_remaining_laps: f32,
+        max_rpm: u16,
+        idle_rpm: u16,
+        max_gears: u8,
+        drs_allowed: DRS,
+        drs_activation_distance: Option<u16>,
+        tyres_wear: WheelData<u8>,
+        actual_tyre_compound: TyreCompound,
+        visual_tyre_compound: TyreCompoundVisual,
+        tyre_age_laps: Option<u8>,
+        tyres_damage: WheelData<u8>,
+        front_left_wing_damage: u8,
+        front_right_wing_damage: u8,
+        rear_wing_damage: u8,
+        drs_fault: bool,
+        engine_damage: u8,
+        gear_box_damage: u8,
+        vehicle_fia_flags: Flag,
+        ers_store_energy: f32,
+        ers_deploy_mode: ERSDeployMode,
+        ers_harvested_this_lap_mguk: f32,
+        ers_harvested_this_lap_mguh: f32,
+        ers_deployed_this_lap: f32,
+    ) -> CarStatusData {
+        CarStatusData {
+            traction_control,
+            anti_lock_brakes,
+            fuel_mix,
+            front_brake_bias,
+            pit_limiter,
+            fuel_in_tank,
+            fuel_capacity,
+            fuel_remaining_laps,
+            max_rpm,
+            idle_rpm,
+            max_gears,
+            drs_allowed,
+            drs_activation_distance,
+            tyres_wear,
+            actual_tyre_compound,
+            visual_tyre_compound,
+            tyre_age_laps,
+            tyres_damage,
+            front_left_wing_damage,
+            front_right_wing_damage,
+            rear_wing_damage,
+            drs_fault,
+            engine_damage,
+            gear_box_damage,
+            vehicle_fia_flags,
+            ers_store_energy,
+            ers_deploy_mode,
+            ers_harvested_this_lap_mguk,
+            ers_harvested_this_lap_mguh,
+            ers_deployed_this_lap,
+        }
+    }
+
     pub(crate) fn from_2019(
         traction_control: TractionControl,
         anti_lock_brakes: bool,
@@ -203,8 +269,8 @@ impl CarStatusData {
             ers_harvested_this_lap_mguk,
             ers_harvested_this_lap_mguh,
             ers_deployed_this_lap,
-            drs_activation_distance: 0,
-            tyre_age_laps: 0,
+            drs_activation_distance: None,
+            tyre_age_laps: None,
             drs_fault: false,
         }
     }
@@ -254,11 +320,11 @@ impl CarStatusData {
             idle_rpm,
             max_gears,
             drs_allowed,
-            drs_activation_distance,
+            drs_activation_distance: Some(drs_activation_distance),
             tyres_wear,
             actual_tyre_compound,
             visual_tyre_compound,
-            tyre_age_laps,
+            tyre_age_laps: Some(tyre_age_laps),
             tyres_damage,
             front_left_wing_damage,
             front_right_wing_damage,
@@ -289,7 +355,7 @@ impl CarStatusData {
 /// header:          Header
 /// car_status_data: List of cars (20)
 /// ```
-#[derive(Debug, Getters)]
+#[derive(Debug, PartialEq, Getters)]
 #[getset(get = "pub")]
 pub struct PacketCarStatusData {
     header: PacketHeader,
@@ -297,10 +363,7 @@ pub struct PacketCarStatusData {
 }
 
 impl PacketCarStatusData {
-    pub(crate) fn new(
-        header: PacketHeader,
-        car_status_data: Vec<CarStatusData>,
-    ) -> PacketCarStatusData {
+    pub fn new(header: PacketHeader, car_status_data: Vec<CarStatusData>) -> PacketCarStatusData {
         PacketCarStatusData {
             header,
             car_status_data,
