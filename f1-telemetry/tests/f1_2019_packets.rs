@@ -2,9 +2,12 @@ use hex;
 use serial_test::serial;
 
 use f1_telemetry::packet::event::{Event, FastestLap, PacketEventData};
-use f1_telemetry::packet::generic::{Flag, ResultStatus, WheelData};
+use f1_telemetry::packet::generic::{Flag, Nationality, ResultStatus, Team, WheelData};
 use f1_telemetry::packet::lap::{DriverStatus, LapData, PacketLapData, PitStatus};
 use f1_telemetry::packet::motion::{MotionData, PacketMotionData};
+use f1_telemetry::packet::participants::{
+    Driver, PacketParticipantsData, ParticipantData, Telemetry,
+};
 use f1_telemetry::packet::session::{
     Formula, MarshalZone, PacketSessionData, SafetyCar, SessionType, Track, Weather,
 };
@@ -30,6 +33,8 @@ fn test_parse_2019_motion_packet() {
         Packet::Motion(m) => m,
         _ => panic!("Invalid packet. Expected Motion, got {:?}", &p),
     };
+
+    assert_eq!(actual.header().packet_format(), 2019);
 
     let expected = PacketMotionData::new(
         actual.header().clone(),
@@ -474,6 +479,8 @@ fn test_parse_2019_session_packet() {
         _ => panic!("Invalid packet. Expected Session, got {:?}", &p),
     };
 
+    assert_eq!(actual.header().packet_format(), 2019);
+
     let expected = PacketSessionData::new(
         actual.header().clone(),
         Weather::LightCloud,
@@ -542,6 +549,8 @@ fn test_parse_2019_lap_packet() {
         Packet::Lap(s) => s,
         _ => panic!("Invalid packet. Expected Lap, got {:?}", &p),
     };
+
+    assert_eq!(actual.header().packet_format(), 2019);
 
     let expected = PacketLapData::new(
         actual.header().clone(),
@@ -1152,6 +1161,8 @@ fn test_parse_2019_event_packet() {
         _ => panic!("Invalid packet. Expected Event, got {:?}", &p),
     };
 
+    assert_eq!(actual.header().packet_format(), 2019);
+
     let expected = PacketEventData::new(
         actual.header().clone(),
         Event::FastestLap(FastestLap::new(0, 82915)),
@@ -1174,7 +1185,201 @@ fn test_parse_2019_participants_packet() {
 
     let p = stream.next().unwrap().unwrap();
 
-    assert!(matches!(p, Packet::Participants(_)));
+    let actual = match p {
+        Packet::Participants(s) => s,
+        _ => panic!("Invalid packet. Expected Participants, got {:?}", &p),
+    };
+
+    assert_eq!(actual.header().packet_format(), 2019);
+
+    let expected = PacketParticipantsData::new(
+        actual.header().clone(),
+        20,
+        vec![
+            ParticipantData::new(
+                true,
+                Driver::ValtteriBottas,
+                Team::Mercedes,
+                77,
+                Nationality::Finnish,
+                "V. BOTTAS".to_string(),
+                Telemetry::Public,
+            ),
+            ParticipantData::new(
+                true,
+                Driver::MaxVerstappen,
+                Team::RedBullRacing,
+                33,
+                Nationality::Dutch,
+                "M. VERSTAPPEN".to_string(),
+                Telemetry::Public,
+            ),
+            ParticipantData::new(
+                true,
+                Driver::KimiRaikkonen,
+                Team::AlfaRomeo,
+                7,
+                Nationality::Finnish,
+                "K. RÄIKKÖNEN".to_string(),
+                Telemetry::Public,
+            ),
+            ParticipantData::new(
+                true,
+                Driver::NicoHulkenburg,
+                Team::Renault,
+                27,
+                Nationality::German,
+                "N. HÜLKENBERG".to_string(),
+                Telemetry::Public,
+            ),
+            ParticipantData::new(
+                true,
+                Driver::DanielRicciardo,
+                Team::Renault,
+                3,
+                Nationality::Australian,
+                "D. RICCIARDO".to_string(),
+                Telemetry::Public,
+            ),
+            ParticipantData::new(
+                true,
+                Driver::RobertKubica,
+                Team::Williams,
+                88,
+                Nationality::Polish,
+                "R. KUBICA".to_string(),
+                Telemetry::Public,
+            ),
+            ParticipantData::new(
+                true,
+                Driver::CarlosSainz,
+                Team::McLaren,
+                55,
+                Nationality::Spanish,
+                "C. SAINZ".to_string(),
+                Telemetry::Public,
+            ),
+            ParticipantData::new(
+                true,
+                Driver::CharlesLeclerc,
+                Team::Ferrari,
+                16,
+                Nationality::Monegasque,
+                "C. LECLERC".to_string(),
+                Telemetry::Public,
+            ),
+            ParticipantData::new(
+                true,
+                Driver::KevinMagnussen,
+                Team::Haas,
+                20,
+                Nationality::Danish,
+                "K. MAGNUSSEN".to_string(),
+                Telemetry::Public,
+            ),
+            ParticipantData::new(
+                true,
+                Driver::SergioPerez,
+                Team::RacingPoint,
+                11,
+                Nationality::Mexican,
+                "S. PEREZ".to_string(),
+                Telemetry::Public,
+            ),
+            ParticipantData::new(
+                true,
+                Driver::DaniilKvyat,
+                Team::ToroRosso,
+                26,
+                Nationality::Russian,
+                "D. KVYAT".to_string(),
+                Telemetry::Public,
+            ),
+            ParticipantData::new(
+                true,
+                Driver::GeorgeRussell,
+                Team::Williams,
+                63,
+                Nationality::British,
+                "G. RUSSELL".to_string(),
+                Telemetry::Public,
+            ),
+            ParticipantData::new(
+                true,
+                Driver::AlexanderAlbon,
+                Team::RedBullRacing,
+                23,
+                Nationality::Thai,
+                "A. ALBON".to_string(),
+                Telemetry::Public,
+            ),
+            ParticipantData::new(
+                true,
+                Driver::SebastianVettel,
+                Team::Ferrari,
+                5,
+                Nationality::German,
+                "S. VETTEL".to_string(),
+                Telemetry::Public,
+            ),
+            ParticipantData::new(
+                true,
+                Driver::LanceStroll,
+                Team::RacingPoint,
+                18,
+                Nationality::Canadian,
+                "L. STROLL".to_string(),
+                Telemetry::Public,
+            ),
+            ParticipantData::new(
+                true,
+                Driver::AntonioGiovinazzi,
+                Team::AlfaRomeo,
+                99,
+                Nationality::Italian,
+                "A. GIOVINAZZI".to_string(),
+                Telemetry::Public,
+            ),
+            ParticipantData::new(
+                true,
+                Driver::PierreGasly,
+                Team::ToroRosso,
+                10,
+                Nationality::French,
+                "P. GASLY".to_string(),
+                Telemetry::Public,
+            ),
+            ParticipantData::new(
+                true,
+                Driver::RomainGrosjean,
+                Team::Haas,
+                8,
+                Nationality::French,
+                "R. GROSJEAN".to_string(),
+                Telemetry::Public,
+            ),
+            ParticipantData::new(
+                true,
+                Driver::LandoNorris,
+                Team::McLaren,
+                4,
+                Nationality::British,
+                "L. NORRIS".to_string(),
+                Telemetry::Public,
+            ),
+            ParticipantData::new(
+                false,
+                Driver::LewisHamilton,
+                Team::Mercedes,
+                44,
+                Nationality::British,
+                "L. HAMILTON".to_string(),
+                Telemetry::Restricted,
+            ),
+        ],
+    );
+
+    assert_eq!(actual, expected);
 }
 
 #[test]

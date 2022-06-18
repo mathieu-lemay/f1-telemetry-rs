@@ -121,7 +121,7 @@ pub enum Telemetry {
 /// ```
 ///
 /// [`PacketParticipantsData`]: ./struct.PacketParticipantsData.html
-#[derive(Debug, CopyGetters, Getters, Clone)]
+#[derive(Debug, Clone, PartialEq, CopyGetters, Getters)]
 pub struct ParticipantData {
     #[getset(get_copy = "pub")]
     ai_controlled: bool,
@@ -140,7 +140,7 @@ pub struct ParticipantData {
 }
 
 impl ParticipantData {
-    pub(crate) fn new(
+    pub fn new(
         ai_controlled: bool,
         driver: Driver,
         team: Team,
@@ -181,7 +181,7 @@ impl ParticipantData {
 ///                  cars on HUD
 /// participants:    List of participants, max 20.
 /// ```
-#[derive(Debug, Getters, CopyGetters, Clone)]
+#[derive(Debug, Clone, PartialEq, Getters, CopyGetters)]
 pub struct PacketParticipantsData {
     #[getset(get = "pub")]
     header: PacketHeader,
@@ -192,7 +192,7 @@ pub struct PacketParticipantsData {
 }
 
 impl PacketParticipantsData {
-    pub(crate) fn new(
+    pub fn new(
         header: PacketHeader,
         num_active_cars: u8,
         participants: Vec<ParticipantData>,
