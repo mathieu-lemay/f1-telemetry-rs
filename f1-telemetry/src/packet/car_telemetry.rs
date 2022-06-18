@@ -41,7 +41,7 @@ pub enum SurfaceType {
 /// surface_type              Driving surface, see appendices
 ///
 /// [`PacketCarTelemetryData`]: ./struct.CarTelemetryData.html
-#[derive(Debug, CopyGetters)]
+#[derive(Debug, PartialEq, CopyGetters)]
 #[getset(get_copy = "pub")]
 pub struct CarTelemetryData {
     speed: u16,
@@ -63,7 +63,7 @@ pub struct CarTelemetryData {
 
 impl CarTelemetryData {
     #[allow(clippy::too_many_arguments)]
-    pub(crate) fn new(
+    pub fn new(
         speed: u16,
         throttle: f32,
         steer: f32,
@@ -123,7 +123,7 @@ pub enum ButtonFlag {
 }
 
 #[allow(clippy::upper_case_acronyms)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, PartialEq)]
 pub enum MFDPanel {
     CarSetup,
     Pits,
@@ -131,6 +131,7 @@ pub enum MFDPanel {
     Engine,
     Temperatures,
     Closed,
+    NotSet,
 }
 
 /// This packet details telemetry for all the cars in the race.
@@ -150,7 +151,7 @@ pub enum MFDPanel {
 /// button_status:      Bit flags specifying which buttons are being
 ///                     pressed currently - see appendices
 /// ```
-#[derive(Debug, CopyGetters, Getters)]
+#[derive(Debug, PartialEq, CopyGetters, Getters)]
 pub struct PacketCarTelemetryData {
     #[getset(get = "pub")]
     header: PacketHeader,
@@ -163,10 +164,28 @@ pub struct PacketCarTelemetryData {
     #[getset(get_copy = "pub")]
     secondary_player_mfd_panel: MFDPanel,
     #[getset(get_copy = "pub")]
-    suggested_gear: i8,
+    suggested_gear: Option<i8>,
 }
 
 impl PacketCarTelemetryData {
+    pub fn new(
+        header: PacketHeader,
+        car_telemetry_data: Vec<CarTelemetryData>,
+        button_status: u32,
+        mfd_panel: MFDPanel,
+        secondary_player_mfd_panel: MFDPanel,
+        suggested_gear: Option<i8>,
+    ) -> Self {
+        PacketCarTelemetryData {
+            header,
+            car_telemetry_data,
+            button_status,
+            mfd_panel,
+            secondary_player_mfd_panel,
+            suggested_gear,
+        }
+    }
+
     pub(crate) fn from_2019(
         header: PacketHeader,
         car_telemetry_data: Vec<CarTelemetryData>,
@@ -176,11 +195,12 @@ impl PacketCarTelemetryData {
             header,
             car_telemetry_data,
             button_status,
-            mfd_panel: MFDPanel::Closed,
-            secondary_player_mfd_panel: MFDPanel::Closed,
-            suggested_gear: 0,
+            mfd_panel: MFDPanel::NotSet,
+            secondary_player_mfd_panel: MFDPanel::NotSet,
+            suggested_gear: None,
         }
     }
+
     pub(crate) fn from_2020(
         header: PacketHeader,
         car_telemetry_data: Vec<CarTelemetryData>,
@@ -195,7 +215,7 @@ impl PacketCarTelemetryData {
             button_status,
             mfd_panel,
             secondary_player_mfd_panel,
-            suggested_gear,
+            suggested_gear: Some(suggested_gear),
         }
     }
 
