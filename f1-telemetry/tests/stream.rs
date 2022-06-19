@@ -26,7 +26,7 @@ fn test_invalid_packet_returns_an_error() {
     assert!(res.is_ok());
     assert_eq!(res.unwrap(), data.len());
 
-    let p = stream.next();
+    let p = utils::get_packet(&stream);
 
     assert_eq!(
         p.unwrap_err(),

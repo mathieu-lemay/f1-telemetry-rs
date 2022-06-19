@@ -1,5 +1,7 @@
 use std::net::UdpSocket;
+use std::{thread, time};
 
+use f1_telemetry::packet::{Packet, UnpackError};
 use f1_telemetry::Stream;
 
 static UDP_BIND_ADDRESS: &str = "127.0.0.1:20777";
@@ -28,4 +30,23 @@ pub fn send_raw_data(stream: &Stream, data: &str) {
         data.len(),
         "Invalid amount of data sent through socket"
     );
+}
+
+pub fn get_packet(stream: &Stream) -> Result<Option<Packet>, UnpackError> {
+    let sleep_duration = time::Duration::from_millis(50);
+
+    for _ in 0..10 {
+        let res = stream.next();
+
+        match res {
+            Ok(Some(_)) | Err(_) => {
+                return res;
+            }
+            _ => {}
+        }
+
+        thread::sleep(sleep_duration);
+    }
+
+    return Ok(None);
 }
