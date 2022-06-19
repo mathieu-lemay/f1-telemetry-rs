@@ -1,6 +1,6 @@
 use std::io::BufRead;
 
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
 
 use crate::packet::header::PacketHeader;
 use crate::packet::session::*;
@@ -126,7 +126,7 @@ fn unpack_safety_car(value: u8) -> Result<SafetyCar, UnpackError> {
 ///                         2 = virtual safety car
 /// network_game:           0 = offline, 1 = online
 /// ```
-#[derive(Serialize, Deserialize)]
+#[derive(Deserialize)]
 struct RawSessionData {
     weather: u8,
     track_temperature: i8,
@@ -150,7 +150,7 @@ struct RawSessionData {
 }
 
 impl PacketSessionData {
-    fn from(header: PacketHeader, session_data: RawSessionData) -> Result<Self, UnpackError> {
+    fn from_2019(header: PacketHeader, session_data: RawSessionData) -> Result<Self, UnpackError> {
         let weather = unpack_weather(session_data.weather)?;
         let session_type = unpack_session_type(session_data.session_type)?;
         let track = unpack_track(session_data.track)?;
@@ -158,7 +158,7 @@ impl PacketSessionData {
         let marshal_zones: Vec<MarshalZone> = session_data
             .marshal_zones
             .iter()
-            .map(|mz| MarshalZone::from(*mz))
+            .map(MarshalZone::from_2019)
             .collect::<Result<Vec<MarshalZone>, UnpackError>>()?;
         let safety_car_status = unpack_safety_car(session_data.safety_car_status)?;
 
@@ -196,14 +196,14 @@ impl PacketSessionData {
 /// zone_start: Fraction (0..1) of way through the lap the marshal zone starts
 /// zone_flag:  -1 = invalid/unknown, 0 = none, 1 = green, 2 = blue, 3 = yellow, 4 = red
 /// ```
-#[derive(Serialize, Deserialize, Copy, Clone)]
+#[derive(Deserialize, Copy, Clone)]
 struct RawMarshalZone {
     zone_start: f32,
     zone_flag: i8,
 }
 
 impl MarshalZone {
-    fn from(mz: RawMarshalZone) -> Result<MarshalZone, UnpackError> {
+    fn from_2019(mz: &RawMarshalZone) -> Result<MarshalZone, UnpackError> {
         let flag = unpack_flag(mz.zone_flag)?;
         Ok(MarshalZone::new(mz.zone_start, flag))
     }
@@ -217,7 +217,7 @@ pub(crate) fn parse_session_data<T: BufRead>(
     assert_packet_size(size, SESSION_PACKET_SIZE)?;
 
     let session_data: RawSessionData = bincode::deserialize_from(reader)?;
-    let packet = PacketSessionData::from(header, session_data)?;
+    let packet = PacketSessionData::from_2019(header, session_data)?;
 
     Ok(packet)
 }

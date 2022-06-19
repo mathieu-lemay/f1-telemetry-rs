@@ -293,8 +293,6 @@ struct RawParticipantData {
 ///                 Will be truncated with … (U+2026) if too long
 /// your_telemetry: The player's UDP setting, 0 = restricted, 1 = public
 /// ```
-///
-/// [`PacketParticipantsData`]: ./struct.PacketParticipantsData.html
 #[derive(Deserialize)]
 struct RawParticipant {
     ai_controlled: bool,
@@ -308,7 +306,7 @@ struct RawParticipant {
 }
 
 impl ParticipantData {
-    fn from(participant: &RawParticipant) -> Result<Self, UnpackError> {
+    fn from_2019(participant: &RawParticipant) -> Result<Self, UnpackError> {
         let name: [u8; 48] = {
             let mut whole: [u8; 48] = [0; 48];
             let (part1, part2) = whole.split_at_mut(participant.name1.len());
@@ -317,14 +315,20 @@ impl ParticipantData {
             whole
         };
 
+        let driver = unpack_driver(participant.driver)?;
+        let team = unpack_team(participant.team)?;
+        let nationality = unpack_nationality(participant.nationality)?;
+        let name = unpack_string(&name)?;
+        let telemetry = unpack_telemetry(participant.telemetry)?;
+
         Ok(ParticipantData::new(
             participant.ai_controlled,
-            unpack_driver(participant.driver)?,
-            unpack_team(participant.team)?,
+            driver,
+            team,
             participant.race_number,
-            unpack_nationality(participant.nationality)?,
-            unpack_string(&name)?,
-            unpack_telemetry(participant.telemetry)?,
+            nationality,
+            name,
+            telemetry,
         ))
     }
 }
@@ -340,7 +344,7 @@ pub(crate) fn parse_participants_data<T: BufRead>(
     let participants: Vec<ParticipantData> = participant_data
         .participants
         .iter()
-        .map(ParticipantData::from)
+        .map(ParticipantData::from_2019)
         .collect::<Result<Vec<ParticipantData>, UnpackError>>()?;
 
     Ok(PacketParticipantsData::new(

@@ -208,24 +208,6 @@ impl PacketCarTelemetryData {
         }
     }
 
-    pub(crate) fn from_2020(
-        header: PacketHeader,
-        car_telemetry_data: Vec<CarTelemetryData>,
-        button_status: u32,
-        mfd_panel: MFDPanel,
-        secondary_player_mfd_panel: MFDPanel,
-        suggested_gear: i8,
-    ) -> PacketCarTelemetryData {
-        PacketCarTelemetryData {
-            header,
-            car_telemetry_data,
-            button_status,
-            mfd_panel,
-            secondary_player_mfd_panel,
-            suggested_gear: Some(suggested_gear),
-        }
-    }
-
     pub fn get_pressed_buttons(&self) -> Vec<ButtonFlag> {
         let mask = self.button_status;
         let mut buttons = Vec::new();

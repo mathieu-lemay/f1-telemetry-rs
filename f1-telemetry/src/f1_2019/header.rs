@@ -21,7 +21,6 @@ use super::consts::*;
 /// session_time:               session timestamp
 /// frame_identifier:           identifier for the frame the data was retrieved on
 /// player_car_index:           index of player's car in the array
-/// secondary_player_car_index: index of secondary player's car in the array (255 if no 2nd player)
 /// ```
 ///
 /// ### Packet Types
@@ -51,7 +50,7 @@ pub(super) struct Header {
 }
 
 impl PacketHeader {
-    fn from(header: &Header) -> Result<Self, UnpackError> {
+    fn from_2019(header: &Header) -> Result<Self, UnpackError> {
         let packet_type = parse_packet_type(header.packet_id)?;
 
         Ok(PacketHeader::new(
@@ -91,5 +90,5 @@ pub(crate) fn parse_header<T: BufRead>(
 
     let header: Header = bincode::deserialize_from(reader)?;
 
-    PacketHeader::from(&header)
+    PacketHeader::from_2019(&header)
 }

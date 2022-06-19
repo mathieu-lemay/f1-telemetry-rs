@@ -180,7 +180,7 @@ struct RawCarStatus {
 }
 
 impl CarStatusData {
-    fn from(packet: &RawCarStatus) -> Result<Self, UnpackError> {
+    fn from_2019(packet: &RawCarStatus) -> Result<Self, UnpackError> {
         let traction_control = unpack_traction_control(packet.traction_control)?;
         let fuel_mix = unpack_fuel_mix(packet.fuel_mix)?;
         let drs_status = unpack_drs(packet.drs_allowed)?;
@@ -235,7 +235,7 @@ pub fn parse_car_status_data<T: BufRead>(
 
     let car_status_data = car_status
         .iter()
-        .map(CarStatusData::from)
+        .map(CarStatusData::from_2019)
         .collect::<Result<Vec<CarStatusData>, UnpackError>>()?;
 
     Ok(PacketCarStatusData::new(header, car_status_data))

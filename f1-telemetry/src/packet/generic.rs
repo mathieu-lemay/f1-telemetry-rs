@@ -307,3 +307,14 @@ where
         }
     }
 }
+
+impl From<WheelData<u8>> for WheelData<u16> {
+    fn from(wheel_data: WheelData<u8>) -> Self {
+        Self {
+            rear_left: wheel_data.rear_left as u16,
+            rear_right: wheel_data.rear_right as u16,
+            front_left: wheel_data.front_left as u16,
+            front_right: wheel_data.front_right as u16,
+        }
+    }
+}

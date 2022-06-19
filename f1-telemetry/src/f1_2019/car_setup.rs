@@ -12,34 +12,36 @@ use super::consts::*;
 
 /// This packet details the car setups for each vehicle in the session.
 ///
-/// Note that in multiplayer games, other player cars will appear as blank, you will only be able to see your car setup and AI cars.
+/// Note that in multiplayer games, other player cars will appear as blank, you will only be able to
+/// see your car setup and AI cars.
 ///
 /// Frequency: 2 per second
 /// Size: 843 bytes
 /// Version: 1
 ///
 /// ## Specification
-/// front_wing              Front wing aero
-/// rear_wing               Rear wing aero
-/// on_throttle             Differential adjustment on throttle (percentage)
-/// off_throttle            Differential adjustment off throttle (percentage)
-/// front_camber            Front camber angle (suspension geometry)
-/// rear_camber             Rear camber angle (suspension geometry)
-/// front_toe               Front toe angle (suspension geometry)
-/// rear_toe                Rear toe angle (suspension geometry)
-/// front_suspension        Front suspension
-/// rear_suspension         Rear suspension
-/// front_anti_roll_bar     Front anti-roll bar
-/// rear_anti_roll_bar      Rear anti-roll bar
-/// front_suspension_height Front ride height
-/// rear_suspension_height  Rear ride height
-/// brake_pressure          Brake pressure (percentage)
-/// brake_bias              Brake bias (percentage)
-/// tyres_pressure          Tyres pressure
-/// ballast                 Ballast
-/// fuel_load               Fuel load
-///
-/// [`PacketCarSetupData`]: ./struct.CarSetupData.html
+/// ```text
+/// front_wing:                 Front wing aero
+/// rear_wing:                  Rear wing aero
+/// on_throttle:                Differential adjustment on throttle (percentage)
+/// off_throttle:               Differential adjustment off throttle (percentage)
+/// front_camber:               Front camber angle (suspension geometry)
+/// rear_camber:                Rear camber angle (suspension geometry)
+/// front_toe:                  Front toe angle (suspension geometry)
+/// rear_toe:                   Rear toe angle (suspension geometry)
+/// front_suspension:           Front suspension
+/// rear_suspension:            Rear suspension
+/// front_anti_roll_bar:        Front anti-roll bar
+/// rear_anti_roll_bar:         Rear anti-roll bar
+/// front_suspension_height:    Front ride height
+/// rear_suspension_height:     Rear ride height
+/// brake_pressure:             Brake pressure (percentage)
+/// brake_bias:                 Brake bias (percentage)
+/// front_tyre_pressure:        Front tyre pressure (PSI)
+/// rear_tyre_pressure:         Rear tyre pressure (PSI)
+/// ballast:                    Ballast
+/// fuel_load:                  Fuel load
+/// ```
 #[derive(Deserialize)]
 struct RawCarSetup {
     front_wing: u8,
@@ -65,7 +67,7 @@ struct RawCarSetup {
 }
 
 impl CarSetupData {
-    fn from(car_setup: &RawCarSetup) -> Self {
+    fn from_2019(car_setup: &RawCarSetup) -> Self {
         let tyres_pressure = WheelData {
             rear_left: car_setup.rear_tyre_pressure,
             rear_right: car_setup.rear_tyre_pressure,
@@ -108,7 +110,7 @@ pub(crate) fn parse_car_setup_data<T: BufRead>(
 
     let car_setups: Vec<CarSetupData> = car_setups
         .iter()
-        .map(CarSetupData::from)
+        .map(CarSetupData::from_2019)
         .collect::<Vec<CarSetupData>>();
 
     Ok(PacketCarSetupData::new(header, car_setups))

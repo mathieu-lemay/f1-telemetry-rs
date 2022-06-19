@@ -1,34 +1,10 @@
-use std::io::BufRead;
-
-use byteorder::{LittleEndian, ReadBytesExt};
-
 use crate::packet::UnpackError;
-
-pub(crate) fn read_string<T: BufRead>(reader: &mut T, n: usize) -> Result<String, UnpackError> {
-    let mut chars: Vec<u8> = (0..n).map(|_| reader.read_u8().unwrap()).collect();
-    let nb_chars = chars.iter().position(|&c| c == 0).unwrap_or(chars.len());
-    chars.truncate(nb_chars);
-
-    unpack_string(&chars)
-}
 
 pub(crate) fn unpack_string(chars: &[u8]) -> Result<String, UnpackError> {
     match std::str::from_utf8(chars) {
         Ok(v) => Ok(v.trim_end_matches(char::from(0)).to_string()),
         Err(e) => Err(UnpackError(format!("Error decoding name: {}", e))),
     }
-}
-
-pub(crate) fn read_millis_f32<T: BufRead>(reader: &mut T) -> u32 {
-    let seconds = reader.read_f32::<LittleEndian>().unwrap();
-
-    seconds_to_millis(seconds as f64)
-}
-
-pub(crate) fn read_millis_f64<T: BufRead>(reader: &mut T) -> u32 {
-    let seconds = reader.read_f64::<LittleEndian>().unwrap();
-
-    seconds_to_millis(seconds)
 }
 
 #[inline]

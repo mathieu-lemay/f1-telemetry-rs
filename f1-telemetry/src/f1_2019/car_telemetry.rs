@@ -133,7 +133,7 @@ struct RawCarTelemetry {
 }
 
 impl CarTelemetryData {
-    fn from(packet: &RawCarTelemetry) -> Result<Self, UnpackError> {
+    fn from_2019(packet: &RawCarTelemetry) -> Result<Self, UnpackError> {
         let surface_types = WheelData {
             rear_left: unpack_surface_type(packet.surface_types.rear_left)?,
             rear_right: unpack_surface_type(packet.surface_types.rear_right)?,
@@ -173,7 +173,7 @@ pub(crate) fn parse_car_telemetry_data<T: BufRead>(
     let car_telemetry_data = packet
         .car_telemetry
         .iter()
-        .map(CarTelemetryData::from)
+        .map(CarTelemetryData::from_2019)
         .collect::<Result<Vec<CarTelemetryData>, UnpackError>>()?;
 
     Ok(PacketCarTelemetryData::new(

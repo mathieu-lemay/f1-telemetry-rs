@@ -59,10 +59,10 @@ fn unpack_driver_status(value: u8) -> Result<DriverStatus, UnpackError> {
 /// penalties:                     Accumulated time penalties in seconds to be added
 /// grid_position:                 Grid position the vehicle started the race in
 /// driver_status:                 Status of driver - 0 = in garage, 1 = flying lap
-//                                 2 = in lap, 3 = out lap, 4 = on track
+///                                2 = in lap, 3 = out lap, 4 = on track
 /// result_status:                 Result status - 0 = invalid, 1 = inactive, 2 = active
-//                                 3 = finished, 4 = disqualified, 5 = not classified
-//                                 6 = retired
+///                                3 = finished, 4 = disqualified, 5 = not classified
+///                                6 = retired
 /// ```
 #[derive(Deserialize)]
 struct RawLapData {
@@ -86,7 +86,7 @@ struct RawLapData {
 }
 
 impl LapData {
-    fn from(car_lap_data: &RawLapData) -> Result<Self, UnpackError> {
+    fn from_2019(car_lap_data: &RawLapData) -> Result<Self, UnpackError> {
         let last_lap_time = seconds_to_millis(car_lap_data.last_lap_time as f64);
         let current_lap_time = seconds_to_millis(car_lap_data.current_lap_time as f64);
         let sector_1_time = seconds_to_millis(car_lap_data.sector_1_time as f64) as u16;
@@ -136,7 +136,7 @@ pub(crate) fn parse_lap_data<T: BufRead>(
 
     let lap_data = lap_data
         .iter()
-        .map(LapData::from)
+        .map(LapData::from_2019)
         .collect::<Result<Vec<LapData>, UnpackError>>()?;
 
     Ok(PacketLapData::new(header, lap_data))

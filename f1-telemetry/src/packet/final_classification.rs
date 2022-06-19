@@ -14,15 +14,14 @@ use super::header::PacketHeader;
 /// points:             Number of points scored
 /// num_pit_stops:      Number of pit stops made
 /// result_status:      Result status
-/// best_lap_time:      Best lap time of the session in seconds
-/// total_race_time:    Total race time in seconds without penalties
+/// best_lap_time:      Best lap time of the session in milliseconds
+/// total_race_time:    Total race time in milliseconds without penalties
 /// penalties_time:     Total penalties accumulated in seconds
 /// num_penalties:      Number of penalties applied to this driver
 /// num_tyre_stints:    Number of tyres stints up to maximum
 /// tyre_stints_actual: Actual tyres used by this driver
 /// tyre_stints_visual: Visual tyres used by this driver
 /// ```
-/// [`PacketFinalClassificationData`]: ./struct.PacketFinalClassificationData.html
 #[derive(Debug, PartialEq, Getters, CopyGetters)]
 pub struct FinalClassification {
     #[getset(get_copy = "pub")]
@@ -91,6 +90,8 @@ impl FinalClassification {
 /// This packet details the final classification at the end of the race, and the data will match
 /// with the post race results screen. This is especially useful for multiplayer games where it
 /// is not always possible to send lap times on the final frame because of network delay.
+///
+/// Frequency: Once at the end of a race
 ///
 /// ## Specification
 /// ```text

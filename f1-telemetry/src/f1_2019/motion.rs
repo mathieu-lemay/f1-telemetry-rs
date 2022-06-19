@@ -40,8 +40,8 @@ use super::consts::*;
 /// front_wheels_angle:      Current front wheels angle in radians
 /// ```
 #[derive(Deserialize)]
-pub(super) struct RawMotionData {
-    car_motion: [RawCarMotion; 20],
+struct RawMotionData {
+    car_motion: [RawCarMotion; NUMBER_CARS],
     suspension_position: WheelData<f32>,
     suspension_velocity: WheelData<f32>,
     suspension_acceleration: WheelData<f32>,
@@ -60,13 +60,13 @@ pub(super) struct RawMotionData {
 }
 
 impl PacketMotionData {
-    pub(super) fn from(header: PacketHeader, motion_data: RawMotionData) -> Self {
+    fn from_2019(header: PacketHeader, motion_data: RawMotionData) -> Self {
         Self::new(
             header,
             motion_data
                 .car_motion
                 .iter()
-                .map(CarMotionData::from)
+                .map(CarMotionData::from_2019)
                 .collect(),
             motion_data.suspension_position,
             motion_data.suspension_velocity,
@@ -131,7 +131,7 @@ struct RawCarMotion {
 }
 
 impl CarMotionData {
-    fn from(car_motion: &RawCarMotion) -> Self {
+    fn from_2019(car_motion: &RawCarMotion) -> Self {
         Self::new(
             car_motion.world_position_x,
             car_motion.world_position_y,
@@ -154,6 +154,7 @@ impl CarMotionData {
         )
     }
 }
+
 pub(crate) fn parse_motion_data<T: BufRead>(
     reader: &mut T,
     header: PacketHeader,
@@ -163,5 +164,5 @@ pub(crate) fn parse_motion_data<T: BufRead>(
 
     let motion_data: RawMotionData = bincode::deserialize_from(reader)?;
 
-    Ok(PacketMotionData::from(header, motion_data))
+    Ok(PacketMotionData::from_2019(header, motion_data))
 }
