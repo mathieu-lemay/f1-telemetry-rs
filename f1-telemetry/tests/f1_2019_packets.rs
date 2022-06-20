@@ -477,54 +477,117 @@ fn test_parse_2019_session_packet() {
         _ => panic!("Invalid packet. Expected Session, got {:?}", &p),
     };
 
-    assert_eq!(actual.header().packet_format(), 2019);
+    assert_eq!(actual.header.packet_format(), 2019);
 
-    let expected = PacketSessionData::new(
-        actual.header().clone(),
-        Weather::LightCloud,
-        33,
-        26,
-        5,
-        4650,
-        SessionType::Race,
-        Track::Catalunya,
-        Formula::F1Modern,
-        7163,
-        7200,
-        80,
-        false,
-        false,
-        255,
-        false,
-        18,
-        vec![
-            MarshalZone::new(0.96982443, Flag::None),
-            MarshalZone::new(0.07268421, Flag::Green),
-            MarshalZone::new(0.15185398, Flag::Blue),
-            MarshalZone::new(0.21676564, Flag::Yellow),
-            MarshalZone::new(0.24085847, Flag::Red),
-            MarshalZone::new(0.32918534, Flag::None),
-            MarshalZone::new(0.37731063, Flag::None),
-            MarshalZone::new(0.42355585, Flag::None),
-            MarshalZone::new(0.519039, Flag::None),
-            MarshalZone::new(0.55978435, Flag::None),
-            MarshalZone::new(0.60588604, Flag::None),
-            MarshalZone::new(0.6434106, Flag::None),
-            MarshalZone::new(0.7212839, Flag::None),
-            MarshalZone::new(0.7810194, Flag::None),
-            MarshalZone::new(0.80435246, Flag::None),
-            MarshalZone::new(0.8529348, Flag::None),
-            MarshalZone::new(0.8828289, Flag::None),
-            MarshalZone::new(0.9086754, Flag::None),
-            MarshalZone::new(0.0, Flag::None),
-            MarshalZone::new(0.0, Flag::None),
-            MarshalZone::new(0.0, Flag::None),
+    let expected = PacketSessionData {
+        header: actual.header.clone(),
+        weather: Weather::LightCloud,
+        track_temperature: 33,
+        air_temperature: 26,
+        total_laps: 5,
+        track_length: 4650,
+        session_type: SessionType::Race,
+        track: Track::Catalunya,
+        formula: Formula::F1Modern,
+        session_time_left: 7163,
+        session_duration: 7200,
+        pit_speed_limit: 80,
+        game_paused: false,
+        is_spectating: false,
+        spectator_car_index: 255,
+        sli_pro_native_support: false,
+        num_marshal_zones: 18,
+        marshal_zones: vec![
+            MarshalZone {
+                zone_start: 0.96982443,
+                zone_flag: Flag::None,
+            },
+            MarshalZone {
+                zone_start: 0.07268421,
+                zone_flag: Flag::Green,
+            },
+            MarshalZone {
+                zone_start: 0.15185398,
+                zone_flag: Flag::Blue,
+            },
+            MarshalZone {
+                zone_start: 0.21676564,
+                zone_flag: Flag::Yellow,
+            },
+            MarshalZone {
+                zone_start: 0.24085847,
+                zone_flag: Flag::Red,
+            },
+            MarshalZone {
+                zone_start: 0.32918534,
+                zone_flag: Flag::None,
+            },
+            MarshalZone {
+                zone_start: 0.37731063,
+                zone_flag: Flag::None,
+            },
+            MarshalZone {
+                zone_start: 0.42355585,
+                zone_flag: Flag::None,
+            },
+            MarshalZone {
+                zone_start: 0.519039,
+                zone_flag: Flag::None,
+            },
+            MarshalZone {
+                zone_start: 0.55978435,
+                zone_flag: Flag::None,
+            },
+            MarshalZone {
+                zone_start: 0.60588604,
+                zone_flag: Flag::None,
+            },
+            MarshalZone {
+                zone_start: 0.6434106,
+                zone_flag: Flag::None,
+            },
+            MarshalZone {
+                zone_start: 0.7212839,
+                zone_flag: Flag::None,
+            },
+            MarshalZone {
+                zone_start: 0.7810194,
+                zone_flag: Flag::None,
+            },
+            MarshalZone {
+                zone_start: 0.80435246,
+                zone_flag: Flag::None,
+            },
+            MarshalZone {
+                zone_start: 0.8529348,
+                zone_flag: Flag::None,
+            },
+            MarshalZone {
+                zone_start: 0.8828289,
+                zone_flag: Flag::None,
+            },
+            MarshalZone {
+                zone_start: 0.9086754,
+                zone_flag: Flag::None,
+            },
+            MarshalZone {
+                zone_start: 0.0,
+                zone_flag: Flag::None,
+            },
+            MarshalZone {
+                zone_start: 0.0,
+                zone_flag: Flag::None,
+            },
+            MarshalZone {
+                zone_start: 0.0,
+                zone_flag: Flag::None,
+            },
         ],
-        SafetyCar::None,
-        false,
-        None,
-        None,
-    );
+        safety_car_status: SafetyCar::None,
+        network_game: false,
+        num_weather_forecast_samples: 0,
+        weather_forecast_samples: vec![],
+    };
 
     assert_eq!(actual, expected);
 }

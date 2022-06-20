@@ -77,17 +77,17 @@ impl GameState {
     }
 
     fn parse_session_data(&mut self, session: &PacketSessionData) {
-        self.session_info.session_type = session.session_type();
-        self.session_info.track_name = session.track().name().into();
-        self.session_info.elapsed_time = session.session_duration() - session.session_time_left();
-        self.session_info.duration = session.session_duration();
-        self.session_info.number_of_laps = session.total_laps();
-        self.session_info.safety_car = session.safety_car_status();
-        self.session_info.weather = session.weather();
-        self.session_info.track_temperature = session.track_temperature();
-        self.session_info.air_temperature = session.air_temperature();
-        self.session_info.is_online = session.network_game();
-        self.player_index = session.header().player_car_index()
+        self.session_info.session_type = session.session_type;
+        self.session_info.track_name = session.track.name().into();
+        self.session_info.elapsed_time = session.session_duration - session.session_time_left;
+        self.session_info.duration = session.session_duration;
+        self.session_info.number_of_laps = session.total_laps;
+        self.session_info.safety_car = session.safety_car_status;
+        self.session_info.weather = session.weather;
+        self.session_info.track_temperature = session.track_temperature;
+        self.session_info.air_temperature = session.air_temperature;
+        self.session_info.is_online = session.network_game;
+        self.player_index = session.header.player_car_index()
     }
 
     fn parse_lap_data(&mut self, lap_data: &PacketLapData) {
