@@ -92,36 +92,30 @@ impl LapData {
         let sector_1_time = seconds_to_millis(car_lap_data.sector_1_time as f64) as u16;
         let sector_2_time = seconds_to_millis(car_lap_data.sector_2_time as f64) as u16;
         let best_lap_time = seconds_to_millis(car_lap_data.best_lap_time as f64);
+        let pit_status = unpack_pit_status(car_lap_data.pit_status)?;
+        let driver_status = unpack_driver_status(car_lap_data.driver_status)?;
+        let result_status = unpack_result_status(car_lap_data.result_status)?;
 
-        Ok(Self::new(
+        Ok(Self {
             last_lap_time,
             current_lap_time,
             sector_1_time,
             sector_2_time,
             best_lap_time,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            car_lap_data.lap_distance,
-            car_lap_data.total_distance,
-            car_lap_data.safety_car_delta,
-            car_lap_data.car_position,
-            car_lap_data.current_lap_num,
-            unpack_pit_status(car_lap_data.pit_status)?,
-            car_lap_data.sector,
-            car_lap_data.current_lap_invalid,
-            car_lap_data.penalties,
-            car_lap_data.grid_position,
-            unpack_driver_status(car_lap_data.driver_status)?,
-            unpack_result_status(car_lap_data.result_status)?,
-        ))
+            lap_distance: car_lap_data.lap_distance,
+            total_distance: car_lap_data.total_distance,
+            safety_car_delta: car_lap_data.safety_car_delta,
+            car_position: car_lap_data.car_position,
+            current_lap_num: car_lap_data.current_lap_num,
+            pit_status,
+            sector: car_lap_data.sector,
+            current_lap_invalid: car_lap_data.current_lap_invalid,
+            penalties: car_lap_data.penalties,
+            grid_position: car_lap_data.grid_position,
+            driver_status,
+            result_status,
+            ..Default::default()
+        })
     }
 }
 
@@ -139,5 +133,5 @@ pub(crate) fn parse_lap_data<T: BufRead>(
         .map(LapData::from_2019)
         .collect::<Result<Vec<LapData>, UnpackError>>()?;
 
-    Ok(PacketLapData::new(header, lap_data))
+    Ok(PacketLapData { header, lap_data })
 }

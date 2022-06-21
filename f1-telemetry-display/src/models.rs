@@ -103,26 +103,26 @@ impl GameState {
         let mut best_lap = u32::MAX;
 
         for idx in 0..self.lap_infos.len() {
-            let ld = &lap_data.lap_data()[idx];
+            let ld = &lap_data.lap_data[idx];
             let li = &mut self.lap_infos[idx];
 
-            li.position = ld.car_position();
-            li.current_lap_time = ld.current_lap_time();
-            li.best_lap_time = ld.best_lap_time();
-            li.current_lap_num = ld.current_lap_num();
-            li.status = ld.result_status();
-            li.in_pit = ld.pit_status() != PitStatus::None;
-            li.lap_invalid = ld.current_lap_invalid();
-            li.penalties = ld.penalties();
-            li.lap_distance = ld.lap_distance();
-            li.total_distance = ld.total_distance();
-            li.best_sector_1 = ld.best_overall_sector_1_time() as u32;
-            li.best_sector_2 = ld.best_overall_sector_2_time() as u32;
-            li.best_sector_3 = ld.best_overall_sector_3_time() as u32;
+            li.position = ld.car_position;
+            li.current_lap_time = ld.current_lap_time;
+            li.best_lap_time = ld.best_lap_time;
+            li.current_lap_num = ld.current_lap_num;
+            li.status = ld.result_status;
+            li.in_pit = ld.pit_status != PitStatus::None;
+            li.lap_invalid = ld.current_lap_invalid;
+            li.penalties = ld.penalties;
+            li.lap_distance = ld.lap_distance;
+            li.total_distance = ld.total_distance;
+            li.best_sector_1 = ld.best_overall_sector_1_time as u32;
+            li.best_sector_2 = ld.best_overall_sector_2_time as u32;
+            li.best_sector_3 = ld.best_overall_sector_3_time as u32;
 
-            let new_s1 = ld.sector_1_time() as u32;
-            let new_s2 = ld.sector_2_time() as u32;
-            let new_ll = ld.last_lap_time();
+            let new_s1 = ld.sector_1_time as u32;
+            let new_s2 = ld.sector_2_time as u32;
+            let new_ll = ld.last_lap_time;
 
             if new_s1 != li.sector_1 && new_s1 > 0 {
                 li.sector_1 = new_s1;
@@ -139,7 +139,7 @@ impl GameState {
 
                 if li.sector_1 != 0 && li.sector_2 != 0 {
                     // Hack to prevent inaccuracies with last_lap_time being a float, if possible.
-                    if ld.best_overall_sector_3_lap_num() == li.current_lap_num - 1 {
+                    if ld.best_overall_sector_3_lap_num == li.current_lap_num - 1 {
                         li.sector_3 = li.best_sector_3;
                     } else {
                         li.sector_3 = li.last_lap_time - li.sector_2 - li.sector_1;
@@ -174,9 +174,9 @@ impl GameState {
 
     fn parse_lap_data_current_lap(&mut self, lap_data: &PacketLapData) {
         self.session_info.current_lap = lap_data
-            .lap_data()
+            .lap_data
             .iter()
-            .map(|l| l.current_lap_num())
+            .map(|l| l.current_lap_num)
             .max()
             .unwrap_or(0)
     }
@@ -188,13 +188,13 @@ impl GameState {
         let mut max = -INFINITY;
 
         for (i, p) in self.participants.iter().enumerate() {
-            let ld = &lap_data.lap_data()[i];
+            let ld = &lap_data.lap_data[i];
 
-            if ld.result_status() != ResultStatus::Active {
+            if ld.result_status != ResultStatus::Active {
                 continue;
             }
 
-            let distance = ld.total_distance();
+            let distance = ld.total_distance;
 
             if distance > max {
                 max = distance;
@@ -206,7 +206,7 @@ impl GameState {
             positions
                 .entry(p.team)
                 .or_insert_with(Vec::new)
-                .push(ld.total_distance());
+                .push(ld.total_distance);
         }
 
         self.relative_positions = RelativePositions {
