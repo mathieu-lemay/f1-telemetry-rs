@@ -32,7 +32,7 @@ pub(crate) fn parse_packet(size: usize, packet: &[u8]) -> Result<Packet, UnpackE
     let mut cursor = Cursor::new(packet);
     let header = parse_header(&mut cursor, size)?;
 
-    match header.packet_type() {
+    match header.packet_type {
         PacketType::Motion => {
             let packet = parse_motion_data(&mut cursor, header, size)?;
 

@@ -1,7 +1,4 @@
-use getset::CopyGetters;
-
 use crate::packet::PacketType;
-use crate::utils::seconds_to_millis;
 
 /// The header for each of the UDP telemetry packets.
 ///
@@ -22,46 +19,16 @@ use crate::utils::seconds_to_millis;
 /// Possible `packet_type` values: [`PacketType`].
 ///
 /// [`PacketType`]: ../enum.PacketType.html
-#[derive(Debug, PartialEq, CopyGetters, Clone)]
-#[getset(get_copy = "pub")]
+#[derive(Debug, PartialEq, Clone)]
 pub struct PacketHeader {
-    packet_format: u16,
-    game_major_version: u8,
-    game_minor_version: u8,
-    packet_version: u8,
-    packet_type: PacketType,
-    session_uid: u64,
-    session_time: u32,
-    frame_identifier: u32,
-    player_car_index: u8,
-    secondary_player_car_index: Option<u8>,
-}
-
-#[allow(clippy::too_many_arguments)]
-impl PacketHeader {
-    pub(crate) fn new(
-        packet_format: u16,
-        game_major_version: u8,
-        game_minor_version: u8,
-        packet_version: u8,
-        packet_id: PacketType,
-        session_uid: u64,
-        session_time: f32,
-        frame_identifier: u32,
-        player_car_index: u8,
-        secondary_player_car_index: Option<u8>,
-    ) -> Self {
-        Self {
-            packet_format,
-            game_major_version,
-            game_minor_version,
-            packet_version,
-            packet_type: packet_id,
-            session_uid,
-            session_time: seconds_to_millis(session_time as f64),
-            frame_identifier,
-            player_car_index,
-            secondary_player_car_index,
-        }
-    }
+    pub packet_format: u16,
+    pub game_major_version: u8,
+    pub game_minor_version: u8,
+    pub packet_version: u8,
+    pub packet_type: PacketType,
+    pub session_uid: u64,
+    pub session_time: u32,
+    pub frame_identifier: u32,
+    pub player_car_index: u8,
+    pub secondary_player_car_index: Option<u8>,
 }

@@ -64,7 +64,7 @@ impl GameState {
     }
 
     fn validate_session(&mut self, packet: &Packet) {
-        let suid = packet.header().session_uid();
+        let suid = packet.header().session_uid;
 
         if self.session_uid.is_some() && self.session_uid.unwrap() == suid {
             return;
@@ -87,7 +87,7 @@ impl GameState {
         self.session_info.track_temperature = session.track_temperature;
         self.session_info.air_temperature = session.air_temperature;
         self.session_info.is_online = session.network_game;
-        self.player_index = session.header.player_car_index()
+        self.player_index = session.header.player_car_index
     }
 
     fn parse_lap_data(&mut self, lap_data: &PacketLapData) {
@@ -237,7 +237,7 @@ impl GameState {
             _ => None,
         };
 
-        self.event_info.timestamp = event_data.header().session_time();
+        self.event_info.timestamp = event_data.header().session_time;
         self.event_info.description = evt.description().to_string();
         self.event_info.driver_name = driver_name;
         self.event_info.detail = detail;
@@ -281,7 +281,7 @@ impl GameState {
     }
 
     fn parse_telemetry_data(&mut self, telemetry_data: &PacketCarTelemetryData) {
-        let player_index = telemetry_data.header().player_car_index();
+        let player_index = telemetry_data.header().player_car_index;
         let td = &telemetry_data.car_telemetry_data()[player_index as usize];
 
         self.telemetry_info.speed = td.speed();
@@ -299,7 +299,7 @@ impl GameState {
     }
 
     fn parse_motion_data(&mut self, motion_data: &PacketMotionData) {
-        let player_index = motion_data.header().player_car_index();
+        let player_index = motion_data.header().player_car_index;
         let md = &motion_data.motion_data()[player_index as usize];
 
         self.motion_info.suspension_position = motion_data.suspension_position();
@@ -375,7 +375,7 @@ impl GameState {
             li.tyre_compound = cs.visual_tyre_compound();
         }
 
-        let player_index = car_status_data.header().player_car_index();
+        let player_index = car_status_data.header().player_car_index;
         let csd = &car_status_data.car_status_data()[player_index as usize];
 
         self.car_status.tyres_damage = csd.tyres_damage();

@@ -43,7 +43,7 @@ fn test_parse_2020_motion_packet() {
         _ => panic!("Invalid packet. Expected Motion, got {:?}", &p),
     };
 
-    assert_eq!(actual.header().packet_format(), 2020);
+    assert_eq!(actual.header().packet_format, 2020);
 
     let expected = PacketMotionData::new(
         actual.header().clone(),
@@ -489,7 +489,7 @@ fn test_parse_2020_session_packet() {
         _ => panic!("Invalid packet. Expected Session, got {:?}", &p),
     };
 
-    assert_eq!(actual.header.packet_format(), 2020);
+    assert_eq!(actual.header.packet_format, 2020);
 
     let expected = PacketSessionData {
         header: actual.header.clone(),
@@ -759,7 +759,7 @@ fn test_parse_2020_lap_packet() {
         _ => panic!("Invalid packet. Expected Lap, got {:?}", &p),
     };
 
-    assert_eq!(actual.header().packet_format(), 2020);
+    assert_eq!(actual.header().packet_format, 2020);
 
     let expected = PacketLapData::new(
         actual.header().clone(),
@@ -1429,7 +1429,7 @@ fn test_parse_2020_event_packet() {
         _ => panic!("Invalid packet. Expected Event, got {:?}", &p),
     };
 
-    assert_eq!(actual.header().packet_format(), 2020);
+    assert_eq!(actual.header().packet_format, 2020);
 
     let expected = PacketEventData::new(
         actual.header().clone(),
@@ -1453,7 +1453,7 @@ fn test_parse_2020_participants_packet() {
         _ => panic!("Invalid packet. Expected Participants, got {:?}", &p),
     };
 
-    assert_eq!(actual.header().packet_format(), 2020);
+    assert_eq!(actual.header().packet_format, 2020);
 
     let expected = PacketParticipantsData::new(
         actual.header().clone(),
@@ -1677,7 +1677,7 @@ fn test_parse_2020_car_setups_packet() {
         _ => panic!("Invalid packet. Expected CarSetups, got {:?}", &p),
     };
 
-    assert_eq!(actual.header().packet_format(), 2020);
+    assert_eq!(actual.header().packet_format, 2020);
 
     let expected = PacketCarSetupData::new(
         actual.header().clone(),
@@ -2164,7 +2164,7 @@ fn test_parse_2020_car_telemetry_packet() {
         _ => panic!("Invalid packet. Expected CarTelemetry, got {:?}", &p),
     };
 
-    assert_eq!(actual.header().packet_format(), 2020);
+    assert_eq!(actual.header().packet_format, 2020);
 
     let expected = PacketCarTelemetryData::new(
         actual.header().clone(),
@@ -2677,7 +2677,7 @@ fn test_parse_2020_car_status_packet() {
         _ => panic!("Invalid packet. Expected CarStatus, got {:?}", &p),
     };
 
-    assert_eq!(actual.header().packet_format(), 2020);
+    assert_eq!(actual.header().packet_format, 2020);
 
     let expected = PacketCarStatusData::new(
         actual.header().clone(),
@@ -3406,7 +3406,7 @@ fn test_parse_2020_final_classification_packet() {
         _ => panic!("Invalid packet. Expected LobbyInfo, got {:?}", &p),
     };
 
-    assert_eq!(actual.header().packet_format(), 2020);
+    assert_eq!(actual.header().packet_format, 2020);
 
     let expected = PacketFinalClassificationData::new(
         actual.header().clone(),
@@ -4158,7 +4158,7 @@ fn test_parse_2020_lobby_info_packet() {
         _ => panic!("Invalid packet. Expected LobbyInfo, got {:?}", &p),
     };
 
-    assert_eq!(actual.header().packet_format(), 2020);
+    assert_eq!(actual.header().packet_format, 2020);
 
     let expected = PacketLobbyInfoData::new(
         actual.header().clone(),
