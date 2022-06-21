@@ -322,25 +322,25 @@ impl GameState {
         let mut laps: i8 = 0;
 
         for i in 0..self.final_classifications.len() {
-            let fc = &classification_data.final_classifications()[i];
+            let fc = &classification_data.final_classifications[i];
             let fi = &mut self.final_classifications[i];
 
-            fi.position = fc.position();
+            fi.position = fc.position;
 
-            fi.best_lap_time = fc.best_lap_time();
-            fi.grid_position = fc.grid_position();
-            fi.total_race_time = fc.total_race_time();
-            fi.num_laps = fc.num_laps();
-            fi.num_pit_stops = fc.num_pit_stops();
-            fi.penalties = fc.penalties_time();
+            fi.best_lap_time = fc.best_lap_time;
+            fi.grid_position = fc.grid_position;
+            fi.total_race_time = fc.total_race_time;
+            fi.num_laps = fc.num_laps;
+            fi.num_pit_stops = fc.num_pit_stops;
+            fi.penalties = fc.penalties_time;
             fi.tyres_visual = fc
-                .tyre_stints_visual()
+                .tyre_stints_visual
                 .iter()
                 .filter(|&&t| t != TyreCompoundVisual::Invalid)
                 .copied()
                 .collect();
-            fi.points = fc.points();
-            fi.status = fc.result_status();
+            fi.points = fc.points;
+            fi.status = fc.result_status;
 
             if fi.position == 1 {
                 race_time = fi.total_race_time;
