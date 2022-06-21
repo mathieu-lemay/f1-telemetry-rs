@@ -51,7 +51,7 @@ pub enum Packet {
 impl Packet {
     pub fn header(&self) -> &PacketHeader {
         match self {
-            Packet::Motion(p) => p.header(),
+            Packet::Motion(p) => &p.header,
             Packet::Session(p) => &p.header,
             Packet::Lap(p) => p.header(),
             Packet::Event(p) => p.header(),

@@ -299,21 +299,21 @@ impl GameState {
     }
 
     fn parse_motion_data(&mut self, motion_data: &PacketMotionData) {
-        let player_index = motion_data.header().player_car_index;
-        let md = &motion_data.motion_data()[player_index as usize];
+        let player_index = motion_data.header.player_car_index;
+        let md = &motion_data.motion_data[player_index as usize];
 
-        self.motion_info.suspension_position = motion_data.suspension_position();
-        self.motion_info.suspension_velocity = motion_data.suspension_velocity();
-        self.motion_info.suspension_acceleration = motion_data.suspension_acceleration();
-        self.motion_info.wheel_speed = motion_data.wheel_speed();
-        self.motion_info.wheel_slip = motion_data.wheel_slip();
-        self.motion_info.front_wheels_angle = motion_data.front_wheels_angle();
-        self.motion_info.g_force_lateral = md.g_force_lateral();
-        self.motion_info.g_force_longitudinal = md.g_force_longitudinal();
-        self.motion_info.g_force_vertical = md.g_force_vertical();
-        self.motion_info.yaw = md.yaw();
-        self.motion_info.pitch = md.pitch();
-        self.motion_info.roll = md.roll();
+        self.motion_info.suspension_position = motion_data.suspension_position;
+        self.motion_info.suspension_velocity = motion_data.suspension_velocity;
+        self.motion_info.suspension_acceleration = motion_data.suspension_acceleration;
+        self.motion_info.wheel_speed = motion_data.wheel_speed;
+        self.motion_info.wheel_slip = motion_data.wheel_slip;
+        self.motion_info.front_wheels_angle = motion_data.front_wheels_angle;
+        self.motion_info.g_force_lateral = md.g_force_lateral;
+        self.motion_info.g_force_longitudinal = md.g_force_longitudinal;
+        self.motion_info.g_force_vertical = md.g_force_vertical;
+        self.motion_info.yaw = md.yaw;
+        self.motion_info.pitch = md.pitch;
+        self.motion_info.roll = md.roll;
     }
 
     fn parse_final_classification(&mut self, classification_data: &PacketFinalClassificationData) {

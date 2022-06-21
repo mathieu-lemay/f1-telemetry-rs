@@ -1,5 +1,3 @@
-use getset::{CopyGetters, Getters};
-
 use crate::packet::generic::WheelData;
 
 use super::header::PacketHeader;
@@ -31,72 +29,26 @@ use super::header::PacketHeader;
 /// pitch:                Pitch angle in radians
 /// roll:                 Roll angle in radians
 /// ```
-#[derive(Debug, PartialEq, CopyGetters)]
-#[getset(get_copy = "pub")]
+#[derive(Debug, PartialEq)]
 pub struct CarMotionData {
-    world_position_x: f32,
-    world_position_y: f32,
-    world_position_z: f32,
-    world_velocity_x: f32,
-    world_velocity_y: f32,
-    world_velocity_z: f32,
-    world_forward_dir_x: i16,
-    world_forward_dir_y: i16,
-    world_forward_dir_z: i16,
-    world_right_dir_x: i16,
-    world_right_dir_y: i16,
-    world_right_dir_z: i16,
-    g_force_lateral: f32,
-    g_force_longitudinal: f32,
-    g_force_vertical: f32,
-    yaw: f32,
-    pitch: f32,
-    roll: f32,
-}
-
-impl CarMotionData {
-    #[allow(clippy::too_many_arguments)]
-    pub fn new(
-        world_position_x: f32,
-        world_position_y: f32,
-        world_position_z: f32,
-        world_velocity_x: f32,
-        world_velocity_y: f32,
-        world_velocity_z: f32,
-        world_forward_dir_x: i16,
-        world_forward_dir_y: i16,
-        world_forward_dir_z: i16,
-        world_right_dir_x: i16,
-        world_right_dir_y: i16,
-        world_right_dir_z: i16,
-        g_force_lateral: f32,
-        g_force_longitudinal: f32,
-        g_force_vertical: f32,
-        yaw: f32,
-        pitch: f32,
-        roll: f32,
-    ) -> CarMotionData {
-        CarMotionData {
-            world_position_x,
-            world_position_y,
-            world_position_z,
-            world_velocity_x,
-            world_velocity_y,
-            world_velocity_z,
-            world_forward_dir_x,
-            world_forward_dir_y,
-            world_forward_dir_z,
-            world_right_dir_x,
-            world_right_dir_y,
-            world_right_dir_z,
-            g_force_lateral,
-            g_force_longitudinal,
-            g_force_vertical,
-            yaw,
-            pitch,
-            roll,
-        }
-    }
+    pub world_position_x: f32,
+    pub world_position_y: f32,
+    pub world_position_z: f32,
+    pub world_velocity_x: f32,
+    pub world_velocity_y: f32,
+    pub world_velocity_z: f32,
+    pub world_forward_dir_x: i16,
+    pub world_forward_dir_y: i16,
+    pub world_forward_dir_z: i16,
+    pub world_right_dir_x: i16,
+    pub world_right_dir_y: i16,
+    pub world_right_dir_z: i16,
+    pub g_force_lateral: f32,
+    pub g_force_longitudinal: f32,
+    pub g_force_vertical: f32,
+    pub yaw: f32,
+    pub pitch: f32,
+    pub roll: f32,
 }
 
 /// The motion packet gives physics data for all the cars being driven. There is additional data for
@@ -126,85 +78,25 @@ impl CarMotionData {
 /// angular_acceleration_z:  Angular acceleration z-component
 /// front_wheels_angle:      Current front wheels angle in radians
 /// ```
-#[derive(Debug, PartialEq, CopyGetters, Getters)]
+#[derive(Debug, PartialEq)]
 pub struct PacketMotionData {
-    #[getset(get = "pub")]
-    header: PacketHeader,
-    #[getset(get = "pub")]
-    motion_data: Vec<CarMotionData>,
+    pub header: PacketHeader,
+    pub motion_data: Vec<CarMotionData>,
 
     // Extra player car ONLY data
-    #[getset(get_copy = "pub")]
-    suspension_position: WheelData<f32>,
-    #[getset(get_copy = "pub")]
-    suspension_velocity: WheelData<f32>,
-    #[getset(get_copy = "pub")]
-    suspension_acceleration: WheelData<f32>,
-    #[getset(get_copy = "pub")]
-    wheel_speed: WheelData<f32>,
-    #[getset(get_copy = "pub")]
-    wheel_slip: WheelData<f32>,
-    #[getset(get_copy = "pub")]
-    local_velocity_x: f32,
-    #[getset(get_copy = "pub")]
-    local_velocity_y: f32,
-    #[getset(get_copy = "pub")]
-    local_velocity_z: f32,
-    #[getset(get_copy = "pub")]
-    angular_velocity_x: f32,
-    #[getset(get_copy = "pub")]
-    angular_velocity_y: f32,
-    #[getset(get_copy = "pub")]
-    angular_velocity_z: f32,
-    #[getset(get_copy = "pub")]
-    angular_acceleration_x: f32,
-    #[getset(get_copy = "pub")]
-    angular_acceleration_y: f32,
-    #[getset(get_copy = "pub")]
-    angular_acceleration_z: f32,
-    #[getset(get_copy = "pub")]
-    front_wheels_angle: f32,
-}
-
-impl PacketMotionData {
-    #[allow(clippy::too_many_arguments)]
-    pub fn new(
-        header: PacketHeader,
-        motion_data: Vec<CarMotionData>,
-        suspension_position: WheelData<f32>,
-        suspension_velocity: WheelData<f32>,
-        suspension_acceleration: WheelData<f32>,
-        wheel_speed: WheelData<f32>,
-        wheel_slip: WheelData<f32>,
-        local_velocity_x: f32,
-        local_velocity_y: f32,
-        local_velocity_z: f32,
-        angular_velocity_x: f32,
-        angular_velocity_y: f32,
-        angular_velocity_z: f32,
-        angular_acceleration_x: f32,
-        angular_acceleration_y: f32,
-        angular_acceleration_z: f32,
-        front_wheels_angle: f32,
-    ) -> PacketMotionData {
-        PacketMotionData {
-            header,
-            motion_data,
-            suspension_position,
-            suspension_velocity,
-            suspension_acceleration,
-            wheel_speed,
-            wheel_slip,
-            local_velocity_x,
-            local_velocity_y,
-            local_velocity_z,
-            angular_velocity_x,
-            angular_velocity_y,
-            angular_velocity_z,
-            angular_acceleration_x,
-            angular_acceleration_y,
-            angular_acceleration_z,
-            front_wheels_angle,
-        }
-    }
+    pub suspension_position: WheelData<f32>,
+    pub suspension_velocity: WheelData<f32>,
+    pub suspension_acceleration: WheelData<f32>,
+    pub wheel_speed: WheelData<f32>,
+    pub wheel_slip: WheelData<f32>,
+    pub local_velocity_x: f32,
+    pub local_velocity_y: f32,
+    pub local_velocity_z: f32,
+    pub angular_velocity_x: f32,
+    pub angular_velocity_y: f32,
+    pub angular_velocity_z: f32,
+    pub angular_acceleration_x: f32,
+    pub angular_acceleration_y: f32,
+    pub angular_acceleration_z: f32,
+    pub front_wheels_angle: f32,
 }

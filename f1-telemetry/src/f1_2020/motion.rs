@@ -61,29 +61,31 @@ struct RawMotionData {
 
 impl PacketMotionData {
     fn from_2020(header: PacketHeader, motion_data: RawMotionData) -> Self {
-        Self::new(
+        let car_motion = motion_data
+            .car_motion
+            .iter()
+            .map(CarMotionData::from_2020)
+            .collect();
+
+        Self {
             header,
-            motion_data
-                .car_motion
-                .iter()
-                .map(CarMotionData::from_2020)
-                .collect(),
-            motion_data.suspension_position,
-            motion_data.suspension_velocity,
-            motion_data.suspension_acceleration,
-            motion_data.wheel_speed,
-            motion_data.wheel_slip,
-            motion_data.local_velocity_x,
-            motion_data.local_velocity_y,
-            motion_data.local_velocity_z,
-            motion_data.angular_velocity_x,
-            motion_data.angular_velocity_y,
-            motion_data.angular_velocity_z,
-            motion_data.angular_acceleration_x,
-            motion_data.angular_acceleration_y,
-            motion_data.angular_acceleration_z,
-            motion_data.front_wheels_angle,
-        )
+            motion_data: car_motion,
+            suspension_position: motion_data.suspension_position,
+            suspension_velocity: motion_data.suspension_velocity,
+            suspension_acceleration: motion_data.suspension_acceleration,
+            wheel_speed: motion_data.wheel_speed,
+            wheel_slip: motion_data.wheel_slip,
+            local_velocity_x: motion_data.local_velocity_x,
+            local_velocity_y: motion_data.local_velocity_y,
+            local_velocity_z: motion_data.local_velocity_z,
+            angular_velocity_x: motion_data.angular_velocity_x,
+            angular_velocity_y: motion_data.angular_velocity_y,
+            angular_velocity_z: motion_data.angular_velocity_z,
+            angular_acceleration_x: motion_data.angular_acceleration_x,
+            angular_acceleration_y: motion_data.angular_acceleration_y,
+            angular_acceleration_z: motion_data.angular_acceleration_z,
+            front_wheels_angle: motion_data.front_wheels_angle,
+        }
     }
 }
 
@@ -132,26 +134,26 @@ struct RawCarMotion {
 
 impl CarMotionData {
     fn from_2020(car_motion: &RawCarMotion) -> Self {
-        Self::new(
-            car_motion.world_position_x,
-            car_motion.world_position_y,
-            car_motion.world_position_z,
-            car_motion.world_velocity_x,
-            car_motion.world_velocity_y,
-            car_motion.world_velocity_z,
-            car_motion.world_forward_dir_x,
-            car_motion.world_forward_dir_y,
-            car_motion.world_forward_dir_z,
-            car_motion.world_right_dir_x,
-            car_motion.world_right_dir_y,
-            car_motion.world_right_dir_z,
-            car_motion.g_force_lateral,
-            car_motion.g_force_longitudinal,
-            car_motion.g_force_vertical,
-            car_motion.yaw,
-            car_motion.pitch,
-            car_motion.roll,
-        )
+        Self {
+            world_position_x: car_motion.world_position_x,
+            world_position_y: car_motion.world_position_y,
+            world_position_z: car_motion.world_position_z,
+            world_velocity_x: car_motion.world_velocity_x,
+            world_velocity_y: car_motion.world_velocity_y,
+            world_velocity_z: car_motion.world_velocity_z,
+            world_forward_dir_x: car_motion.world_forward_dir_x,
+            world_forward_dir_y: car_motion.world_forward_dir_y,
+            world_forward_dir_z: car_motion.world_forward_dir_z,
+            world_right_dir_x: car_motion.world_right_dir_x,
+            world_right_dir_y: car_motion.world_right_dir_y,
+            world_right_dir_z: car_motion.world_right_dir_z,
+            g_force_lateral: car_motion.g_force_lateral,
+            g_force_longitudinal: car_motion.g_force_longitudinal,
+            g_force_vertical: car_motion.g_force_vertical,
+            yaw: car_motion.yaw,
+            pitch: car_motion.pitch,
+            roll: car_motion.roll,
+        }
     }
 }
 pub(crate) fn parse_motion_data<T: BufRead>(
