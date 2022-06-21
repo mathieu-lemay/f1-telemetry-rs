@@ -217,7 +217,7 @@ impl GameState {
     }
 
     fn parse_event_data(&mut self, event_data: &PacketEventData) {
-        let evt = event_data.event();
+        let evt = event_data.event;
 
         let driver_name = match evt.vehicle_idx() {
             Some(idx) => {
@@ -231,17 +231,17 @@ impl GameState {
         };
 
         let detail = match evt {
-            Event::FastestLap(f) => Some(fmt::milliseconds_to_msf(f.lap_time())),
-            Event::Penalty(p) => Some(format!("{:?}", p.penalty_type())),
-            Event::SpeedTrap(s) => Some(format!("{:.1} km/h", s.speed())),
+            Event::FastestLap(f) => Some(fmt::milliseconds_to_msf(f.lap_time)),
+            Event::Penalty(p) => Some(format!("{:?}", p.penalty_type)),
+            Event::SpeedTrap(s) => Some(format!("{:.1} km/h", s.speed)),
             _ => None,
         };
 
-        self.event_info.timestamp = event_data.header().session_time;
+        self.event_info.timestamp = event_data.header.session_time;
         self.event_info.description = evt.description().to_string();
         self.event_info.driver_name = driver_name;
         self.event_info.detail = detail;
-        self.event_info.event = *evt;
+        self.event_info.event = evt;
     }
 
     fn parse_participants(&mut self, ppd: &PacketParticipantsData) {

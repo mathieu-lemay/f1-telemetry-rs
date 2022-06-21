@@ -1034,12 +1034,15 @@ fn test_parse_2019_event_packet() {
         _ => panic!("Invalid packet. Expected Event, got {:?}", &p),
     };
 
-    assert_eq!(actual.header().packet_format, 2019);
+    assert_eq!(actual.header.packet_format, 2019);
 
-    let expected = PacketEventData::new(
-        actual.header().clone(),
-        Event::FastestLap(FastestLap::new(0, 82915)),
-    );
+    let expected = PacketEventData {
+        header: actual.header.clone(),
+        event: Event::FastestLap(FastestLap {
+            vehicle_idx: 0,
+            lap_time: 82915,
+        }),
+    };
 
     assert_eq!(actual, expected);
 }

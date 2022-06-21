@@ -294,15 +294,19 @@ pub(crate) fn parse_event_data<T: BufRead>(
         "SEND" => Ok(Event::SessionEnded),
         "FTLP" => {
             let details: FastestLapDetails = bincode::deserialize_from(reader)?;
-            let lap_time = seconds_to_millis(details.lap_time as f64);
 
-            let evt_detail = FastestLap::new(details.vehicle_idx, lap_time);
+            let evt_detail = FastestLap {
+                vehicle_idx: details.vehicle_idx,
+                lap_time: seconds_to_millis(details.lap_time as f64),
+            };
             Ok(Event::FastestLap(evt_detail))
         }
         "RTMT" => {
             let details: RetirementDetails = bincode::deserialize_from(reader)?;
 
-            let evt_detail = Retirement::new(details.vehicle_idx);
+            let evt_detail = Retirement {
+                vehicle_idx: details.vehicle_idx,
+            };
             Ok(Event::Retirement(evt_detail))
         }
         "DRSE" => Ok(Event::DRSEnabled),
@@ -310,14 +314,18 @@ pub(crate) fn parse_event_data<T: BufRead>(
         "TMPT" => {
             let details: TeamMateInPitsDetails = bincode::deserialize_from(reader)?;
 
-            let evt_detail = TeamMateInPits::new(details.vehicle_idx);
+            let evt_detail = TeamMateInPits {
+                vehicle_idx: details.vehicle_idx,
+            };
             Ok(Event::TeamMateInPits(evt_detail))
         }
         "CHQF" => Ok(Event::ChequeredFlag),
         "RCWN" => {
             let details: RaceWinnerDetails = bincode::deserialize_from(reader)?;
 
-            let evt_detail = RaceWinner::new(details.vehicle_idx);
+            let evt_detail = RaceWinner {
+                vehicle_idx: details.vehicle_idx,
+            };
             Ok(Event::RaceWinner(evt_detail))
         }
         "PENA" => {
@@ -326,25 +334,28 @@ pub(crate) fn parse_event_data<T: BufRead>(
             let penalty_type = unpack_penalty_type(details.penalty_type)?;
             let infringement_type = unpack_infringement_type(details.infringement_type)?;
 
-            let evt_detail = Penalty::new(
-                details.vehicle_idx,
+            let evt_detail = Penalty {
+                vehicle_idx: details.vehicle_idx,
                 penalty_type,
                 infringement_type,
-                details.other_vehicle_idx,
-                details.time,
-                details.lap_num,
-                details.places_gained,
-            );
+                other_vehicle_idx: details.other_vehicle_idx,
+                time: details.time,
+                lap_num: details.lap_num,
+                places_gained: details.places_gained,
+            };
             Ok(Event::Penalty(evt_detail))
         }
         "SPTP" => {
             let details: SpeedTrapDetails = bincode::deserialize_from(reader)?;
 
-            let evt_detail = SpeedTrap::new(details.vehicle_idx, details.speed);
+            let evt_detail = SpeedTrap {
+                vehicle_idx: details.vehicle_idx,
+                speed: details.speed,
+            };
             Ok(Event::SpeedTrap(evt_detail))
         }
         _ => Err(UnpackError(format!("Invalid Event Code: {}", event_code))),
     }?;
 
-    Ok(PacketEventData::new(header, event))
+    Ok(PacketEventData { header, event })
 }

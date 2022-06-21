@@ -1407,12 +1407,15 @@ fn test_parse_2020_event_packet() {
         _ => panic!("Invalid packet. Expected Event, got {:?}", &p),
     };
 
-    assert_eq!(actual.header().packet_format, 2020);
+    assert_eq!(actual.header.packet_format, 2020);
 
-    let expected = PacketEventData::new(
-        actual.header().clone(),
-        Event::SpeedTrap(SpeedTrap::new(13, 341.42874)),
-    );
+    let expected = PacketEventData {
+        header: actual.header.clone(),
+        event: Event::SpeedTrap(SpeedTrap {
+            vehicle_idx: 13,
+            speed: 341.42874,
+        }),
+    };
 
     assert_eq!(actual, expected);
 }

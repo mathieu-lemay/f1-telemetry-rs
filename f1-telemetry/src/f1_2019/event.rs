@@ -58,27 +58,35 @@ pub(crate) fn parse_event_data<T: BufRead>(
         "SSTA" => Ok(Event::SessionStarted),
         "SEND" => Ok(Event::SessionEnded),
         "FTLP" => {
-            let lap_time = seconds_to_millis(event.lap_time as f64);
-            let evt_detail = FastestLap::new(event.vehicle_idx, lap_time);
+            let evt_detail = FastestLap {
+                vehicle_idx: event.vehicle_idx,
+                lap_time: seconds_to_millis(event.lap_time as f64),
+            };
             Ok(Event::FastestLap(evt_detail))
         }
         "RTMT" => {
-            let evt_detail = Retirement::new(event.vehicle_idx);
+            let evt_detail = Retirement {
+                vehicle_idx: event.vehicle_idx,
+            };
             Ok(Event::Retirement(evt_detail))
         }
         "DRSE" => Ok(Event::DRSEnabled),
         "DRSD" => Ok(Event::DRSDisabled),
         "TMPT" => {
-            let evt_detail = TeamMateInPits::new(event.vehicle_idx);
+            let evt_detail = TeamMateInPits {
+                vehicle_idx: event.vehicle_idx,
+            };
             Ok(Event::TeamMateInPits(evt_detail))
         }
         "CHQF" => Ok(Event::ChequeredFlag),
         "RCWN" => {
-            let evt_detail = RaceWinner::new(event.vehicle_idx);
+            let evt_detail = RaceWinner {
+                vehicle_idx: event.vehicle_idx,
+            };
             Ok(Event::RaceWinner(evt_detail))
         }
         _ => Err(UnpackError(format!("Invalid Event Code: {}", event_code))),
     }?;
 
-    Ok(PacketEventData::new(header, event))
+    Ok(PacketEventData { header, event })
 }

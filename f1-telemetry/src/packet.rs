@@ -54,7 +54,7 @@ impl Packet {
             Packet::Motion(p) => &p.header,
             Packet::Session(p) => &p.header,
             Packet::Lap(p) => &p.header,
-            Packet::Event(p) => p.header(),
+            Packet::Event(p) => &p.header,
             Packet::Participants(p) => p.header(),
             Packet::CarSetups(p) => p.header(),
             Packet::CarTelemetry(p) => p.header(),
