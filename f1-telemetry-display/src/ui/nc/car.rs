@@ -81,10 +81,10 @@ pub fn render_car(w: WINDOW, car_status: &CarStatus) {
         5,
     );
 
-    render_component(w, TYRE, car_status.tyres_damage.front_left(), 4, 0);
-    render_component(w, TYRE, car_status.tyres_damage.front_right(), 4, 22);
-    render_component(w, TYRE, car_status.tyres_damage.rear_left(), 13, 0);
-    render_component(w, TYRE, car_status.tyres_damage.rear_right(), 13, 22);
+    render_component(w, TYRE, car_status.tyres_damage.front_left, 4, 0);
+    render_component(w, TYRE, car_status.tyres_damage.front_right, 4, 22);
+    render_component(w, TYRE, car_status.tyres_damage.rear_left, 13, 0);
+    render_component(w, TYRE, car_status.tyres_damage.rear_right, 13, 22);
 }
 
 pub(crate) fn render_component(w: WINDOW, component: &str, damage: u8, y: i32, x: i32) {

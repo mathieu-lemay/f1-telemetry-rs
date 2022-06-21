@@ -572,10 +572,10 @@ pub struct TimedWheelData {
 
 impl TimedWheelData {
     pub(crate) fn sum(&self) -> u16 {
-        (self.tyre_damage.front_left()
-            + self.tyre_damage.front_right()
-            + self.tyre_damage.rear_left()
-            + self.tyre_damage.rear_right()) as u16
+        (self.tyre_damage.front_left
+            + self.tyre_damage.front_right
+            + self.tyre_damage.rear_left
+            + self.tyre_damage.rear_right) as u16
     }
 }
 #[derive(Default, Clone, Copy)]

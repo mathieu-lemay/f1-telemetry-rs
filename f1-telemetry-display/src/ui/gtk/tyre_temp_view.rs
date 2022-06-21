@@ -34,20 +34,20 @@ impl TyreTempView {
     pub(super) fn update(&self, game_state: &GameState) {
         let ti = &game_state.telemetry_info;
         let front_left = TyreTemp::from_surface_inner(
-            ti.tyre_surface_temperature.front_left(),
-            ti.tyre_inner_temperature.front_left(),
+            ti.tyre_surface_temperature.front_left,
+            ti.tyre_inner_temperature.front_left,
         );
         let front_right = TyreTemp::from_surface_inner(
-            ti.tyre_surface_temperature.front_right(),
-            ti.tyre_inner_temperature.front_right(),
+            ti.tyre_surface_temperature.front_right,
+            ti.tyre_inner_temperature.front_right,
         );
         let rear_left = TyreTemp::from_surface_inner(
-            ti.tyre_surface_temperature.rear_left(),
-            ti.tyre_inner_temperature.rear_left(),
+            ti.tyre_surface_temperature.rear_left,
+            ti.tyre_inner_temperature.rear_left,
         );
         let rear_right = TyreTemp::from_surface_inner(
-            ti.tyre_surface_temperature.rear_right(),
-            ti.tyre_inner_temperature.rear_right(),
+            ti.tyre_surface_temperature.rear_right,
+            ti.tyre_inner_temperature.rear_right,
         );
         update_tyres(
             &self._tyres,

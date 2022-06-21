@@ -34,10 +34,10 @@ impl CarView {
 
     pub(super) fn update(&self, game_state: &GameState) {
         let cs = &game_state.car_status;
-        let front_left = cs.tyres_damage.front_left();
-        let front_right = cs.tyres_damage.front_right();
-        let rear_left = cs.tyres_damage.rear_left();
-        let rear_right = cs.tyres_damage.rear_right();
+        let front_left = cs.tyres_damage.front_left;
+        let front_right = cs.tyres_damage.front_right;
+        let rear_left = cs.tyres_damage.rear_left;
+        let rear_right = cs.tyres_damage.rear_right;
         let left_wing = cs.left_front_wing_damage;
         let right_wing = cs.right_front_wing_damage;
         let player = game_state.player_index as usize;
