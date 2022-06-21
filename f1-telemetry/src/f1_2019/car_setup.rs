@@ -75,27 +75,27 @@ impl CarSetupData {
             front_right: car_setup.front_tyre_pressure,
         };
 
-        Self::new(
-            car_setup.front_wing,
-            car_setup.rear_wing,
-            car_setup.on_throttle,
-            car_setup.off_throttle,
-            car_setup.front_camber,
-            car_setup.rear_camber,
-            car_setup.front_toe,
-            car_setup.rear_toe,
-            car_setup.front_suspension,
-            car_setup.rear_suspension,
-            car_setup.front_anti_roll_bar,
-            car_setup.rear_anti_roll_bar,
-            car_setup.front_suspension_height,
-            car_setup.rear_suspension_height,
-            car_setup.brake_pressure,
-            car_setup.brake_bias,
+        Self {
+            front_wing: car_setup.front_wing,
+            rear_wing: car_setup.rear_wing,
+            on_throttle: car_setup.on_throttle,
+            off_throttle: car_setup.off_throttle,
+            front_camber: car_setup.front_camber,
+            rear_camber: car_setup.rear_camber,
+            front_toe: car_setup.front_toe,
+            rear_toe: car_setup.rear_toe,
+            front_suspension: car_setup.front_suspension,
+            rear_suspension: car_setup.rear_suspension,
+            front_anti_roll_bar: car_setup.front_anti_roll_bar,
+            rear_anti_roll_bar: car_setup.rear_anti_roll_bar,
+            front_suspension_height: car_setup.front_suspension_height,
+            rear_suspension_height: car_setup.rear_suspension_height,
+            brake_pressure: car_setup.brake_pressure,
+            brake_bias: car_setup.brake_bias,
             tyres_pressure,
-            car_setup.ballast,
-            car_setup.fuel_load,
-        )
+            ballast: car_setup.ballast,
+            fuel_load: car_setup.fuel_load,
+        }
     }
 }
 
@@ -113,5 +113,5 @@ pub(crate) fn parse_car_setup_data<T: BufRead>(
         .map(CarSetupData::from_2019)
         .collect::<Vec<CarSetupData>>();
 
-    Ok(PacketCarSetupData::new(header, car_setups))
+    Ok(PacketCarSetupData { header, car_setups })
 }
