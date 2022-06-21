@@ -1,57 +1,24 @@
-use getset::{CopyGetters, Getters};
-
 use super::header::PacketHeader;
 
-#[derive(Debug, Copy, Clone, Eq, PartialEq, CopyGetters)]
-#[getset(get_copy = "pub")]
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
 pub struct FastestLap {
-    vehicle_idx: u8,
-    lap_time: u32,
+    pub vehicle_idx: u8,
+    pub lap_time: u32,
 }
 
-impl FastestLap {
-    pub fn new(vehicle_idx: u8, lap_time: u32) -> Self {
-        Self {
-            vehicle_idx,
-            lap_time,
-        }
-    }
-}
-
-#[derive(Debug, Copy, Clone, Eq, PartialEq, CopyGetters)]
-#[getset(get_copy = "pub")]
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
 pub struct Retirement {
-    vehicle_idx: u8,
+    pub vehicle_idx: u8,
 }
 
-impl Retirement {
-    pub fn new(vehicle_idx: u8) -> Self {
-        Self { vehicle_idx }
-    }
-}
-
-#[derive(Debug, Copy, Clone, Eq, PartialEq, CopyGetters)]
-#[getset(get_copy = "pub")]
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
 pub struct TeamMateInPits {
-    vehicle_idx: u8,
+    pub vehicle_idx: u8,
 }
 
-impl TeamMateInPits {
-    pub fn new(vehicle_idx: u8) -> Self {
-        Self { vehicle_idx }
-    }
-}
-
-#[derive(Debug, Copy, Clone, Eq, PartialEq, CopyGetters)]
-#[getset(get_copy = "pub")]
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
 pub struct RaceWinner {
-    vehicle_idx: u8,
-}
-
-impl RaceWinner {
-    pub fn new(vehicle_idx: u8) -> Self {
-        Self { vehicle_idx }
-    }
+    pub vehicle_idx: u8,
 }
 
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
@@ -144,51 +111,21 @@ pub enum InfringementType {
 /// lap_num:           Lap the penalty occurred on
 /// places_gained:     Number of places gained by this
 /// ```
-#[derive(Debug, Copy, Clone, Eq, PartialEq, CopyGetters)]
-#[getset(get_copy = "pub")]
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
 pub struct Penalty {
-    vehicle_idx: u8,
-    penalty_type: PenaltyType,
-    infringement_type: InfringementType,
-    other_vehicle_idx: u8,
-    time: u8,
-    lap_num: u8,
-    places_gained: u8,
+    pub vehicle_idx: u8,
+    pub penalty_type: PenaltyType,
+    pub infringement_type: InfringementType,
+    pub other_vehicle_idx: u8,
+    pub time: u8,
+    pub lap_num: u8,
+    pub places_gained: u8,
 }
 
-impl Penalty {
-    pub fn new(
-        vehicle_idx: u8,
-        penalty_type: PenaltyType,
-        infringement_type: InfringementType,
-        other_vehicle_idx: u8,
-        time: u8,
-        lap_num: u8,
-        places_gained: u8,
-    ) -> Self {
-        Self {
-            vehicle_idx,
-            penalty_type,
-            infringement_type,
-            other_vehicle_idx,
-            time,
-            lap_num,
-            places_gained,
-        }
-    }
-}
-
-#[derive(Debug, Copy, Clone, PartialEq, CopyGetters)]
-#[getset(get_copy = "pub")]
+#[derive(Debug, Copy, Clone, PartialEq)]
 pub struct SpeedTrap {
-    vehicle_idx: u8,
-    speed: f32,
-}
-
-impl SpeedTrap {
-    pub fn new(vehicle_idx: u8, speed: f32) -> Self {
-        Self { vehicle_idx, speed }
-    }
+    pub vehicle_idx: u8,
+    pub speed: f32,
 }
 
 /// List of possible events.
@@ -242,12 +179,12 @@ impl Event {
 
     pub fn vehicle_idx(self) -> Option<u8> {
         match self {
-            Event::FastestLap(e) => Some(e.vehicle_idx()),
-            Event::Retirement(e) => Some(e.vehicle_idx()),
-            Event::TeamMateInPits(e) => Some(e.vehicle_idx()),
-            Event::RaceWinner(e) => Some(e.vehicle_idx()),
-            Event::Penalty(e) => Some(e.vehicle_idx()),
-            Event::SpeedTrap(e) => Some(e.vehicle_idx()),
+            Event::FastestLap(e) => Some(e.vehicle_idx),
+            Event::Retirement(e) => Some(e.vehicle_idx),
+            Event::TeamMateInPits(e) => Some(e.vehicle_idx),
+            Event::RaceWinner(e) => Some(e.vehicle_idx),
+            Event::Penalty(e) => Some(e.vehicle_idx),
+            Event::SpeedTrap(e) => Some(e.vehicle_idx),
             _ => None,
         }
     }
@@ -264,15 +201,8 @@ impl Event {
 /// ```
 ///
 /// See also [`Event`]
-#[derive(Debug, PartialEq, Getters)]
-#[getset(get = "pub")]
+#[derive(Debug, PartialEq)]
 pub struct PacketEventData {
-    header: PacketHeader,
-    event: Event,
-}
-
-impl PacketEventData {
-    pub fn new(header: PacketHeader, event: Event) -> PacketEventData {
-        PacketEventData { header, event }
-    }
+    pub header: PacketHeader,
+    pub event: Event,
 }

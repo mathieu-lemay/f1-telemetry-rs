@@ -319,17 +319,17 @@ impl ParticipantData {
         let team = unpack_team(participant.team)?;
         let nationality = unpack_nationality(participant.nationality)?;
         let name = unpack_string(&name)?;
-        let telemetry = unpack_telemetry(participant.telemetry)?;
+        let telemetry_access = unpack_telemetry(participant.telemetry)?;
 
-        Ok(ParticipantData::new(
-            participant.ai_controlled,
+        Ok(ParticipantData {
+            ai_controlled: participant.ai_controlled,
             driver,
             team,
-            participant.race_number,
+            race_number: participant.race_number,
             nationality,
             name,
-            telemetry,
-        ))
+            telemetry_access,
+        })
     }
 }
 
@@ -347,9 +347,9 @@ pub(crate) fn parse_participants_data<T: BufRead>(
         .map(ParticipantData::from_2019)
         .collect::<Result<Vec<ParticipantData>, UnpackError>>()?;
 
-    Ok(PacketParticipantsData::new(
+    Ok(PacketParticipantsData {
         header,
-        participant_data.num_active_cars,
+        num_active_cars: participant_data.num_active_cars,
         participants,
-    ))
+    })
 }

@@ -1,11 +1,10 @@
-use getset::{CopyGetters, Getters};
-
 use crate::packet::generic::WheelData;
 
 use super::header::PacketHeader;
 
 /// This type is used for the 20-element `car_setups` array of the [`PacketCarSetupData`] type.
 ///
+/// ```text
 /// ## Specification
 /// front_wing              Front wing aero
 /// rear_wing               Rear wing aero
@@ -26,77 +25,28 @@ use super::header::PacketHeader;
 /// tyres_pressure          Tyres pressure (PSI)
 /// ballast                 Ballast
 /// fuel_load               Fuel load
-///
-/// [`PacketCarSetupData`]: ./struct.CarSetupData.html
-#[derive(Debug, PartialEq, CopyGetters)]
-#[getset(get_copy = "pub")]
+/// ```
+#[derive(Debug, PartialEq, Default)]
 pub struct CarSetupData {
-    front_wing: u8,
-    rear_wing: u8,
-    on_throttle: u8,
-    off_throttle: u8,
-    front_camber: f32,
-    rear_camber: f32,
-    front_toe: f32,
-    rear_toe: f32,
-    front_suspension: u8,
-    rear_suspension: u8,
-    front_anti_roll_bar: u8,
-    rear_anti_roll_bar: u8,
-    front_suspension_height: u8,
-    rear_suspension_height: u8,
-    brake_pressure: u8,
-    brake_bias: u8,
-    tyres_pressure: WheelData<f32>,
-    ballast: u8,
-    fuel_load: f32,
-}
-
-#[allow(clippy::too_many_arguments)]
-impl CarSetupData {
-    pub fn new(
-        front_wing: u8,
-        rear_wing: u8,
-        on_throttle: u8,
-        off_throttle: u8,
-        front_camber: f32,
-        rear_camber: f32,
-        front_toe: f32,
-        rear_toe: f32,
-        front_suspension: u8,
-        rear_suspension: u8,
-        front_anti_roll_bar: u8,
-        rear_anti_roll_bar: u8,
-        front_suspension_height: u8,
-        rear_suspension_height: u8,
-        brake_pressure: u8,
-        brake_bias: u8,
-        tyres_pressure: WheelData<f32>,
-        ballast: u8,
-        fuel_load: f32,
-    ) -> Self {
-        Self {
-            front_wing,
-            rear_wing,
-            on_throttle,
-            off_throttle,
-            front_camber,
-            rear_camber,
-            front_toe,
-            rear_toe,
-            front_suspension,
-            rear_suspension,
-            front_anti_roll_bar,
-            rear_anti_roll_bar,
-            front_suspension_height,
-            rear_suspension_height,
-            brake_pressure,
-            brake_bias,
-            tyres_pressure,
-            ballast,
-            fuel_load,
-        }
-    }
+    pub front_wing: u8,
+    pub rear_wing: u8,
+    pub on_throttle: u8,
+    pub off_throttle: u8,
+    pub front_camber: f32,
+    pub rear_camber: f32,
+    pub front_toe: f32,
+    pub rear_toe: f32,
+    pub front_suspension: u8,
+    pub rear_suspension: u8,
+    pub front_anti_roll_bar: u8,
+    pub rear_anti_roll_bar: u8,
+    pub front_suspension_height: u8,
+    pub rear_suspension_height: u8,
+    pub brake_pressure: u8,
+    pub brake_bias: u8,
+    pub tyres_pressure: WheelData<f32>,
+    pub ballast: u8,
+    pub fuel_load: f32,
 }
 
 /// This packet details the car setups for each vehicle in the session.
@@ -110,15 +60,8 @@ impl CarSetupData {
 /// header:     Header
 /// car_setups: List of car setups
 /// ```
-#[derive(Debug, PartialEq, Getters)]
-#[getset(get = "pub")]
+#[derive(Debug, PartialEq)]
 pub struct PacketCarSetupData {
-    header: PacketHeader,
-    car_setups: Vec<CarSetupData>,
-}
-
-impl PacketCarSetupData {
-    pub fn new(header: PacketHeader, car_setups: Vec<CarSetupData>) -> PacketCarSetupData {
-        PacketCarSetupData { header, car_setups }
-    }
+    pub header: PacketHeader,
+    pub car_setups: Vec<CarSetupData>,
 }

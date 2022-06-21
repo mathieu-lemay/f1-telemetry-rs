@@ -1,5 +1,3 @@
-use getset::{CopyGetters, Getters};
-
 use crate::packet::generic::ResultStatus;
 
 use super::header::PacketHeader;
@@ -67,99 +65,35 @@ impl Default for DriverStatus {
 /// result_status:                 Result status. See [`ResultStatus`].
 /// ```
 /// See also: [`DriverStatus`], [`PitStatus`], [`ResultStatus`]
-#[derive(Debug, PartialEq, Default, CopyGetters)]
-#[getset(get_copy = "pub")]
+#[derive(Debug, PartialEq, Default)]
 pub struct LapData {
-    last_lap_time: u32,
-    current_lap_time: u32,
-    sector_1_time: u16,
-    sector_2_time: u16,
-    best_lap_time: u32,
-    best_lap_num: u8,
-    best_lap_sector_1_time: u16,
-    best_lap_sector_2_time: u16,
-    best_lap_sector_3_time: u16,
-    best_overall_sector_1_time: u16,
-    best_overall_sector_1_lap_num: u8,
-    best_overall_sector_2_time: u16,
-    best_overall_sector_2_lap_num: u8,
-    best_overall_sector_3_time: u16,
-    best_overall_sector_3_lap_num: u8,
-    lap_distance: f32,
-    total_distance: f32,
-    safety_car_delta: f32,
-    car_position: u8,
-    current_lap_num: u8,
-    pit_status: PitStatus,
-    sector: u8,
-    current_lap_invalid: bool,
-    penalties: u8,
-    grid_position: u8,
-    driver_status: DriverStatus,
-    result_status: ResultStatus,
-}
-
-impl LapData {
-    #[allow(clippy::too_many_arguments)]
-    pub fn new(
-        last_lap_time: u32,
-        current_lap_time: u32,
-        sector_1_time: u16,
-        sector_2_time: u16,
-        best_lap_time: u32,
-        best_lap_num: u8,
-        best_lap_sector_1_time: u16,
-        best_lap_sector_2_time: u16,
-        best_lap_sector_3_time: u16,
-        best_overall_sector_1_time: u16,
-        best_overall_sector_1_lap_num: u8,
-        best_overall_sector_2_time: u16,
-        best_overall_sector_2_lap_num: u8,
-        best_overall_sector_3_time: u16,
-        best_overall_sector_3_lap_num: u8,
-        lap_distance: f32,
-        total_distance: f32,
-        safety_car_delta: f32,
-        car_position: u8,
-        current_lap_num: u8,
-        pit_status: PitStatus,
-        sector: u8,
-        current_lap_invalid: bool,
-        penalties: u8,
-        grid_position: u8,
-        driver_status: DriverStatus,
-        result_status: ResultStatus,
-    ) -> Self {
-        Self {
-            last_lap_time,
-            current_lap_time,
-            sector_1_time,
-            sector_2_time,
-            best_lap_time,
-            best_lap_num,
-            best_lap_sector_1_time,
-            best_lap_sector_2_time,
-            best_lap_sector_3_time,
-            best_overall_sector_1_time,
-            best_overall_sector_1_lap_num,
-            best_overall_sector_2_time,
-            best_overall_sector_2_lap_num,
-            best_overall_sector_3_time,
-            best_overall_sector_3_lap_num,
-            lap_distance,
-            total_distance,
-            safety_car_delta,
-            car_position,
-            current_lap_num,
-            pit_status,
-            sector,
-            current_lap_invalid,
-            penalties,
-            grid_position,
-            driver_status,
-            result_status,
-        }
-    }
+    pub last_lap_time: u32,
+    pub current_lap_time: u32,
+    pub sector_1_time: u16,
+    pub sector_2_time: u16,
+    pub best_lap_time: u32,
+    pub best_lap_num: u8,
+    pub best_lap_sector_1_time: u16,
+    pub best_lap_sector_2_time: u16,
+    pub best_lap_sector_3_time: u16,
+    pub best_overall_sector_1_time: u16,
+    pub best_overall_sector_1_lap_num: u8,
+    pub best_overall_sector_2_time: u16,
+    pub best_overall_sector_2_lap_num: u8,
+    pub best_overall_sector_3_time: u16,
+    pub best_overall_sector_3_lap_num: u8,
+    pub lap_distance: f32,
+    pub total_distance: f32,
+    pub safety_car_delta: f32,
+    pub car_position: u8,
+    pub current_lap_num: u8,
+    pub pit_status: PitStatus,
+    pub sector: u8,
+    pub current_lap_invalid: bool,
+    pub penalties: u8,
+    pub grid_position: u8,
+    pub driver_status: DriverStatus,
+    pub result_status: ResultStatus,
 }
 
 /// The lap data packet gives details of all the cars in the session.
@@ -171,15 +105,8 @@ impl LapData {
 /// header:   Header
 /// lap_data: Lap data for all cars on track
 /// ```
-#[derive(Debug, PartialEq, Getters)]
-#[getset(get = "pub")]
+#[derive(Debug, PartialEq)]
 pub struct PacketLapData {
-    header: PacketHeader,
-    lap_data: Vec<LapData>,
-}
-
-impl PacketLapData {
-    pub fn new(header: PacketHeader, lap_data: Vec<LapData>) -> PacketLapData {
-        PacketLapData { header, lap_data }
-    }
+    pub header: PacketHeader,
+    pub lap_data: Vec<LapData>,
 }

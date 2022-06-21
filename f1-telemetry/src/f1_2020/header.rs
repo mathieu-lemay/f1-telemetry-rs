@@ -4,7 +4,7 @@ use serde::Deserialize;
 
 use crate::packet::header::PacketHeader;
 use crate::packet::{PacketType, UnpackError};
-use crate::utils::assert_packet_at_least_size;
+use crate::utils::{assert_packet_at_least_size, seconds_to_millis};
 
 use super::consts::*;
 
@@ -56,7 +56,7 @@ fn parse_packet_type(value: u8) -> Result<PacketType, UnpackError> {
 /// Lobby Info              9       Information about players in a multiplayer lobby
 /// ```
 #[derive(Deserialize)]
-pub(super) struct Header {
+struct Header {
     packet_format: u16,
     game_major_version: u8,
     game_minor_version: u8,
@@ -73,18 +73,20 @@ impl PacketHeader {
     fn from_2020(header: &Header) -> Result<Self, UnpackError> {
         let packet_type = parse_packet_type(header.packet_id)?;
 
-        Ok(PacketHeader::new(
-            header.packet_format,
-            header.game_major_version,
-            header.game_minor_version,
-            header.packet_version,
+        let session_time = seconds_to_millis(header.session_time as f64);
+
+        Ok(PacketHeader {
+            packet_format: header.packet_format,
+            game_major_version: header.game_major_version,
+            game_minor_version: header.game_minor_version,
+            packet_version: header.packet_version,
             packet_type,
-            header.session_uid,
-            header.session_time,
-            header.frame_identifier,
-            header.player_car_index,
-            Some(header.secondary_player_car_index),
-        ))
+            session_uid: header.session_uid,
+            session_time,
+            frame_identifier: header.frame_identifier,
+            player_car_index: header.player_car_index,
+            secondary_player_car_index: Some(header.secondary_player_car_index),
+        })
     }
 }
 

@@ -587,24 +587,24 @@ impl NcursesUi {
     //
     //     let front_slip = format!(
     //         "Front Slip  : {:03.2} --- {:03.2}",
-    //         game_state.motion_info.wheel_slip.front_left(),
-    //         game_state.motion_info.wheel_slip.front_right()
+    //         game_state.motion_info.wheel_slip.front_left,
+    //         game_state.motion_info.wheel_slip.front_right
     //     );
     //     let rear_slip = format!(
     //         "Rear Slip   : {:03.2} --- {:03.2}",
-    //         game_state.motion_info.wheel_slip.rear_left(),
-    //         game_state.motion_info.wheel_slip.rear_right()
+    //         game_state.motion_info.wheel_slip.rear_left,
+    //         game_state.motion_info.wheel_slip.rear_right
     //     );
     //
     //     let front_suspension = format!(
     //         "Front Susp  : {:03.2} --- {:03.2}",
-    //         game_state.motion_info.suspension_position.front_left(),
-    //         game_state.motion_info.suspension_position.front_right()
+    //         game_state.motion_info.suspension_position.front_left,
+    //         game_state.motion_info.suspension_position.front_right
     //     );
     //     let rear_suspension = format!(
     //         "Rear Susp   : {:03.2} --- {:03.2}",
-    //         game_state.motion_info.suspension_position.rear_left(),
-    //         game_state.motion_info.suspension_position.rear_right()
+    //         game_state.motion_info.suspension_position.rear_left,
+    //         game_state.motion_info.suspension_position.rear_right
     //     );
     //
     //     mvwaddstr(wnd, 1, 0, roll.as_str());

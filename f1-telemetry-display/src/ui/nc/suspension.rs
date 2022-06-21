@@ -93,15 +93,15 @@ pub(crate) fn render_suspension(
     telemetry_info: &TelemetryInfo,
 ) {
     werase(w);
-    let left_front_susp = get_left_component(motion_info.suspension_position.front_left());
-    let left_rear_susp = get_left_component(motion_info.suspension_position.rear_left());
-    let right_front_susp = get_right_component(motion_info.suspension_position.front_right());
-    let right_rear_susp = get_right_component(motion_info.suspension_position.rear_right());
+    let left_front_susp = get_left_component(motion_info.suspension_position.front_left);
+    let left_rear_susp = get_left_component(motion_info.suspension_position.rear_left);
+    let right_front_susp = get_right_component(motion_info.suspension_position.front_right);
+    let right_rear_susp = get_right_component(motion_info.suspension_position.rear_right);
 
-    let front_left_temp = telemetry_info.tyre_inner_temperature.front_left();
-    let front_right_temp = telemetry_info.tyre_inner_temperature.front_right();
-    let rear_left_temp = telemetry_info.tyre_inner_temperature.rear_left();
-    let rear_right_temp = telemetry_info.tyre_inner_temperature.rear_right();
+    let front_left_temp = telemetry_info.tyre_inner_temperature.front_left;
+    let front_right_temp = telemetry_info.tyre_inner_temperature.front_right;
+    let rear_left_temp = telemetry_info.tyre_inner_temperature.rear_left;
+    let rear_right_temp = telemetry_info.tyre_inner_temperature.rear_right;
     let temp_offsety = 6;
     let temp_offsetx = 1;
 

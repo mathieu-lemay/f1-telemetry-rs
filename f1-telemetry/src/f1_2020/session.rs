@@ -173,30 +173,30 @@ impl PacketSessionData {
             .map(WeatherForecastSample::from_2020)
             .collect::<Result<Vec<WeatherForecastSample>, UnpackError>>()?;
 
-        Ok(Self::new(
+        Ok(Self {
             header,
             weather,
-            session_data.track_temperature,
-            session_data.air_temperature,
-            session_data.total_laps,
-            session_data.track_length,
+            track_temperature: session_data.track_temperature,
+            air_temperature: session_data.air_temperature,
+            total_laps: session_data.total_laps,
+            track_length: session_data.track_length,
             session_type,
             track,
             formula,
-            session_data.session_time_left,
-            session_data.session_duration,
-            session_data.pit_speed_limit,
-            session_data.game_paused,
-            session_data.is_spectating,
-            session_data.spectator_car_index,
-            session_data.sli_pro_native_support,
-            session_data.num_marshal_zones,
+            session_time_left: session_data.session_time_left,
+            session_duration: session_data.session_duration,
+            pit_speed_limit: session_data.pit_speed_limit,
+            game_paused: session_data.game_paused,
+            is_spectating: session_data.is_spectating,
+            spectator_car_index: session_data.spectator_car_index,
+            sli_pro_native_support: session_data.sli_pro_native_support,
+            num_marshal_zones: session_data.num_marshal_zones,
             marshal_zones,
             safety_car_status,
-            session_data.network_game,
-            Some(session_data.num_weather_forecast_samples),
-            Some(weather_forecast_samples),
-        ))
+            network_game: session_data.network_game,
+            num_weather_forecast_samples: session_data.num_weather_forecast_samples,
+            weather_forecast_samples,
+        })
     }
 }
 
@@ -215,8 +215,12 @@ struct RawMarshalZone {
 
 impl MarshalZone {
     fn from_2020(mz: &RawMarshalZone) -> Result<MarshalZone, UnpackError> {
-        let flag = unpack_flag(mz.zone_flag)?;
-        Ok(MarshalZone::new(mz.zone_start, flag))
+        let zone_flag = unpack_flag(mz.zone_flag)?;
+
+        Ok(MarshalZone {
+            zone_start: mz.zone_start,
+            zone_flag,
+        })
     }
 }
 
@@ -246,13 +250,13 @@ impl WeatherForecastSample {
     fn from_2020(wf: &RawWeatherForecast) -> Result<WeatherForecastSample, UnpackError> {
         let session_type = unpack_session_type(wf.session_type)?;
         let weather = unpack_weather(wf.weather)?;
-        Ok(WeatherForecastSample::new(
+        Ok(WeatherForecastSample {
             session_type,
-            wf.time_offset,
+            time_offset: wf.time_offset,
             weather,
-            wf.track_temperature,
-            wf.air_temperature,
-        ))
+            track_temperature: wf.track_temperature,
+            air_temperature: wf.air_temperature,
+        })
     }
 }
 

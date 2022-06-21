@@ -1,4 +1,3 @@
-use getset::{CopyGetters, Getters};
 use serde::Deserialize;
 
 use crate::packet::generic::Flag;
@@ -177,32 +176,13 @@ impl Default for SafetyCar {
 /// air_temperature:   Air temp. in degrees celsius.
 /// ```
 /// [`PacketSessionData`]: ./struct.PacketSessionData.html
-#[derive(Debug, Eq, PartialEq, CopyGetters)]
-#[getset(get_copy = "pub")]
+#[derive(Debug, Eq, PartialEq)]
 pub struct WeatherForecastSample {
-    session_type: SessionType,
-    time_offset: u8,
-    weather: Weather,
-    track_temperature: i8,
-    air_temperature: i8,
-}
-
-impl WeatherForecastSample {
-    pub fn new(
-        session_type: SessionType,
-        time_offset: u8,
-        weather: Weather,
-        track_temperature: i8,
-        air_temperature: i8,
-    ) -> WeatherForecastSample {
-        WeatherForecastSample {
-            session_type,
-            time_offset,
-            weather,
-            track_temperature,
-            air_temperature,
-        }
-    }
+    pub session_type: SessionType,
+    pub time_offset: u8,
+    pub weather: Weather,
+    pub track_temperature: i8,
+    pub air_temperature: i8,
 }
 
 /// This type is used for the `marshal_zones` array of the [`PacketSessionData`] type.
@@ -213,20 +193,10 @@ impl WeatherForecastSample {
 /// zone_flag:  Flag active in the zone. See [`Flag`].
 /// ```
 /// See also [`Flag`].
-#[derive(Debug, PartialEq, Clone, Copy, CopyGetters)]
-#[getset(get_copy = "pub")]
+#[derive(Debug, PartialEq, Clone, Copy)]
 pub struct MarshalZone {
-    zone_start: f32,
-    zone_flag: Flag,
-}
-
-impl MarshalZone {
-    pub fn new(zone_start: f32, zone_flag: Flag) -> MarshalZone {
-        MarshalZone {
-            zone_start,
-            zone_flag,
-        }
-    }
+    pub zone_start: f32,
+    pub zone_flag: Flag,
 }
 
 /// The session packet includes details about the current session in progress.
@@ -260,103 +230,28 @@ impl MarshalZone {
 /// ```
 /// See also: [`Formula`], [`MarshalZone`], [`SafetyCar`], [`SessionType`], [`Track`],
 /// [`WeatherForecastSample`] and [`Weather`]
-#[derive(Debug, PartialEq, CopyGetters, Getters)]
+#[derive(Debug, PartialEq)]
 pub struct PacketSessionData {
-    #[getset(get = "pub")]
-    header: PacketHeader,
-    #[getset(get_copy = "pub")]
-    weather: Weather,
-    #[getset(get_copy = "pub")]
-    track_temperature: i8,
-    #[getset(get_copy = "pub")]
-    air_temperature: i8,
-    #[getset(get_copy = "pub")]
-    total_laps: u8,
-    #[getset(get_copy = "pub")]
-    track_length: u16,
-    #[getset(get_copy = "pub")]
-    session_type: SessionType,
-    #[getset(get_copy = "pub")]
-    track: Track,
-    #[getset(get_copy = "pub")]
-    formula: Formula,
-    #[getset(get_copy = "pub")]
-    session_time_left: u16,
-    #[getset(get_copy = "pub")]
-    session_duration: u16,
-    #[getset(get_copy = "pub")]
-    pit_speed_limit: u8,
-    #[getset(get_copy = "pub")]
-    game_paused: bool,
-    #[getset(get_copy = "pub")]
-    is_spectating: bool,
-    #[getset(get_copy = "pub")]
-    spectator_car_index: u8,
-    #[getset(get_copy = "pub")]
-    sli_pro_native_support: bool,
-    #[getset(get_copy = "pub")]
-    num_marshal_zones: u8,
-    #[getset(get = "pub")]
-    marshal_zones: Vec<MarshalZone>,
-    #[getset(get_copy = "pub")]
-    safety_car_status: SafetyCar,
-    #[getset(get_copy = "pub")]
-    network_game: bool,
-    #[getset(get_copy = "pub")]
-    num_weather_forecast_samples: u8,
-    #[getset(get = "pub")]
-    weather_forecast_samples: Vec<WeatherForecastSample>,
-}
-
-#[allow(clippy::too_many_arguments)]
-impl PacketSessionData {
-    pub fn new(
-        header: PacketHeader,
-        weather: Weather,
-        track_temperature: i8,
-        air_temperature: i8,
-        total_laps: u8,
-        track_length: u16,
-        session_type: SessionType,
-        track: Track,
-        formula: Formula,
-        session_time_left: u16,
-        session_duration: u16,
-        pit_speed_limit: u8,
-        game_paused: bool,
-        is_spectating: bool,
-        spectator_car_index: u8,
-        sli_pro_native_support: bool,
-        num_marshal_zones: u8,
-        marshal_zones: Vec<MarshalZone>,
-        safety_car_status: SafetyCar,
-        network_game: bool,
-        num_weather_forecast_samples: Option<u8>,
-        weather_forecast_samples: Option<Vec<WeatherForecastSample>>,
-    ) -> Self {
-        Self {
-            header,
-            weather,
-            track_temperature,
-            air_temperature,
-            total_laps,
-            track_length,
-            session_type,
-            track,
-            formula,
-            session_time_left,
-            session_duration,
-            pit_speed_limit,
-            game_paused,
-            is_spectating,
-            spectator_car_index,
-            sli_pro_native_support,
-            num_marshal_zones,
-            marshal_zones,
-            safety_car_status,
-            network_game,
-            num_weather_forecast_samples: num_weather_forecast_samples.unwrap_or_default(),
-            weather_forecast_samples: weather_forecast_samples.unwrap_or_default(),
-        }
-    }
+    pub header: PacketHeader,
+    pub weather: Weather,
+    pub track_temperature: i8,
+    pub air_temperature: i8,
+    pub total_laps: u8,
+    pub track_length: u16,
+    pub session_type: SessionType,
+    pub track: Track,
+    pub formula: Formula,
+    pub session_time_left: u16,
+    pub session_duration: u16,
+    pub pit_speed_limit: u8,
+    pub game_paused: bool,
+    pub is_spectating: bool,
+    pub spectator_car_index: u8,
+    pub sli_pro_native_support: bool,
+    pub num_marshal_zones: u8,
+    pub marshal_zones: Vec<MarshalZone>,
+    pub safety_car_status: SafetyCar,
+    pub network_game: bool,
+    pub num_weather_forecast_samples: u8,
+    pub weather_forecast_samples: Vec<WeatherForecastSample>,
 }

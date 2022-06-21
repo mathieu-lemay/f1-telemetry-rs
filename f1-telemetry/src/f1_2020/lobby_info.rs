@@ -73,13 +73,13 @@ impl Player {
         let name = unpack_string(&name)?;
         let ready_status = unpack_ready_status(player.ready_status)?;
 
-        Ok(Player::new(
-            player.ai_controlled,
+        Ok(Player {
+            ai_controlled: player.ai_controlled,
             team,
             nationality,
             name,
             ready_status,
-        ))
+        })
     }
 }
 
@@ -98,9 +98,9 @@ pub(crate) fn parse_lobby_info_data<T: BufRead>(
         .map(Player::from_2020)
         .collect::<Result<Vec<Player>, UnpackError>>()?;
 
-    Ok(PacketLobbyInfoData::new(
+    Ok(PacketLobbyInfoData {
         header,
-        lobby_info.num_players,
+        num_players: lobby_info.num_players,
         players,
-    ))
+    })
 }

@@ -51,16 +51,16 @@ pub enum Packet {
 impl Packet {
     pub fn header(&self) -> &PacketHeader {
         match self {
-            Packet::Motion(p) => p.header(),
-            Packet::Session(p) => p.header(),
-            Packet::Lap(p) => p.header(),
-            Packet::Event(p) => p.header(),
-            Packet::Participants(p) => p.header(),
-            Packet::CarSetups(p) => p.header(),
-            Packet::CarTelemetry(p) => p.header(),
-            Packet::CarStatus(p) => p.header(),
-            Packet::FinalClassification(p) => p.header(),
-            Packet::LobbyInfo(p) => p.header(),
+            Packet::Motion(p) => &p.header,
+            Packet::Session(p) => &p.header,
+            Packet::Lap(p) => &p.header,
+            Packet::Event(p) => &p.header,
+            Packet::Participants(p) => &p.header,
+            Packet::CarSetups(p) => &p.header,
+            Packet::CarTelemetry(p) => &p.header,
+            Packet::CarStatus(p) => &p.header,
+            Packet::FinalClassification(p) => &p.header,
+            Packet::LobbyInfo(p) => &p.header,
         }
     }
 }

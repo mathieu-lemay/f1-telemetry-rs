@@ -4,7 +4,7 @@ use serde::Deserialize;
 
 use crate::packet::header::PacketHeader;
 use crate::packet::{PacketType, UnpackError};
-use crate::utils::assert_packet_at_least_size;
+use crate::utils::{assert_packet_at_least_size, seconds_to_millis};
 
 use super::consts::*;
 
@@ -53,18 +53,20 @@ impl PacketHeader {
     fn from_2019(header: &Header) -> Result<Self, UnpackError> {
         let packet_type = parse_packet_type(header.packet_id)?;
 
-        Ok(PacketHeader::new(
-            header.packet_format,
-            header.game_major_version,
-            header.game_minor_version,
-            header.packet_version,
+        let session_time = seconds_to_millis(header.session_time as f64);
+
+        Ok(PacketHeader {
+            packet_format: header.packet_format,
+            game_major_version: header.game_major_version,
+            game_minor_version: header.game_minor_version,
+            packet_version: header.packet_version,
             packet_type,
-            header.session_uid,
-            header.session_time,
-            header.frame_identifier,
-            header.player_car_index,
-            None,
-        ))
+            session_uid: header.session_uid,
+            session_time,
+            frame_identifier: header.frame_identifier,
+            player_car_index: header.player_car_index,
+            secondary_player_car_index: None,
+        })
     }
 }
 

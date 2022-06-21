@@ -141,23 +141,23 @@ impl CarTelemetryData {
             front_right: unpack_surface_type(packet.surface_types.front_right)?,
         };
 
-        Ok(Self::new(
-            packet.speed,
-            packet.throttle,
-            packet.steer,
-            packet.brake,
-            packet.clutch,
-            packet.gear,
-            packet.engine_rpm,
-            packet.drs,
-            packet.rev_lights_percent,
-            packet.brakes_temperature,
-            packet.tyres_surface_temperature,
-            packet.tyres_inner_temperature,
-            packet.engine_temperature,
-            packet.tyre_pressures,
+        Ok(Self {
+            speed: packet.speed,
+            throttle: packet.throttle,
+            steer: packet.steer,
+            brake: packet.brake,
+            clutch: packet.clutch,
+            gear: packet.gear,
+            engine_rpm: packet.engine_rpm,
+            drs: packet.drs,
+            rev_lights_percent: packet.rev_lights_percent,
+            brakes_temperature: packet.brakes_temperature,
+            tyres_surface_temperature: packet.tyres_surface_temperature,
+            tyres_inner_temperature: packet.tyres_inner_temperature,
+            engine_temperature: packet.engine_temperature,
+            tyre_pressures: packet.tyre_pressures,
             surface_types,
-        ))
+        })
     }
 }
 
@@ -176,12 +176,12 @@ pub(crate) fn parse_car_telemetry_data<T: BufRead>(
         .map(CarTelemetryData::from_2019)
         .collect::<Result<Vec<CarTelemetryData>, UnpackError>>()?;
 
-    Ok(PacketCarTelemetryData::new(
+    Ok(PacketCarTelemetryData {
         header,
         car_telemetry_data,
-        packet.button_status,
-        MFDPanel::NotSet,
-        MFDPanel::NotSet,
-        None,
-    ))
+        button_status: packet.button_status,
+        mfd_panel: MFDPanel::NotSet,
+        secondary_player_mfd_panel: MFDPanel::NotSet,
+        suggested_gear: None,
+    })
 }

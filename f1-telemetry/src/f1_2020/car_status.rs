@@ -148,38 +148,38 @@ impl CarStatusData {
         let vehicle_fia_flag = unpack_flag(packet.vehicle_fia_flags)?;
         let ers_deploy_mode = unpack_ers_deploy_mode(packet.ers_deploy_mode)?;
 
-        Ok(CarStatusData::new(
+        Ok(CarStatusData {
             traction_control,
-            packet.anti_lock_brakes,
+            anti_lock_brakes: packet.anti_lock_brakes,
             fuel_mix,
-            packet.front_brake_bias,
-            packet.pit_limiter,
-            packet.fuel_in_tank,
-            packet.fuel_capacity,
-            packet.fuel_remaining_laps,
-            packet.max_rpm,
-            packet.idle_rpm,
-            packet.max_gears,
+            front_brake_bias: packet.front_brake_bias,
+            pit_limiter: packet.pit_limiter,
+            fuel_in_tank: packet.fuel_in_tank,
+            fuel_capacity: packet.fuel_capacity,
+            fuel_remaining_laps: packet.fuel_remaining_laps,
+            max_rpm: packet.max_rpm,
+            idle_rpm: packet.idle_rpm,
+            max_gears: packet.max_gears,
             drs_status,
-            Some(packet.drs_activation_distance),
-            packet.tyres_wear,
+            drs_activation_distance: Some(packet.drs_activation_distance),
+            tyres_wear: packet.tyres_wear,
             actual_tyre_compound,
             visual_tyre_compound,
-            Some(packet.tyres_age_laps),
-            packet.tyres_damage,
-            packet.front_left_wing_damage,
-            packet.front_right_wing_damage,
-            packet.rear_wing_damage,
-            packet.drs_fault,
-            packet.engine_damage,
-            packet.gear_box_damage,
+            tyre_age_laps: Some(packet.tyres_age_laps),
+            tyres_damage: packet.tyres_damage,
+            front_left_wing_damage: packet.front_left_wing_damage,
+            front_right_wing_damage: packet.front_right_wing_damage,
+            rear_wing_damage: packet.rear_wing_damage,
+            drs_fault: packet.drs_fault,
+            engine_damage: packet.engine_damage,
+            gear_box_damage: packet.gear_box_damage,
             vehicle_fia_flag,
-            packet.ers_store_energy,
+            ers_store_energy: packet.ers_store_energy,
             ers_deploy_mode,
-            packet.ers_harvested_this_lap_mguk,
-            packet.ers_harvested_this_lap_mguh,
-            packet.ers_deployed_this_lap,
-        ))
+            ers_harvested_this_lap_mguk: packet.ers_harvested_this_lap_mguk,
+            ers_harvested_this_lap_mguh: packet.ers_harvested_this_lap_mguh,
+            ers_deployed_this_lap: packet.ers_deployed_this_lap,
+        })
     }
 }
 
@@ -197,5 +197,8 @@ pub fn parse_car_status_data<T: BufRead>(
         .map(CarStatusData::from_2020)
         .collect::<Result<Vec<CarStatusData>, UnpackError>>()?;
 
-    Ok(PacketCarStatusData::new(header, car_status_data))
+    Ok(PacketCarStatusData {
+        header,
+        car_status_data,
+    })
 }

@@ -88,21 +88,21 @@ impl FinalClassification {
             .map(|&t| unpack_tyre_compound_visual(t))
             .collect::<Result<Vec<TyreCompoundVisual>, UnpackError>>()?;
 
-        Ok(FinalClassification::new(
-            fc.position,
-            fc.num_laps,
-            fc.grid_position,
-            fc.points,
-            fc.num_pit_stops,
+        Ok(FinalClassification {
+            position: fc.position,
+            num_laps: fc.num_laps,
+            grid_position: fc.grid_position,
+            points: fc.points,
+            num_pit_stops: fc.num_pit_stops,
             result_status,
             best_lap_time,
             total_race_time,
-            fc.penalties_time,
-            fc.num_penalties,
-            fc.num_tyre_stints,
+            penalties_time: fc.penalties_time,
+            num_penalties: fc.num_penalties,
+            num_tyre_stints: fc.num_tyre_stints,
             tyre_stints_actual,
             tyre_stints_visual,
-        ))
+        })
     }
 }
 
@@ -121,9 +121,9 @@ pub(crate) fn parse_final_classification_data<T: BufRead>(
         .map(FinalClassification::from_2020)
         .collect::<Result<Vec<FinalClassification>, UnpackError>>()?;
 
-    Ok(PacketFinalClassificationData::new(
+    Ok(PacketFinalClassificationData {
         header,
-        final_classification.num_cars,
+        num_cars: final_classification.num_cars,
         final_classifications,
-    ))
+    })
 }

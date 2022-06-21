@@ -64,7 +64,7 @@ impl GameState {
     }
 
     fn validate_session(&mut self, packet: &Packet) {
-        let suid = packet.header().session_uid();
+        let suid = packet.header().session_uid;
 
         if self.session_uid.is_some() && self.session_uid.unwrap() == suid {
             return;
@@ -77,17 +77,17 @@ impl GameState {
     }
 
     fn parse_session_data(&mut self, session: &PacketSessionData) {
-        self.session_info.session_type = session.session_type();
-        self.session_info.track_name = session.track().name().into();
-        self.session_info.elapsed_time = session.session_duration() - session.session_time_left();
-        self.session_info.duration = session.session_duration();
-        self.session_info.number_of_laps = session.total_laps();
-        self.session_info.safety_car = session.safety_car_status();
-        self.session_info.weather = session.weather();
-        self.session_info.track_temperature = session.track_temperature();
-        self.session_info.air_temperature = session.air_temperature();
-        self.session_info.is_online = session.network_game();
-        self.player_index = session.header().player_car_index()
+        self.session_info.session_type = session.session_type;
+        self.session_info.track_name = session.track.name().into();
+        self.session_info.elapsed_time = session.session_duration - session.session_time_left;
+        self.session_info.duration = session.session_duration;
+        self.session_info.number_of_laps = session.total_laps;
+        self.session_info.safety_car = session.safety_car_status;
+        self.session_info.weather = session.weather;
+        self.session_info.track_temperature = session.track_temperature;
+        self.session_info.air_temperature = session.air_temperature;
+        self.session_info.is_online = session.network_game;
+        self.player_index = session.header.player_car_index
     }
 
     fn parse_lap_data(&mut self, lap_data: &PacketLapData) {
@@ -103,26 +103,26 @@ impl GameState {
         let mut best_lap = u32::MAX;
 
         for idx in 0..self.lap_infos.len() {
-            let ld = &lap_data.lap_data()[idx];
+            let ld = &lap_data.lap_data[idx];
             let li = &mut self.lap_infos[idx];
 
-            li.position = ld.car_position();
-            li.current_lap_time = ld.current_lap_time();
-            li.best_lap_time = ld.best_lap_time();
-            li.current_lap_num = ld.current_lap_num();
-            li.status = ld.result_status();
-            li.in_pit = ld.pit_status() != PitStatus::None;
-            li.lap_invalid = ld.current_lap_invalid();
-            li.penalties = ld.penalties();
-            li.lap_distance = ld.lap_distance();
-            li.total_distance = ld.total_distance();
-            li.best_sector_1 = ld.best_overall_sector_1_time() as u32;
-            li.best_sector_2 = ld.best_overall_sector_2_time() as u32;
-            li.best_sector_3 = ld.best_overall_sector_3_time() as u32;
+            li.position = ld.car_position;
+            li.current_lap_time = ld.current_lap_time;
+            li.best_lap_time = ld.best_lap_time;
+            li.current_lap_num = ld.current_lap_num;
+            li.status = ld.result_status;
+            li.in_pit = ld.pit_status != PitStatus::None;
+            li.lap_invalid = ld.current_lap_invalid;
+            li.penalties = ld.penalties;
+            li.lap_distance = ld.lap_distance;
+            li.total_distance = ld.total_distance;
+            li.best_sector_1 = ld.best_overall_sector_1_time as u32;
+            li.best_sector_2 = ld.best_overall_sector_2_time as u32;
+            li.best_sector_3 = ld.best_overall_sector_3_time as u32;
 
-            let new_s1 = ld.sector_1_time() as u32;
-            let new_s2 = ld.sector_2_time() as u32;
-            let new_ll = ld.last_lap_time();
+            let new_s1 = ld.sector_1_time as u32;
+            let new_s2 = ld.sector_2_time as u32;
+            let new_ll = ld.last_lap_time;
 
             if new_s1 != li.sector_1 && new_s1 > 0 {
                 li.sector_1 = new_s1;
@@ -139,7 +139,7 @@ impl GameState {
 
                 if li.sector_1 != 0 && li.sector_2 != 0 {
                     // Hack to prevent inaccuracies with last_lap_time being a float, if possible.
-                    if ld.best_overall_sector_3_lap_num() == li.current_lap_num - 1 {
+                    if ld.best_overall_sector_3_lap_num == li.current_lap_num - 1 {
                         li.sector_3 = li.best_sector_3;
                     } else {
                         li.sector_3 = li.last_lap_time - li.sector_2 - li.sector_1;
@@ -174,9 +174,9 @@ impl GameState {
 
     fn parse_lap_data_current_lap(&mut self, lap_data: &PacketLapData) {
         self.session_info.current_lap = lap_data
-            .lap_data()
+            .lap_data
             .iter()
-            .map(|l| l.current_lap_num())
+            .map(|l| l.current_lap_num)
             .max()
             .unwrap_or(0)
     }
@@ -188,13 +188,13 @@ impl GameState {
         let mut max = -INFINITY;
 
         for (i, p) in self.participants.iter().enumerate() {
-            let ld = &lap_data.lap_data()[i];
+            let ld = &lap_data.lap_data[i];
 
-            if ld.result_status() != ResultStatus::Active {
+            if ld.result_status != ResultStatus::Active {
                 continue;
             }
 
-            let distance = ld.total_distance();
+            let distance = ld.total_distance;
 
             if distance > max {
                 max = distance;
@@ -206,7 +206,7 @@ impl GameState {
             positions
                 .entry(p.team)
                 .or_insert_with(Vec::new)
-                .push(ld.total_distance());
+                .push(ld.total_distance);
         }
 
         self.relative_positions = RelativePositions {
@@ -217,7 +217,7 @@ impl GameState {
     }
 
     fn parse_event_data(&mut self, event_data: &PacketEventData) {
-        let evt = event_data.event();
+        let evt = event_data.event;
 
         let driver_name = match evt.vehicle_idx() {
             Some(idx) => {
@@ -231,27 +231,27 @@ impl GameState {
         };
 
         let detail = match evt {
-            Event::FastestLap(f) => Some(fmt::milliseconds_to_msf(f.lap_time())),
-            Event::Penalty(p) => Some(format!("{:?}", p.penalty_type())),
-            Event::SpeedTrap(s) => Some(format!("{:.1} km/h", s.speed())),
+            Event::FastestLap(f) => Some(fmt::milliseconds_to_msf(f.lap_time)),
+            Event::Penalty(p) => Some(format!("{:?}", p.penalty_type)),
+            Event::SpeedTrap(s) => Some(format!("{:.1} km/h", s.speed)),
             _ => None,
         };
 
-        self.event_info.timestamp = event_data.header().session_time();
+        self.event_info.timestamp = event_data.header.session_time;
         self.event_info.description = evt.description().to_string();
         self.event_info.driver_name = driver_name;
         self.event_info.detail = detail;
-        self.event_info.event = *evt;
+        self.event_info.event = evt;
     }
 
     fn parse_participants(&mut self, ppd: &PacketParticipantsData) {
         self.participants = ppd
-            .participants()
+            .participants
             .iter()
             .map(|p| Participant {
-                name: p.name().into(),
-                driver: p.driver(),
-                team: p.team(),
+                name: p.name.clone(),
+                driver: p.driver,
+                team: p.team,
             })
             .collect();
 
@@ -281,39 +281,39 @@ impl GameState {
     }
 
     fn parse_telemetry_data(&mut self, telemetry_data: &PacketCarTelemetryData) {
-        let player_index = telemetry_data.header().player_car_index();
-        let td = &telemetry_data.car_telemetry_data()[player_index as usize];
+        let player_index = telemetry_data.header.player_car_index;
+        let td = &telemetry_data.car_telemetry_data[player_index as usize];
 
-        self.telemetry_info.speed = td.speed();
-        self.telemetry_info.throttle = td.throttle();
-        self.telemetry_info.brake = td.brake();
-        self.telemetry_info.gear = td.gear();
-        self.telemetry_info.engine_rpm = td.engine_rpm();
-        self.telemetry_info.drs = td.drs();
-        self.telemetry_info.rev_lights_percent = td.rev_lights_percent();
-        self.telemetry_info.engine_temperature = td.engine_temperature();
+        self.telemetry_info.speed = td.speed;
+        self.telemetry_info.throttle = td.throttle;
+        self.telemetry_info.brake = td.brake;
+        self.telemetry_info.gear = td.gear;
+        self.telemetry_info.engine_rpm = td.engine_rpm;
+        self.telemetry_info.drs = td.drs;
+        self.telemetry_info.rev_lights_percent = td.rev_lights_percent;
+        self.telemetry_info.engine_temperature = td.engine_temperature;
 
-        self.car_status.drs = td.drs();
-        self.telemetry_info.tyre_inner_temperature = td.tyres_inner_temperature();
-        self.telemetry_info.tyre_surface_temperature = td.tyres_surface_temperature();
+        self.car_status.drs = td.drs;
+        self.telemetry_info.tyre_inner_temperature = td.tyres_inner_temperature;
+        self.telemetry_info.tyre_surface_temperature = td.tyres_surface_temperature;
     }
 
     fn parse_motion_data(&mut self, motion_data: &PacketMotionData) {
-        let player_index = motion_data.header().player_car_index();
-        let md = &motion_data.motion_data()[player_index as usize];
+        let player_index = motion_data.header.player_car_index;
+        let md = &motion_data.motion_data[player_index as usize];
 
-        self.motion_info.suspension_position = motion_data.suspension_position();
-        self.motion_info.suspension_velocity = motion_data.suspension_velocity();
-        self.motion_info.suspension_acceleration = motion_data.suspension_acceleration();
-        self.motion_info.wheel_speed = motion_data.wheel_speed();
-        self.motion_info.wheel_slip = motion_data.wheel_slip();
-        self.motion_info.front_wheels_angle = motion_data.front_wheels_angle();
-        self.motion_info.g_force_lateral = md.g_force_lateral();
-        self.motion_info.g_force_longitudinal = md.g_force_longitudinal();
-        self.motion_info.g_force_vertical = md.g_force_vertical();
-        self.motion_info.yaw = md.yaw();
-        self.motion_info.pitch = md.pitch();
-        self.motion_info.roll = md.roll();
+        self.motion_info.suspension_position = motion_data.suspension_position;
+        self.motion_info.suspension_velocity = motion_data.suspension_velocity;
+        self.motion_info.suspension_acceleration = motion_data.suspension_acceleration;
+        self.motion_info.wheel_speed = motion_data.wheel_speed;
+        self.motion_info.wheel_slip = motion_data.wheel_slip;
+        self.motion_info.front_wheels_angle = motion_data.front_wheels_angle;
+        self.motion_info.g_force_lateral = md.g_force_lateral;
+        self.motion_info.g_force_longitudinal = md.g_force_longitudinal;
+        self.motion_info.g_force_vertical = md.g_force_vertical;
+        self.motion_info.yaw = md.yaw;
+        self.motion_info.pitch = md.pitch;
+        self.motion_info.roll = md.roll;
     }
 
     fn parse_final_classification(&mut self, classification_data: &PacketFinalClassificationData) {
@@ -322,25 +322,25 @@ impl GameState {
         let mut laps: i8 = 0;
 
         for i in 0..self.final_classifications.len() {
-            let fc = &classification_data.final_classifications()[i];
+            let fc = &classification_data.final_classifications[i];
             let fi = &mut self.final_classifications[i];
 
-            fi.position = fc.position();
+            fi.position = fc.position;
 
-            fi.best_lap_time = fc.best_lap_time();
-            fi.grid_position = fc.grid_position();
-            fi.total_race_time = fc.total_race_time();
-            fi.num_laps = fc.num_laps();
-            fi.num_pit_stops = fc.num_pit_stops();
-            fi.penalties = fc.penalties_time();
+            fi.best_lap_time = fc.best_lap_time;
+            fi.grid_position = fc.grid_position;
+            fi.total_race_time = fc.total_race_time;
+            fi.num_laps = fc.num_laps;
+            fi.num_pit_stops = fc.num_pit_stops;
+            fi.penalties = fc.penalties_time;
             fi.tyres_visual = fc
-                .tyre_stints_visual()
+                .tyre_stints_visual
                 .iter()
                 .filter(|&&t| t != TyreCompoundVisual::Invalid)
                 .copied()
                 .collect();
-            fi.points = fc.points();
-            fi.status = fc.result_status();
+            fi.points = fc.points;
+            fi.status = fc.result_status;
 
             if fi.position == 1 {
                 race_time = fi.total_race_time;
@@ -369,25 +369,25 @@ impl GameState {
 
     fn parse_car_status(&mut self, car_status_data: &PacketCarStatusData) {
         for idx in 0..self.lap_infos.len() {
-            let cs = &car_status_data.car_status_data()[idx];
+            let cs = &car_status_data.car_status_data[idx];
             let li = &mut self.lap_infos[idx];
 
-            li.tyre_compound = cs.visual_tyre_compound();
+            li.tyre_compound = cs.visual_tyre_compound;
         }
 
-        let player_index = car_status_data.header().player_car_index();
-        let csd = &car_status_data.car_status_data()[player_index as usize];
+        let player_index = car_status_data.header.player_car_index;
+        let csd = &car_status_data.car_status_data[player_index as usize];
 
-        self.car_status.tyres_damage = csd.tyres_damage();
-        self.car_status.left_front_wing_damage = csd.front_left_wing_damage();
-        self.car_status.right_front_wing_damage = csd.front_right_wing_damage();
-        self.car_status.rear_wing_damage = csd.rear_wing_damage();
-        self.car_status.engine_damage = csd.engine_damage();
-        self.car_status.gearbox_damage = csd.gear_box_damage();
-        self.car_status.fuel_in_tank = csd.fuel_in_tank();
-        self.car_status.fuel_remaining_laps = csd.fuel_remaining_laps();
-        self.car_status.tyre_compound = csd.visual_tyre_compound();
-        self.car_status.tyre_age_laps = csd.tyre_age_laps().unwrap_or_default();
+        self.car_status.tyres_damage = csd.tyres_damage;
+        self.car_status.left_front_wing_damage = csd.front_left_wing_damage;
+        self.car_status.right_front_wing_damage = csd.front_right_wing_damage;
+        self.car_status.rear_wing_damage = csd.rear_wing_damage;
+        self.car_status.engine_damage = csd.engine_damage;
+        self.car_status.gearbox_damage = csd.gear_box_damage;
+        self.car_status.fuel_in_tank = csd.fuel_in_tank;
+        self.car_status.fuel_remaining_laps = csd.fuel_remaining_laps;
+        self.car_status.tyre_compound = csd.visual_tyre_compound;
+        self.car_status.tyre_age_laps = csd.tyre_age_laps.unwrap_or_default();
 
         if self.lap_infos.is_empty() {
             return;
@@ -396,7 +396,7 @@ impl GameState {
         let last_tyre_entry = &self.historical_race_data.tyre_damage.last();
         let new_tyre_entry = TimedWheelData {
             lap,
-            tyre_damage: csd.tyres_damage(),
+            tyre_damage: csd.tyres_damage,
         };
         if let Some(last) = last_tyre_entry {
             if last.sum() > new_tyre_entry.sum() {
@@ -414,7 +414,7 @@ impl GameState {
         let last_fuel_entry = &self.historical_race_data.fuel_in_tank.last();
         let new_fuel_entry = TimedFuelData {
             lap,
-            fuel_remaining: csd.fuel_in_tank(),
+            fuel_remaining: csd.fuel_in_tank,
         };
 
         if let Some(last) = last_fuel_entry {
@@ -572,10 +572,10 @@ pub struct TimedWheelData {
 
 impl TimedWheelData {
     pub(crate) fn sum(&self) -> u16 {
-        (self.tyre_damage.front_left()
-            + self.tyre_damage.front_right()
-            + self.tyre_damage.rear_left()
-            + self.tyre_damage.rear_right()) as u16
+        (self.tyre_damage.front_left
+            + self.tyre_damage.front_right
+            + self.tyre_damage.rear_left
+            + self.tyre_damage.rear_right) as u16
     }
 }
 #[derive(Default, Clone, Copy)]
