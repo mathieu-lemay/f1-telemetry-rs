@@ -10,7 +10,7 @@ use motion::PacketMotionData;
 use participants::PacketParticipantsData;
 use session::PacketSessionData;
 
-use super::{f1_2019, f1_2020};
+use super::{f1_2019, f1_2020, f1_2021};
 
 pub mod car_setup;
 pub mod car_status;
@@ -85,6 +85,7 @@ pub(crate) fn parse_packet(size: usize, packet: &[u8]) -> Result<Packet, UnpackE
     match packet_format {
         2019 => Ok(f1_2019::parse_packet(size, packet)?),
         2020 => Ok(f1_2020::parse_packet(size, packet)?),
+        2021 => Ok(f1_2021::parse_packet(size, packet)?),
         _ => Err(UnpackError(format!(
             "Invalid packet: unknown format ({})",
             packet_format
