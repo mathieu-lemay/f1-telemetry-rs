@@ -1,5 +1,3 @@
-use getset::{CopyGetters, Getters};
-
 use crate::packet::generic::{Flag, TyreCompound, TyreCompoundVisual, WheelData};
 
 use super::header::PacketHeader;
@@ -103,135 +101,51 @@ pub enum ERSDeployMode {
 /// ```
 ///
 /// See also: [`DRS`], [`ERSDeployMode`], [`Flag`], [`FuelMix`], [`TractionControl`], [`TyreCompoundVisual`], [`TyreCompound`]
-#[derive(Debug, PartialEq, CopyGetters)]
-#[getset(get_copy = "pub")]
+#[derive(Debug, PartialEq)]
 pub struct CarStatusData {
-    traction_control: TractionControl,
-    anti_lock_brakes: bool,
-    fuel_mix: FuelMix,
-    front_brake_bias: u8,
-    pit_limiter: bool,
-    fuel_in_tank: f32,
-    fuel_capacity: f32,
-    fuel_remaining_laps: f32,
-    max_rpm: u16,
-    idle_rpm: u16,
-    max_gears: u8,
-    drs_status: DRS,
-    drs_activation_distance: Option<u16>,
-    tyres_wear: WheelData<u8>,
-    actual_tyre_compound: TyreCompound,
-    visual_tyre_compound: TyreCompoundVisual,
-    tyre_age_laps: Option<u8>,
-    tyres_damage: WheelData<u8>,
-    front_left_wing_damage: u8,
-    front_right_wing_damage: u8,
-    rear_wing_damage: u8,
-    drs_fault: bool,
-    engine_damage: u8,
-    gear_box_damage: u8,
-    vehicle_fia_flag: Flag,
-    ers_store_energy: f32,
-    ers_deploy_mode: ERSDeployMode,
-    ers_harvested_this_lap_mguk: f32,
-    ers_harvested_this_lap_mguh: f32,
-    ers_deployed_this_lap: f32,
-}
-
-#[allow(clippy::too_many_arguments)]
-impl CarStatusData {
-    pub fn new(
-        traction_control: TractionControl,
-        anti_lock_brakes: bool,
-        fuel_mix: FuelMix,
-        front_brake_bias: u8,
-        pit_limiter: bool,
-        fuel_in_tank: f32,
-        fuel_capacity: f32,
-        fuel_remaining_laps: f32,
-        max_rpm: u16,
-        idle_rpm: u16,
-        max_gears: u8,
-        drs_status: DRS,
-        drs_activation_distance: Option<u16>,
-        tyres_wear: WheelData<u8>,
-        actual_tyre_compound: TyreCompound,
-        visual_tyre_compound: TyreCompoundVisual,
-        tyre_age_laps: Option<u8>,
-        tyres_damage: WheelData<u8>,
-        front_left_wing_damage: u8,
-        front_right_wing_damage: u8,
-        rear_wing_damage: u8,
-        drs_fault: bool,
-        engine_damage: u8,
-        gear_box_damage: u8,
-        vehicle_fia_flag: Flag,
-        ers_store_energy: f32,
-        ers_deploy_mode: ERSDeployMode,
-        ers_harvested_this_lap_mguk: f32,
-        ers_harvested_this_lap_mguh: f32,
-        ers_deployed_this_lap: f32,
-    ) -> CarStatusData {
-        CarStatusData {
-            traction_control,
-            anti_lock_brakes,
-            fuel_mix,
-            front_brake_bias,
-            pit_limiter,
-            fuel_in_tank,
-            fuel_capacity,
-            fuel_remaining_laps,
-            max_rpm,
-            idle_rpm,
-            max_gears,
-            drs_status,
-            drs_activation_distance,
-            tyres_wear,
-            actual_tyre_compound,
-            visual_tyre_compound,
-            tyre_age_laps,
-            tyres_damage,
-            front_left_wing_damage,
-            front_right_wing_damage,
-            rear_wing_damage,
-            drs_fault,
-            engine_damage,
-            gear_box_damage,
-            vehicle_fia_flag,
-            ers_store_energy,
-            ers_deploy_mode,
-            ers_harvested_this_lap_mguk,
-            ers_harvested_this_lap_mguh,
-            ers_deployed_this_lap,
-        }
-    }
+    pub traction_control: TractionControl,
+    pub anti_lock_brakes: bool,
+    pub fuel_mix: FuelMix,
+    pub front_brake_bias: u8,
+    pub pit_limiter: bool,
+    pub fuel_in_tank: f32,
+    pub fuel_capacity: f32,
+    pub fuel_remaining_laps: f32,
+    pub max_rpm: u16,
+    pub idle_rpm: u16,
+    pub max_gears: u8,
+    pub drs_status: DRS,
+    pub drs_activation_distance: Option<u16>,
+    pub tyres_wear: WheelData<u8>,
+    pub actual_tyre_compound: TyreCompound,
+    pub visual_tyre_compound: TyreCompoundVisual,
+    pub tyre_age_laps: Option<u8>,
+    pub tyres_damage: WheelData<u8>,
+    pub front_left_wing_damage: u8,
+    pub front_right_wing_damage: u8,
+    pub rear_wing_damage: u8,
+    pub drs_fault: bool,
+    pub engine_damage: u8,
+    pub gear_box_damage: u8,
+    pub vehicle_fia_flag: Flag,
+    pub ers_store_energy: f32,
+    pub ers_deploy_mode: ERSDeployMode,
+    pub ers_harvested_this_lap_mguk: f32,
+    pub ers_harvested_this_lap_mguh: f32,
+    pub ers_deployed_this_lap: f32,
 }
 
 /// This packet details car statuses for all the cars in the race. It includes values such as the damage readings on the car.
 ///
 /// Frequency: Rate as specified in menus
 ///
-/// Size: 1143 bytes
-///
-/// Version: 1
-///
 /// ## Specification
 /// ```text
 /// header:          Header
-/// car_status_data: List of cars (20)
+/// car_status_data: List of cars
 /// ```
-#[derive(Debug, PartialEq, Getters)]
-#[getset(get = "pub")]
+#[derive(Debug, PartialEq)]
 pub struct PacketCarStatusData {
-    header: PacketHeader,
-    car_status_data: Vec<CarStatusData>,
-}
-
-impl PacketCarStatusData {
-    pub fn new(header: PacketHeader, car_status_data: Vec<CarStatusData>) -> PacketCarStatusData {
-        PacketCarStatusData {
-            header,
-            car_status_data,
-        }
-    }
+    pub header: PacketHeader,
+    pub car_status_data: Vec<CarStatusData>,
 }
