@@ -246,12 +246,12 @@ impl GameState {
 
     fn parse_participants(&mut self, ppd: &PacketParticipantsData) {
         self.participants = ppd
-            .participants()
+            .participants
             .iter()
             .map(|p| Participant {
-                name: p.name().into(),
-                driver: p.driver(),
-                team: p.team(),
+                name: p.name.clone(),
+                driver: p.driver,
+                team: p.team,
             })
             .collect();
 

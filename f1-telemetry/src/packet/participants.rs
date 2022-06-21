@@ -1,5 +1,3 @@
-use getset::{CopyGetters, Getters};
-
 use crate::packet::generic::{Nationality, Team};
 
 use super::header::PacketHeader;
@@ -116,44 +114,15 @@ pub enum Telemetry {
 /// ```
 ///
 /// See also [`Driver`], [`Team`] and [`Telemetry`]
-#[derive(Debug, Clone, PartialEq, CopyGetters, Getters)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct ParticipantData {
-    #[getset(get_copy = "pub")]
-    ai_controlled: bool,
-    #[getset(get_copy = "pub")]
-    driver: Driver,
-    #[getset(get_copy = "pub")]
-    team: Team,
-    #[getset(get_copy = "pub")]
-    race_number: u8,
-    #[getset(get_copy = "pub")]
-    nationality: Nationality,
-    #[getset(get = "pub")]
-    name: String,
-    #[getset(get_copy = "pub")]
-    telemetry_access: Telemetry,
-}
-
-impl ParticipantData {
-    pub fn new(
-        ai_controlled: bool,
-        driver: Driver,
-        team: Team,
-        race_number: u8,
-        nationality: Nationality,
-        name: String,
-        telemetry_access: Telemetry,
-    ) -> ParticipantData {
-        ParticipantData {
-            ai_controlled,
-            driver,
-            team,
-            race_number,
-            nationality,
-            name,
-            telemetry_access,
-        }
-    }
+    pub ai_controlled: bool,
+    pub driver: Driver,
+    pub team: Team,
+    pub race_number: u8,
+    pub nationality: Nationality,
+    pub name: String,
+    pub telemetry_access: Telemetry,
 }
 
 /// This is a list of participants in the race. If the vehicle is controlled by AI, then the name
@@ -174,26 +143,9 @@ impl ParticipantData {
 ///                  cars on HUD
 /// participants:    List of participants
 /// ```
-#[derive(Debug, Clone, PartialEq, Getters, CopyGetters)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct PacketParticipantsData {
-    #[getset(get = "pub")]
-    header: PacketHeader,
-    #[getset(get_copy = "pub")]
-    num_active_cars: u8,
-    #[getset(get = "pub")]
-    participants: Vec<ParticipantData>,
-}
-
-impl PacketParticipantsData {
-    pub fn new(
-        header: PacketHeader,
-        num_active_cars: u8,
-        participants: Vec<ParticipantData>,
-    ) -> PacketParticipantsData {
-        PacketParticipantsData {
-            header,
-            num_active_cars,
-            participants,
-        }
-    }
+    pub header: PacketHeader,
+    pub num_active_cars: u8,
+    pub participants: Vec<ParticipantData>,
 }

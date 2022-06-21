@@ -55,7 +55,7 @@ impl Packet {
             Packet::Session(p) => &p.header,
             Packet::Lap(p) => &p.header,
             Packet::Event(p) => &p.header,
-            Packet::Participants(p) => p.header(),
+            Packet::Participants(p) => &p.header,
             Packet::CarSetups(p) => p.header(),
             Packet::CarTelemetry(p) => p.header(),
             Packet::CarStatus(p) => p.header(),
