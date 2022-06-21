@@ -57,7 +57,7 @@ impl Packet {
             Packet::Event(p) => &p.header,
             Packet::Participants(p) => &p.header,
             Packet::CarSetups(p) => &p.header,
-            Packet::CarTelemetry(p) => p.header(),
+            Packet::CarTelemetry(p) => &p.header,
             Packet::CarStatus(p) => p.header(),
             Packet::FinalClassification(p) => p.header(),
             Packet::LobbyInfo(p) => p.header(),

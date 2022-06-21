@@ -281,21 +281,21 @@ impl GameState {
     }
 
     fn parse_telemetry_data(&mut self, telemetry_data: &PacketCarTelemetryData) {
-        let player_index = telemetry_data.header().player_car_index;
-        let td = &telemetry_data.car_telemetry_data()[player_index as usize];
+        let player_index = telemetry_data.header.player_car_index;
+        let td = &telemetry_data.car_telemetry_data[player_index as usize];
 
-        self.telemetry_info.speed = td.speed();
-        self.telemetry_info.throttle = td.throttle();
-        self.telemetry_info.brake = td.brake();
-        self.telemetry_info.gear = td.gear();
-        self.telemetry_info.engine_rpm = td.engine_rpm();
-        self.telemetry_info.drs = td.drs();
-        self.telemetry_info.rev_lights_percent = td.rev_lights_percent();
-        self.telemetry_info.engine_temperature = td.engine_temperature();
+        self.telemetry_info.speed = td.speed;
+        self.telemetry_info.throttle = td.throttle;
+        self.telemetry_info.brake = td.brake;
+        self.telemetry_info.gear = td.gear;
+        self.telemetry_info.engine_rpm = td.engine_rpm;
+        self.telemetry_info.drs = td.drs;
+        self.telemetry_info.rev_lights_percent = td.rev_lights_percent;
+        self.telemetry_info.engine_temperature = td.engine_temperature;
 
-        self.car_status.drs = td.drs();
-        self.telemetry_info.tyre_inner_temperature = td.tyres_inner_temperature();
-        self.telemetry_info.tyre_surface_temperature = td.tyres_surface_temperature();
+        self.car_status.drs = td.drs;
+        self.telemetry_info.tyre_inner_temperature = td.tyres_inner_temperature;
+        self.telemetry_info.tyre_surface_temperature = td.tyres_surface_temperature;
     }
 
     fn parse_motion_data(&mut self, motion_data: &PacketMotionData) {

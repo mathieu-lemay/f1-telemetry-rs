@@ -163,23 +163,23 @@ impl CarTelemetryData {
             front_right: unpack_surface_type(packet.surface_types.front_right)?,
         };
 
-        Ok(Self::new(
-            packet.speed,
-            packet.throttle,
-            packet.steer,
-            packet.brake,
-            packet.clutch,
-            packet.gear,
-            packet.engine_rpm,
-            packet.drs,
-            packet.rev_lights_percent,
-            packet.brakes_temperature,
-            packet.tyres_surface_temperature.into(),
-            packet.tyres_inner_temperature.into(),
-            packet.engine_temperature,
-            packet.tyre_pressures,
+        Ok(Self {
+            speed: packet.speed,
+            throttle: packet.throttle,
+            steer: packet.steer,
+            brake: packet.brake,
+            clutch: packet.clutch,
+            gear: packet.gear,
+            engine_rpm: packet.engine_rpm,
+            drs: packet.drs,
+            rev_lights_percent: packet.rev_lights_percent,
+            brakes_temperature: packet.brakes_temperature,
+            tyres_surface_temperature: packet.tyres_surface_temperature.into(),
+            tyres_inner_temperature: packet.tyres_inner_temperature.into(),
+            engine_temperature: packet.engine_temperature,
+            tyre_pressures: packet.tyre_pressures,
             surface_types,
-        ))
+        })
     }
 }
 
@@ -199,14 +199,14 @@ pub(crate) fn parse_car_telemetry_data<T: BufRead>(
         .collect::<Result<Vec<CarTelemetryData>, UnpackError>>()?;
 
     let mfd_panel = unpack_mfd_panel(packet.mfd_panel_index)?;
-    let mfd_panel_secondary_player = unpack_mfd_panel(packet.mfd_panel_index_secondary_player)?;
+    let secondary_player_mfd_panel = unpack_mfd_panel(packet.mfd_panel_index_secondary_player)?;
 
-    Ok(PacketCarTelemetryData::new(
+    Ok(PacketCarTelemetryData {
         header,
         car_telemetry_data,
-        packet.button_status,
+        button_status: packet.button_status,
         mfd_panel,
-        mfd_panel_secondary_player,
-        Some(packet.suggested_gear),
-    ))
+        secondary_player_mfd_panel,
+        suggested_gear: Some(packet.suggested_gear),
+    })
 }

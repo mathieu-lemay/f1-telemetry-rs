@@ -1,5 +1,3 @@
-use getset::{CopyGetters, Getters};
-
 use crate::packet::generic::WheelData;
 
 use super::header::PacketHeader;
@@ -43,63 +41,23 @@ pub enum SurfaceType {
 /// ```
 ///
 /// See also [`SurfaceType`]
-#[derive(Debug, PartialEq, CopyGetters)]
-#[getset(get_copy = "pub")]
+#[derive(Debug, PartialEq)]
 pub struct CarTelemetryData {
-    speed: u16,
-    throttle: f32,
-    steer: f32,
-    brake: f32,
-    clutch: u8,
-    gear: i8,
-    engine_rpm: u16,
-    drs: bool,
-    rev_lights_percent: u8,
-    brakes_temperature: WheelData<u16>,
-    tyres_surface_temperature: WheelData<u16>,
-    tyres_inner_temperature: WheelData<u16>,
-    engine_temperature: u16,
-    tyre_pressures: WheelData<f32>,
-    surface_types: WheelData<SurfaceType>,
-}
-
-impl CarTelemetryData {
-    #[allow(clippy::too_many_arguments)]
-    pub fn new(
-        speed: u16,
-        throttle: f32,
-        steer: f32,
-        brake: f32,
-        clutch: u8,
-        gear: i8,
-        engine_rpm: u16,
-        drs: bool,
-        rev_lights_percent: u8,
-        brakes_temperature: WheelData<u16>,
-        tyres_surface_temperature: WheelData<u16>,
-        tyres_inner_temperature: WheelData<u16>,
-        engine_temperature: u16,
-        tyre_pressures: WheelData<f32>,
-        surface_types: WheelData<SurfaceType>,
-    ) -> CarTelemetryData {
-        CarTelemetryData {
-            speed,
-            throttle,
-            steer,
-            brake,
-            clutch,
-            gear,
-            engine_rpm,
-            drs,
-            rev_lights_percent,
-            brakes_temperature,
-            tyres_surface_temperature,
-            tyres_inner_temperature,
-            engine_temperature,
-            tyre_pressures,
-            surface_types,
-        }
-    }
+    pub speed: u16,
+    pub throttle: f32,
+    pub steer: f32,
+    pub brake: f32,
+    pub clutch: u8,
+    pub gear: i8,
+    pub engine_rpm: u16,
+    pub drs: bool,
+    pub rev_lights_percent: u8,
+    pub brakes_temperature: WheelData<u16>,
+    pub tyres_surface_temperature: WheelData<u16>,
+    pub tyres_inner_temperature: WheelData<u16>,
+    pub engine_temperature: u16,
+    pub tyre_pressures: WheelData<f32>,
+    pub surface_types: WheelData<SurfaceType>,
 }
 
 /// Bit-mask values for the `button_status` field in [`PacketCarTelemetryData`]
@@ -173,41 +131,17 @@ pub enum MFDPanel {
 ///                     See [`ButtonFlag`]
 /// ```
 /// See also [`ButtonFlag`]
-#[derive(Debug, PartialEq, CopyGetters, Getters)]
+#[derive(Debug, PartialEq)]
 pub struct PacketCarTelemetryData {
-    #[getset(get = "pub")]
-    header: PacketHeader,
-    #[getset(get = "pub")]
-    car_telemetry_data: Vec<CarTelemetryData>,
-    #[getset(get_copy = "pub")]
-    button_status: u32,
-    #[getset(get_copy = "pub")]
-    mfd_panel: MFDPanel,
-    #[getset(get_copy = "pub")]
-    secondary_player_mfd_panel: MFDPanel,
-    #[getset(get_copy = "pub")]
-    suggested_gear: Option<i8>,
+    pub header: PacketHeader,
+    pub car_telemetry_data: Vec<CarTelemetryData>,
+    pub button_status: u32,
+    pub mfd_panel: MFDPanel,
+    pub secondary_player_mfd_panel: MFDPanel,
+    pub suggested_gear: Option<i8>,
 }
 
 impl PacketCarTelemetryData {
-    pub fn new(
-        header: PacketHeader,
-        car_telemetry_data: Vec<CarTelemetryData>,
-        button_status: u32,
-        mfd_panel: MFDPanel,
-        secondary_player_mfd_panel: MFDPanel,
-        suggested_gear: Option<i8>,
-    ) -> Self {
-        Self {
-            header,
-            car_telemetry_data,
-            button_status,
-            mfd_panel,
-            secondary_player_mfd_panel,
-            suggested_gear,
-        }
-    }
-
     pub fn get_pressed_buttons(&self) -> Vec<ButtonFlag> {
         let mask = self.button_status;
         let mut buttons = Vec::new();
