@@ -587,6 +587,15 @@ fn test_parse_2019_session_packet() {
         network_game: false,
         num_weather_forecast_samples: 0,
         weather_forecast_samples: vec![],
+        forecast_accuracy: None,
+        ai_difficulty: None,
+        season_identifier: None,
+        weekend_identifier: None,
+        session_identifier: None,
+        pit_stop_window_ideal_lap: None,
+        pit_stop_window_latest_lap: None,
+        pit_stop_rejoin_position: None,
+        driving_assists: None,
     };
 
     assert_eq!(actual, expected);

@@ -1,4 +1,3 @@
-use hex;
 use serial_test::serial;
 
 use f1_telemetry::packet::car_setup::{CarSetupData, PacketCarSetupData};
@@ -639,6 +638,7 @@ fn test_parse_2020_session_packet() {
                 weather: Weather::Clear,
                 track_temperature: 35,
                 air_temperature: 27,
+                ..Default::default()
             },
             WeatherForecastSample {
                 session_type: SessionType::QualifyingShort,
@@ -646,6 +646,7 @@ fn test_parse_2020_session_packet() {
                 weather: Weather::Clear,
                 track_temperature: 35,
                 air_temperature: 27,
+                ..Default::default()
             },
             WeatherForecastSample {
                 session_type: SessionType::QualifyingShort,
@@ -653,6 +654,7 @@ fn test_parse_2020_session_packet() {
                 weather: Weather::Clear,
                 track_temperature: 35,
                 air_temperature: 27,
+                ..Default::default()
             },
             WeatherForecastSample {
                 session_type: SessionType::QualifyingShort,
@@ -660,6 +662,7 @@ fn test_parse_2020_session_packet() {
                 weather: Weather::Clear,
                 track_temperature: 35,
                 air_temperature: 27,
+                ..Default::default()
             },
             WeatherForecastSample {
                 session_type: SessionType::QualifyingShort,
@@ -667,6 +670,7 @@ fn test_parse_2020_session_packet() {
                 weather: Weather::Clear,
                 track_temperature: 35,
                 air_temperature: 27,
+                ..Default::default()
             },
             WeatherForecastSample {
                 session_type: SessionType::QualifyingShort,
@@ -674,6 +678,7 @@ fn test_parse_2020_session_packet() {
                 weather: Weather::Clear,
                 track_temperature: 35,
                 air_temperature: 27,
+                ..Default::default()
             },
             WeatherForecastSample {
                 session_type: SessionType::QualifyingShort,
@@ -681,6 +686,7 @@ fn test_parse_2020_session_packet() {
                 weather: Weather::Clear,
                 track_temperature: 35,
                 air_temperature: 27,
+                ..Default::default()
             },
             WeatherForecastSample {
                 session_type: SessionType::Race,
@@ -688,6 +694,7 @@ fn test_parse_2020_session_packet() {
                 weather: Weather::Clear,
                 track_temperature: 31,
                 air_temperature: 24,
+                ..Default::default()
             },
             WeatherForecastSample {
                 session_type: SessionType::Race,
@@ -695,6 +702,7 @@ fn test_parse_2020_session_packet() {
                 weather: Weather::Clear,
                 track_temperature: 30,
                 air_temperature: 23,
+                ..Default::default()
             },
             WeatherForecastSample {
                 session_type: SessionType::Race,
@@ -702,6 +710,7 @@ fn test_parse_2020_session_packet() {
                 weather: Weather::Clear,
                 track_temperature: 29,
                 air_temperature: 23,
+                ..Default::default()
             },
             WeatherForecastSample {
                 session_type: SessionType::Unknown,
@@ -709,6 +718,7 @@ fn test_parse_2020_session_packet() {
                 weather: Weather::Clear,
                 track_temperature: 0,
                 air_temperature: 0,
+                ..Default::default()
             },
             WeatherForecastSample {
                 session_type: SessionType::Unknown,
@@ -716,6 +726,7 @@ fn test_parse_2020_session_packet() {
                 weather: Weather::Clear,
                 track_temperature: 0,
                 air_temperature: 0,
+                ..Default::default()
             },
             WeatherForecastSample {
                 session_type: SessionType::Unknown,
@@ -723,6 +734,7 @@ fn test_parse_2020_session_packet() {
                 weather: Weather::Clear,
                 track_temperature: 0,
                 air_temperature: 0,
+                ..Default::default()
             },
             WeatherForecastSample {
                 session_type: SessionType::Unknown,
@@ -730,6 +742,7 @@ fn test_parse_2020_session_packet() {
                 weather: Weather::Clear,
                 track_temperature: 0,
                 air_temperature: 0,
+                ..Default::default()
             },
             WeatherForecastSample {
                 session_type: SessionType::Unknown,
@@ -737,6 +750,7 @@ fn test_parse_2020_session_packet() {
                 weather: Weather::Clear,
                 track_temperature: 0,
                 air_temperature: 0,
+                ..Default::default()
             },
             WeatherForecastSample {
                 session_type: SessionType::Unknown,
@@ -744,6 +758,7 @@ fn test_parse_2020_session_packet() {
                 weather: Weather::Clear,
                 track_temperature: 0,
                 air_temperature: 0,
+                ..Default::default()
             },
             WeatherForecastSample {
                 session_type: SessionType::Unknown,
@@ -751,6 +766,7 @@ fn test_parse_2020_session_packet() {
                 weather: Weather::Clear,
                 track_temperature: 0,
                 air_temperature: 0,
+                ..Default::default()
             },
             WeatherForecastSample {
                 session_type: SessionType::Unknown,
@@ -758,6 +774,7 @@ fn test_parse_2020_session_packet() {
                 weather: Weather::Clear,
                 track_temperature: 0,
                 air_temperature: 0,
+                ..Default::default()
             },
             WeatherForecastSample {
                 session_type: SessionType::Unknown,
@@ -765,6 +782,7 @@ fn test_parse_2020_session_packet() {
                 weather: Weather::Clear,
                 track_temperature: 0,
                 air_temperature: 0,
+                ..Default::default()
             },
             WeatherForecastSample {
                 session_type: SessionType::Unknown,
@@ -772,8 +790,18 @@ fn test_parse_2020_session_packet() {
                 weather: Weather::Clear,
                 track_temperature: 0,
                 air_temperature: 0,
+                ..Default::default()
             },
         ],
+        forecast_accuracy: None,
+        ai_difficulty: None,
+        season_identifier: None,
+        weekend_identifier: None,
+        session_identifier: None,
+        pit_stop_window_ideal_lap: None,
+        pit_stop_window_latest_lap: None,
+        pit_stop_rejoin_position: None,
+        driving_assists: None,
     };
 
     assert_eq!(actual, expected);
@@ -1390,15 +1418,11 @@ fn test_parse_2020_lap_packet() {
 #[serial]
 fn test_parse_2020_event_packet() {
     let stream = utils::get_stream();
-    let socket = utils::get_connected_socket(&stream);
 
-    let data =
-        hex::decode("e407010e0103599832db55618ae1e143e142da0c000013ff535054500de1b6aa430000")
-            .unwrap();
-    let res = socket.send(&data);
-
-    assert!(res.is_ok());
-    assert_eq!(res.unwrap(), data.len());
+    utils::send_raw_data(
+        &stream,
+        "e407010e0103599832db55618ae1e143e142da0c000013ff535054500de1b6aa430000",
+    );
 
     let p = utils::get_packet(&stream).unwrap().unwrap();
 

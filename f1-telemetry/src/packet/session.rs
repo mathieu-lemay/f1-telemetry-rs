@@ -20,6 +20,19 @@ impl Default for Weather {
     }
 }
 
+#[derive(Debug, Clone, Copy, Eq, PartialEq, Deserialize)]
+pub enum TemperatureChange {
+    Up,
+    Down,
+    NoChange,
+}
+
+impl Default for TemperatureChange {
+    fn default() -> Self {
+        Self::Up // The default in F1 2021 for default WeatherForecast
+    }
+}
+
 #[derive(Debug, Clone, Copy, Eq, PartialEq)]
 pub enum SessionType {
     Unknown,
@@ -163,10 +176,6 @@ impl Default for SafetyCar {
 
 /// This type is used for the `weather_forecast_sample` array of the [`PacketSessionData`] type.
 ///
-/// Size: 5 bytes
-///
-/// Version: 1
-///
 /// ## Specification
 /// ```text
 /// session_type:      Type of session the forecast applies to. See [`SessionType`].
@@ -176,13 +185,16 @@ impl Default for SafetyCar {
 /// air_temperature:   Air temp. in degrees celsius.
 /// ```
 /// [`PacketSessionData`]: ./struct.PacketSessionData.html
-#[derive(Debug, Eq, PartialEq)]
+#[derive(Debug, Eq, PartialEq, Default)]
 pub struct WeatherForecastSample {
     pub session_type: SessionType,
     pub time_offset: u8,
     pub weather: Weather,
     pub track_temperature: i8,
+    pub track_temperature_change: TemperatureChange,
     pub air_temperature: i8,
+    pub air_temperature_change: TemperatureChange,
+    pub rain_percentage: u8,
 }
 
 /// This type is used for the `marshal_zones` array of the [`PacketSessionData`] type.
@@ -197,6 +209,68 @@ pub struct WeatherForecastSample {
 pub struct MarshalZone {
     pub zone_start: f32,
     pub zone_flag: Flag,
+}
+
+#[derive(Debug, PartialEq)]
+pub enum ForecastAccuracy {
+    Perfect,
+    Approximate,
+}
+
+#[derive(Debug, PartialEq)]
+pub enum BrakingAssist {
+    Off,
+    Low,
+    Medium,
+    High,
+}
+
+#[derive(Debug, PartialEq)]
+pub enum GearboxAssist {
+    Manual,
+    ManualAndSuggestedGear,
+    Automatic,
+}
+
+#[derive(Debug, PartialEq)]
+pub enum DynamicRacingLine {
+    Off,
+    CornersOnly,
+    Full,
+}
+
+#[derive(Debug, PartialEq)]
+pub enum DynamicRacingLineType {
+    TwoDimensions,
+    ThreeDimensions,
+}
+
+/// Status of various driving assistances.
+///
+/// ```text
+/// steering_assist:                Wether steering assist is on or not.
+/// braking_assist:                 Braking assist. See [`BrakingAssist`]
+/// gearbox_assist:                 Gearbox assist. See [`GearboxAssist`]
+/// pit_assist:                     Wether pit assist is on or not.
+/// pit_relase_assist:              Wether pit release assist is on or not.
+/// ers_assist:                     Wether ERS assist is on or not.
+/// drs_assist:                     Wether DRS assist is on or not.
+/// dynamic_racing_line:            Dynamic racing line. See [`DynamicRacingLine`]
+/// dynamic_racing_line_type:       Dynamic racing line type. See [`DynamicRacingLineType`]
+/// ```
+/// See also: [`BrakingAssist`], [`DynamicRacingLine`], [`DynamicRacingLineType`] and
+/// [`GearboxAssist`].
+#[derive(Debug, PartialEq)]
+pub struct DrivingAssists {
+    pub steering_assist: bool,
+    pub braking_assist: BrakingAssist,
+    pub gearbox_assist: GearboxAssist,
+    pub pit_assist: bool,
+    pub pit_relase_assist: bool,
+    pub ers_assist: bool,
+    pub drs_assist: bool,
+    pub dynamic_racing_line: DynamicRacingLine,
+    pub dynamic_racing_line_type: DynamicRacingLineType,
 }
 
 /// The session packet includes details about the current session in progress.
@@ -227,9 +301,18 @@ pub struct MarshalZone {
 /// network_game:                   Whether the game is online or not.
 /// num_weather_forecast_samples    Number of weather samples to follow.
 /// weather_forecast_samples        List of weather forecast samples. See [`WeatherForecastSample`].
+/// forecast_accuracy:              Forecast accuracy. See [`ForecastAccuracy`].
+/// ai_difficulty:                  AI Difficulty rating – 0-110
+/// season_identifier:              Identifier for season - persists across saves
+/// weekend_identifier:             Identifier for weekend - persists across saves
+/// session_identifier:             Identifier for session - persists across saves
+/// pit_stop_window_ideal_lap:      Ideal lap to pit on for current strategy (player)
+/// pit_stop_window_latest_lap:     Latest lap to pit on for current strategy (player)
+/// pit_stop_rejoin_position:       Predicted position to rejoin at (player)
+/// driving_assists:                Status of various driving assistances.
 /// ```
-/// See also: [`Formula`], [`MarshalZone`], [`SafetyCar`], [`SessionType`], [`Track`],
-/// [`WeatherForecastSample`] and [`Weather`]
+/// See also: [`DrivingAssists`], [`Formula`], [`MarshalZone`], [`SafetyCar`], [`SessionType`],
+/// [`Track`], [`WeatherForecastSample`] and [`Weather`]
 #[derive(Debug, PartialEq)]
 pub struct PacketSessionData {
     pub header: PacketHeader,
@@ -254,4 +337,13 @@ pub struct PacketSessionData {
     pub network_game: bool,
     pub num_weather_forecast_samples: u8,
     pub weather_forecast_samples: Vec<WeatherForecastSample>,
+    pub forecast_accuracy: Option<ForecastAccuracy>,
+    pub ai_difficulty: Option<u8>,
+    pub season_identifier: Option<u32>,
+    pub weekend_identifier: Option<u32>,
+    pub session_identifier: Option<u32>,
+    pub pit_stop_window_ideal_lap: Option<u8>,
+    pub pit_stop_window_latest_lap: Option<u8>,
+    pub pit_stop_rejoin_position: Option<u8>,
+    pub driving_assists: Option<DrivingAssists>,
 }

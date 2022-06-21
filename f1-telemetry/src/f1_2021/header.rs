@@ -9,7 +9,10 @@ use crate::utils::{assert_packet_at_least_size, seconds_to_millis};
 use super::consts::*;
 
 fn parse_packet_type(value: u8) -> Result<PacketType, UnpackError> {
-    Err(UnpackError(format!("Invalid PacketType: {}", value)))
+    match value {
+        1 => Ok(PacketType::Session),
+        _ => Err(UnpackError(format!("Invalid PacketType: {}", value))),
+    }
 }
 
 /// The header for each of the UDP telemetry packets.

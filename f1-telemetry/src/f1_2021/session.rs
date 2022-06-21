@@ -2,7 +2,7 @@ use std::io::BufRead;
 
 use serde::Deserialize;
 
-use crate::f1_2020::generic::unpack_flag;
+use crate::f1_2021::generic::unpack_flag;
 use crate::packet::header::PacketHeader;
 use crate::packet::session::*;
 use crate::packet::UnpackError;
@@ -94,10 +94,81 @@ fn unpack_safety_car(value: u8) -> Result<SafetyCar, UnpackError> {
     }
 }
 
+fn unpack_temperature_change(value: i8) -> Result<TemperatureChange, UnpackError> {
+    match value {
+        0 => Ok(TemperatureChange::Up),
+        1 => Ok(TemperatureChange::Down),
+        2 => Ok(TemperatureChange::NoChange),
+        _ => Err(UnpackError(format!(
+            "Invalid TrackTemperature value: {}",
+            value
+        ))),
+    }
+}
+
+fn unpack_forecast_accuracy(value: u8) -> Result<ForecastAccuracy, UnpackError> {
+    match value {
+        0 => Ok(ForecastAccuracy::Perfect),
+        1 => Ok(ForecastAccuracy::Approximate),
+        _ => Err(UnpackError(format!(
+            "Invalid ForecastAccuracy value: {}",
+            value
+        ))),
+    }
+}
+
+fn unpack_braking_assist(value: u8) -> Result<BrakingAssist, UnpackError> {
+    match value {
+        0 => Ok(BrakingAssist::Off),
+        1 => Ok(BrakingAssist::Low),
+        2 => Ok(BrakingAssist::Medium),
+        3 => Ok(BrakingAssist::High),
+        _ => Err(UnpackError(format!(
+            "Invalid BrakingAssist value: {}",
+            value
+        ))),
+    }
+}
+
+fn unpack_gearbox_assist(value: u8) -> Result<GearboxAssist, UnpackError> {
+    match value {
+        1 => Ok(GearboxAssist::Manual),
+        2 => Ok(GearboxAssist::ManualAndSuggestedGear),
+        3 => Ok(GearboxAssist::Automatic),
+        _ => Err(UnpackError(format!(
+            "Invalid GearboxAssist value: {}",
+            value
+        ))),
+    }
+}
+
+fn unpack_dynamic_racing_line(value: u8) -> Result<DynamicRacingLine, UnpackError> {
+    match value {
+        0 => Ok(DynamicRacingLine::Off),
+        1 => Ok(DynamicRacingLine::CornersOnly),
+        2 => Ok(DynamicRacingLine::Full),
+        _ => Err(UnpackError(format!(
+            "Invalid DynamicRacingLine value: {}",
+            value
+        ))),
+    }
+}
+
+fn unpack_dynamic_racing_line_type(value: u8) -> Result<DynamicRacingLineType, UnpackError> {
+    match value {
+        0 => Ok(DynamicRacingLineType::TwoDimensions),
+        1 => Ok(DynamicRacingLineType::ThreeDimensions),
+        _ => Err(UnpackError(format!(
+            "Invalid DynamicRacingLineType value: {}",
+            value
+        ))),
+    }
+}
+
 /// The session packet includes details about the current session in progress.
 ///
 /// Frequency: 2 per second
-/// Size: 251 bytes
+/// Size: 625 bytes
 /// Version: 1
 ///
 /// ## Specification
@@ -129,6 +200,23 @@ fn unpack_safety_car(value: u8) -> Result<SafetyCar, UnpackError> {
 /// network_game:                   0 = offline, 1 = online
 /// num_weather_forecast_samples:   Number of weather samples to follow
 /// weather_forecast_samples:       List of weather forecast samples - max 20
+/// forecast_accuracy:              0 = Perfect, 1 = Approximate
+/// ai_difficulty:                  AI Difficulty rating – 0-110
+/// season_identifier:              Identifier for season - persists across saves
+/// weekend_identifier:             Identifier for weekend - persists across saves
+/// session_identifier:             Identifier for session - persists across saves
+/// pit_stop_window_ideal_lap:      Ideal lap to pit on for current strategy (player)
+/// pit_stop_window_latest_lap:     Latest lap to pit on for current strategy (player)
+/// pit_stop_rejoin_position:       Predicted position to rejoin at (player)
+/// steering_assist:                0 = off, 1 = on
+/// braking_assist:                 0 = off, 1 = low, 2 = medium, 3 = high
+/// gearbox_assist:                 1 = manual, 2 = manual & suggested gear, 3 = auto
+/// pit_assist:                     0 = off, 1 = on
+/// pit_relase_assist:              0 = off, 1 = on
+/// ers_assist:                     0 = off, 1 = on
+/// drs_assist:                     0 = off, 1 = on
+/// dynamic_racing_line:            0 = off, 1 = corners only, 2 = full
+/// dynamic_racing_line_type:       0 = 2D, 1 = 3D
 /// ```
 #[derive(Deserialize)]
 struct RawSessionData {
@@ -152,11 +240,30 @@ struct RawSessionData {
     safety_car_status: u8,
     network_game: bool,
     num_weather_forecast_samples: u8,
-    weather_forecast_samples: [RawWeatherForecast; NUMBER_WEATHER_FORECASTS],
+    // weather_forecast_samples: [RawWeatherForecast; NUMBER_WEATHER_FORECASTS],
+    weather_forecast_samples_1: [RawWeatherForecast; 32], // FIXME: https://stackoverflow.com/a/62665880
+    weather_forecast_samples_2: [RawWeatherForecast; 24],
+    forecast_accuracy: u8,
+    ai_difficulty: u8,
+    season_identifier: u32,
+    weekend_identifier: u32,
+    session_identifier: u32,
+    pit_stop_window_ideal_lap: u8,
+    pit_stop_window_latest_lap: u8,
+    pit_stop_rejoin_position: u8,
+    steering_assist: bool,
+    braking_assist: u8,
+    gearbox_assist: u8,
+    pit_assist: bool,
+    pit_relase_assist: bool,
+    ers_assist: bool,
+    drs_assist: bool,
+    dynamic_racing_line: u8,
+    dynamic_racing_line_type: u8,
 }
 
 impl PacketSessionData {
-    fn from_2020(header: PacketHeader, session_data: RawSessionData) -> Result<Self, UnpackError> {
+    fn from_2021(header: PacketHeader, session_data: RawSessionData) -> Result<Self, UnpackError> {
         let weather = unpack_weather(session_data.weather)?;
         let session_type = unpack_session_type(session_data.session_type)?;
         let track = unpack_track(session_data.track)?;
@@ -164,14 +271,25 @@ impl PacketSessionData {
         let marshal_zones: Vec<MarshalZone> = session_data
             .marshal_zones
             .iter()
-            .map(MarshalZone::from_2020)
+            .map(MarshalZone::from_2021)
             .collect::<Result<Vec<MarshalZone>, UnpackError>>()?;
         let safety_car_status = unpack_safety_car(session_data.safety_car_status)?;
-        let weather_forecast_samples: Vec<WeatherForecastSample> = session_data
-            .weather_forecast_samples
-            .iter()
-            .map(WeatherForecastSample::from_2020)
-            .collect::<Result<Vec<WeatherForecastSample>, UnpackError>>()?;
+        let forecast_accuracy = unpack_forecast_accuracy(session_data.forecast_accuracy)?;
+        let braking_assist = unpack_braking_assist(session_data.braking_assist)?;
+        let gearbox_assist = unpack_gearbox_assist(session_data.gearbox_assist)?;
+        let dynamic_racing_line = unpack_dynamic_racing_line(session_data.dynamic_racing_line)?;
+        let dynamic_racing_line_type =
+            unpack_dynamic_racing_line_type(session_data.dynamic_racing_line_type)?;
+
+        let mut weather_forecast_samples: Vec<WeatherForecastSample> =
+            Vec::with_capacity(NUMBER_WEATHER_FORECASTS);
+
+        for wf in session_data.weather_forecast_samples_1 {
+            weather_forecast_samples.push(WeatherForecastSample::from_2021(&wf)?);
+        }
+        for wf in session_data.weather_forecast_samples_2 {
+            weather_forecast_samples.push(WeatherForecastSample::from_2021(&wf)?);
+        }
 
         Ok(Self {
             header,
@@ -196,15 +314,25 @@ impl PacketSessionData {
             network_game: session_data.network_game,
             num_weather_forecast_samples: session_data.num_weather_forecast_samples,
             weather_forecast_samples,
-            forecast_accuracy: None,
-            ai_difficulty: None,
-            season_identifier: None,
-            weekend_identifier: None,
-            session_identifier: None,
-            pit_stop_window_ideal_lap: None,
-            pit_stop_window_latest_lap: None,
-            pit_stop_rejoin_position: None,
-            driving_assists: None,
+            forecast_accuracy: Some(forecast_accuracy),
+            ai_difficulty: Some(session_data.ai_difficulty),
+            season_identifier: Some(session_data.season_identifier),
+            weekend_identifier: Some(session_data.weekend_identifier),
+            session_identifier: Some(session_data.session_identifier),
+            pit_stop_window_ideal_lap: Some(session_data.pit_stop_window_ideal_lap),
+            pit_stop_window_latest_lap: Some(session_data.pit_stop_window_latest_lap),
+            pit_stop_rejoin_position: Some(session_data.pit_stop_rejoin_position),
+            driving_assists: Some(DrivingAssists {
+                steering_assist: session_data.steering_assist,
+                braking_assist,
+                gearbox_assist,
+                pit_assist: session_data.pit_assist,
+                pit_relase_assist: session_data.pit_relase_assist,
+                ers_assist: session_data.ers_assist,
+                drs_assist: session_data.drs_assist,
+                dynamic_racing_line,
+                dynamic_racing_line_type,
+            }),
         })
     }
 }
@@ -223,7 +351,7 @@ struct RawMarshalZone {
 }
 
 impl MarshalZone {
-    fn from_2020(mz: &RawMarshalZone) -> Result<MarshalZone, UnpackError> {
+    fn from_2021(mz: &RawMarshalZone) -> Result<MarshalZone, UnpackError> {
         let zone_flag = unpack_flag(mz.zone_flag)?;
 
         Ok(MarshalZone {
@@ -237,14 +365,17 @@ impl MarshalZone {
 ///
 /// ## Specification
 /// ```text
-/// session_type:       0 = unknown, 1 = P1, 2 = P2, 3 = P3, 4 = Short P, 5 = Q1
-///                     6 = Q2, 7 = Q3, 8 = Short Q, 9 = OSQ, 10 = R, 11 = R2
-///                     12 = Time Trial
-/// time_offset:        Time in minutes the forecast is for
-/// weather:            Weather - 0 = clear, 1 = light cloud, 2 = overcast
-///                     3 = light rain, 4 = heavy rain, 5 = storm
-/// track_temperature:  Track temperature in celsius.
-/// air_temperature:    Air temperature in celsius.
+/// session_type:             0 = unknown, 1 = P1, 2 = P2, 3 = P3, 4 = Short P, 5 = Q1
+///                           6 = Q2, 7 = Q3, 8 = Short Q, 9 = OSQ, 10 = R, 11 = R2
+///                           12 = Time Trial
+/// time_offset:              Time in minutes the forecast is for
+/// weather:                  Weather - 0 = clear, 1 = light cloud, 2 = overcast
+///                           3 = light rain, 4 = heavy rain, 5 = storm
+/// track_temperature:        Track temperature in celsius.
+/// track_temperature_change: Track temp. change – 0 = up, 1 = down, 2 = no change
+/// air_temperature:          Air temperature in celsius.
+/// air_temperature_change:   Air temp. change – 0 = up, 1 = down, 2 = no change
+/// rain_percentage:          Rain percentage (0-100)
 /// ```
 #[derive(Deserialize, Copy, Clone)]
 struct RawWeatherForecast {
@@ -252,20 +383,28 @@ struct RawWeatherForecast {
     time_offset: u8,
     weather: u8,
     track_temperature: i8,
+    track_temperature_change: i8,
     air_temperature: i8,
+    air_temperature_change: i8,
+    rain_percentage: u8,
 }
 
 impl WeatherForecastSample {
-    fn from_2020(wf: &RawWeatherForecast) -> Result<WeatherForecastSample, UnpackError> {
+    fn from_2021(wf: &RawWeatherForecast) -> Result<WeatherForecastSample, UnpackError> {
         let session_type = unpack_session_type(wf.session_type)?;
         let weather = unpack_weather(wf.weather)?;
+        let track_temperature_change = unpack_temperature_change(wf.track_temperature_change)?;
+        let air_temperature_change = unpack_temperature_change(wf.air_temperature_change)?;
+
         Ok(WeatherForecastSample {
             session_type,
             time_offset: wf.time_offset,
             weather,
+            track_temperature_change,
             track_temperature: wf.track_temperature,
+            air_temperature_change,
             air_temperature: wf.air_temperature,
-            ..Default::default()
+            rain_percentage: wf.rain_percentage,
         })
     }
 }
@@ -278,7 +417,7 @@ pub(crate) fn parse_session_data<T: BufRead>(
     assert_packet_size(size, SESSION_PACKET_SIZE)?;
 
     let session_data: RawSessionData = bincode::deserialize_from(reader)?;
-    let packet = PacketSessionData::from_2020(header, session_data)?;
+    let packet = PacketSessionData::from_2021(header, session_data)?;
 
     Ok(packet)
 }
