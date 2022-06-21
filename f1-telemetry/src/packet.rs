@@ -60,7 +60,7 @@ impl Packet {
             Packet::CarTelemetry(p) => &p.header,
             Packet::CarStatus(p) => &p.header,
             Packet::FinalClassification(p) => &p.header,
-            Packet::LobbyInfo(p) => p.header(),
+            Packet::LobbyInfo(p) => &p.header,
         }
     }
 }
