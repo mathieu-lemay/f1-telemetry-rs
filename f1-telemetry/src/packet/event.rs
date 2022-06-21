@@ -122,27 +122,65 @@ pub struct Penalty {
     pub places_gained: u8,
 }
 
-#[derive(Debug, Copy, Clone, PartialEq)]
+#[derive(Debug, Copy, Clone, PartialEq, Default)]
 pub struct SpeedTrap {
     pub vehicle_idx: u8,
     pub speed: f32,
+    pub overall_fastest_in_session: Option<bool>,
+    pub personal_fastest_in_session: Option<bool>,
+}
+
+#[derive(Debug, Copy, Clone, PartialEq)]
+pub struct StartLights {
+    pub number_of_lights: u8,
+}
+
+#[derive(Debug, Copy, Clone, PartialEq)]
+pub struct DriveThroughPenaltyServed {
+    pub vehicle_idx: u8,
+}
+
+#[derive(Debug, Copy, Clone, PartialEq)]
+pub struct StopGoPenaltyServed {
+    pub vehicle_idx: u8,
+}
+
+#[derive(Debug, Copy, Clone, PartialEq)]
+pub struct Flashback {
+    pub frame_identifier: u32,
+    pub session_time: f32,
+}
+
+#[derive(Debug, Copy, Clone, PartialEq)]
+pub struct Buttons {
+    pub button_status: u32,
 }
 
 /// List of possible events.
 ///
 /// ## Specification
 /// ```text
-/// SessionStarted: Sent when the session starts
-/// SessionEnded:   Sent when the session ends
-/// FastestLap:     When a driver achieves the fastest lap
-/// Retirement:     When a driver retires
-/// DRSEnabled:     Race control have enabled DRS
-/// DRSDisabled:    Race control have disabled DRS
-/// TeamMateInPits: Your team mate has entered the pits
-/// ChequeredFlag:  The chequered flag has been waved
-/// RaceWinner:     The race winner is announced
-/// Penalty:        A penalty has been issued
-/// RaceWinner:     Speed trap has been triggered by fastest speed
+/// SessionStarted:            Sent when the session starts
+/// SessionEnded:              Sent when the session ends
+/// FastestLap:                When a driver achieves the fastest lap
+/// Retirement:                When a driver retires
+/// DRSEnabled:                Race control have enabled DRS
+/// DRSDisabled:               Race control have disabled DRS
+/// TeamMateInPits:            Your team mate has entered the pits
+/// ChequeredFlag:             The chequered flag has been waved
+/// RaceWinner:                The race winner is announced
+///
+/// Introduced in F1 2020
+/// Penalty:                   A penalty has been issued
+/// SpeedTrap:                 Speed trap has been triggered by fastest speed
+///
+/// Introduced in F1 2021
+/// StartLights:               Start lights – number shown
+/// LightsOut:                 Lights out
+/// DriveThroughPenaltyServed: Drive through penalty served
+/// StopGoPenaltyServed:       Stop go penalty served
+/// Flashback:                 Flashback activated
+/// Buttons:                   Button status changed
 /// ```
 #[allow(clippy::upper_case_acronyms)]
 #[derive(Debug, Copy, Clone, PartialEq)]
@@ -158,6 +196,12 @@ pub enum Event {
     RaceWinner(RaceWinner),
     Penalty(Penalty),
     SpeedTrap(SpeedTrap),
+    StartLights(StartLights),
+    LightsOut,
+    DriveThroughPenaltyServed(DriveThroughPenaltyServed),
+    StopGoPenaltyServed(StopGoPenaltyServed),
+    Flashback(Flashback),
+    Buttons(Buttons),
 }
 
 impl Event {
@@ -174,6 +218,12 @@ impl Event {
             Event::RaceWinner(_) => "Race Winner",
             Event::Penalty(_) => "Penalty",
             Event::SpeedTrap(_) => "Speed Trap",
+            Event::StartLights(_) => "Number of start lights shown",
+            Event::LightsOut => "Lights out",
+            Event::DriveThroughPenaltyServed(_) => "Drive through penalty served",
+            Event::StopGoPenaltyServed(_) => "Stop and go penalty served",
+            Event::Flashback(_) => "Flashback activated",
+            Event::Buttons(_) => "Button status changed",
         }
     }
 
@@ -185,6 +235,8 @@ impl Event {
             Event::RaceWinner(e) => Some(e.vehicle_idx),
             Event::Penalty(e) => Some(e.vehicle_idx),
             Event::SpeedTrap(e) => Some(e.vehicle_idx),
+            Event::DriveThroughPenaltyServed(e) => Some(e.vehicle_idx),
+            Event::StopGoPenaltyServed(e) => Some(e.vehicle_idx),
             _ => None,
         }
     }

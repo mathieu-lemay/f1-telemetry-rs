@@ -3,4 +3,5 @@ pub const NUMBER_WEATHER_FORECASTS: usize = 56;
 
 pub const HEADER_SIZE: usize = 24;
 
+pub const EVENT_PACKET_SIZE: usize = 36;
 pub const SESSION_PACKET_SIZE: usize = 625;

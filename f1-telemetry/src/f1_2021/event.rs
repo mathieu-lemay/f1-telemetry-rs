@@ -97,7 +97,7 @@ fn unpack_infringement_type(value: u8) -> Result<InfringementType, UnpackError> 
 /// This packet gives details of events that happen during the course of a session.
 ///
 /// Frequency: When the event occurs
-/// Size: 35 bytes
+/// Size: 36 bytes
 /// Version: 1
 ///
 /// ## Specification
@@ -122,6 +122,12 @@ fn unpack_infringement_type(value: u8) -> Result<InfringementType, UnpackError> 
 /// Race Winner             RCWN    The race winner is announced
 /// Penalty Issued          PENA    A penalty has been issued
 /// Speed Trap Triggered    SPTP    Speed trap has been triggered by fastest speed
+/// Start lights            STLG    Start lights – number shown
+/// Lights out              LGOT    Lights out
+/// Drive through served    DTSV    Drive through penalty served
+/// Stop go served          SGSV    Stop go penalty served
+/// Flashback               FLBK    Flashback activated
+/// Button status           BUTN    Button status changed
 /// ```
 #[derive(Deserialize)]
 struct RawEvent {
@@ -269,13 +275,65 @@ struct PenaltyDetails {
 
 /// ## Specification
 /// ```text
-/// vehicle_idx:    Vehicle index of the vehicle triggering speed trap
-/// speed:          Top speed achieved in kilometres per hour
+/// vehicle_idx:                 Vehicle index of the vehicle triggering speed trap
+/// speed:                       Top speed achieved in kilometres per hour
+/// overall_fastest_in_session:  Overall fastest speed in session = 1, otherwise 0
+/// personal_fastest_in_session: Fastest speed for driver in session = 1, otherwise 0
 /// ```
 #[derive(Deserialize)]
 struct SpeedTrapDetails {
     vehicle_idx: u8,
     speed: f32,
+    overall_fastest_in_session: bool,
+    personal_fastest_in_session: bool,
+}
+
+/// ## Specification
+/// ```text
+/// number_of_lights: Number of lights showing
+/// ```
+#[derive(Deserialize)]
+struct StartLightsDetails {
+    number_of_lights: u8,
+}
+
+/// ## Specification
+/// ```text
+/// vehicle_idx: Vehicle index of the vehicle serving drive through
+/// ```
+#[derive(Deserialize)]
+struct DriveThroughPenaltyServedDetails {
+    vehicle_idx: u8,
+}
+
+/// ## Specification
+/// ```text
+/// vehicle_idx: Vehicle index of the vehicle serving stop go
+/// ```
+#[derive(Deserialize)]
+struct StopGoPenaltyServedDetails {
+    vehicle_idx: u8,
+}
+
+/// ## Specification
+/// ```text
+/// frame_identifier: Frame identifier flashed back to
+/// session_time:     Session time flashed back to
+/// ```
+#[derive(Deserialize)]
+struct FlashbackDetails {
+    frame_identifier: u32,
+    session_time: f32,
+}
+
+/// ## Specification
+/// ```text
+/// button_status: Bit flags specifying which buttons are being pressed
+///                currently - see appendices
+/// ```
+#[derive(Deserialize)]
+struct ButtonsDetails {
+    button_status: u32,
 }
 
 pub(crate) fn parse_event_data<T: BufRead>(
@@ -351,9 +409,52 @@ pub(crate) fn parse_event_data<T: BufRead>(
             let evt_detail = SpeedTrap {
                 vehicle_idx: details.vehicle_idx,
                 speed: details.speed,
-                ..Default::default()
+                overall_fastest_in_session: Some(details.overall_fastest_in_session),
+                personal_fastest_in_session: Some(details.personal_fastest_in_session),
             };
             Ok(Event::SpeedTrap(evt_detail))
+        }
+        "STLG" => {
+            let details: StartLightsDetails = bincode::deserialize_from(reader)?;
+
+            let evt_detail = StartLights {
+                number_of_lights: details.number_of_lights,
+            };
+            Ok(Event::StartLights(evt_detail))
+        }
+        "LGOT" => Ok(Event::LightsOut),
+        "DTSV" => {
+            let details: DriveThroughPenaltyServedDetails = bincode::deserialize_from(reader)?;
+
+            let evt_detail = DriveThroughPenaltyServed {
+                vehicle_idx: details.vehicle_idx,
+            };
+            Ok(Event::DriveThroughPenaltyServed(evt_detail))
+        }
+        "SGSV" => {
+            let details: StopGoPenaltyServedDetails = bincode::deserialize_from(reader)?;
+
+            let evt_detail = StopGoPenaltyServed {
+                vehicle_idx: details.vehicle_idx,
+            };
+            Ok(Event::StopGoPenaltyServed(evt_detail))
+        }
+        "FLBK" => {
+            let details: FlashbackDetails = bincode::deserialize_from(reader)?;
+
+            let evt_detail = Flashback {
+                frame_identifier: details.frame_identifier,
+                session_time: details.session_time,
+            };
+            Ok(Event::Flashback(evt_detail))
+        }
+        "BUTN" => {
+            let details: ButtonsDetails = bincode::deserialize_from(reader)?;
+
+            let evt_detail = Buttons {
+                button_status: details.button_status,
+            };
+            Ok(Event::Buttons(evt_detail))
         }
         _ => Err(UnpackError(format!("Invalid Event Code: {}", event_code))),
     }?;

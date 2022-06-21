@@ -1,5 +1,6 @@
 use serial_test::serial;
 
+use f1_telemetry::packet::event::{Event, InfringementType, PacketEventData, Penalty, PenaltyType};
 use f1_telemetry::packet::generic::Flag;
 use f1_telemetry::packet::session::{
     BrakingAssist, DrivingAssists, DynamicRacingLine, DynamicRacingLineType, ForecastAccuracy,
@@ -263,6 +264,41 @@ fn test_parse_2021_session_packet() {
             drs_assist: false,
             dynamic_racing_line: DynamicRacingLine::CornersOnly,
             dynamic_racing_line_type: DynamicRacingLineType::ThreeDimensions,
+        }),
+    };
+
+    assert_eq!(actual, expected);
+}
+
+#[test]
+#[serial]
+fn test_parse_2021_event_packet() {
+    let stream = utils::get_stream();
+
+    utils::send_raw_data(
+        &stream,
+        "e507011201032e324e2ac5eb38ad9ba596420906000013ff50454e41102913ffff01ff00",
+    );
+
+    let p = utils::get_packet(&stream).unwrap().unwrap();
+
+    let actual = match p {
+        Packet::Event(s) => s,
+        _ => panic!("Invalid packet. Expected Event, got {:?}", &p),
+    };
+
+    assert_eq!(actual.header.packet_format, 2021);
+
+    let expected = PacketEventData {
+        header: actual.header.clone(),
+        event: Event::Penalty(Penalty {
+            vehicle_idx: 19,
+            penalty_type: PenaltyType::Retired,
+            infringement_type: InfringementType::RetiredTerminallyDamaged,
+            other_vehicle_idx: 255,
+            time: 255,
+            lap_num: 1,
+            places_gained: 255,
         }),
     };
 

@@ -1438,6 +1438,7 @@ fn test_parse_2020_event_packet() {
         event: Event::SpeedTrap(SpeedTrap {
             vehicle_idx: 13,
             speed: 341.42874,
+            ..Default::default()
         }),
     };
 
