@@ -2,6 +2,7 @@ use std::io::Cursor;
 
 use event::parse_event_data;
 use header::parse_header;
+use motion::parse_motion_data;
 use session::parse_session_data;
 
 use crate::packet::{Packet, PacketType, UnpackError};
@@ -10,6 +11,7 @@ mod consts;
 mod event;
 mod generic;
 mod header;
+mod motion;
 mod session;
 
 pub(crate) fn parse_packet(size: usize, packet: &[u8]) -> Result<Packet, UnpackError> {
@@ -17,6 +19,11 @@ pub(crate) fn parse_packet(size: usize, packet: &[u8]) -> Result<Packet, UnpackE
     let header = parse_header(&mut cursor, size)?;
 
     match header.packet_type {
+        PacketType::Motion => {
+            let packet = parse_motion_data(&mut cursor, header, size)?;
+
+            Ok(Packet::Motion(packet))
+        }
         PacketType::Session => {
             let packet = parse_session_data(&mut cursor, header, size)?;
 
