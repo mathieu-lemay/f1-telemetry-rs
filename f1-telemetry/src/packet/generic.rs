@@ -112,6 +112,7 @@ pub enum ResultStatus {
     Disqualified,
     NotClassified,
     Retired,
+    DidNotFinish,
 }
 
 impl Default for ResultStatus {

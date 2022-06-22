@@ -854,6 +854,7 @@ fn test_parse_2020_lap_packet() {
                 grid_position: 11,
                 driver_status: DriverStatus::OutLap,
                 result_status: ResultStatus::Active,
+                ..Default::default()
             },
             LapData {
                 last_lap_time: 0,
@@ -883,6 +884,7 @@ fn test_parse_2020_lap_packet() {
                 grid_position: 9,
                 driver_status: DriverStatus::OutLap,
                 result_status: ResultStatus::Active,
+                ..Default::default()
             },
             LapData {
                 last_lap_time: 0,
@@ -912,6 +914,7 @@ fn test_parse_2020_lap_packet() {
                 grid_position: 5,
                 driver_status: DriverStatus::Garage,
                 result_status: ResultStatus::Active,
+                ..Default::default()
             },
             LapData {
                 last_lap_time: 0,
@@ -941,6 +944,7 @@ fn test_parse_2020_lap_packet() {
                 grid_position: 16,
                 driver_status: DriverStatus::OutLap,
                 result_status: ResultStatus::Active,
+                ..Default::default()
             },
             LapData {
                 last_lap_time: 0,
@@ -970,6 +974,7 @@ fn test_parse_2020_lap_packet() {
                 grid_position: 3,
                 driver_status: DriverStatus::Garage,
                 result_status: ResultStatus::Active,
+                ..Default::default()
             },
             LapData {
                 last_lap_time: 0,
@@ -999,6 +1004,7 @@ fn test_parse_2020_lap_packet() {
                 grid_position: 7,
                 driver_status: DriverStatus::Garage,
                 result_status: ResultStatus::Active,
+                ..Default::default()
             },
             LapData {
                 last_lap_time: 0,
@@ -1028,6 +1034,7 @@ fn test_parse_2020_lap_packet() {
                 grid_position: 10,
                 driver_status: DriverStatus::OutLap,
                 result_status: ResultStatus::Active,
+                ..Default::default()
             },
             LapData {
                 last_lap_time: 0,
@@ -1057,6 +1064,7 @@ fn test_parse_2020_lap_packet() {
                 grid_position: 13,
                 driver_status: DriverStatus::OutLap,
                 result_status: ResultStatus::Active,
+                ..Default::default()
             },
             LapData {
                 last_lap_time: 0,
@@ -1086,6 +1094,7 @@ fn test_parse_2020_lap_packet() {
                 grid_position: 20,
                 driver_status: DriverStatus::OutLap,
                 result_status: ResultStatus::Active,
+                ..Default::default()
             },
             LapData {
                 last_lap_time: 0,
@@ -1115,6 +1124,7 @@ fn test_parse_2020_lap_packet() {
                 grid_position: 8,
                 driver_status: DriverStatus::Garage,
                 result_status: ResultStatus::Active,
+                ..Default::default()
             },
             LapData {
                 last_lap_time: 0,
@@ -1144,6 +1154,7 @@ fn test_parse_2020_lap_packet() {
                 grid_position: 15,
                 driver_status: DriverStatus::OutLap,
                 result_status: ResultStatus::Active,
+                ..Default::default()
             },
             LapData {
                 last_lap_time: 0,
@@ -1173,6 +1184,7 @@ fn test_parse_2020_lap_packet() {
                 grid_position: 19,
                 driver_status: DriverStatus::Garage,
                 result_status: ResultStatus::Active,
+                ..Default::default()
             },
             LapData {
                 last_lap_time: 0,
@@ -1202,6 +1214,7 @@ fn test_parse_2020_lap_packet() {
                 grid_position: 12,
                 driver_status: DriverStatus::Garage,
                 result_status: ResultStatus::Active,
+                ..Default::default()
             },
             LapData {
                 last_lap_time: 0,
@@ -1231,6 +1244,7 @@ fn test_parse_2020_lap_packet() {
                 grid_position: 4,
                 driver_status: DriverStatus::OutLap,
                 result_status: ResultStatus::Active,
+                ..Default::default()
             },
             LapData {
                 last_lap_time: 0,
@@ -1260,6 +1274,7 @@ fn test_parse_2020_lap_packet() {
                 grid_position: 18,
                 driver_status: DriverStatus::OutLap,
                 result_status: ResultStatus::Active,
+                ..Default::default()
             },
             LapData {
                 last_lap_time: 0,
@@ -1289,6 +1304,7 @@ fn test_parse_2020_lap_packet() {
                 grid_position: 14,
                 driver_status: DriverStatus::Garage,
                 result_status: ResultStatus::Active,
+                ..Default::default()
             },
             LapData {
                 last_lap_time: 0,
@@ -1318,6 +1334,7 @@ fn test_parse_2020_lap_packet() {
                 grid_position: 17,
                 driver_status: DriverStatus::OutLap,
                 result_status: ResultStatus::Active,
+                ..Default::default()
             },
             LapData {
                 last_lap_time: 0,
@@ -1347,6 +1364,7 @@ fn test_parse_2020_lap_packet() {
                 grid_position: 1,
                 driver_status: DriverStatus::OutLap,
                 result_status: ResultStatus::Active,
+                ..Default::default()
             },
             LapData {
                 last_lap_time: 0,
@@ -1376,6 +1394,7 @@ fn test_parse_2020_lap_packet() {
                 grid_position: 6,
                 driver_status: DriverStatus::Garage,
                 result_status: ResultStatus::Active,
+                ..Default::default()
             },
             LapData {
                 last_lap_time: 0,
@@ -1405,6 +1424,7 @@ fn test_parse_2020_lap_packet() {
                 grid_position: 2,
                 driver_status: DriverStatus::Garage,
                 result_status: ResultStatus::Active,
+                ..Default::default()
             },
             LapData::default(),
             LapData::default(),

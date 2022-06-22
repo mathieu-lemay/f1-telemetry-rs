@@ -2,13 +2,13 @@ use std::io::BufRead;
 
 use serde::Deserialize;
 
-use crate::f1_2020::generic::unpack_result_status;
 use crate::packet::header::PacketHeader;
 use crate::packet::lap::{DriverStatus, LapData, PacketLapData, PitStatus};
 use crate::packet::UnpackError;
 use crate::utils::{assert_packet_size, seconds_to_millis};
 
 use super::consts::*;
+use super::generic::unpack_result_status;
 
 fn unpack_pit_status(value: u8) -> Result<PitStatus, UnpackError> {
     match value {
@@ -36,7 +36,7 @@ fn unpack_driver_status(value: u8) -> Result<DriverStatus, UnpackError> {
 /// The lap data packet gives details of all the cars in the session.
 ///
 /// Frequency: Rate as specified in menus
-/// Size: 843 bytes
+/// Size: 1190 bytes
 /// Version: 1
 ///
 /// ## Specification
@@ -143,6 +143,7 @@ impl LapData {
             grid_position: car_lap_data.grid_position,
             driver_status,
             result_status,
+            ..Default::default()
         })
     }
 }

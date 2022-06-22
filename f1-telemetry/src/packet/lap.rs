@@ -57,12 +57,20 @@ impl Default for DriverStatus {
 /// car_position:                  Car race position
 /// current_lap_num:               Current lap number
 /// pit_status:                    Pitting status. See [`PitStatus`].
+/// number_pit_stops:              Number of pit stops taken in this race
 /// sector:                        0 = sector1, 1 = sector2, 2 = sector3
 /// current_lap_invalid:           Current lap invalid
 /// penalties:                     Accumulated time penalties in seconds to be added
+/// warnings:                      Accumulated number of warnings issued
+/// number_unserved_drive_through: Number of drive through penalties left to serve
+/// number_unserved_stop_go:       Number of stop and go penalties left to serve
 /// grid_position:                 Grid position the vehicle started the race in
 /// driver_status:                 Status of driver. See [`DriverStatus`].
 /// result_status:                 Result status. See [`ResultStatus`].
+/// pit_lane_timer_active:         Pit lane timing, 0 = inactive, 1 = active
+/// pit_lane_time_in_lane:         If active, the current time spent in the pit lane in milliseconds
+/// pit_stop_time:                 Time of the actual pit stop in milliseconds
+/// pit_stop_should_serve_penalty: Whether the car should serve a penalty at this stop
 /// ```
 /// See also: [`DriverStatus`], [`PitStatus`], [`ResultStatus`]
 #[derive(Debug, PartialEq, Default)]
@@ -88,12 +96,20 @@ pub struct LapData {
     pub car_position: u8,
     pub current_lap_num: u8,
     pub pit_status: PitStatus,
+    pub number_pit_stops: u8,
     pub sector: u8,
     pub current_lap_invalid: bool,
     pub penalties: u8,
+    pub warnings: u8,
+    pub number_unserved_drive_through: u8,
+    pub number_unserved_stop_go: u8,
     pub grid_position: u8,
     pub driver_status: DriverStatus,
     pub result_status: ResultStatus,
+    pub pit_lane_timer_active: bool,
+    pub pit_lane_time_in_lane: u16,
+    pub pit_stop_time: u16,
+    pub pit_stop_should_serve_penalty: bool,
 }
 
 /// The lap data packet gives details of all the cars in the session.
