@@ -12,6 +12,7 @@ use lobby_info::parse_lobby_info_data;
 use motion::parse_motion_data;
 use participants::parse_participants_data;
 use session::parse_session_data;
+use session_history::parse_session_history_data;
 
 use crate::packet::{Packet, PacketType, UnpackError};
 
@@ -29,6 +30,7 @@ mod lobby_info;
 mod motion;
 mod participants;
 mod session;
+mod session_history;
 
 pub(crate) fn parse_packet(size: usize, packet: &[u8]) -> Result<Packet, UnpackError> {
     let mut cursor = Cursor::new(packet);
@@ -89,6 +91,11 @@ pub(crate) fn parse_packet(size: usize, packet: &[u8]) -> Result<Packet, UnpackE
             let packet = parse_car_damage_data(&mut cursor, header, size)?;
 
             Ok(Packet::CarDamage(packet))
+        }
+        PacketType::SessionHistory => {
+            let packet = parse_session_history_data(&mut cursor, header, size)?;
+
+            Ok(Packet::SessionHistory(packet))
         }
     }
 }

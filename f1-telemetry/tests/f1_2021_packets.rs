@@ -26,6 +26,9 @@ use f1_telemetry::packet::session::{
     Formula, GearboxAssist, MarshalZone, PacketSessionData, SafetyCar, SessionType,
     TemperatureChange, Track, Weather, WeatherForecastSample,
 };
+use f1_telemetry::packet::session_history::{
+    LapHistoryData, PacketSessionHistoryData, TyreStintData,
+};
 use f1_telemetry::packet::Packet;
 
 mod utils;
@@ -5528,6 +5531,164 @@ fn test_parse_2021_car_damage_packet() {
                 engine_mguk_wear: 0,
                 engine_tc_wear: 0,
             },
+        ],
+    };
+
+    assert_eq!(actual, expected);
+}
+
+#[test]
+#[serial]
+fn test_parse_2021_session_history_packet() {
+    let stream = utils::get_stream();
+
+    utils::send_raw_data(&stream, "e5070112010b2e324e2ac5eb38ad000000000000000013ff13020101010101752001003e52095b2d730f000000000000000000000f00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000ff1010000000000000000000000000000000000000000000");
+
+    let p = utils::get_packet(&stream).unwrap().unwrap();
+
+    let actual = match p {
+        Packet::SessionHistory(s) => s,
+        _ => panic!("Invalid packet. Expected SessionHistory, got {:?}", &p),
+    };
+
+    assert_eq!(actual.header.packet_format, 2021);
+
+    let expected = PacketSessionHistoryData {
+        header: actual.header.clone(),
+        car_index: 19,
+        number_of_laps: 2,
+        number_of_tyre_stints: 1,
+        best_lap_time_lap_number: 1,
+        best_sector_1_lap_number: 1,
+        best_sector_2_lap_number: 1,
+        best_sector_3_lap_number: 1,
+        lap_history: vec![
+            LapHistoryData {
+                lap_time: 73845,
+                sector_1_time: 21054,
+                sector_2_time: 23305,
+                sector_3_time: 29485,
+                valid_sectors: 15,
+            },
+            LapHistoryData {
+                lap_time: 0,
+                sector_1_time: 0,
+                sector_2_time: 0,
+                sector_3_time: 0,
+                valid_sectors: 15,
+            },
+            LapHistoryData::default(),
+            LapHistoryData::default(),
+            LapHistoryData::default(),
+            LapHistoryData::default(),
+            LapHistoryData::default(),
+            LapHistoryData::default(),
+            LapHistoryData::default(),
+            LapHistoryData::default(),
+            LapHistoryData::default(),
+            LapHistoryData::default(),
+            LapHistoryData::default(),
+            LapHistoryData::default(),
+            LapHistoryData::default(),
+            LapHistoryData::default(),
+            LapHistoryData::default(),
+            LapHistoryData::default(),
+            LapHistoryData::default(),
+            LapHistoryData::default(),
+            LapHistoryData::default(),
+            LapHistoryData::default(),
+            LapHistoryData::default(),
+            LapHistoryData::default(),
+            LapHistoryData::default(),
+            LapHistoryData::default(),
+            LapHistoryData::default(),
+            LapHistoryData::default(),
+            LapHistoryData::default(),
+            LapHistoryData::default(),
+            LapHistoryData::default(),
+            LapHistoryData::default(),
+            LapHistoryData::default(),
+            LapHistoryData::default(),
+            LapHistoryData::default(),
+            LapHistoryData::default(),
+            LapHistoryData::default(),
+            LapHistoryData::default(),
+            LapHistoryData::default(),
+            LapHistoryData::default(),
+            LapHistoryData::default(),
+            LapHistoryData::default(),
+            LapHistoryData::default(),
+            LapHistoryData::default(),
+            LapHistoryData::default(),
+            LapHistoryData::default(),
+            LapHistoryData::default(),
+            LapHistoryData::default(),
+            LapHistoryData::default(),
+            LapHistoryData::default(),
+            LapHistoryData::default(),
+            LapHistoryData::default(),
+            LapHistoryData::default(),
+            LapHistoryData::default(),
+            LapHistoryData::default(),
+            LapHistoryData::default(),
+            LapHistoryData::default(),
+            LapHistoryData::default(),
+            LapHistoryData::default(),
+            LapHistoryData::default(),
+            LapHistoryData::default(),
+            LapHistoryData::default(),
+            LapHistoryData::default(),
+            LapHistoryData::default(),
+            LapHistoryData::default(),
+            LapHistoryData::default(),
+            LapHistoryData::default(),
+            LapHistoryData::default(),
+            LapHistoryData::default(),
+            LapHistoryData::default(),
+            LapHistoryData::default(),
+            LapHistoryData::default(),
+            LapHistoryData::default(),
+            LapHistoryData::default(),
+            LapHistoryData::default(),
+            LapHistoryData::default(),
+            LapHistoryData::default(),
+            LapHistoryData::default(),
+            LapHistoryData::default(),
+            LapHistoryData::default(),
+            LapHistoryData::default(),
+            LapHistoryData::default(),
+            LapHistoryData::default(),
+            LapHistoryData::default(),
+            LapHistoryData::default(),
+            LapHistoryData::default(),
+            LapHistoryData::default(),
+            LapHistoryData::default(),
+            LapHistoryData::default(),
+            LapHistoryData::default(),
+            LapHistoryData::default(),
+            LapHistoryData::default(),
+            LapHistoryData::default(),
+            LapHistoryData::default(),
+            LapHistoryData::default(),
+            LapHistoryData::default(),
+            LapHistoryData::default(),
+            LapHistoryData::default(),
+            LapHistoryData::default(),
+            LapHistoryData::default(),
+        ],
+        tyre_stints: vec![
+            TyreStintData {
+                end_lap: 255,
+                tyre_compound: TyreCompound::C5,
+                tyre_compound_visual: TyreCompoundVisual::Soft,
+            },
+            TyreStintData::default(),
+            TyreStintData::default(),
+            TyreStintData::default(),
+            TyreStintData::default(),
+            TyreStintData::default(),
+            TyreStintData::default(),
+            TyreStintData::default(),
         ],
     };
 

@@ -10,6 +10,7 @@ use lobby_info::PacketLobbyInfoData;
 use motion::PacketMotionData;
 use participants::PacketParticipantsData;
 use session::PacketSessionData;
+use session_history::PacketSessionHistoryData;
 
 use super::{f1_2019, f1_2020, f1_2021};
 
@@ -26,6 +27,7 @@ pub mod lobby_info;
 pub mod motion;
 pub mod participants;
 pub mod session;
+pub mod session_history;
 
 #[derive(Debug, Eq, PartialEq)]
 pub struct UnpackError(pub String);
@@ -49,6 +51,7 @@ pub enum Packet {
     FinalClassification(PacketFinalClassificationData),
     LobbyInfo(PacketLobbyInfoData),
     CarDamage(PacketCarDamageData),
+    SessionHistory(PacketSessionHistoryData),
 }
 
 impl Packet {
@@ -65,6 +68,7 @@ impl Packet {
             Packet::FinalClassification(p) => &p.header,
             Packet::LobbyInfo(p) => &p.header,
             Packet::CarDamage(p) => &p.header,
+            Packet::SessionHistory(p) => &p.header,
         }
     }
 }
@@ -82,6 +86,7 @@ pub enum PacketType {
     FinalClassification,
     LobbyInfo,
     CarDamage,
+    SessionHistory,
 }
 
 pub(crate) fn parse_packet(size: usize, packet: &[u8]) -> Result<Packet, UnpackError> {
