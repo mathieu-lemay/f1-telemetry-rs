@@ -1,5 +1,6 @@
 use std::io::Cursor;
 
+use car_setup::parse_car_setup_data;
 use event::parse_event_data;
 use header::parse_header;
 use lap::parse_lap_data;
@@ -9,6 +10,7 @@ use session::parse_session_data;
 
 use crate::packet::{Packet, PacketType, UnpackError};
 
+mod car_setup;
 mod consts;
 mod event;
 mod generic;
@@ -47,6 +49,11 @@ pub(crate) fn parse_packet(size: usize, packet: &[u8]) -> Result<Packet, UnpackE
             let packet = parse_participants_data(&mut cursor, header, size)?;
 
             Ok(Packet::Participants(packet))
+        }
+        PacketType::CarSetups => {
+            let packet = parse_car_setup_data(&mut cursor, header, size)?;
+
+            Ok(Packet::CarSetups(packet))
         }
         _ => Err(UnpackError(format!(
             "Not implemented: {:?}",
