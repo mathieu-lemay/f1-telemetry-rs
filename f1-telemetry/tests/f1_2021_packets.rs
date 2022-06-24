@@ -15,6 +15,7 @@ use f1_telemetry::packet::generic::{
     Flag, Nationality, ResultStatus, Team, TyreCompound, TyreCompoundVisual, WheelData,
 };
 use f1_telemetry::packet::lap::{DriverStatus, LapData, PacketLapData, PitStatus};
+use f1_telemetry::packet::lobby_info::{PacketLobbyInfoData, Player, ReadyStatus};
 use f1_telemetry::packet::motion::{CarMotionData, PacketMotionData};
 use f1_telemetry::packet::participants::{
     Driver, PacketParticipantsData, ParticipantData, Telemetry,
@@ -4528,6 +4529,208 @@ fn test_parse_2021_final_classification_packet() {
                     TyreCompoundVisual::Invalid,
                     TyreCompoundVisual::Invalid,
                 ],
+            },
+        ],
+    };
+
+    assert_eq!(actual, expected);
+}
+
+#[test]
+#[serial]
+fn test_parse_2021_lobby_info_packet() {
+    let stream = utils::get_stream();
+
+    utils::send_raw_data(&stream, "e507011201090000000000000000000000000000000000001401290a4172726f6e204241524e4553000000000000000000000000000000000000000000000000000000000000000000000000470001290a4d617274696e2047494c4553000000000000000000000000000000000000000000000000000000000000000000000000460001290a416c6578204d55525241590000000000000000000000000000000000000000000000000000000000000000000000000028000129044c7563617320524f544800000000000000000000000000000000000000000000000000000000000000000000000000005f0001290949676f7220434f52524549410000000000000000000000000000000000000000000000000000000000000000000000004f0001291c536f70686965204c4556415353455552000000000000000000000000000000000000000000000000000000000000000035000129044a6f6e6173205343484946464552000000000000000000000000000000000000000000000000000000000000000000004c0001291c416c61696e20464f52455354000000000000000000000000000000000000000000000000000000000000000000000000500001290d4a6179204c45544f55524e45415500000000000000000000000000000000000000000000000000000000000000000000440001291b4573746f20534141524900000000000000000000000000000000000000000000000000000000000000000000000000001c000129065961736172204154495945480000000000000000000000000000000000000000000000000000000000000000000000002d0001292b4e616f746120495a554d49000000000000000000000000000000000000000000000000000000000000000000000000002a0001291d57696c68656c6d204b4155464d414e4e00000000000000000000000000000000000000000000000000000000000000002f000129154d61726965204c41555253454e0000000000000000000000000000000000000000000000000000000000000000000000410001294d466c6176696f204e49455645530000000000000000000000000000000000000000000000000000000000000000000000240001294350657465722042454c4f55534f5600000000000000000000000000000000000000000000000000000000000000000000570001293f4b6c696d656b204d494348414c534b490000000000000000000000000000000000000000000000000000000000000000200001291053616e746961676f204d4f52454e4f0000000000000000000000000000000000000000000000000000000000000000003c0001290742656e6a616d696e20434f5050454e530000000000000000000000000000000000000000000000000000000000000000360000ff0d506c617965720000000000000000000000000000000000000000000000000000000000000000000000000000000000002a0000ff00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000ff000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000");
+
+    let p = utils::get_packet(&stream).unwrap().unwrap();
+
+    let actual = match p {
+        Packet::LobbyInfo(s) => s,
+        _ => panic!("Invalid packet. Expected LobbyInfo, got {:?}", &p),
+    };
+
+    assert_eq!(actual.header.packet_format, 2021);
+
+    let expected = PacketLobbyInfoData {
+        header: actual.header.clone(),
+        num_players: 20,
+        players: vec![
+            Player {
+                ai_controlled: true,
+                team: Team::F1GenericCar,
+                nationality: Nationality::British,
+                name: "Arron BARNES".to_string(),
+                car_number: Some(71),
+                ready_status: ReadyStatus::NotReady,
+            },
+            Player {
+                ai_controlled: true,
+                team: Team::F1GenericCar,
+                nationality: Nationality::British,
+                name: "Martin GILES".to_string(),
+                car_number: Some(70),
+                ready_status: ReadyStatus::NotReady,
+            },
+            Player {
+                ai_controlled: true,
+                team: Team::F1GenericCar,
+                nationality: Nationality::British,
+                name: "Alex MURRAY".to_string(),
+                car_number: Some(40),
+                ready_status: ReadyStatus::NotReady,
+            },
+            Player {
+                ai_controlled: true,
+                team: Team::F1GenericCar,
+                nationality: Nationality::Austrian,
+                name: "Lucas ROTH".to_string(),
+                car_number: Some(95),
+                ready_status: ReadyStatus::NotReady,
+            },
+            Player {
+                ai_controlled: true,
+                team: Team::F1GenericCar,
+                nationality: Nationality::Brazilian,
+                name: "Igor CORREIA".to_string(),
+                car_number: Some(79),
+                ready_status: ReadyStatus::NotReady,
+            },
+            Player {
+                ai_controlled: true,
+                team: Team::F1GenericCar,
+                nationality: Nationality::French,
+                name: "Sophie LEVASSEUR".to_string(),
+                car_number: Some(53),
+                ready_status: ReadyStatus::NotReady,
+            },
+            Player {
+                ai_controlled: true,
+                team: Team::F1GenericCar,
+                nationality: Nationality::Austrian,
+                name: "Jonas SCHIFFER".to_string(),
+                car_number: Some(76),
+                ready_status: ReadyStatus::NotReady,
+            },
+            Player {
+                ai_controlled: true,
+                team: Team::F1GenericCar,
+                nationality: Nationality::French,
+                name: "Alain FOREST".to_string(),
+                car_number: Some(80),
+                ready_status: ReadyStatus::NotReady,
+            },
+            Player {
+                ai_controlled: true,
+                team: Team::F1GenericCar,
+                nationality: Nationality::Canadian,
+                name: "Jay LETOURNEAU".to_string(),
+                car_number: Some(68),
+                ready_status: ReadyStatus::NotReady,
+            },
+            Player {
+                ai_controlled: true,
+                team: Team::F1GenericCar,
+                nationality: Nationality::Finnish,
+                name: "Esto SAARI".to_string(),
+                car_number: Some(28),
+                ready_status: ReadyStatus::NotReady,
+            },
+            Player {
+                ai_controlled: true,
+                team: Team::F1GenericCar,
+                nationality: Nationality::Bahraini,
+                name: "Yasar ATIYEH".to_string(),
+                car_number: Some(45),
+                ready_status: ReadyStatus::NotReady,
+            },
+            Player {
+                ai_controlled: true,
+                team: Team::F1GenericCar,
+                nationality: Nationality::Japanese,
+                name: "Naota IZUMI".to_string(),
+                car_number: Some(42),
+                ready_status: ReadyStatus::NotReady,
+            },
+            Player {
+                ai_controlled: true,
+                team: Team::F1GenericCar,
+                nationality: Nationality::German,
+                name: "Wilhelm KAUFMANN".to_string(),
+                car_number: Some(47),
+                ready_status: ReadyStatus::NotReady,
+            },
+            Player {
+                ai_controlled: true,
+                team: Team::F1GenericCar,
+                nationality: Nationality::Danish,
+                name: "Marie LAURSEN".to_string(),
+                car_number: Some(65),
+                ready_status: ReadyStatus::NotReady,
+            },
+            Player {
+                ai_controlled: true,
+                team: Team::F1GenericCar,
+                nationality: Nationality::Spanish,
+                name: "Flavio NIEVES".to_string(),
+                car_number: Some(36),
+                ready_status: ReadyStatus::NotReady,
+            },
+            Player {
+                ai_controlled: true,
+                team: Team::F1GenericCar,
+                nationality: Nationality::Russian,
+                name: "Peter BELOUSOV".to_string(),
+                car_number: Some(87),
+                ready_status: ReadyStatus::NotReady,
+            },
+            Player {
+                ai_controlled: true,
+                team: Team::F1GenericCar,
+                nationality: Nationality::Polish,
+                name: "Klimek MICHALSKI".to_string(),
+                car_number: Some(32),
+                ready_status: ReadyStatus::NotReady,
+            },
+            Player {
+                ai_controlled: true,
+                team: Team::F1GenericCar,
+                nationality: Nationality::Colombian,
+                name: "Santiago MORENO".to_string(),
+                car_number: Some(60),
+                ready_status: ReadyStatus::NotReady,
+            },
+            Player {
+                ai_controlled: true,
+                team: Team::F1GenericCar,
+                nationality: Nationality::Belgian,
+                name: "Benjamin COPPENS".to_string(),
+                car_number: Some(54),
+                ready_status: ReadyStatus::NotReady,
+            },
+            Player {
+                ai_controlled: false,
+                team: Team::MyTeam,
+                nationality: Nationality::Canadian,
+                name: "Player".to_string(),
+                car_number: Some(42),
+                ready_status: ReadyStatus::NotReady,
+            },
+            Player {
+                ai_controlled: false,
+                team: Team::MyTeam,
+                nationality: Nationality::Invalid,
+                name: "".to_string(),
+                car_number: Some(0),
+                ready_status: ReadyStatus::NotReady,
+            },
+            Player {
+                ai_controlled: false,
+                team: Team::MyTeam,
+                nationality: Nationality::Invalid,
+                name: "".to_string(),
+                car_number: Some(0),
+                ready_status: ReadyStatus::NotReady,
             },
         ],
     };

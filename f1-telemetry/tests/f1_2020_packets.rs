@@ -4182,6 +4182,7 @@ fn test_parse_2020_lobby_info_packet() {
                 nationality: Nationality::Spanish,
                 name: "Carlos SAINZ".to_string(),
                 ready_status: ReadyStatus::NotReady,
+                ..Default::default()
             },
             Player {
                 ai_controlled: true,
@@ -4189,6 +4190,7 @@ fn test_parse_2020_lobby_info_packet() {
                 nationality: Nationality::Russian,
                 name: "Daniil KVYAT".to_string(),
                 ready_status: ReadyStatus::NotReady,
+                ..Default::default()
             },
             Player {
                 ai_controlled: true,
@@ -4196,6 +4198,7 @@ fn test_parse_2020_lobby_info_packet() {
                 nationality: Nationality::Australian,
                 name: "Daniel RICCIARDO".to_string(),
                 ready_status: ReadyStatus::NotReady,
+                ..Default::default()
             },
             Player {
                 ai_controlled: true,
@@ -4203,6 +4206,7 @@ fn test_parse_2020_lobby_info_packet() {
                 nationality: Nationality::British,
                 name: "Lewis HAMILTON".to_string(),
                 ready_status: ReadyStatus::NotReady,
+                ..Default::default()
             },
             Player {
                 ai_controlled: true,
@@ -4210,6 +4214,7 @@ fn test_parse_2020_lobby_info_packet() {
                 nationality: Nationality::Dutch,
                 name: "Max VERSTAPPEN".to_string(),
                 ready_status: ReadyStatus::NotReady,
+                ..Default::default()
             },
             Player {
                 ai_controlled: true,
@@ -4217,6 +4222,7 @@ fn test_parse_2020_lobby_info_packet() {
                 nationality: Nationality::Danish,
                 name: "Kevin MAGNUSSEN".to_string(),
                 ready_status: ReadyStatus::NotReady,
+                ..Default::default()
             },
             Player {
                 ai_controlled: true,
@@ -4224,6 +4230,7 @@ fn test_parse_2020_lobby_info_packet() {
                 nationality: Nationality::French,
                 name: "Romain GROSJEAN".to_string(),
                 ready_status: ReadyStatus::NotReady,
+                ..Default::default()
             },
             Player {
                 ai_controlled: true,
@@ -4231,6 +4238,7 @@ fn test_parse_2020_lobby_info_packet() {
                 nationality: Nationality::German,
                 name: "Sebastian VETTEL".to_string(),
                 ready_status: ReadyStatus::NotReady,
+                ..Default::default()
             },
             Player {
                 ai_controlled: true,
@@ -4238,6 +4246,7 @@ fn test_parse_2020_lobby_info_packet() {
                 nationality: Nationality::Mexican,
                 name: "Sergio PEREZ".to_string(),
                 ready_status: ReadyStatus::NotReady,
+                ..Default::default()
             },
             Player {
                 ai_controlled: true,
@@ -4245,6 +4254,7 @@ fn test_parse_2020_lobby_info_packet() {
                 nationality: Nationality::Finnish,
                 name: "Valtteri BOTTAS".to_string(),
                 ready_status: ReadyStatus::NotReady,
+                ..Default::default()
             },
             Player {
                 ai_controlled: true,
@@ -4252,6 +4262,7 @@ fn test_parse_2020_lobby_info_packet() {
                 nationality: Nationality::French,
                 name: "Esteban OCON".to_string(),
                 ready_status: ReadyStatus::NotReady,
+                ..Default::default()
             },
             Player {
                 ai_controlled: true,
@@ -4259,6 +4270,7 @@ fn test_parse_2020_lobby_info_packet() {
                 nationality: Nationality::Canadian,
                 name: "Lance STROLL".to_string(),
                 ready_status: ReadyStatus::Ready,
+                ..Default::default()
             },
             Player {
                 ai_controlled: true,
@@ -4266,6 +4278,7 @@ fn test_parse_2020_lobby_info_packet() {
                 nationality: Nationality::British,
                 name: "George RUSSELL".to_string(),
                 ready_status: ReadyStatus::Ready,
+                ..Default::default()
             },
             Player {
                 ai_controlled: true,
@@ -4273,6 +4286,7 @@ fn test_parse_2020_lobby_info_packet() {
                 nationality: Nationality::British,
                 name: "Lando NORRIS".to_string(),
                 ready_status: ReadyStatus::Ready,
+                ..Default::default()
             },
             Player {
                 ai_controlled: true,
@@ -4280,6 +4294,7 @@ fn test_parse_2020_lobby_info_packet() {
                 nationality: Nationality::Monegasque,
                 name: "Charles LECLERC".to_string(),
                 ready_status: ReadyStatus::NotReady,
+                ..Default::default()
             },
             Player {
                 ai_controlled: true,
@@ -4287,6 +4302,7 @@ fn test_parse_2020_lobby_info_packet() {
                 nationality: Nationality::Canadian,
                 name: "Nicholas LATIFI".to_string(),
                 ready_status: ReadyStatus::Ready,
+                ..Default::default()
             },
             Player {
                 ai_controlled: true,
@@ -4294,6 +4310,7 @@ fn test_parse_2020_lobby_info_packet() {
                 nationality: Nationality::Italian,
                 name: "Antonio GIOVINAZZI".to_string(),
                 ready_status: ReadyStatus::NotReady,
+                ..Default::default()
             },
             Player {
                 ai_controlled: false,
@@ -4301,6 +4318,7 @@ fn test_parse_2020_lobby_info_packet() {
                 nationality: Nationality::Canadian,
                 name: "Player".to_string(),
                 ready_status: ReadyStatus::NotReady,
+                ..Default::default()
             },
             Player {
                 ai_controlled: false,
@@ -4308,6 +4326,7 @@ fn test_parse_2020_lobby_info_packet() {
                 nationality: Nationality::Canadian,
                 name: "Player".to_string(),
                 ready_status: ReadyStatus::NotReady,
+                ..Default::default()
             },
             Player {
                 ai_controlled: false,
@@ -4315,6 +4334,7 @@ fn test_parse_2020_lobby_info_packet() {
                 nationality: Nationality::British,
                 name: "Player".to_string(),
                 ready_status: ReadyStatus::Ready,
+                ..Default::default()
             },
             Player {
                 ai_controlled: false,
@@ -4322,6 +4342,7 @@ fn test_parse_2020_lobby_info_packet() {
                 nationality: Nationality::Invalid,
                 name: "".to_string(),
                 ready_status: ReadyStatus::NotReady,
+                ..Default::default()
             },
             Player {
                 ai_controlled: false,
@@ -4329,6 +4350,7 @@ fn test_parse_2020_lobby_info_packet() {
                 nationality: Nationality::Invalid,
                 name: "".to_string(),
                 ready_status: ReadyStatus::NotReady,
+                ..Default::default()
             },
         ],
     };

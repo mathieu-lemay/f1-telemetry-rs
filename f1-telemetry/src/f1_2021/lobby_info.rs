@@ -2,7 +2,7 @@ use std::io::BufRead;
 
 use serde::Deserialize;
 
-use crate::f1_2020::generic::{unpack_nationality, unpack_team};
+use crate::f1_2021::generic::{unpack_nationality, unpack_team};
 use crate::packet::header::PacketHeader;
 use crate::packet::lobby_info::{PacketLobbyInfoData, Player, ReadyStatus};
 use crate::packet::UnpackError;
@@ -23,7 +23,7 @@ fn unpack_ready_status(value: u8) -> Result<ReadyStatus, UnpackError> {
 /// selected car, any AI involved in the game and also the ready status of each of the participants.
 ///
 /// Frequency: Two every second when in the lobby
-/// Size: 1169 bytes
+/// Size: 1191 bytes
 /// Version: 1
 ///
 /// ## Specification
@@ -42,24 +42,27 @@ struct RawLobbyInfo {
 ///
 /// ## Specification
 /// ```text
-/// ai_controlled: Whether the vehicle is AI or Human.
-/// team:          Team of the player
+/// ai_controlled: Whether the vehicle is AI (1) or Human (0) controlled
+/// team_id:       Team id - see appendix (255 if no team currently selected)
 /// nationality:   Nationality of the player
 /// name:          Name of participant in UTF-8 format – null terminated
-/// ready_status:  Player's ready status
+///                Will be truncated with ... (U+2026) if too long
+/// car_number:    Car number of the player
+/// ready_status:  0 = not ready, 1 = ready, 2 = spectating
 /// ```
 #[derive(Deserialize)]
 struct RawPlayer {
     ai_controlled: bool,
-    team: u8,
+    team_id: u8,
     nationality: u8,
     name1: [u8; 32], // FIXME: Ugly hack
     name2: [u8; 16],
+    car_number: u8,
     ready_status: u8,
 }
 
 impl Player {
-    fn from_2020(player: &RawPlayer) -> Result<Self, UnpackError> {
+    fn from_2021(player: &RawPlayer) -> Result<Self, UnpackError> {
         let name: [u8; 48] = {
             let mut whole: [u8; 48] = [0; 48];
             let (part1, part2) = whole.split_at_mut(player.name1.len());
@@ -68,7 +71,7 @@ impl Player {
             whole
         };
 
-        let team = unpack_team(player.team)?;
+        let team = unpack_team(player.team_id)?;
         let nationality = unpack_nationality(player.nationality)?;
         let name = unpack_string(&name)?;
         let ready_status = unpack_ready_status(player.ready_status)?;
@@ -78,8 +81,8 @@ impl Player {
             team,
             nationality,
             name,
+            car_number: Some(player.car_number),
             ready_status,
-            ..Default::default()
         })
     }
 }
@@ -96,7 +99,7 @@ pub(crate) fn parse_lobby_info_data<T: BufRead>(
     let players = lobby_info
         .players
         .iter()
-        .map(Player::from_2020)
+        .map(Player::from_2021)
         .collect::<Result<Vec<Player>, UnpackError>>()?;
 
     Ok(PacketLobbyInfoData {

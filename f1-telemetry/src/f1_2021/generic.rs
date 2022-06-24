@@ -121,6 +121,7 @@ pub(crate) fn unpack_team(value: u8) -> Result<Team, UnpackError> {
         7 => Ok(Team::Haas),
         8 => Ok(Team::McLaren),
         9 => Ok(Team::AlfaRomeo),
+        41 => Ok(Team::F1GenericCar),
         42 => Ok(Team::ArtGP2019),
         43 => Ok(Team::Campos2019),
         44 => Ok(Team::Carlin2019),

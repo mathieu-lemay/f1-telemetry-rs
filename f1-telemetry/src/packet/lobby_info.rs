@@ -9,6 +9,12 @@ pub enum ReadyStatus {
     Spectating,
 }
 
+impl Default for ReadyStatus {
+    fn default() -> Self {
+        Self::NotReady
+    }
+}
+
 /// This type is used for the `players` array of the [`PacketLobbyInfoData`] type.
 ///
 /// ## Specification
@@ -17,14 +23,16 @@ pub enum ReadyStatus {
 /// team:          Team of the player
 /// nationality:   Nationality of the player
 /// name:          Name of participant in UTF-8 format – null terminated
+/// car_number:    Car number of the player
 /// ready_status:  Player's ready status
 /// ```
-#[derive(Debug, PartialEq)]
+#[derive(Debug, Default, PartialEq)]
 pub struct Player {
     pub ai_controlled: bool,
     pub team: Team,
     pub nationality: Nationality,
     pub name: String,
+    pub car_number: Option<u8>,
     pub ready_status: ReadyStatus,
 }
 
