@@ -2158,6 +2158,7 @@ fn test_parse_2020_car_telemetry_packet() {
                     SurfaceType::Tarmac,
                     SurfaceType::Tarmac,
                 ),
+                ..Default::default()
             },
             CarTelemetryData {
                 speed: 190,
@@ -2180,6 +2181,7 @@ fn test_parse_2020_car_telemetry_packet() {
                     SurfaceType::Tarmac,
                     SurfaceType::Tarmac,
                 ),
+                ..Default::default()
             },
             CarTelemetryData {
                 speed: 0,
@@ -2202,6 +2204,7 @@ fn test_parse_2020_car_telemetry_packet() {
                     SurfaceType::Tarmac,
                     SurfaceType::Tarmac,
                 ),
+                ..Default::default()
             },
             CarTelemetryData {
                 speed: 186,
@@ -2224,6 +2227,7 @@ fn test_parse_2020_car_telemetry_packet() {
                     SurfaceType::Tarmac,
                     SurfaceType::Tarmac,
                 ),
+                ..Default::default()
             },
             CarTelemetryData {
                 speed: 0,
@@ -2246,6 +2250,7 @@ fn test_parse_2020_car_telemetry_packet() {
                     SurfaceType::Tarmac,
                     SurfaceType::Tarmac,
                 ),
+                ..Default::default()
             },
             CarTelemetryData {
                 speed: 0,
@@ -2268,6 +2273,7 @@ fn test_parse_2020_car_telemetry_packet() {
                     SurfaceType::Tarmac,
                     SurfaceType::Tarmac,
                 ),
+                ..Default::default()
             },
             CarTelemetryData {
                 speed: 217,
@@ -2290,6 +2296,7 @@ fn test_parse_2020_car_telemetry_packet() {
                     SurfaceType::Tarmac,
                     SurfaceType::RumbleStrip,
                 ),
+                ..Default::default()
             },
             CarTelemetryData {
                 speed: 307,
@@ -2312,6 +2319,7 @@ fn test_parse_2020_car_telemetry_packet() {
                     SurfaceType::Tarmac,
                     SurfaceType::Tarmac,
                 ),
+                ..Default::default()
             },
             CarTelemetryData {
                 speed: 157,
@@ -2334,6 +2342,7 @@ fn test_parse_2020_car_telemetry_packet() {
                     SurfaceType::RumbleStrip,
                     SurfaceType::Tarmac,
                 ),
+                ..Default::default()
             },
             CarTelemetryData {
                 speed: 0,
@@ -2356,6 +2365,7 @@ fn test_parse_2020_car_telemetry_packet() {
                     SurfaceType::Tarmac,
                     SurfaceType::Tarmac,
                 ),
+                ..Default::default()
             },
             CarTelemetryData {
                 speed: 246,
@@ -2378,6 +2388,7 @@ fn test_parse_2020_car_telemetry_packet() {
                     SurfaceType::Tarmac,
                     SurfaceType::Tarmac,
                 ),
+                ..Default::default()
             },
             CarTelemetryData {
                 speed: 0,
@@ -2400,6 +2411,7 @@ fn test_parse_2020_car_telemetry_packet() {
                     SurfaceType::Tarmac,
                     SurfaceType::Tarmac,
                 ),
+                ..Default::default()
             },
             CarTelemetryData {
                 speed: 0,
@@ -2422,6 +2434,7 @@ fn test_parse_2020_car_telemetry_packet() {
                     SurfaceType::Tarmac,
                     SurfaceType::Tarmac,
                 ),
+                ..Default::default()
             },
             CarTelemetryData {
                 speed: 295,
@@ -2444,6 +2457,7 @@ fn test_parse_2020_car_telemetry_packet() {
                     SurfaceType::Tarmac,
                     SurfaceType::Tarmac,
                 ),
+                ..Default::default()
             },
             CarTelemetryData {
                 speed: 79,
@@ -2466,6 +2480,7 @@ fn test_parse_2020_car_telemetry_packet() {
                     SurfaceType::Tarmac,
                     SurfaceType::Tarmac,
                 ),
+                ..Default::default()
             },
             CarTelemetryData {
                 speed: 0,
@@ -2488,6 +2503,7 @@ fn test_parse_2020_car_telemetry_packet() {
                     SurfaceType::Tarmac,
                     SurfaceType::Tarmac,
                 ),
+                ..Default::default()
             },
             CarTelemetryData {
                 speed: 318,
@@ -2510,6 +2526,7 @@ fn test_parse_2020_car_telemetry_packet() {
                     SurfaceType::Tarmac,
                     SurfaceType::Tarmac,
                 ),
+                ..Default::default()
             },
             CarTelemetryData {
                 speed: 121,
@@ -2532,6 +2549,7 @@ fn test_parse_2020_car_telemetry_packet() {
                     SurfaceType::Tarmac,
                     SurfaceType::Tarmac,
                 ),
+                ..Default::default()
             },
             CarTelemetryData {
                 speed: 0,
@@ -2554,6 +2572,7 @@ fn test_parse_2020_car_telemetry_packet() {
                     SurfaceType::Tarmac,
                     SurfaceType::Tarmac,
                 ),
+                ..Default::default()
             },
             CarTelemetryData {
                 speed: 14,
@@ -2576,6 +2595,7 @@ fn test_parse_2020_car_telemetry_packet() {
                     SurfaceType::Tarmac,
                     SurfaceType::Tarmac,
                 ),
+                ..Default::default()
             },
             CarTelemetryData {
                 speed: 0,
@@ -2598,6 +2618,7 @@ fn test_parse_2020_car_telemetry_packet() {
                     SurfaceType::Tarmac,
                     SurfaceType::Tarmac,
                 ),
+                ..Default::default()
             },
             CarTelemetryData {
                 speed: 0,
@@ -2620,9 +2641,10 @@ fn test_parse_2020_car_telemetry_packet() {
                     SurfaceType::Tarmac,
                     SurfaceType::Tarmac,
                 ),
+                ..Default::default()
             },
         ],
-        button_status: 0,
+        button_status: Some(0),
         mfd_panel: MFDPanel::Closed,
         secondary_player_mfd_panel: MFDPanel::Closed,
         suggested_gear: Some(0),

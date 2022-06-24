@@ -16,6 +16,7 @@ fn parse_packet_type(value: u8) -> Result<PacketType, UnpackError> {
         3 => Ok(PacketType::Event),
         4 => Ok(PacketType::Participants),
         5 => Ok(PacketType::CarSetups),
+        6 => Ok(PacketType::CarTelemetry),
         _ => Err(UnpackError(format!("Invalid PacketType: {}", value))),
     }
 }

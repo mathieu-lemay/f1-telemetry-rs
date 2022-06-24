@@ -179,6 +179,7 @@ impl CarTelemetryData {
             engine_temperature: packet.engine_temperature,
             tyre_pressures: packet.tyre_pressures,
             surface_types,
+            ..Default::default()
         })
     }
 }
@@ -204,7 +205,7 @@ pub(crate) fn parse_car_telemetry_data<T: BufRead>(
     Ok(PacketCarTelemetryData {
         header,
         car_telemetry_data,
-        button_status: packet.button_status,
+        button_status: Some(packet.button_status),
         mfd_panel,
         secondary_player_mfd_panel,
         suggested_gear: Some(packet.suggested_gear),

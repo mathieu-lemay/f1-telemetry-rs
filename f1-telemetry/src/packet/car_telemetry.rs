@@ -19,6 +19,12 @@ pub enum SurfaceType {
     Unknown,
 }
 
+impl Default for SurfaceType {
+    fn default() -> Self {
+        Self::Unknown
+    }
+}
+
 /// This type is used for the `car_telemetry_data` array of the [`PacketCarTelemetryData`] type.
 ///
 /// ## Specification
@@ -41,7 +47,7 @@ pub enum SurfaceType {
 /// ```
 ///
 /// See also [`SurfaceType`]
-#[derive(Debug, PartialEq)]
+#[derive(Debug, Default, PartialEq)]
 pub struct CarTelemetryData {
     pub speed: u16,
     pub throttle: f32,
@@ -52,6 +58,7 @@ pub struct CarTelemetryData {
     pub engine_rpm: u16,
     pub drs: bool,
     pub rev_lights_percent: u8,
+    pub rev_lights_bit_value: Option<u16>,
     pub brakes_temperature: WheelData<u16>,
     pub tyres_surface_temperature: WheelData<u16>,
     pub tyres_inner_temperature: WheelData<u16>,
@@ -129,13 +136,15 @@ pub enum MFDPanel {
 /// car_telemetry_data: List of car telemetry
 /// button_status:      Bit flags specifying which buttons are being pressed currently.
 ///                     See [`ButtonFlag`]
+///                     Available in F1 2019 and F1 2020 only. For F1 2021 and above,
+///                     this information is available as an event packet.
 /// ```
 /// See also [`ButtonFlag`]
 #[derive(Debug, PartialEq)]
 pub struct PacketCarTelemetryData {
     pub header: PacketHeader,
     pub car_telemetry_data: Vec<CarTelemetryData>,
-    pub button_status: u32,
+    pub button_status: Option<u32>,
     pub mfd_panel: MFDPanel,
     pub secondary_player_mfd_panel: MFDPanel,
     pub suggested_gear: Option<i8>,
@@ -143,8 +152,12 @@ pub struct PacketCarTelemetryData {
 
 impl PacketCarTelemetryData {
     pub fn get_pressed_buttons(&self) -> Vec<ButtonFlag> {
-        let mask = self.button_status;
+        let mask = self.button_status.unwrap_or_default();
         let mut buttons = Vec::new();
+
+        if mask == 0 {
+            return buttons;
+        }
 
         if mask & (ButtonFlag::Cross as u32) > 0 {
             buttons.push(ButtonFlag::Cross);

@@ -1767,6 +1767,7 @@ fn test_parse_2019_car_telemetry_packet() {
                     SurfaceType::Tarmac,
                     SurfaceType::Tarmac,
                 ),
+                ..Default::default()
             },
             CarTelemetryData {
                 speed: 242,
@@ -1789,6 +1790,7 @@ fn test_parse_2019_car_telemetry_packet() {
                     SurfaceType::Tarmac,
                     SurfaceType::Tarmac,
                 ),
+                ..Default::default()
             },
             CarTelemetryData {
                 speed: 171,
@@ -1811,6 +1813,7 @@ fn test_parse_2019_car_telemetry_packet() {
                     SurfaceType::Tarmac,
                     SurfaceType::Tarmac,
                 ),
+                ..Default::default()
             },
             CarTelemetryData {
                 speed: 197,
@@ -1833,6 +1836,7 @@ fn test_parse_2019_car_telemetry_packet() {
                     SurfaceType::Tarmac,
                     SurfaceType::Tarmac,
                 ),
+                ..Default::default()
             },
             CarTelemetryData {
                 speed: 197,
@@ -1855,6 +1859,7 @@ fn test_parse_2019_car_telemetry_packet() {
                     SurfaceType::Tarmac,
                     SurfaceType::Tarmac,
                 ),
+                ..Default::default()
             },
             CarTelemetryData {
                 speed: 174,
@@ -1877,6 +1882,7 @@ fn test_parse_2019_car_telemetry_packet() {
                     SurfaceType::Tarmac,
                     SurfaceType::Tarmac,
                 ),
+                ..Default::default()
             },
             CarTelemetryData {
                 speed: 200,
@@ -1899,6 +1905,7 @@ fn test_parse_2019_car_telemetry_packet() {
                     SurfaceType::Tarmac,
                     SurfaceType::Tarmac,
                 ),
+                ..Default::default()
             },
             CarTelemetryData {
                 speed: 193,
@@ -1921,6 +1928,7 @@ fn test_parse_2019_car_telemetry_packet() {
                     SurfaceType::Tarmac,
                     SurfaceType::Tarmac,
                 ),
+                ..Default::default()
             },
             CarTelemetryData {
                 speed: 194,
@@ -1943,6 +1951,7 @@ fn test_parse_2019_car_telemetry_packet() {
                     SurfaceType::Tarmac,
                     SurfaceType::Tarmac,
                 ),
+                ..Default::default()
             },
             CarTelemetryData {
                 speed: 193,
@@ -1965,6 +1974,7 @@ fn test_parse_2019_car_telemetry_packet() {
                     SurfaceType::Tarmac,
                     SurfaceType::Tarmac,
                 ),
+                ..Default::default()
             },
             CarTelemetryData {
                 speed: 168,
@@ -1987,6 +1997,7 @@ fn test_parse_2019_car_telemetry_packet() {
                     SurfaceType::Tarmac,
                     SurfaceType::Tarmac,
                 ),
+                ..Default::default()
             },
             CarTelemetryData {
                 speed: 183,
@@ -2009,6 +2020,7 @@ fn test_parse_2019_car_telemetry_packet() {
                     SurfaceType::Tarmac,
                     SurfaceType::Tarmac,
                 ),
+                ..Default::default()
             },
             CarTelemetryData {
                 speed: 240,
@@ -2031,6 +2043,7 @@ fn test_parse_2019_car_telemetry_packet() {
                     SurfaceType::Tarmac,
                     SurfaceType::Tarmac,
                 ),
+                ..Default::default()
             },
             CarTelemetryData {
                 speed: 163,
@@ -2053,6 +2066,7 @@ fn test_parse_2019_car_telemetry_packet() {
                     SurfaceType::Tarmac,
                     SurfaceType::Tarmac,
                 ),
+                ..Default::default()
             },
             CarTelemetryData {
                 speed: 196,
@@ -2075,6 +2089,7 @@ fn test_parse_2019_car_telemetry_packet() {
                     SurfaceType::Tarmac,
                     SurfaceType::Tarmac,
                 ),
+                ..Default::default()
             },
             CarTelemetryData {
                 speed: 182,
@@ -2097,6 +2112,7 @@ fn test_parse_2019_car_telemetry_packet() {
                     SurfaceType::Tarmac,
                     SurfaceType::Tarmac,
                 ),
+                ..Default::default()
             },
             CarTelemetryData {
                 speed: 188,
@@ -2119,6 +2135,7 @@ fn test_parse_2019_car_telemetry_packet() {
                     SurfaceType::Tarmac,
                     SurfaceType::Tarmac,
                 ),
+                ..Default::default()
             },
             CarTelemetryData {
                 speed: 190,
@@ -2141,6 +2158,7 @@ fn test_parse_2019_car_telemetry_packet() {
                     SurfaceType::Tarmac,
                     SurfaceType::Tarmac,
                 ),
+                ..Default::default()
             },
             CarTelemetryData {
                 speed: 192,
@@ -2163,6 +2181,7 @@ fn test_parse_2019_car_telemetry_packet() {
                     SurfaceType::Tarmac,
                     SurfaceType::Tarmac,
                 ),
+                ..Default::default()
             },
             CarTelemetryData {
                 speed: 219,
@@ -2185,9 +2204,10 @@ fn test_parse_2019_car_telemetry_packet() {
                     SurfaceType::Tarmac,
                     SurfaceType::Tarmac,
                 ),
+                ..Default::default()
             },
         ],
-        button_status: 0,
+        button_status: Some(0),
         mfd_panel: MFDPanel::NotSet,
         secondary_player_mfd_panel: MFDPanel::NotSet,
         suggested_gear: None,
