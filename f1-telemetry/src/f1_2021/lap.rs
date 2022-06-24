@@ -64,7 +64,7 @@ fn unpack_driver_status(value: u8) -> Result<DriverStatus, UnpackError> {
 /// driver_status:                 Status of driver - 0 = in garage, 1 = flying lap
 ///                                2 = in lap, 3 = out lap, 4 = on track
 /// result_status:                 Result status - 0 = invalid, 1 = inactive, 2 = active
-///                                3 = finished, 4 = didnotfinish, 5 = disqualified
+///                                3 = finished, 4 = did not finish, 5 = disqualified
 ///                                6 = not classified, 7 = retired
 /// pit_lane_timer_active:         Pit lane timing, 0 = inactive, 1 = active
 /// pit_lane_time_in_lane:         If active, the current time spent in the pit lane in milliseconds

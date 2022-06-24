@@ -4,6 +4,7 @@ use car_setup::parse_car_setup_data;
 use car_status::parse_car_status_data;
 use car_telemetry::parse_car_telemetry_data;
 use event::parse_event_data;
+use final_classification::parse_final_classification_data;
 use header::parse_header;
 use lap::parse_lap_data;
 use motion::parse_motion_data;
@@ -17,6 +18,7 @@ mod car_status;
 mod car_telemetry;
 mod consts;
 mod event;
+mod final_classification;
 mod generic;
 mod header;
 mod lap;
@@ -68,6 +70,11 @@ pub(crate) fn parse_packet(size: usize, packet: &[u8]) -> Result<Packet, UnpackE
             let packet = parse_car_status_data(&mut cursor, header, size)?;
 
             Ok(Packet::CarStatus(packet))
+        }
+        PacketType::FinalClassification => {
+            let packet = parse_final_classification_data(&mut cursor, header, size)?;
+
+            Ok(Packet::FinalClassification(packet))
         }
         _ => Err(UnpackError(format!(
             "Not implemented: {:?}",
