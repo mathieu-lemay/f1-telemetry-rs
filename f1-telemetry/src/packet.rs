@@ -1,3 +1,4 @@
+use car_damage::PacketCarDamageData;
 use car_setup::PacketCarSetupData;
 use car_status::PacketCarStatusData;
 use car_telemetry::PacketCarTelemetryData;
@@ -12,6 +13,7 @@ use session::PacketSessionData;
 
 use super::{f1_2019, f1_2020, f1_2021};
 
+pub mod car_damage;
 pub mod car_setup;
 pub mod car_status;
 pub mod car_telemetry;
@@ -46,6 +48,7 @@ pub enum Packet {
     CarStatus(PacketCarStatusData),
     FinalClassification(PacketFinalClassificationData),
     LobbyInfo(PacketLobbyInfoData),
+    CarDamage(PacketCarDamageData),
 }
 
 impl Packet {
@@ -61,6 +64,7 @@ impl Packet {
             Packet::CarStatus(p) => &p.header,
             Packet::FinalClassification(p) => &p.header,
             Packet::LobbyInfo(p) => &p.header,
+            Packet::CarDamage(p) => &p.header,
         }
     }
 }
@@ -77,6 +81,7 @@ pub enum PacketType {
     CarStatus,
     FinalClassification,
     LobbyInfo,
+    CarDamage,
 }
 
 pub(crate) fn parse_packet(size: usize, packet: &[u8]) -> Result<Packet, UnpackError> {
