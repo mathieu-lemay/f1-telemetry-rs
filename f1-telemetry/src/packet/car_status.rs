@@ -9,6 +9,12 @@ pub enum TractionControl {
     High,
 }
 
+impl Default for TractionControl {
+    fn default() -> Self {
+        Self::Off
+    }
+}
+
 #[derive(Debug, Clone, Copy, Eq, PartialEq)]
 pub enum FuelMix {
     Lean,
@@ -17,12 +23,24 @@ pub enum FuelMix {
     Max,
 }
 
+impl Default for FuelMix {
+    fn default() -> Self {
+        Self::Standard
+    }
+}
+
 #[allow(clippy::upper_case_acronyms)]
 #[derive(Debug, Clone, Copy, Eq, PartialEq)]
 pub enum DRS {
     NotAllowed,
     Allowed,
     Unknown,
+}
+
+impl Default for DRS {
+    fn default() -> Self {
+        Self::Unknown
+    }
 }
 
 #[allow(clippy::upper_case_acronyms)]
@@ -34,6 +52,12 @@ pub enum ERSDeployMode {
     High,
     Overtake,
     Hotlap,
+}
+
+impl Default for ERSDeployMode {
+    fn default() -> Self {
+        Self::None
+    }
 }
 
 /// This type is used for the 20-element `car_status_data` array of the [`PacketCarStatusData`] type.
@@ -82,26 +106,29 @@ pub enum ERSDeployMode {
 /// idle_rpm:                    Cars idle RPM.
 /// max_gears:                   Maximum number of gears.
 /// drs_status:                  DRS status. See [`DRS`].
-/// tyres_wear:                  Tyre wear percentage.
 /// actual_tyre_compound:        Tyre compound used. See [`TyreCompound`].
 /// tyre_visual_compound:        Visual representation of the tyre compound. See
 ///                              [`TyreCompoundVisual`].
-/// tyres_damage:                Tyre damage (percentage).
-/// front_left_wing_damage:      Front left wing damage (percentage).
-/// front_right_wing_damage:     Front right wing damage (percentage).
-/// rear_wing_damage:            Rear wing damage (percentage).
-/// engine_damage:               Engine damage (percentage).
-/// gear_box_damage:             Gear box damage (percentage).
 /// vehicle_fia_flag:            Flag being shown to the car. See [`Flag`].
 /// ers_store_energy:            ERS energy store in joules
 /// ers_deploy_mode:             ERS deployment mode. See [`ERSDeployMode`]
 /// ers_harvested_this_lap_mguk: ERS energy harvested this lap by MGU-k
 /// ers_harvested_this_lap_mguh: ERS energy harvested this lap by MGU-h
 /// ers_deployed_this_lap:       ERS energy deployed this lap
+/// network_paused:              Wether the car is paused in a network game
+///
+/// F1 2019 and F1 2020 only
+/// tyres_wear:                  Tyre wear percentage.
+/// tyres_damage:                Tyre damage (percentage).
+/// front_left_wing_damage:      Front left wing damage (percentage).
+/// front_right_wing_damage:     Front right wing damage (percentage).
+/// rear_wing_damage:            Rear wing damage (percentage).
+/// engine_damage:               Engine damage (percentage).
+/// gear_box_damage:             Gear box damage (percentage).
 /// ```
 ///
 /// See also: [`DRS`], [`ERSDeployMode`], [`Flag`], [`FuelMix`], [`TractionControl`], [`TyreCompoundVisual`], [`TyreCompound`]
-#[derive(Debug, PartialEq)]
+#[derive(Debug, Default, PartialEq)]
 pub struct CarStatusData {
     pub traction_control: TractionControl,
     pub anti_lock_brakes: bool,
@@ -116,23 +143,24 @@ pub struct CarStatusData {
     pub max_gears: u8,
     pub drs_status: DRS,
     pub drs_activation_distance: Option<u16>,
-    pub tyres_wear: WheelData<u8>,
     pub actual_tyre_compound: TyreCompound,
     pub visual_tyre_compound: TyreCompoundVisual,
     pub tyre_age_laps: Option<u8>,
-    pub tyres_damage: WheelData<u8>,
-    pub front_left_wing_damage: u8,
-    pub front_right_wing_damage: u8,
-    pub rear_wing_damage: u8,
-    pub drs_fault: bool,
-    pub engine_damage: u8,
-    pub gear_box_damage: u8,
     pub vehicle_fia_flag: Flag,
     pub ers_store_energy: f32,
     pub ers_deploy_mode: ERSDeployMode,
     pub ers_harvested_this_lap_mguk: f32,
     pub ers_harvested_this_lap_mguh: f32,
     pub ers_deployed_this_lap: f32,
+    pub network_paused: bool,
+    pub tyres_wear: Option<WheelData<u8>>,
+    pub tyres_damage: Option<WheelData<u8>>,
+    pub front_left_wing_damage: Option<u8>,
+    pub front_right_wing_damage: Option<u8>,
+    pub rear_wing_damage: Option<u8>,
+    pub drs_fault: Option<bool>,
+    pub engine_damage: Option<u8>,
+    pub gear_box_damage: Option<u8>,
 }
 
 /// This packet details car statuses for all the cars in the race. It includes values such as the damage readings on the car.

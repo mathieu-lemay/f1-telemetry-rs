@@ -378,16 +378,21 @@ impl GameState {
         let player_index = car_status_data.header.player_car_index;
         let csd = &car_status_data.car_status_data[player_index as usize];
 
-        self.car_status.tyres_damage = csd.tyres_damage;
-        self.car_status.left_front_wing_damage = csd.front_left_wing_damage;
-        self.car_status.right_front_wing_damage = csd.front_right_wing_damage;
-        self.car_status.rear_wing_damage = csd.rear_wing_damage;
-        self.car_status.engine_damage = csd.engine_damage;
-        self.car_status.gearbox_damage = csd.gear_box_damage;
         self.car_status.fuel_in_tank = csd.fuel_in_tank;
         self.car_status.fuel_remaining_laps = csd.fuel_remaining_laps;
         self.car_status.tyre_compound = csd.visual_tyre_compound;
         self.car_status.tyre_age_laps = csd.tyre_age_laps.unwrap_or_default();
+
+        // TODO: Implement for 2021+ from car damage packet
+        if car_status_data.header.packet_format <= 2020 {
+            self.car_status.tyres_damage = csd.tyres_damage.unwrap_or_default();
+            self.car_status.left_front_wing_damage = csd.front_left_wing_damage.unwrap_or_default();
+            self.car_status.right_front_wing_damage =
+                csd.front_right_wing_damage.unwrap_or_default();
+            self.car_status.rear_wing_damage = csd.rear_wing_damage.unwrap_or_default();
+            self.car_status.engine_damage = csd.engine_damage.unwrap_or_default();
+            self.car_status.gearbox_damage = csd.gear_box_damage.unwrap_or_default();
+        }
 
         if self.lap_infos.is_empty() {
             return;
@@ -396,7 +401,8 @@ impl GameState {
         let last_tyre_entry = &self.historical_race_data.tyre_damage.last();
         let new_tyre_entry = TimedWheelData {
             lap,
-            tyre_damage: csd.tyres_damage,
+            // TODO: Implement for 2021+ from car damage packet
+            tyre_damage: csd.tyres_damage.unwrap_or_default(),
         };
         if let Some(last) = last_tyre_entry {
             if last.sum() > new_tyre_entry.sum() {

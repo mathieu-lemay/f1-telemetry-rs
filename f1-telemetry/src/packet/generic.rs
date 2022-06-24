@@ -10,6 +10,12 @@ pub enum Flag {
     Invalid,
 }
 
+impl Default for Flag {
+    fn default() -> Self {
+        Self::Invalid
+    }
+}
+
 #[derive(Debug, Clone, Copy, Eq, PartialEq)]
 pub enum Nationality {
     American,
@@ -277,6 +283,12 @@ pub enum TyreCompound {
     F2Hard,
     F2Wet,
     Invalid,
+}
+
+impl Default for TyreCompound {
+    fn default() -> Self {
+        TyreCompound::Invalid
+    }
 }
 
 #[derive(Debug, Clone, Copy, Eq, PartialEq)]
