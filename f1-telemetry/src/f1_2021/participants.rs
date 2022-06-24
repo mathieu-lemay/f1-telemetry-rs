@@ -2,9 +2,9 @@ use std::io::BufRead;
 
 use serde::Deserialize;
 
-use crate::packet::generic::{Nationality, Team};
+use crate::f1_2021::generic::{unpack_nationality, unpack_team};
 use crate::packet::header::PacketHeader;
-use crate::packet::participants::*;
+use crate::packet::participants::{Driver, PacketParticipantsData, ParticipantData, Telemetry};
 use crate::packet::UnpackError;
 use crate::utils::{assert_packet_size, unpack_string};
 
@@ -15,6 +15,8 @@ fn unpack_driver(value: u8) -> Result<Driver, UnpackError> {
         0 => Ok(Driver::CarlosSainz),
         1 => Ok(Driver::DaniilKvyat),
         2 => Ok(Driver::DanielRicciardo),
+        3 => Ok(Driver::FernandoAlonso),
+        4 => Ok(Driver::FelipeMassa),
         6 => Ok(Driver::KimiRaikkonen),
         7 => Ok(Driver::LewisHamilton),
         9 => Ok(Driver::MaxVerstappen),
@@ -24,6 +26,7 @@ fn unpack_driver(value: u8) -> Result<Driver, UnpackError> {
         13 => Ok(Driver::SebastianVettel),
         14 => Ok(Driver::SergioPerez),
         15 => Ok(Driver::ValtteriBottas),
+        17 => Ok(Driver::EstebanOcon),
         19 => Ok(Driver::LanceStroll),
         20 => Ok(Driver::ArronBarnes),
         21 => Ok(Driver::MartinGiles),
@@ -79,6 +82,8 @@ fn unpack_driver(value: u8) -> Result<Driver, UnpackError> {
         73 => Ok(Driver::LukasWeber),
         74 => Ok(Driver::AntonioGiovinazzi),
         75 => Ok(Driver::RobertKubica),
+        76 => Ok(Driver::AlainProst),
+        77 => Ok(Driver::AyrtonSenna),
         78 => Ok(Driver::NobuharuMatsushita),
         79 => Ok(Driver::NikitaMazepin),
         80 => Ok(Driver::GuanyaZhou),
@@ -91,160 +96,37 @@ fn unpack_driver(value: u8) -> Result<Driver, UnpackError> {
         87 => Ok(Driver::AnthoineHubert),
         88 => Ok(Driver::GuilianoAlesi),
         89 => Ok(Driver::RalphBoschung),
-        d if d >= 100 => Ok(Driver::Player),
+        90 => Ok(Driver::MichaelSchumacher),
+        91 => Ok(Driver::DanTicktum),
+        92 => Ok(Driver::MarcusArmstrong),
+        93 => Ok(Driver::ChristianLundgaard),
+        94 => Ok(Driver::YukiTsunoda),
+        95 => Ok(Driver::JehanDaruvala),
+        96 => Ok(Driver::GulhermeSamaia),
+        97 => Ok(Driver::PedroPiquet),
+        98 => Ok(Driver::FelipeDrugovich),
+        99 => Ok(Driver::RobertSchwartzman),
+        100 => Ok(Driver::RoyNissany),
+        101 => Ok(Driver::MarinoSato),
+        102 => Ok(Driver::AidanJackson),
+        103 => Ok(Driver::CasperAkkerman),
+        109 => Ok(Driver::JensonButton),
+        110 => Ok(Driver::DavidCoulthard),
+        111 => Ok(Driver::NicoRosberg),
+        112 => Ok(Driver::OscarPiastri),
+        113 => Ok(Driver::LiamLawson),
+        114 => Ok(Driver::JuriVips),
+        115 => Ok(Driver::TheoPourchaire),
+        116 => Ok(Driver::RichardVerschoor),
+        117 => Ok(Driver::LirimZendeli),
+        118 => Ok(Driver::DavidBeckmann),
+        119 => Ok(Driver::GianlucaPetecof),
+        120 => Ok(Driver::MatteoNannini),
+        121 => Ok(Driver::AlessioDeledda),
+        122 => Ok(Driver::BentViscaal),
+        123 => Ok(Driver::EnzoFittipaldi),
+        255 => Ok(Driver::Player),
         _ => Err(UnpackError(format!("Invalid Driver value: {}", value))),
-    }
-}
-
-fn unpack_team(value: u8) -> Result<Team, UnpackError> {
-    match value {
-        0 => Ok(Team::Mercedes),
-        1 => Ok(Team::Ferrari),
-        2 => Ok(Team::RedBullRacing),
-        3 => Ok(Team::Williams),
-        4 => Ok(Team::RacingPoint),
-        5 => Ok(Team::Renault),
-        6 => Ok(Team::ToroRosso),
-        7 => Ok(Team::Haas),
-        8 => Ok(Team::McLaren),
-        9 => Ok(Team::AlfaRomeo),
-        10 => Ok(Team::McLaren1988),
-        11 => Ok(Team::McLaren1991),
-        12 => Ok(Team::Williams1992),
-        13 => Ok(Team::Ferrari1995),
-        14 => Ok(Team::Williams1996),
-        15 => Ok(Team::McLaren1998),
-        16 => Ok(Team::Ferrari2002),
-        17 => Ok(Team::Ferrari2004),
-        18 => Ok(Team::Renault2006),
-        19 => Ok(Team::Ferrari2007),
-        21 => Ok(Team::RedBull2010),
-        22 => Ok(Team::Ferrari1976),
-        23 => Ok(Team::ARTGrandPrix),
-        24 => Ok(Team::CamposVexatecRacing),
-        25 => Ok(Team::Carlin),
-        26 => Ok(Team::CharouzRacingSystem),
-        27 => Ok(Team::DAMS),
-        28 => Ok(Team::RussianTime),
-        29 => Ok(Team::MPMotorsport),
-        30 => Ok(Team::Pertamina),
-        31 => Ok(Team::McLaren1990),
-        32 => Ok(Team::Trident),
-        33 => Ok(Team::BWTArden),
-        34 => Ok(Team::McLaren1976),
-        35 => Ok(Team::Lotus1972),
-        36 => Ok(Team::Ferrari1979),
-        37 => Ok(Team::McLaren1982),
-        38 => Ok(Team::Williams2003),
-        39 => Ok(Team::Brawn2009),
-        40 => Ok(Team::Lotus1978),
-        42 => Ok(Team::ArtGP2019),
-        43 => Ok(Team::Campos2019),
-        44 => Ok(Team::Carlin2019),
-        45 => Ok(Team::SauberJuniorCharouz2019),
-        46 => Ok(Team::Dams2019),
-        47 => Ok(Team::UniVirtuosi2019),
-        48 => Ok(Team::MPMotorsport2019),
-        49 => Ok(Team::Prema2019),
-        50 => Ok(Team::Trident2019),
-        51 => Ok(Team::Arden2019),
-        63 => Ok(Team::Ferrari1990),
-        64 => Ok(Team::McLaren2010),
-        65 => Ok(Team::Ferrari2010),
-        _ => Err(UnpackError(format!("Invalid Team value: {}", value))),
-    }
-}
-
-fn unpack_nationality(value: u8) -> Result<Nationality, UnpackError> {
-    match value {
-        1 => Ok(Nationality::American),
-        2 => Ok(Nationality::Argentinean),
-        3 => Ok(Nationality::Australian),
-        4 => Ok(Nationality::Austrian),
-        5 => Ok(Nationality::Azerbaijani),
-        6 => Ok(Nationality::Bahraini),
-        7 => Ok(Nationality::Belgian),
-        8 => Ok(Nationality::Bolivian),
-        9 => Ok(Nationality::Brazilian),
-        10 => Ok(Nationality::British),
-        11 => Ok(Nationality::Bulgarian),
-        12 => Ok(Nationality::Cameroonian),
-        13 => Ok(Nationality::Canadian),
-        14 => Ok(Nationality::Chilean),
-        15 => Ok(Nationality::Chinese),
-        16 => Ok(Nationality::Colombian),
-        17 => Ok(Nationality::CostaRican),
-        18 => Ok(Nationality::Croatian),
-        19 => Ok(Nationality::Cypriot),
-        20 => Ok(Nationality::Czech),
-        21 => Ok(Nationality::Danish),
-        22 => Ok(Nationality::Dutch),
-        23 => Ok(Nationality::Ecuadorian),
-        24 => Ok(Nationality::English),
-        25 => Ok(Nationality::Emirian),
-        26 => Ok(Nationality::Estonian),
-        27 => Ok(Nationality::Finnish),
-        28 => Ok(Nationality::French),
-        29 => Ok(Nationality::German),
-        30 => Ok(Nationality::Ghanaian),
-        31 => Ok(Nationality::Greek),
-        32 => Ok(Nationality::Guatemalan),
-        33 => Ok(Nationality::Honduran),
-        34 => Ok(Nationality::HongKonger),
-        35 => Ok(Nationality::Hungarian),
-        36 => Ok(Nationality::Icelander),
-        37 => Ok(Nationality::Indian),
-        38 => Ok(Nationality::Indonesian),
-        39 => Ok(Nationality::Irish),
-        40 => Ok(Nationality::Israeli),
-        41 => Ok(Nationality::Italian),
-        42 => Ok(Nationality::Jamaican),
-        43 => Ok(Nationality::Japanese),
-        44 => Ok(Nationality::Jordanian),
-        45 => Ok(Nationality::Kuwaiti),
-        46 => Ok(Nationality::Latvian),
-        47 => Ok(Nationality::Lebanese),
-        48 => Ok(Nationality::Lithuanian),
-        49 => Ok(Nationality::Luxembourger),
-        50 => Ok(Nationality::Malaysian),
-        51 => Ok(Nationality::Maltese),
-        52 => Ok(Nationality::Mexican),
-        53 => Ok(Nationality::Monegasque),
-        54 => Ok(Nationality::NewZealander),
-        55 => Ok(Nationality::Nicaraguan),
-        56 => Ok(Nationality::NorthKorean),
-        57 => Ok(Nationality::NorthernIrish),
-        58 => Ok(Nationality::Norwegian),
-        59 => Ok(Nationality::Omani),
-        60 => Ok(Nationality::Pakistani),
-        61 => Ok(Nationality::Panamanian),
-        62 => Ok(Nationality::Paraguayan),
-        63 => Ok(Nationality::Peruvian),
-        64 => Ok(Nationality::Polish),
-        65 => Ok(Nationality::Portuguese),
-        66 => Ok(Nationality::Qatari),
-        67 => Ok(Nationality::Romanian),
-        68 => Ok(Nationality::Russian),
-        69 => Ok(Nationality::Salvadoran),
-        70 => Ok(Nationality::Saudi),
-        71 => Ok(Nationality::Scottish),
-        72 => Ok(Nationality::Serbian),
-        73 => Ok(Nationality::Singaporean),
-        74 => Ok(Nationality::Slovakian),
-        75 => Ok(Nationality::Slovenian),
-        76 => Ok(Nationality::SouthKorean),
-        77 => Ok(Nationality::SouthAfrican),
-        78 => Ok(Nationality::Spanish),
-        79 => Ok(Nationality::Swedish),
-        80 => Ok(Nationality::Swiss),
-        81 => Ok(Nationality::Thai),
-        82 => Ok(Nationality::Turkish),
-        83 => Ok(Nationality::Uruguayan),
-        84 => Ok(Nationality::Ukrainian),
-        85 => Ok(Nationality::Venezuelan),
-        86 => Ok(Nationality::Welsh),
-        0 => Ok(Nationality::Invalid),
-        _ => Err(UnpackError(format!("Invalid Nationality value: {}", value))),
     }
 }
 
@@ -266,7 +148,7 @@ fn unpack_telemetry(value: u8) -> Result<Telemetry, UnpackError> {
 /// The array should be indexed by vehicle index.
 ///
 /// Frequency: Every 5 seconds
-/// Size: 1104 bytes
+/// Size: 1257 bytes
 /// Version: 1
 ///
 /// ## Specification
@@ -274,7 +156,7 @@ fn unpack_telemetry(value: u8) -> Result<Telemetry, UnpackError> {
 /// header:          Header
 /// num_active_cars: Number of active cars in the data – should match number of
 ///                  cars on HUD
-/// participants:    List of participants (20)
+/// participants:    List of participants (22)
 /// ```
 #[derive(Deserialize)]
 struct RawParticipantData {
@@ -286,7 +168,9 @@ struct RawParticipantData {
 /// ```text
 /// ai_controlled:  Whether the vehicle is AI (1) or Human (0) controlled
 /// driver_id:      Driver id - see appendix
+/// network_id:     Network id – unique identifier for network players
 /// team_id:        Team id - see appendix
+/// my_team:        My team flag – 1 = My Team, 0 = otherwise
 /// race_number:    Race number of the car
 /// nationality:    Nationality of the driver
 /// name:           Name of participant in UTF-8 format – null terminated
@@ -296,8 +180,10 @@ struct RawParticipantData {
 #[derive(Deserialize)]
 struct RawParticipant {
     ai_controlled: bool,
-    driver: u8,
-    team: u8,
+    driver_id: u8,
+    network_id: u8,
+    team_id: u8,
+    my_team: bool,
     race_number: u8,
     nationality: u8,
     name1: [u8; 32], // FIXME: Ugly hack
@@ -306,7 +192,7 @@ struct RawParticipant {
 }
 
 impl ParticipantData {
-    fn from_2019(participant: &RawParticipant) -> Result<Self, UnpackError> {
+    fn from_2021(participant: &RawParticipant) -> Result<Self, UnpackError> {
         let name: [u8; 48] = {
             let mut whole: [u8; 48] = [0; 48];
             let (part1, part2) = whole.split_at_mut(participant.name1.len());
@@ -315,8 +201,8 @@ impl ParticipantData {
             whole
         };
 
-        let driver = unpack_driver(participant.driver)?;
-        let team = unpack_team(participant.team)?;
+        let driver = unpack_driver(participant.driver_id)?;
+        let team = unpack_team(participant.team_id)?;
         let nationality = unpack_nationality(participant.nationality)?;
         let name = unpack_string(&name)?;
         let telemetry_access = unpack_telemetry(participant.telemetry)?;
@@ -324,12 +210,13 @@ impl ParticipantData {
         Ok(ParticipantData {
             ai_controlled: participant.ai_controlled,
             driver,
+            network_id: Some(participant.network_id),
             team,
+            my_team: participant.my_team,
             race_number: participant.race_number,
             nationality,
             name,
             telemetry_access,
-            ..Default::default()
         })
     }
 }
@@ -345,7 +232,7 @@ pub(crate) fn parse_participants_data<T: BufRead>(
     let participants: Vec<ParticipantData> = participant_data
         .participants
         .iter()
-        .map(ParticipantData::from_2019)
+        .map(ParticipantData::from_2021)
         .collect::<Result<Vec<ParticipantData>, UnpackError>>()?;
 
     Ok(PacketParticipantsData {

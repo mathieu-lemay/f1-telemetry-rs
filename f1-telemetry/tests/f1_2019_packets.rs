@@ -1084,6 +1084,7 @@ fn test_parse_2019_participants_packet() {
                 nationality: Nationality::Finnish,
                 name: "V. BOTTAS".to_string(),
                 telemetry_access: Telemetry::Public,
+                ..Default::default()
             },
             ParticipantData {
                 ai_controlled: true,
@@ -1093,6 +1094,7 @@ fn test_parse_2019_participants_packet() {
                 nationality: Nationality::Dutch,
                 name: "M. VERSTAPPEN".to_string(),
                 telemetry_access: Telemetry::Public,
+                ..Default::default()
             },
             ParticipantData {
                 ai_controlled: true,
@@ -1102,6 +1104,7 @@ fn test_parse_2019_participants_packet() {
                 nationality: Nationality::Finnish,
                 name: "K. RÄIKKÖNEN".to_string(),
                 telemetry_access: Telemetry::Public,
+                ..Default::default()
             },
             ParticipantData {
                 ai_controlled: true,
@@ -1111,6 +1114,7 @@ fn test_parse_2019_participants_packet() {
                 nationality: Nationality::German,
                 name: "N. HÜLKENBERG".to_string(),
                 telemetry_access: Telemetry::Public,
+                ..Default::default()
             },
             ParticipantData {
                 ai_controlled: true,
@@ -1120,6 +1124,7 @@ fn test_parse_2019_participants_packet() {
                 nationality: Nationality::Australian,
                 name: "D. RICCIARDO".to_string(),
                 telemetry_access: Telemetry::Public,
+                ..Default::default()
             },
             ParticipantData {
                 ai_controlled: true,
@@ -1129,6 +1134,7 @@ fn test_parse_2019_participants_packet() {
                 nationality: Nationality::Polish,
                 name: "R. KUBICA".to_string(),
                 telemetry_access: Telemetry::Public,
+                ..Default::default()
             },
             ParticipantData {
                 ai_controlled: true,
@@ -1138,6 +1144,7 @@ fn test_parse_2019_participants_packet() {
                 nationality: Nationality::Spanish,
                 name: "C. SAINZ".to_string(),
                 telemetry_access: Telemetry::Public,
+                ..Default::default()
             },
             ParticipantData {
                 ai_controlled: true,
@@ -1147,6 +1154,7 @@ fn test_parse_2019_participants_packet() {
                 nationality: Nationality::Monegasque,
                 name: "C. LECLERC".to_string(),
                 telemetry_access: Telemetry::Public,
+                ..Default::default()
             },
             ParticipantData {
                 ai_controlled: true,
@@ -1156,6 +1164,7 @@ fn test_parse_2019_participants_packet() {
                 nationality: Nationality::Danish,
                 name: "K. MAGNUSSEN".to_string(),
                 telemetry_access: Telemetry::Public,
+                ..Default::default()
             },
             ParticipantData {
                 ai_controlled: true,
@@ -1165,6 +1174,7 @@ fn test_parse_2019_participants_packet() {
                 nationality: Nationality::Mexican,
                 name: "S. PEREZ".to_string(),
                 telemetry_access: Telemetry::Public,
+                ..Default::default()
             },
             ParticipantData {
                 ai_controlled: true,
@@ -1174,6 +1184,7 @@ fn test_parse_2019_participants_packet() {
                 nationality: Nationality::Russian,
                 name: "D. KVYAT".to_string(),
                 telemetry_access: Telemetry::Public,
+                ..Default::default()
             },
             ParticipantData {
                 ai_controlled: true,
@@ -1183,6 +1194,7 @@ fn test_parse_2019_participants_packet() {
                 nationality: Nationality::British,
                 name: "G. RUSSELL".to_string(),
                 telemetry_access: Telemetry::Public,
+                ..Default::default()
             },
             ParticipantData {
                 ai_controlled: true,
@@ -1192,6 +1204,7 @@ fn test_parse_2019_participants_packet() {
                 nationality: Nationality::Thai,
                 name: "A. ALBON".to_string(),
                 telemetry_access: Telemetry::Public,
+                ..Default::default()
             },
             ParticipantData {
                 ai_controlled: true,
@@ -1201,6 +1214,7 @@ fn test_parse_2019_participants_packet() {
                 nationality: Nationality::German,
                 name: "S. VETTEL".to_string(),
                 telemetry_access: Telemetry::Public,
+                ..Default::default()
             },
             ParticipantData {
                 ai_controlled: true,
@@ -1210,6 +1224,7 @@ fn test_parse_2019_participants_packet() {
                 nationality: Nationality::Canadian,
                 name: "L. STROLL".to_string(),
                 telemetry_access: Telemetry::Public,
+                ..Default::default()
             },
             ParticipantData {
                 ai_controlled: true,
@@ -1219,6 +1234,7 @@ fn test_parse_2019_participants_packet() {
                 nationality: Nationality::Italian,
                 name: "A. GIOVINAZZI".to_string(),
                 telemetry_access: Telemetry::Public,
+                ..Default::default()
             },
             ParticipantData {
                 ai_controlled: true,
@@ -1228,6 +1244,7 @@ fn test_parse_2019_participants_packet() {
                 nationality: Nationality::French,
                 name: "P. GASLY".to_string(),
                 telemetry_access: Telemetry::Public,
+                ..Default::default()
             },
             ParticipantData {
                 ai_controlled: true,
@@ -1237,6 +1254,7 @@ fn test_parse_2019_participants_packet() {
                 nationality: Nationality::French,
                 name: "R. GROSJEAN".to_string(),
                 telemetry_access: Telemetry::Public,
+                ..Default::default()
             },
             ParticipantData {
                 ai_controlled: true,
@@ -1246,6 +1264,7 @@ fn test_parse_2019_participants_packet() {
                 nationality: Nationality::British,
                 name: "L. NORRIS".to_string(),
                 telemetry_access: Telemetry::Public,
+                ..Default::default()
             },
             ParticipantData {
                 ai_controlled: false,
@@ -1255,6 +1274,7 @@ fn test_parse_2019_participants_packet() {
                 nationality: Nationality::British,
                 name: "L. HAMILTON".to_string(),
                 telemetry_access: Telemetry::Restricted,
+                ..Default::default()
             },
         ],
     };

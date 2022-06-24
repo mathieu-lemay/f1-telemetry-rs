@@ -4,6 +4,7 @@ use event::parse_event_data;
 use header::parse_header;
 use lap::parse_lap_data;
 use motion::parse_motion_data;
+use participants::parse_participants_data;
 use session::parse_session_data;
 
 use crate::packet::{Packet, PacketType, UnpackError};
@@ -14,6 +15,7 @@ mod generic;
 mod header;
 mod lap;
 mod motion;
+mod participants;
 mod session;
 
 pub(crate) fn parse_packet(size: usize, packet: &[u8]) -> Result<Packet, UnpackError> {
@@ -40,6 +42,11 @@ pub(crate) fn parse_packet(size: usize, packet: &[u8]) -> Result<Packet, UnpackE
             let packet = parse_event_data(&mut cursor, header, size)?;
 
             Ok(Packet::Event(packet))
+        }
+        PacketType::Participants => {
+            let packet = parse_participants_data(&mut cursor, header, size)?;
+
+            Ok(Packet::Participants(packet))
         }
         _ => Err(UnpackError(format!(
             "Not implemented: {:?}",

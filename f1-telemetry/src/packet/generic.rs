@@ -103,6 +103,12 @@ pub enum Nationality {
     Invalid,
 }
 
+impl Default for Nationality {
+    fn default() -> Self {
+        Self::Invalid
+    }
+}
+
 #[derive(Debug, Clone, Copy, Eq, PartialEq)]
 pub enum ResultStatus {
     Invalid,
@@ -140,6 +146,9 @@ pub enum Team {
     Haas,
     McLaren,
     AlfaRomeo,
+    AlphaTauri,
+    Alpine,
+    AstonMartin,
     McLaren1988,
     McLaren1991,
     Williams1992,
@@ -183,13 +192,44 @@ pub enum Team {
     Ferrari1990,
     McLaren2010,
     Ferrari2010,
-    AlphaTauri,
     McLaren2008,
     F1GenericCar,
     Benetton1994,
     Benetton1995,
     Ferrari2000,
     Jordan1991,
+    ArtGP2020,
+    Campos2020,
+    Carlin2020,
+    Charouz2020,
+    Dams2020,
+    UniVirtuosi2020,
+    MPMotorsport2020,
+    Prema2020,
+    Trident2020,
+    BWT2020,
+    Hitech2020,
+    Mercedes2020,
+    Ferrari2020,
+    RedBull2020,
+    Williams2020,
+    RacingPoint2020,
+    Renault2020,
+    AlphaTauri2020,
+    Haas2020,
+    McLaren2020,
+    AlfaRomeo2020,
+    Prema2021,
+    UniVirtuosi2021,
+    Carlin2021,
+    Hitech2021,
+    ArtGP2021,
+    MPMotorsport2021,
+    Charouz2021,
+    Dams2021,
+    Campos2021,
+    BWT2021,
+    Trident2021,
     MyTeam,
     Unknown,
 }

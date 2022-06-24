@@ -1,9 +1,12 @@
 use serial_test::serial;
 
 use f1_telemetry::packet::event::{Event, InfringementType, PacketEventData, Penalty, PenaltyType};
-use f1_telemetry::packet::generic::{Flag, ResultStatus, WheelData};
+use f1_telemetry::packet::generic::{Flag, Nationality, ResultStatus, Team, WheelData};
 use f1_telemetry::packet::lap::{DriverStatus, LapData, PacketLapData, PitStatus};
 use f1_telemetry::packet::motion::{CarMotionData, PacketMotionData};
+use f1_telemetry::packet::participants::{
+    Driver, PacketParticipantsData, ParticipantData, Telemetry,
+};
 use f1_telemetry::packet::session::{
     BrakingAssist, DrivingAssists, DynamicRacingLine, DynamicRacingLineType, ForecastAccuracy,
     Formula, GearboxAssist, MarshalZone, PacketSessionData, SafetyCar, SessionType,
@@ -1374,6 +1377,276 @@ fn test_parse_2021_event_packet() {
             lap_num: 1,
             places_gained: 255,
         }),
+    };
+
+    assert_eq!(actual, expected);
+}
+
+#[test]
+#[serial]
+fn test_parse_2021_participants_packet() {
+    let stream = utils::get_stream();
+
+    utils::send_raw_data(&stream, "e507011201042e324e2ac5eb38ad72cd9242e705000013ff140151ff07002f1d534348554d41434845520000000000000000000000000000000000000000000000000000000000000000000000000000010106ff0900071b52c384494b4bc3964e454e0000000000000000000000000000000000000000000000000000000000000000000000000001014aff0900632947494f56494e415a5a49000000000000000000000000000000000000000000000000000000000000000000000000000001013bff06000a1c4741534c5900000000000000000000000000000000000000000000000000000000000000000000000000000000000000010136ff0800040a4e4f5252495300000000000000000000000000000000000000000000000000000000000000000000000000000000000001013fff0300060d4c4154494649000000000000000000000000000000000000000000000000000000000000000000000000000000000000010103ff05000e4d414c4f4e534f000000000000000000000000000000000000000000000000000000000000000000000000000000000000010102ff0800030352494343494152444f00000000000000000000000000000000000000000000000000000000000000000000000000000001013aff010010354c45434c4552430000000000000000000000000000000000000000000000000000000000000000000000000000000000010107ff00002c0a48414d494c544f4e0000000000000000000000000000000000000000000000000000000000000000000000000000000001015eff0600162b5453554e4f44410000000000000000000000000000000000000000000000000000000000000000000000000000000000010132ff03003f0a52555353454c4c000000000000000000000000000000000000000000000000000000000000000000000000000000000001010fff00004d1b424f54544153000000000000000000000000000000000000000000000000000000000000000000000000000000000000010100ff0100374d5341494e5a0000000000000000000000000000000000000000000000000000000000000000000000000000000000000001010eff02000b34504552455a00000000000000000000000000000000000000000000000000000000000000000000000000000000000000010113ff0400120d5354524f4c4c00000000000000000000000000000000000000000000000000000000000000000000000000000000000001010dff0400051d56455454454c00000000000000000000000000000000000000000000000000000000000000000000000000000000000001014fff070009004d415a4550494e0000000000000000000000000000000000000000000000000000000000000000000000000000000000010111ff05001f1c4f434f4e0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000010009ff020021165645525354415050454e00000000000000000000000000000000000000000000000000000000000000000000000000000000ffffff0000ff0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000ffffff0000ff00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000");
+
+    let p = utils::get_packet(&stream).unwrap().unwrap();
+
+    let actual = match p {
+        Packet::Participants(s) => s,
+        _ => panic!("Invalid packet. Expected Participants, got {:?}", &p),
+    };
+
+    assert_eq!(actual.header.packet_format, 2021);
+
+    // let expected = PacketParticipantsData {
+
+    let expected = PacketParticipantsData {
+        header: actual.header.clone(),
+        num_active_cars: 20,
+        participants: vec![
+            ParticipantData {
+                ai_controlled: true,
+                driver: Driver::MickSchumacher,
+                network_id: Some(255),
+                team: Team::Haas,
+                my_team: false,
+                race_number: 47,
+                nationality: Nationality::German,
+                name: "SCHUMACHER".to_string(),
+                telemetry_access: Telemetry::Public,
+            },
+            ParticipantData {
+                ai_controlled: true,
+                driver: Driver::KimiRaikkonen,
+                network_id: Some(255),
+                team: Team::AlfaRomeo,
+                my_team: false,
+                race_number: 7,
+                nationality: Nationality::Finnish,
+                name: "RÄIKKÖNEN".to_string(),
+                telemetry_access: Telemetry::Public,
+            },
+            ParticipantData {
+                ai_controlled: true,
+                driver: Driver::AntonioGiovinazzi,
+                network_id: Some(255),
+                team: Team::AlfaRomeo,
+                my_team: false,
+                race_number: 99,
+                nationality: Nationality::Italian,
+                name: "GIOVINAZZI".to_string(),
+                telemetry_access: Telemetry::Public,
+            },
+            ParticipantData {
+                ai_controlled: true,
+                driver: Driver::PierreGasly,
+                network_id: Some(255),
+                team: Team::AlphaTauri,
+                my_team: false,
+                race_number: 10,
+                nationality: Nationality::French,
+                name: "GASLY".to_string(),
+                telemetry_access: Telemetry::Public,
+            },
+            ParticipantData {
+                ai_controlled: true,
+                driver: Driver::LandoNorris,
+                network_id: Some(255),
+                team: Team::McLaren,
+                my_team: false,
+                race_number: 4,
+                nationality: Nationality::British,
+                name: "NORRIS".to_string(),
+                telemetry_access: Telemetry::Public,
+            },
+            ParticipantData {
+                ai_controlled: true,
+                driver: Driver::NicholasLatifi,
+                network_id: Some(255),
+                team: Team::Williams,
+                my_team: false,
+                race_number: 6,
+                nationality: Nationality::Canadian,
+                name: "LATIFI".to_string(),
+                telemetry_access: Telemetry::Public,
+            },
+            ParticipantData {
+                ai_controlled: true,
+                driver: Driver::FernandoAlonso,
+                network_id: Some(255),
+                team: Team::Alpine,
+                my_team: false,
+                race_number: 14,
+                nationality: Nationality::Spanish,
+                name: "ALONSO".to_string(),
+                telemetry_access: Telemetry::Public,
+            },
+            ParticipantData {
+                ai_controlled: true,
+                driver: Driver::DanielRicciardo,
+                network_id: Some(255),
+                team: Team::McLaren,
+                my_team: false,
+                race_number: 3,
+                nationality: Nationality::Australian,
+                name: "RICCIARDO".to_string(),
+                telemetry_access: Telemetry::Public,
+            },
+            ParticipantData {
+                ai_controlled: true,
+                driver: Driver::CharlesLeclerc,
+                network_id: Some(255),
+                team: Team::Ferrari,
+                my_team: false,
+                race_number: 16,
+                nationality: Nationality::Monegasque,
+                name: "LECLERC".to_string(),
+                telemetry_access: Telemetry::Public,
+            },
+            ParticipantData {
+                ai_controlled: true,
+                driver: Driver::LewisHamilton,
+                network_id: Some(255),
+                team: Team::Mercedes,
+                my_team: false,
+                race_number: 44,
+                nationality: Nationality::British,
+                name: "HAMILTON".to_string(),
+                telemetry_access: Telemetry::Public,
+            },
+            ParticipantData {
+                ai_controlled: true,
+                driver: Driver::YukiTsunoda,
+                network_id: Some(255),
+                team: Team::AlphaTauri,
+                my_team: false,
+                race_number: 22,
+                nationality: Nationality::Japanese,
+                name: "TSUNODA".to_string(),
+                telemetry_access: Telemetry::Public,
+            },
+            ParticipantData {
+                ai_controlled: true,
+                driver: Driver::GeorgeRussell,
+                network_id: Some(255),
+                team: Team::Williams,
+                my_team: false,
+                race_number: 63,
+                nationality: Nationality::British,
+                name: "RUSSELL".to_string(),
+                telemetry_access: Telemetry::Public,
+            },
+            ParticipantData {
+                ai_controlled: true,
+                driver: Driver::ValtteriBottas,
+                network_id: Some(255),
+                team: Team::Mercedes,
+                my_team: false,
+                race_number: 77,
+                nationality: Nationality::Finnish,
+                name: "BOTTAS".to_string(),
+                telemetry_access: Telemetry::Public,
+            },
+            ParticipantData {
+                ai_controlled: true,
+                driver: Driver::CarlosSainz,
+                network_id: Some(255),
+                team: Team::Ferrari,
+                my_team: false,
+                race_number: 55,
+                nationality: Nationality::Spanish,
+                name: "SAINZ".to_string(),
+                telemetry_access: Telemetry::Public,
+            },
+            ParticipantData {
+                ai_controlled: true,
+                driver: Driver::SergioPerez,
+                network_id: Some(255),
+                team: Team::RedBullRacing,
+                my_team: false,
+                race_number: 11,
+                nationality: Nationality::Mexican,
+                name: "PEREZ".to_string(),
+                telemetry_access: Telemetry::Public,
+            },
+            ParticipantData {
+                ai_controlled: true,
+                driver: Driver::LanceStroll,
+                network_id: Some(255),
+                team: Team::AstonMartin,
+                my_team: false,
+                race_number: 18,
+                nationality: Nationality::Canadian,
+                name: "STROLL".to_string(),
+                telemetry_access: Telemetry::Public,
+            },
+            ParticipantData {
+                ai_controlled: true,
+                driver: Driver::SebastianVettel,
+                network_id: Some(255),
+                team: Team::AstonMartin,
+                my_team: false,
+                race_number: 5,
+                nationality: Nationality::German,
+                name: "VETTEL".to_string(),
+                telemetry_access: Telemetry::Public,
+            },
+            ParticipantData {
+                ai_controlled: true,
+                driver: Driver::NikitaMazepin,
+                network_id: Some(255),
+                team: Team::Haas,
+                my_team: false,
+                race_number: 9,
+                nationality: Nationality::Invalid,
+                name: "MAZEPIN".to_string(),
+                telemetry_access: Telemetry::Public,
+            },
+            ParticipantData {
+                ai_controlled: true,
+                driver: Driver::EstebanOcon,
+                network_id: Some(255),
+                team: Team::Alpine,
+                my_team: false,
+                race_number: 31,
+                nationality: Nationality::French,
+                name: "OCON".to_string(),
+                telemetry_access: Telemetry::Public,
+            },
+            ParticipantData {
+                ai_controlled: false,
+                driver: Driver::MaxVerstappen,
+                network_id: Some(255),
+                team: Team::RedBullRacing,
+                my_team: false,
+                race_number: 33,
+                nationality: Nationality::Dutch,
+                name: "VERSTAPPEN".to_string(),
+                telemetry_access: Telemetry::Restricted,
+            },
+            ParticipantData {
+                ai_controlled: false,
+                driver: Driver::Player,
+                network_id: Some(255),
+                team: Team::MyTeam,
+                my_team: false,
+                race_number: 0,
+                nationality: Nationality::Invalid,
+                name: "".to_string(),
+                telemetry_access: Telemetry::Restricted,
+            },
+            ParticipantData {
+                ai_controlled: false,
+                driver: Driver::Player,
+                network_id: Some(255),
+                team: Team::MyTeam,
+                my_team: false,
+                race_number: 0,
+                nationality: Nationality::Invalid,
+                name: "".to_string(),
+                telemetry_access: Telemetry::Restricted,
+            },
+        ],
     };
 
     assert_eq!(actual, expected);
