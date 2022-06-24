@@ -39,6 +39,8 @@ pub enum Color {
     McLaren,
     AlfaRomeo,
     AlphaTauri,
+    Alpine,
+    AstonMartin,
     MyTeam,
 }
 
@@ -60,6 +62,8 @@ impl ToColor for Team {
             Team::McLaren => Color::McLaren,
             Team::AlfaRomeo => Color::AlfaRomeo,
             Team::AlphaTauri => Color::AlphaTauri,
+            Team::Alpine => Color::Alpine,
+            Team::AstonMartin => Color::AstonMartin,
             Team::MyTeam => Color::MyTeam,
             _ => Color::Black,
         }
@@ -112,6 +116,8 @@ fn init_team_colors() {
         (Color::McLaren, (255, 135, 0)),
         (Color::AlfaRomeo, (155, 0, 0)),
         (Color::AlphaTauri, (255, 255, 255)),
+        (Color::Alpine, (0, 144, 255)),
+        (Color::AstonMartin, (0, 111, 98)),
         (Color::MyTeam, (118, 0, 218)),
     ] {
         let idx = t as i16;
