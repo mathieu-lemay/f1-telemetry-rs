@@ -22,7 +22,7 @@ use f1_telemetry::packet::participants::{
 };
 use f1_telemetry::packet::session::{
     Formula, MarshalZone, PacketSessionData, SafetyCar, SessionType, Track, Weather,
-    WeatherForecastSample,
+    WeatherForecast, WeatherForecastSample,
 };
 use f1_telemetry::packet::Packet;
 
@@ -630,170 +630,92 @@ fn test_parse_2020_session_packet() {
         ],
         safety_car_status: SafetyCar::None,
         network_game: true,
-        num_weather_forecast_samples: 10,
-        weather_forecast_samples: vec![
-            WeatherForecastSample {
-                session_type: SessionType::QualifyingShort,
-                time_offset: 0,
-                weather: Weather::Clear,
-                track_temperature: 35,
-                air_temperature: 27,
-                ..Default::default()
-            },
-            WeatherForecastSample {
-                session_type: SessionType::QualifyingShort,
-                time_offset: 5,
-                weather: Weather::Clear,
-                track_temperature: 35,
-                air_temperature: 27,
-                ..Default::default()
-            },
-            WeatherForecastSample {
-                session_type: SessionType::QualifyingShort,
-                time_offset: 10,
-                weather: Weather::Clear,
-                track_temperature: 35,
-                air_temperature: 27,
-                ..Default::default()
-            },
-            WeatherForecastSample {
-                session_type: SessionType::QualifyingShort,
-                time_offset: 15,
-                weather: Weather::Clear,
-                track_temperature: 35,
-                air_temperature: 27,
-                ..Default::default()
-            },
-            WeatherForecastSample {
-                session_type: SessionType::QualifyingShort,
-                time_offset: 20,
-                weather: Weather::Clear,
-                track_temperature: 35,
-                air_temperature: 27,
-                ..Default::default()
-            },
-            WeatherForecastSample {
-                session_type: SessionType::QualifyingShort,
-                time_offset: 30,
-                weather: Weather::Clear,
-                track_temperature: 35,
-                air_temperature: 27,
-                ..Default::default()
-            },
-            WeatherForecastSample {
-                session_type: SessionType::QualifyingShort,
-                time_offset: 45,
-                weather: Weather::Clear,
-                track_temperature: 35,
-                air_temperature: 27,
-                ..Default::default()
-            },
-            WeatherForecastSample {
-                session_type: SessionType::Race,
-                time_offset: 0,
-                weather: Weather::Clear,
-                track_temperature: 31,
-                air_temperature: 24,
-                ..Default::default()
-            },
-            WeatherForecastSample {
-                session_type: SessionType::Race,
-                time_offset: 20,
-                weather: Weather::Clear,
-                track_temperature: 30,
-                air_temperature: 23,
-                ..Default::default()
-            },
-            WeatherForecastSample {
-                session_type: SessionType::Race,
-                time_offset: 45,
-                weather: Weather::Clear,
-                track_temperature: 29,
-                air_temperature: 23,
-                ..Default::default()
-            },
-            WeatherForecastSample {
-                session_type: SessionType::Unknown,
-                time_offset: 0,
-                weather: Weather::Clear,
-                track_temperature: 0,
-                air_temperature: 0,
-                ..Default::default()
-            },
-            WeatherForecastSample {
-                session_type: SessionType::Unknown,
-                time_offset: 0,
-                weather: Weather::Clear,
-                track_temperature: 0,
-                air_temperature: 0,
-                ..Default::default()
-            },
-            WeatherForecastSample {
-                session_type: SessionType::Unknown,
-                time_offset: 0,
-                weather: Weather::Clear,
-                track_temperature: 0,
-                air_temperature: 0,
-                ..Default::default()
-            },
-            WeatherForecastSample {
-                session_type: SessionType::Unknown,
-                time_offset: 0,
-                weather: Weather::Clear,
-                track_temperature: 0,
-                air_temperature: 0,
-                ..Default::default()
-            },
-            WeatherForecastSample {
-                session_type: SessionType::Unknown,
-                time_offset: 0,
-                weather: Weather::Clear,
-                track_temperature: 0,
-                air_temperature: 0,
-                ..Default::default()
-            },
-            WeatherForecastSample {
-                session_type: SessionType::Unknown,
-                time_offset: 0,
-                weather: Weather::Clear,
-                track_temperature: 0,
-                air_temperature: 0,
-                ..Default::default()
-            },
-            WeatherForecastSample {
-                session_type: SessionType::Unknown,
-                time_offset: 0,
-                weather: Weather::Clear,
-                track_temperature: 0,
-                air_temperature: 0,
-                ..Default::default()
-            },
-            WeatherForecastSample {
-                session_type: SessionType::Unknown,
-                time_offset: 0,
-                weather: Weather::Clear,
-                track_temperature: 0,
-                air_temperature: 0,
-                ..Default::default()
-            },
-            WeatherForecastSample {
-                session_type: SessionType::Unknown,
-                time_offset: 0,
-                weather: Weather::Clear,
-                track_temperature: 0,
-                air_temperature: 0,
-                ..Default::default()
-            },
-            WeatherForecastSample {
-                session_type: SessionType::Unknown,
-                time_offset: 0,
-                weather: Weather::Clear,
-                track_temperature: 0,
-                air_temperature: 0,
-                ..Default::default()
-            },
-        ],
-        forecast_accuracy: None,
+        weather_forecast: Some(WeatherForecast {
+            number_of_samples: 10,
+            samples: vec![
+                WeatherForecastSample {
+                    session_type: SessionType::QualifyingShort,
+                    time_offset: 0,
+                    weather: Weather::Clear,
+                    track_temperature: 35,
+                    air_temperature: 27,
+                    ..Default::default()
+                },
+                WeatherForecastSample {
+                    session_type: SessionType::QualifyingShort,
+                    time_offset: 5,
+                    weather: Weather::Clear,
+                    track_temperature: 35,
+                    air_temperature: 27,
+                    ..Default::default()
+                },
+                WeatherForecastSample {
+                    session_type: SessionType::QualifyingShort,
+                    time_offset: 10,
+                    weather: Weather::Clear,
+                    track_temperature: 35,
+                    air_temperature: 27,
+                    ..Default::default()
+                },
+                WeatherForecastSample {
+                    session_type: SessionType::QualifyingShort,
+                    time_offset: 15,
+                    weather: Weather::Clear,
+                    track_temperature: 35,
+                    air_temperature: 27,
+                    ..Default::default()
+                },
+                WeatherForecastSample {
+                    session_type: SessionType::QualifyingShort,
+                    time_offset: 20,
+                    weather: Weather::Clear,
+                    track_temperature: 35,
+                    air_temperature: 27,
+                    ..Default::default()
+                },
+                WeatherForecastSample {
+                    session_type: SessionType::QualifyingShort,
+                    time_offset: 30,
+                    weather: Weather::Clear,
+                    track_temperature: 35,
+                    air_temperature: 27,
+                    ..Default::default()
+                },
+                WeatherForecastSample {
+                    session_type: SessionType::QualifyingShort,
+                    time_offset: 45,
+                    weather: Weather::Clear,
+                    track_temperature: 35,
+                    air_temperature: 27,
+                    ..Default::default()
+                },
+                WeatherForecastSample {
+                    session_type: SessionType::Race,
+                    time_offset: 0,
+                    weather: Weather::Clear,
+                    track_temperature: 31,
+                    air_temperature: 24,
+                    ..Default::default()
+                },
+                WeatherForecastSample {
+                    session_type: SessionType::Race,
+                    time_offset: 20,
+                    weather: Weather::Clear,
+                    track_temperature: 30,
+                    air_temperature: 23,
+                    ..Default::default()
+                },
+                WeatherForecastSample {
+                    session_type: SessionType::Race,
+                    time_offset: 45,
+                    weather: Weather::Clear,
+                    track_temperature: 29,
+                    air_temperature: 23,
+                    ..Default::default()
+                },
+            ],
+            ..Default::default()
+        }),
         ai_difficulty: None,
         season_identifier: None,
         weekend_identifier: None,

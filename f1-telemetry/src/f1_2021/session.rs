@@ -291,6 +291,12 @@ impl PacketSessionData {
             weather_forecast_samples.push(WeatherForecastSample::from_2021(&wf)?);
         }
 
+        let weather_forecast_samples = weather_forecast_samples
+            .iter()
+            .take(session_data.num_weather_forecast_samples as usize)
+            .cloned()
+            .collect();
+
         Ok(Self {
             header,
             weather,
@@ -312,9 +318,11 @@ impl PacketSessionData {
             marshal_zones,
             safety_car_status,
             network_game: session_data.network_game,
-            num_weather_forecast_samples: session_data.num_weather_forecast_samples,
-            weather_forecast_samples,
-            forecast_accuracy: Some(forecast_accuracy),
+            weather_forecast: Some(WeatherForecast {
+                number_of_samples: session_data.num_weather_forecast_samples,
+                samples: weather_forecast_samples,
+                accuracy: forecast_accuracy,
+            }),
             ai_difficulty: Some(session_data.ai_difficulty),
             season_identifier: Some(session_data.season_identifier),
             weekend_identifier: Some(session_data.weekend_identifier),

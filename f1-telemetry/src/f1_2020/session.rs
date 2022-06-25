@@ -170,6 +170,7 @@ impl PacketSessionData {
         let weather_forecast_samples: Vec<WeatherForecastSample> = session_data
             .weather_forecast_samples
             .iter()
+            .take(session_data.num_weather_forecast_samples as usize)
             .map(WeatherForecastSample::from_2020)
             .collect::<Result<Vec<WeatherForecastSample>, UnpackError>>()?;
 
@@ -194,9 +195,11 @@ impl PacketSessionData {
             marshal_zones,
             safety_car_status,
             network_game: session_data.network_game,
-            num_weather_forecast_samples: session_data.num_weather_forecast_samples,
-            weather_forecast_samples,
-            forecast_accuracy: None,
+            weather_forecast: Some(WeatherForecast {
+                number_of_samples: session_data.num_weather_forecast_samples,
+                samples: weather_forecast_samples,
+                ..Default::default()
+            }),
             ai_difficulty: None,
             season_identifier: None,
             weekend_identifier: None,

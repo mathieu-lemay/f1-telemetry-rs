@@ -174,18 +174,35 @@ impl Default for SafetyCar {
     }
 }
 
-/// This type is used for the `weather_forecast_sample` array of the [`PacketSessionData`] type.
+/// Weather forecast
 ///
 /// ## Specification
 /// ```text
-/// session_type:      Type of session the forecast applies to. See [`SessionType`].
-/// time_offset:       Time in minutes the forecast is for.
-/// weather:           Expected weather. See [`Weather`].
-/// track_temperature: Track temp. in degrees celsius.
-/// air_temperature:   Air temp. in degrees celsius.
+/// number_of_samples: Number of available forecasts
+/// samples:           List of forecast samples
+/// accuracy:          Accuracy of the forecasts
 /// ```
-/// [`PacketSessionData`]: ./struct.PacketSessionData.html
-#[derive(Debug, Eq, PartialEq, Default)]
+#[derive(Debug, Default, Eq, PartialEq)]
+pub struct WeatherForecast {
+    pub number_of_samples: u8,
+    pub samples: Vec<WeatherForecastSample>,
+    pub accuracy: ForecastAccuracy,
+}
+
+/// Defines the weather forecast for a given time in the future.
+///
+/// ## Specification
+/// ```text
+/// session_type:             Type of session the forecast applies to. See [`SessionType`].
+/// time_offset:              Time in minutes the forecast is for.
+/// weather:                  Expected weather. See [`Weather`].
+/// track_temperature:        Track temperature in degrees celsius.
+/// track_temperature_change: Track temperature change.
+/// air_temperature:          Air temperature in degrees celsius.
+/// air_temperature_change:   Air temperature change.
+/// rain_percentage:          Rain percentage
+/// ```
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Default)]
 pub struct WeatherForecastSample {
     pub session_type: SessionType,
     pub time_offset: u8,
@@ -211,10 +228,17 @@ pub struct MarshalZone {
     pub zone_flag: Flag,
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, Eq, PartialEq)]
 pub enum ForecastAccuracy {
     Perfect,
     Approximate,
+    Unknown,
+}
+
+impl Default for ForecastAccuracy {
+    fn default() -> Self {
+        ForecastAccuracy::Unknown
+    }
 }
 
 #[derive(Debug, PartialEq)]
@@ -299,9 +323,8 @@ pub struct DrivingAssists {
 /// marshal_zones:                  List of marshal zones. See [`MarshalZone`].
 /// safety_car_status               Safety car status. See [`SafetyCar`].
 /// network_game:                   Whether the game is online or not.
-/// num_weather_forecast_samples    Number of weather samples to follow.
-/// weather_forecast_samples        List of weather forecast samples. See [`WeatherForecastSample`].
-/// forecast_accuracy:              Forecast accuracy. See [`ForecastAccuracy`].
+/// weather_forecast:               Weather forecast for the rest of the session and next one
+///                                 (if available)
 /// ai_difficulty:                  AI Difficulty rating – 0-110
 /// season_identifier:              Identifier for season - persists across saves
 /// weekend_identifier:             Identifier for weekend - persists across saves
@@ -335,9 +358,7 @@ pub struct PacketSessionData {
     pub marshal_zones: Vec<MarshalZone>,
     pub safety_car_status: SafetyCar,
     pub network_game: bool,
-    pub num_weather_forecast_samples: u8,
-    pub weather_forecast_samples: Vec<WeatherForecastSample>,
-    pub forecast_accuracy: Option<ForecastAccuracy>,
+    pub weather_forecast: Option<WeatherForecast>,
     pub ai_difficulty: Option<u8>,
     pub season_identifier: Option<u32>,
     pub weekend_identifier: Option<u32>,
