@@ -175,56 +175,43 @@ impl Default for SafetyCar {
 }
 
 /// Weather forecast
-///
-/// ## Specification
-/// ```text
-/// number_of_samples: Number of available forecasts
-/// samples:           List of forecast samples
-/// accuracy:          Accuracy of the forecasts
-/// ```
 #[derive(Debug, Clone, Default, Eq, PartialEq, Serialize)]
 pub struct WeatherForecast {
+    /// Number of available forecasts
     pub number_of_samples: u8,
+    /// List of forecast samples
     pub samples: Vec<WeatherForecastSample>,
+    /// Accuracy of the forecasts
     pub accuracy: ForecastAccuracy,
 }
 
-/// Defines the weather forecast for a given time in the future.
-///
-/// ## Specification
-/// ```text
-/// session_type:             Type of session the forecast applies to. See [`SessionType`].
-/// time_offset:              Time in minutes the forecast is for.
-/// weather:                  Expected weather. See [`Weather`].
-/// track_temperature:        Track temperature in degrees celsius.
-/// track_temperature_change: Track temperature change.
-/// air_temperature:          Air temperature in degrees celsius.
-/// air_temperature_change:   Air temperature change.
-/// rain_percentage:          Rain percentage
-/// ```
+/// Defines the weather forecast for a given time in the future
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Serialize, Default)]
 pub struct WeatherForecastSample {
+    /// Type of session the forecast applies to
     pub session_type: SessionType,
+    /// Time in minutes the forecast is for
     pub time_offset: u8,
+    /// Expected weather
     pub weather: Weather,
+    /// Track temperature in degrees celsius
     pub track_temperature: i8,
+    /// Track temperature change
     pub track_temperature_change: TemperatureChange,
+    /// Air temperature in degrees celsius
     pub air_temperature: i8,
+    /// Air temperature change
     pub air_temperature_change: TemperatureChange,
+    /// Rain probability (percentage)
     pub rain_percentage: u8,
 }
 
-/// This type is used for the `marshal_zones` array of the [`PacketSessionData`] type.
-///
-/// ## Specification
-/// ```text
-/// zone_start: Fraction (0..1) of way through the lap the marshal zone starts.
-/// zone_flag:  Flag active in the zone. See [`Flag`].
-/// ```
-/// See also [`Flag`].
+/// Description of a marshal zone
 #[derive(Debug, Copy, Clone, PartialEq, Serialize)]
 pub struct MarshalZone {
+    /// Fraction (0..1) of way through the lap the marshal zone starts
     pub zone_start: f32,
+    /// Flag active in the zone
     pub zone_flag: Flag,
 }
 
@@ -269,102 +256,90 @@ pub enum DynamicRacingLineType {
     ThreeDimensions,
 }
 
-/// Status of various driving assistances.
-///
-/// ```text
-/// steering_assist:                Wether steering assist is on or not.
-/// braking_assist:                 Braking assist. See [`BrakingAssist`]
-/// gearbox_assist:                 Gearbox assist. See [`GearboxAssist`]
-/// pit_assist:                     Wether pit assist is on or not.
-/// pit_relase_assist:              Wether pit release assist is on or not.
-/// ers_assist:                     Wether ERS assist is on or not.
-/// drs_assist:                     Wether DRS assist is on or not.
-/// dynamic_racing_line:            Dynamic racing line. See [`DynamicRacingLine`]
-/// dynamic_racing_line_type:       Dynamic racing line type. See [`DynamicRacingLineType`]
-/// ```
-/// See also: [`BrakingAssist`], [`DynamicRacingLine`], [`DynamicRacingLineType`] and
-/// [`GearboxAssist`].
+/// Status of various driving assistances
 #[derive(Debug, Clone, PartialEq, Serialize)]
 pub struct DrivingAssists {
+    /// Wether steering assist is on or not
     pub steering_assist: bool,
+    /// Braking assist
     pub braking_assist: BrakingAssist,
+    /// Gearbox assist
     pub gearbox_assist: GearboxAssist,
+    /// Wether pit assist is on or not
     pub pit_assist: bool,
+    /// Wether pit release assist is on or not
     pub pit_relase_assist: bool,
+    /// Wether ERS assist is on or not
     pub ers_assist: bool,
+    /// Wether DRS assist is on or not
     pub drs_assist: bool,
+    /// Dynamic racing line
     pub dynamic_racing_line: DynamicRacingLine,
+    /// Dynamic racing line type
     pub dynamic_racing_line_type: DynamicRacingLineType,
 }
 
-/// The session packet includes details about the current session in progress.
+/// The session packet includes details about the current session in progress
 ///
 /// Frequency: 2 per second
-///
-/// ## Specification
-/// ```text
-/// header:                         Header.
-/// weather:                        Current weather. See [`Weather`].
-/// track_temperature:              Track temperature in celsius.
-/// air_temperature:                Air temperature in celsius.
-/// total_laps:                     Total number of laps in this race.
-/// track_length:                   Track length in metres.
-/// session_type:                   Type of session. See [`SessionType`].
-/// track_id:                       Current track. See [`Track`].
-/// formula:                        Current formula. See [`Formula`].
-/// session_time_left:              Time left in session in seconds.
-/// session_duration:               Session duration in seconds.
-/// pit_speed_limit:                Pit speed limit in kilometres per hour.
-/// game_paused:                    Whether the game is paused.
-/// is_spectating:                  Whether the player is spectating.
-/// spectator_car_index:            Index of the car being spectated.
-/// sli_pro_native_support:         Whether SLI pro is active.
-/// num_marshal_zones:              Number of marshal zones to follow.
-/// marshal_zones:                  List of marshal zones. See [`MarshalZone`].
-/// safety_car_status               Safety car status. See [`SafetyCar`].
-/// network_game:                   Whether the game is online or not.
-/// weather_forecast:               Weather forecast for the rest of the session and next one
-///                                 (if available)
-/// ai_difficulty:                  AI Difficulty rating – 0-110
-/// season_identifier:              Identifier for season - persists across saves
-/// weekend_identifier:             Identifier for weekend - persists across saves
-/// session_identifier:             Identifier for session - persists across saves
-/// pit_stop_window_ideal_lap:      Ideal lap to pit on for current strategy (player)
-/// pit_stop_window_latest_lap:     Latest lap to pit on for current strategy (player)
-/// pit_stop_rejoin_position:       Predicted position to rejoin at (player)
-/// driving_assists:                Status of various driving assistances.
-/// ```
-/// See also: [`DrivingAssists`], [`Formula`], [`MarshalZone`], [`SafetyCar`], [`SessionType`],
-/// [`Track`], [`WeatherForecastSample`] and [`Weather`]
 #[derive(Debug, Clone, PartialEq, Serialize)]
 pub struct PacketSessionData {
+    /// Packet Header
     pub header: PacketHeader,
+    /// Current weather
     pub weather: Weather,
+    /// Track temperature in celsius
     pub track_temperature: i8,
+    /// Air temperature in celsius
     pub air_temperature: i8,
+    /// Total number of laps in this race
     pub total_laps: u8,
+    /// Track length in metres
     pub track_length: u16,
+    /// Type of session
     pub session_type: SessionType,
+    /// Current track
     pub track: Track,
+    /// Current formula
     pub formula: Formula,
+    /// Time left in session in seconds
     pub session_time_left: u16,
+    /// Session duration in seconds
     pub session_duration: u16,
+    /// Pit speed limit in kilometres per hour
     pub pit_speed_limit: u8,
+    /// Whether the game is paused
     pub game_paused: bool,
+    /// Whether the player is spectating
     pub is_spectating: bool,
+    /// Index of the car being spectated
     pub spectator_car_index: u8,
+    /// Whether SLI pro is active
     pub sli_pro_native_support: bool,
+    /// Number of marshal zones
     pub num_marshal_zones: u8,
+    /// List of marshal zones
     pub marshal_zones: Vec<MarshalZone>,
+    /// Safety car status
     pub safety_car_status: SafetyCar,
+    /// Whether the game is online or not
     pub network_game: bool,
+    /// Weather forecast for the rest of the session and next ones, if any
     pub weather_forecast: Option<WeatherForecast>,
+    /// AI Difficulty rating – 0-110
     pub ai_difficulty: Option<u8>,
+    /// Identifier for season - persists across saves
     pub season_identifier: Option<u32>,
+    /// Identifier for weekend - persists across saves
     pub weekend_identifier: Option<u32>,
+    /// Identifier for session - persists across saves
     pub session_identifier: Option<u32>,
+    /// Ideal lap to pit on for current strategy (player)
     pub pit_stop_window_ideal_lap: Option<u8>,
+    /// Latest lap to pit on for current strategy (player)
     pub pit_stop_window_latest_lap: Option<u8>,
+    /// Predicted position to rejoin at (player)
     pub pit_stop_rejoin_position: Option<u8>,
+    /// Status of various driving assistances
     pub driving_assists: Option<DrivingAssists>,
 }
