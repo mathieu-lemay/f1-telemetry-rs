@@ -9,47 +9,43 @@ use super::header::PacketHeader;
 /// N.B. For the normalised vectors below, to convert to float values divide by 32767.0f – 16-bit
 /// signed values are used to pack the data and on the assumption that direction values are always
 /// between -1.0f and 1.0f.
-///
-/// ## Specification
-/// ```text
-/// world_position_x:     World space X position
-/// world_position_y:     World space Y position
-/// world_position_z:     World space Z position
-/// world_velocity_x:     Velocity in world space X
-/// world_velocity_y:     Velocity in world space Y
-/// world_velocity_z:     Velocity in world space Z
-/// world_forward_dir_x:  World space forward X direction (normalised)
-/// world_forward_dir_y:  World space forward Y direction (normalised)
-/// world_forward_dir_z:  World space forward Z direction (normalised)
-/// world_right_dir_x:    World space right X direction (normalised)
-/// world_right_dir_y:    World space right Y direction (normalised)
-/// world_right_dir_z:    World space right Z direction (normalised)
-/// g_force_lateral:      Lateral G-Force component
-/// g_force_longitudinal: Longitudinal G-Force component
-/// g_force_vertical:     Vertical G-Force component
-/// yaw:                  Yaw angle in radians
-/// pitch:                Pitch angle in radians
-/// roll:                 Roll angle in radians
-/// ```
 #[derive(Debug, Clone, PartialEq, Serialize)]
 pub struct CarMotionData {
+    /// World space X position
     pub world_position_x: f32,
+    /// World space Y position
     pub world_position_y: f32,
+    /// World space Z position
     pub world_position_z: f32,
+    /// Velocity in world space X
     pub world_velocity_x: f32,
+    /// Velocity in world space Y
     pub world_velocity_y: f32,
+    /// Velocity in world space Z
     pub world_velocity_z: f32,
+    /// World space forward X direction (normalised)
     pub world_forward_dir_x: i16,
+    /// World space forward Y direction (normalised)
     pub world_forward_dir_y: i16,
+    /// World space forward Z direction (normalised)
     pub world_forward_dir_z: i16,
+    /// World space right X direction (normalised)
     pub world_right_dir_x: i16,
+    /// World space right Y direction (normalised)
     pub world_right_dir_y: i16,
+    /// World space right Z direction (normalised)
     pub world_right_dir_z: i16,
+    /// Lateral G-Force component
     pub g_force_lateral: f32,
+    /// Longitudinal G-Force component
     pub g_force_longitudinal: f32,
+    /// Vertical G-Force component
     pub g_force_vertical: f32,
+    /// Yaw angle in radians
     pub yaw: f32,
+    /// Pitch angle in radians
     pub pitch: f32,
+    /// Roll angle in radians
     pub roll: f32,
 }
 
@@ -57,48 +53,41 @@ pub struct CarMotionData {
 /// the car being driven with the goal of being able to drive a motion platform setup.
 ///
 /// Frequency: Rate as specified in menus
-///
-/// ## Specification
-/// ```text
-/// header:                 Header
-/// motion_data:            List of motion data
-///
-/// # Extra player car ONLY data
-/// suspension_position:     Note: All wheel arrays have the following order:
-/// suspension_velocity:     RL, RR, FL, FR
-/// suspension_acceleration: RL, RR, FL, FR
-/// wheel_speed:             Speed of each wheel
-/// wheel_slip:              Slip ratio for each wheel
-/// local_velocity_x:        Velocity in local space
-/// local_velocity_y:        Velocity in local space
-/// local_velocity_z:        Velocity in local space
-/// angular_velocity_x:      Angular velocity x-component
-/// angular_velocity_y:      Angular velocity y-component
-/// angular_velocity_z:      Angular velocity z-component
-/// angular_acceleration_x:  Angular acceleration x-component
-/// angular_acceleration_y:  Angular acceleration y-component
-/// angular_acceleration_z:  Angular acceleration z-component
-/// front_wheels_angle:      Current front wheels angle in radians
 /// ```
 #[derive(Debug, Clone, PartialEq, Serialize)]
 pub struct PacketMotionData {
+    /// Packet Header
     pub header: PacketHeader,
+    /// List of motion data
     pub motion_data: Vec<CarMotionData>,
-
-    // Extra player car ONLY data
+    /// Position of the suspension
     pub suspension_position: WheelData<f32>,
+    /// Velocity of the suspension
     pub suspension_velocity: WheelData<f32>,
+    /// Acceleration of the suspension
     pub suspension_acceleration: WheelData<f32>,
+    /// Speed of each wheel
     pub wheel_speed: WheelData<f32>,
+    /// Slip ratio for each wheel
     pub wheel_slip: WheelData<f32>,
+    /// Velocity in local space
     pub local_velocity_x: f32,
+    /// Velocity in local space
     pub local_velocity_y: f32,
+    /// Velocity in local space
     pub local_velocity_z: f32,
+    /// Angular velocity x-component
     pub angular_velocity_x: f32,
+    /// Angular velocity y-component
     pub angular_velocity_y: f32,
+    /// Angular velocity z-component
     pub angular_velocity_z: f32,
+    /// Angular acceleration x-component
     pub angular_acceleration_x: f32,
+    /// Angular acceleration y-component
     pub angular_acceleration_y: f32,
+    /// Angular acceleration z-component
     pub angular_acceleration_z: f32,
+    /// Current front wheels angle in radians
     pub front_wheels_angle: f32,
 }
