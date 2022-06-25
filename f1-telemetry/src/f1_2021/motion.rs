@@ -4,7 +4,7 @@ use serde::Deserialize;
 
 use crate::packet::generic::WheelData;
 use crate::packet::header::PacketHeader;
-use crate::packet::motion::{CarMotionData, PacketMotionData};
+use crate::packet::motion::{CarMotionData, PacketMotionData, PlayerCarData};
 use crate::packet::UnpackError;
 use crate::utils::assert_packet_size;
 
@@ -70,21 +70,23 @@ impl PacketMotionData {
         Self {
             header,
             motion_data: car_motion,
-            suspension_position: motion_data.suspension_position,
-            suspension_velocity: motion_data.suspension_velocity,
-            suspension_acceleration: motion_data.suspension_acceleration,
-            wheel_speed: motion_data.wheel_speed,
-            wheel_slip: motion_data.wheel_slip,
-            local_velocity_x: motion_data.local_velocity_x,
-            local_velocity_y: motion_data.local_velocity_y,
-            local_velocity_z: motion_data.local_velocity_z,
-            angular_velocity_x: motion_data.angular_velocity_x,
-            angular_velocity_y: motion_data.angular_velocity_y,
-            angular_velocity_z: motion_data.angular_velocity_z,
-            angular_acceleration_x: motion_data.angular_acceleration_x,
-            angular_acceleration_y: motion_data.angular_acceleration_y,
-            angular_acceleration_z: motion_data.angular_acceleration_z,
-            front_wheels_angle: motion_data.front_wheels_angle,
+            player_car_data: PlayerCarData {
+                suspension_position: motion_data.suspension_position,
+                suspension_velocity: motion_data.suspension_velocity,
+                suspension_acceleration: motion_data.suspension_acceleration,
+                wheel_speed: motion_data.wheel_speed,
+                wheel_slip: motion_data.wheel_slip,
+                local_velocity_x: motion_data.local_velocity_x,
+                local_velocity_y: motion_data.local_velocity_y,
+                local_velocity_z: motion_data.local_velocity_z,
+                angular_velocity_x: motion_data.angular_velocity_x,
+                angular_velocity_y: motion_data.angular_velocity_y,
+                angular_velocity_z: motion_data.angular_velocity_z,
+                angular_acceleration_x: motion_data.angular_acceleration_x,
+                angular_acceleration_y: motion_data.angular_acceleration_y,
+                angular_acceleration_z: motion_data.angular_acceleration_z,
+                front_wheels_angle: motion_data.front_wheels_angle,
+            },
         }
     }
 }

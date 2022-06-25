@@ -49,17 +49,10 @@ pub struct CarMotionData {
     pub roll: f32,
 }
 
-/// The motion packet gives physics data for all the cars being driven. There is additional data for
-/// the car being driven with the goal of being able to drive a motion platform setup.
-///
-/// Frequency: Rate as specified in menus
-/// ```
+/// Data specific to the car being driven. This data is provided with the goal of being able to
+/// drive a motion platform setup
 #[derive(Debug, Clone, PartialEq, Serialize)]
-pub struct PacketMotionData {
-    /// Packet Header
-    pub header: PacketHeader,
-    /// List of motion data
-    pub motion_data: Vec<CarMotionData>,
+pub struct PlayerCarData {
     /// Position of the suspension
     pub suspension_position: WheelData<f32>,
     /// Velocity of the suspension
@@ -90,4 +83,18 @@ pub struct PacketMotionData {
     pub angular_acceleration_z: f32,
     /// Current front wheels angle in radians
     pub front_wheels_angle: f32,
+}
+
+/// The motion packet gives physics data for all the cars being driven. There is additional data for
+/// the car being driven with the goal of being able to drive a motion platform setup.
+///
+/// Frequency: Rate as specified in menus
+#[derive(Debug, Clone, Serialize, PartialEq)]
+pub struct PacketMotionData {
+    /// Packet Header
+    pub header: PacketHeader,
+    /// List of motion data
+    pub motion_data: Vec<CarMotionData>,
+    /// Extra data specific to the player's car
+    pub player_car_data: PlayerCarData,
 }

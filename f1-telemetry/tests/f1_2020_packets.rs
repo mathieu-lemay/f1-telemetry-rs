@@ -16,7 +16,7 @@ use f1_telemetry::packet::generic::{
 };
 use f1_telemetry::packet::lap::{DriverStatus, LapData, PacketLapData, PitStatus};
 use f1_telemetry::packet::lobby_info::{PacketLobbyInfoData, Player, ReadyStatus};
-use f1_telemetry::packet::motion::{CarMotionData, PacketMotionData};
+use f1_telemetry::packet::motion::{CarMotionData, PacketMotionData, PlayerCarData};
 use f1_telemetry::packet::participants::{
     Driver, PacketParticipantsData, ParticipantData, Telemetry,
 };
@@ -488,21 +488,23 @@ fn test_parse_2020_motion_packet() {
                 roll: 0.0,
             },
         ],
-        suspension_position: WheelData::new(26.20373, 26.403694, 19.53884, 19.719767),
-        suspension_velocity: WheelData::new(-614.7353, -618.4027, -805.08936, -812.2999),
-        suspension_acceleration: WheelData::new(131.04732, 129.56093, 1071.8608, 1079.6766),
-        wheel_speed: WheelData::new(3.4202447, 3.42687, 2.6395788, 2.6516619),
-        wheel_slip: WheelData::new(-0.16633803, -0.16500373, -0.32943496, -0.32693008),
-        local_velocity_x: 0.0011961462,
-        local_velocity_y: 0.002303479,
-        local_velocity_z: 4.1129713,
-        angular_velocity_x: -0.00019301154,
-        angular_velocity_y: -3.8312217e-7,
-        angular_velocity_z: 0.0016990091,
-        angular_acceleration_x: -0.0032527023,
-        angular_acceleration_y: 3.3884582e-5,
-        angular_acceleration_z: 0.01779745,
-        front_wheels_angle: -0.0,
+        player_car_data: PlayerCarData {
+            suspension_position: WheelData::new(26.20373, 26.403694, 19.53884, 19.719767),
+            suspension_velocity: WheelData::new(-614.7353, -618.4027, -805.08936, -812.2999),
+            suspension_acceleration: WheelData::new(131.04732, 129.56093, 1071.8608, 1079.6766),
+            wheel_speed: WheelData::new(3.4202447, 3.42687, 2.6395788, 2.6516619),
+            wheel_slip: WheelData::new(-0.16633803, -0.16500373, -0.32943496, -0.32693008),
+            local_velocity_x: 0.0011961462,
+            local_velocity_y: 0.002303479,
+            local_velocity_z: 4.1129713,
+            angular_velocity_x: -0.00019301154,
+            angular_velocity_y: -3.8312217e-7,
+            angular_velocity_z: 0.0016990091,
+            angular_acceleration_x: -0.0032527023,
+            angular_acceleration_y: 3.3884582e-5,
+            angular_acceleration_z: 0.01779745,
+            front_wheels_angle: -0.0,
+        },
     };
 
     assert_eq!(actual, expected);

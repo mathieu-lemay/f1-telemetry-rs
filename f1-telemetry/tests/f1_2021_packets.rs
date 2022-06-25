@@ -17,7 +17,7 @@ use f1_telemetry::packet::generic::{
 };
 use f1_telemetry::packet::lap::{DriverStatus, LapData, PacketLapData, PitStatus};
 use f1_telemetry::packet::lobby_info::{PacketLobbyInfoData, Player, ReadyStatus};
-use f1_telemetry::packet::motion::{CarMotionData, PacketMotionData};
+use f1_telemetry::packet::motion::{CarMotionData, PacketMotionData, PlayerCarData};
 use f1_telemetry::packet::participants::{
     Driver, PacketParticipantsData, ParticipantData, Telemetry,
 };
@@ -493,46 +493,48 @@ fn test_parse_2021_motion_packet() {
                 roll: 0.0,
             },
         ],
-        suspension_position: WheelData {
-            rear_left: 3.48383,
-            rear_right: 5.019466,
-            front_left: 11.89759,
-            front_right: 13.159083,
+        player_car_data: PlayerCarData {
+            suspension_position: WheelData {
+                rear_left: 3.48383,
+                rear_right: 5.019466,
+                front_left: 11.89759,
+                front_right: 13.159083,
+            },
+            suspension_velocity: WheelData {
+                rear_left: 6.695991,
+                rear_right: -2.3639169,
+                front_left: 5.7955356,
+                front_right: -1.4686866,
+            },
+            suspension_acceleration: WheelData {
+                rear_left: 20.734251,
+                rear_right: 212.36191,
+                front_left: -37.22408,
+                front_right: 238.83655,
+            },
+            wheel_speed: WheelData {
+                rear_left: 82.88415,
+                rear_right: 82.90534,
+                front_left: 82.5856,
+                front_right: 82.60763,
+            },
+            wheel_slip: WheelData {
+                rear_left: 0.004123952,
+                rear_right: 0.0041984995,
+                front_left: 0.00050301384,
+                front_right: 0.000554653,
+            },
+            local_velocity_x: -0.116361395,
+            local_velocity_y: -0.07154236,
+            local_velocity_z: 82.55308,
+            angular_velocity_x: -0.0026180444,
+            angular_velocity_y: 0.010635535,
+            angular_velocity_z: -0.011352809,
+            angular_acceleration_x: -0.14016522,
+            angular_acceleration_y: -0.26576725,
+            angular_acceleration_z: -0.6107175,
+            front_wheels_angle: 0.0,
         },
-        suspension_velocity: WheelData {
-            rear_left: 6.695991,
-            rear_right: -2.3639169,
-            front_left: 5.7955356,
-            front_right: -1.4686866,
-        },
-        suspension_acceleration: WheelData {
-            rear_left: 20.734251,
-            rear_right: 212.36191,
-            front_left: -37.22408,
-            front_right: 238.83655,
-        },
-        wheel_speed: WheelData {
-            rear_left: 82.88415,
-            rear_right: 82.90534,
-            front_left: 82.5856,
-            front_right: 82.60763,
-        },
-        wheel_slip: WheelData {
-            rear_left: 0.004123952,
-            rear_right: 0.0041984995,
-            front_left: 0.00050301384,
-            front_right: 0.000554653,
-        },
-        local_velocity_x: -0.116361395,
-        local_velocity_y: -0.07154236,
-        local_velocity_z: 82.55308,
-        angular_velocity_x: -0.0026180444,
-        angular_velocity_y: 0.010635535,
-        angular_velocity_z: -0.011352809,
-        angular_acceleration_x: -0.14016522,
-        angular_acceleration_y: -0.26576725,
-        angular_acceleration_z: -0.6107175,
-        front_wheels_angle: 0.0,
     };
 
     assert_eq!(actual, expected);
