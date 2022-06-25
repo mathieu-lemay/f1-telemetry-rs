@@ -76,8 +76,11 @@ struct Header {
 impl PacketHeader {
     fn from_2021(header: &Header) -> Result<Self, UnpackError> {
         let packet_type = parse_packet_type(header.packet_id)?;
-
         let session_time = seconds_to_millis(header.session_time as f64);
+        let secondary_player_car_index = match header.secondary_player_car_index {
+            255 => None,
+            idx => Some(idx),
+        };
 
         Ok(PacketHeader {
             packet_format: header.packet_format,
@@ -89,7 +92,7 @@ impl PacketHeader {
             session_time,
             frame_identifier: header.frame_identifier,
             player_car_index: header.player_car_index,
-            secondary_player_car_index: Some(header.secondary_player_car_index),
+            secondary_player_car_index,
         })
     }
 }
