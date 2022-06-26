@@ -28,7 +28,7 @@ use super::header::PacketHeader;
 /// ballast                 Ballast
 /// fuel_load               Fuel load
 /// ```
-#[derive(Debug, Clone, Serialize, PartialEq, Default)]
+#[derive(Debug, Clone, Default, PartialEq, Serialize)]
 pub struct CarSetupData {
     pub front_wing: u8,
     pub rear_wing: u8,
@@ -62,7 +62,7 @@ pub struct CarSetupData {
 /// header:     Header
 /// car_setups: List of car setups
 /// ```
-#[derive(Debug, Clone, Serialize, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Serialize)]
 pub struct PacketCarSetupData {
     pub header: PacketHeader,
     pub car_setups: Vec<CarSetupData>,

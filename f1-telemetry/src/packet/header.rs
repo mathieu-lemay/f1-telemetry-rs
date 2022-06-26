@@ -21,7 +21,7 @@ use crate::packet::PacketType;
 /// Possible `packet_type` values: [`PacketType`].
 ///
 /// [`PacketType`]: ../enum.PacketType.html
-#[derive(Debug, Clone, Serialize, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Serialize)]
 pub struct PacketHeader {
     pub packet_format: u16,
     pub game_major_version: u8,

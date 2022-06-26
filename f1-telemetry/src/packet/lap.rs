@@ -4,7 +4,7 @@ use crate::packet::generic::ResultStatus;
 
 use super::header::PacketHeader;
 
-#[derive(Debug, Clone, Serialize, Copy, Eq, PartialEq)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Serialize)]
 pub enum PitStatus {
     None,
     Pitting,
@@ -17,7 +17,7 @@ impl Default for PitStatus {
     }
 }
 
-#[derive(Debug, Clone, Serialize, Copy, Eq, PartialEq)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Serialize)]
 pub enum DriverStatus {
     Garage,
     FlyingLap,
@@ -75,7 +75,7 @@ impl Default for DriverStatus {
 /// pit_stop_should_serve_penalty: Whether the car should serve a penalty at this stop
 /// ```
 /// See also: [`DriverStatus`], [`PitStatus`], [`ResultStatus`]
-#[derive(Debug, Clone, Serialize, PartialEq, Default)]
+#[derive(Debug, Clone, Default, PartialEq, Serialize)]
 pub struct LapData {
     pub last_lap_time: u32,
     pub current_lap_time: u32,
@@ -123,7 +123,7 @@ pub struct LapData {
 /// header:   Header
 /// lap_data: Lap data for all cars on track
 /// ```
-#[derive(Debug, Clone, Serialize, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Serialize)]
 pub struct PacketLapData {
     pub header: PacketHeader,
     pub lap_data: Vec<LapData>,

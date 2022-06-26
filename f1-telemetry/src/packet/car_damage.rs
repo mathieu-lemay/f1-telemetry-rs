@@ -27,7 +27,7 @@ use super::header::PacketHeader;
 /// engine_mguk_wear:        Engine wear MGU-K (percentage)
 /// engine_tc_wear:          Engine wear TC (percentage)
 /// ```
-#[derive(Debug, Clone, Serialize, PartialEq, Default)]
+#[derive(Debug, Clone, Default, PartialEq, Serialize)]
 pub struct CarDamageData {
     pub tyres_wear: WheelData<f32>,
     pub tyres_damage: WheelData<u8>,
@@ -58,7 +58,7 @@ pub struct CarDamageData {
 /// header:     Header
 /// car_setups: List of car damage data
 /// ```
-#[derive(Debug, Clone, Serialize, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Serialize)]
 pub struct PacketCarDamageData {
     pub header: PacketHeader,
     pub car_damage_data: Vec<CarDamageData>,
