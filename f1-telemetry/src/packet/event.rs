@@ -2,27 +2,37 @@ use serde::Serialize;
 
 use super::header::PacketHeader;
 
+/// Description of a fastest lap event
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Serialize)]
 pub struct FastestLap {
+    /// Index of the vehicle that did the fastest lap
     pub vehicle_idx: u8,
+    /// Lap time, in milliseconds
     pub lap_time: u32,
 }
 
+/// Description of a retirement event
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Serialize)]
 pub struct Retirement {
+    /// Index of the vehicle that retired
     pub vehicle_idx: u8,
 }
 
+/// Description of a teammate in pits event
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Serialize)]
 pub struct TeamMateInPits {
+    /// Index of the teammate's vehicle
     pub vehicle_idx: u8,
 }
 
+/// Description of a race winner event
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Serialize)]
 pub struct RaceWinner {
+    /// Index of the vehicle that won the race
     pub vehicle_idx: u8,
 }
 
+/// List of possible penalties
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Serialize)]
 pub enum PenaltyType {
     DriveThrough,
@@ -45,6 +55,7 @@ pub enum PenaltyType {
     BlackFlagTimer,
 }
 
+/// List of possible infringments
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Serialize)]
 pub enum InfringementType {
     BlockingBySlowDriving,
@@ -101,112 +112,129 @@ pub enum InfringementType {
     MandatoryPitstop,
 }
 
-/// Penalty Event
-///
-/// ## Specification
-/// ```text
-/// vehicle_idx:       Vehicle index of the car the penalty is applied to
-/// penalty_type:      Penalty type. See [`PenaltyType`].
-/// infringement_type: Infringement type. See [`InfringementType`].
-/// other_vehicle_idx: Vehicle index of the other car involved
-/// time:              Time gained, or time spent doing action in seconds
-/// lap_num:           Lap the penalty occurred on
-/// places_gained:     Number of places gained by this
-/// ```
+/// Description of a penalty event
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Serialize)]
 pub struct Penalty {
+    /// Vehicle index of the car the penalty is applied to
     pub vehicle_idx: u8,
+    /// Penalty given to the caa
     pub penalty_type: PenaltyType,
+    /// Infringment done by the car
     pub infringement_type: InfringementType,
+    /// Vehicle index of the other car involved
     pub other_vehicle_idx: u8,
+    /// Time gained, or time spent doing action in seconds
     pub time: u8,
+    /// Lap the penalty occurred on
     pub lap_num: u8,
+    /// Number of places gained by this
     pub places_gained: u8,
 }
 
+/// Description of a speed trap event
 #[derive(Debug, Copy, Clone, Default, PartialEq, Serialize)]
 pub struct SpeedTrap {
+    /// Vehicle index of the vehicle triggering speed trap
     pub vehicle_idx: u8,
+    /// Top speed achieved in kilometres per hour
     pub speed: f32,
+    /// Was this the overall fastest speed in the session (F1 2021+)
     pub overall_fastest_in_session: Option<bool>,
+    /// Was this the car's fastest speed in the session (F1 2021+)
     pub personal_fastest_in_session: Option<bool>,
 }
 
+/// Description of a start lights event
 #[derive(Debug, Copy, Clone, PartialEq, Serialize)]
 pub struct StartLights {
+    /// Number of lights showing
     pub number_of_lights: u8,
 }
 
+/// Description of a drive through penalty served event
 #[derive(Debug, Copy, Clone, PartialEq, Serialize)]
 pub struct DriveThroughPenaltyServed {
+    /// Vehicle index of the vehicle serving drive through
     pub vehicle_idx: u8,
 }
 
+/// Description of a stop and go penalty served event
 #[derive(Debug, Copy, Clone, PartialEq, Serialize)]
 pub struct StopGoPenaltyServed {
+    /// Vehicle index of the vehicle serving a stop and go
     pub vehicle_idx: u8,
 }
 
+/// Description of a flashback event
 #[derive(Debug, Copy, Clone, PartialEq, Serialize)]
 pub struct Flashback {
+    /// Frame identifier flashed back to
     pub frame_identifier: u32,
+    ///Session time flashed back to
     pub session_time: f32,
 }
 
+/// Description of a buttons event
 #[derive(Debug, Copy, Clone, PartialEq, Serialize)]
 pub struct Buttons {
+    /// Bit flags specifying which buttons are being pressed currently
     pub button_status: u32,
 }
 
-/// List of possible events.
+/// List of possible events
 ///
-/// ## Specification
-/// ```text
-/// SessionStarted:            Sent when the session starts
-/// SessionEnded:              Sent when the session ends
-/// FastestLap:                When a driver achieves the fastest lap
-/// Retirement:                When a driver retires
-/// DRSEnabled:                Race control have enabled DRS
-/// DRSDisabled:               Race control have disabled DRS
-/// TeamMateInPits:            Your team mate has entered the pits
-/// ChequeredFlag:             The chequered flag has been waved
-/// RaceWinner:                The race winner is announced
+/// The following packets were introduced in F1 2020:
+/// * [`Event::Penalty`]
+/// * [`Event::SpeedTrap`]
 ///
-/// Introduced in F1 2020
-/// Penalty:                   A penalty has been issued
-/// SpeedTrap:                 Speed trap has been triggered by fastest speed
-///
-/// Introduced in F1 2021
-/// StartLights:               Start lights – number shown
-/// LightsOut:                 Lights out
-/// DriveThroughPenaltyServed: Drive through penalty served
-/// StopGoPenaltyServed:       Stop go penalty served
-/// Flashback:                 Flashback activated
-/// Buttons:                   Button status changed
-/// ```
+/// The following packets were introduced in F1 2021:
+/// * [`Event::StartLights`]
+/// * [`Event::LightsOut`]
+/// * [`Event::DriveThroughPenaltyServed`]
+/// * [`Event::StopGoPenaltyServed`]
+/// * [`Event::Flashback`]
+/// * [`Event::Buttons`]
 #[allow(clippy::upper_case_acronyms)]
 #[derive(Debug, Copy, Clone, PartialEq, Serialize)]
 pub enum Event {
+    /// Sent when the session starts
     SessionStarted,
+    /// Sent when the session ends
     SessionEnded,
+    /// When a driver achieves the fastest lap
     FastestLap(FastestLap),
+    /// When a driver retires
     Retirement(Retirement),
+    /// Race control have enabled DRS
     DRSEnabled,
+    /// Race control have disabled DRS
     DRSDisabled,
+    /// Your team mate has entered the pits
     TeamMateInPits(TeamMateInPits),
+    /// The chequered flag has been waved
     ChequeredFlag,
+    /// The race winner is announced
     RaceWinner(RaceWinner),
+    /// A penalty has been issued
     Penalty(Penalty),
+    /// Speed trap has been triggered by fastest speed
     SpeedTrap(SpeedTrap),
+    /// Start lights – number shown
     StartLights(StartLights),
+    /// Lights out
     LightsOut,
+    /// Drive through penalty served
     DriveThroughPenaltyServed(DriveThroughPenaltyServed),
+    /// Stop go penalty served
     StopGoPenaltyServed(StopGoPenaltyServed),
+    /// Flashback activated
     Flashback(Flashback),
+    /// Button status changed
     Buttons(Buttons),
 }
 
 impl Event {
+    /// Get a human readable description of an event
     pub fn description<'a>(self) -> &'a str {
         match self {
             Event::SessionStarted => "Session Started",
@@ -229,6 +257,7 @@ impl Event {
         }
     }
 
+    /// Index of the vehicle involved in the event, if any.
     pub fn vehicle_idx(self) -> Option<u8> {
         match self {
             Event::FastestLap(e) => Some(e.vehicle_idx),
@@ -247,16 +276,10 @@ impl Event {
 /// This packet gives details of events that happen during the course of a session.
 ///
 /// Frequency: When the event occurs
-///
-/// ## Specification
-/// ```text
-/// header: Header
-/// event:  See [`Event`]
-/// ```
-///
-/// See also [`Event`]
 #[derive(Debug, Clone, PartialEq, Serialize)]
 pub struct PacketEventData {
+    /// Packet header
     pub header: PacketHeader,
+    /// The event
     pub event: Event,
 }
