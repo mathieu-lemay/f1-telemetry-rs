@@ -1,3 +1,5 @@
+use serde::Serialize;
+
 use crate::packet::generic::WheelData;
 
 use super::header::PacketHeader;
@@ -25,7 +27,7 @@ use super::header::PacketHeader;
 /// engine_mguk_wear:        Engine wear MGU-K (percentage)
 /// engine_tc_wear:          Engine wear TC (percentage)
 /// ```
-#[derive(Debug, PartialEq, Default)]
+#[derive(Debug, Clone, Serialize, PartialEq, Default)]
 pub struct CarDamageData {
     pub tyres_wear: WheelData<f32>,
     pub tyres_damage: WheelData<u8>,
@@ -56,7 +58,7 @@ pub struct CarDamageData {
 /// header:     Header
 /// car_setups: List of car damage data
 /// ```
-#[derive(Debug, PartialEq)]
+#[derive(Debug, Clone, Serialize, PartialEq)]
 pub struct PacketCarDamageData {
     pub header: PacketHeader,
     pub car_damage_data: Vec<CarDamageData>,

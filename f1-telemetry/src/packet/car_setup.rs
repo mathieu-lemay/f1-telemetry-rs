@@ -1,3 +1,5 @@
+use serde::Serialize;
+
 use crate::packet::generic::WheelData;
 
 use super::header::PacketHeader;
@@ -26,7 +28,7 @@ use super::header::PacketHeader;
 /// ballast                 Ballast
 /// fuel_load               Fuel load
 /// ```
-#[derive(Debug, PartialEq, Default)]
+#[derive(Debug, Clone, Serialize, PartialEq, Default)]
 pub struct CarSetupData {
     pub front_wing: u8,
     pub rear_wing: u8,
@@ -60,7 +62,7 @@ pub struct CarSetupData {
 /// header:     Header
 /// car_setups: List of car setups
 /// ```
-#[derive(Debug, PartialEq)]
+#[derive(Debug, Clone, Serialize, PartialEq)]
 pub struct PacketCarSetupData {
     pub header: PacketHeader,
     pub car_setups: Vec<CarSetupData>,

@@ -1,8 +1,10 @@
+use serde::Serialize;
+
 use crate::packet::generic::{Nationality, Team};
 
 use super::header::PacketHeader;
 
-#[derive(Debug, Clone, Copy, Eq, PartialEq)]
+#[derive(Debug, Clone, Serialize, Copy, Eq, PartialEq)]
 pub enum Driver {
     CarlosSainz,
     DaniilKvyat,
@@ -127,7 +129,7 @@ impl Default for Driver {
     }
 }
 
-#[derive(Debug, Clone, Copy, Eq, PartialEq)]
+#[derive(Debug, Clone, Serialize, Copy, Eq, PartialEq)]
 pub enum Telemetry {
     Restricted,
     Public,
@@ -155,7 +157,7 @@ impl Default for Telemetry {
 /// ```
 ///
 /// See also [`Driver`], [`Team`] and [`Telemetry`]
-#[derive(Debug, Clone, PartialEq, Default)]
+#[derive(Debug, Clone, Serialize, PartialEq, Default)]
 pub struct ParticipantData {
     pub ai_controlled: bool,
     pub driver: Driver,
@@ -186,7 +188,7 @@ pub struct ParticipantData {
 ///                  cars on HUD
 /// participants:    List of participants
 /// ```
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, Serialize, PartialEq)]
 pub struct PacketParticipantsData {
     pub header: PacketHeader,
     pub num_active_cars: u8,

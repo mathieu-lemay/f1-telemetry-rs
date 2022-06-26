@@ -1,3 +1,5 @@
+use serde::Serialize;
+
 use crate::packet::PacketType;
 
 /// The header for each of the UDP telemetry packets.
@@ -19,7 +21,7 @@ use crate::packet::PacketType;
 /// Possible `packet_type` values: [`PacketType`].
 ///
 /// [`PacketType`]: ../enum.PacketType.html
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Debug, Clone, Serialize, PartialEq)]
 pub struct PacketHeader {
     pub packet_format: u16,
     pub game_major_version: u8,

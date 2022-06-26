@@ -1,27 +1,29 @@
+use serde::Serialize;
+
 use super::header::PacketHeader;
 
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+#[derive(Debug, Copy, Clone, Serialize, Eq, PartialEq)]
 pub struct FastestLap {
     pub vehicle_idx: u8,
     pub lap_time: u32,
 }
 
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+#[derive(Debug, Copy, Clone, Serialize, Eq, PartialEq)]
 pub struct Retirement {
     pub vehicle_idx: u8,
 }
 
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+#[derive(Debug, Copy, Clone, Serialize, Eq, PartialEq)]
 pub struct TeamMateInPits {
     pub vehicle_idx: u8,
 }
 
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+#[derive(Debug, Copy, Clone, Serialize, Eq, PartialEq)]
 pub struct RaceWinner {
     pub vehicle_idx: u8,
 }
 
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+#[derive(Debug, Copy, Clone, Serialize, Eq, PartialEq)]
 pub enum PenaltyType {
     DriveThrough,
     StopGo,
@@ -43,7 +45,7 @@ pub enum PenaltyType {
     BlackFlagTimer,
 }
 
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+#[derive(Debug, Copy, Clone, Serialize, Eq, PartialEq)]
 pub enum InfringementType {
     BlockingBySlowDriving,
     BlockingByWrongWayDriving,
@@ -111,7 +113,7 @@ pub enum InfringementType {
 /// lap_num:           Lap the penalty occurred on
 /// places_gained:     Number of places gained by this
 /// ```
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+#[derive(Debug, Copy, Clone, Serialize, Eq, PartialEq)]
 pub struct Penalty {
     pub vehicle_idx: u8,
     pub penalty_type: PenaltyType,
@@ -122,7 +124,7 @@ pub struct Penalty {
     pub places_gained: u8,
 }
 
-#[derive(Debug, Copy, Clone, PartialEq, Default)]
+#[derive(Debug, Copy, Clone, Serialize, PartialEq, Default)]
 pub struct SpeedTrap {
     pub vehicle_idx: u8,
     pub speed: f32,
@@ -130,28 +132,28 @@ pub struct SpeedTrap {
     pub personal_fastest_in_session: Option<bool>,
 }
 
-#[derive(Debug, Copy, Clone, PartialEq)]
+#[derive(Debug, Copy, Clone, Serialize, PartialEq)]
 pub struct StartLights {
     pub number_of_lights: u8,
 }
 
-#[derive(Debug, Copy, Clone, PartialEq)]
+#[derive(Debug, Copy, Clone, Serialize, PartialEq)]
 pub struct DriveThroughPenaltyServed {
     pub vehicle_idx: u8,
 }
 
-#[derive(Debug, Copy, Clone, PartialEq)]
+#[derive(Debug, Copy, Clone, Serialize, PartialEq)]
 pub struct StopGoPenaltyServed {
     pub vehicle_idx: u8,
 }
 
-#[derive(Debug, Copy, Clone, PartialEq)]
+#[derive(Debug, Copy, Clone, Serialize, PartialEq)]
 pub struct Flashback {
     pub frame_identifier: u32,
     pub session_time: f32,
 }
 
-#[derive(Debug, Copy, Clone, PartialEq)]
+#[derive(Debug, Copy, Clone, Serialize, PartialEq)]
 pub struct Buttons {
     pub button_status: u32,
 }
@@ -183,7 +185,7 @@ pub struct Buttons {
 /// Buttons:                   Button status changed
 /// ```
 #[allow(clippy::upper_case_acronyms)]
-#[derive(Debug, Copy, Clone, PartialEq)]
+#[derive(Debug, Copy, Clone, Serialize, PartialEq)]
 pub enum Event {
     SessionStarted,
     SessionEnded,
@@ -253,7 +255,7 @@ impl Event {
 /// ```
 ///
 /// See also [`Event`]
-#[derive(Debug, PartialEq)]
+#[derive(Debug, Clone, Serialize, PartialEq)]
 pub struct PacketEventData {
     pub header: PacketHeader,
     pub event: Event,

@@ -1,3 +1,5 @@
+use serde::Serialize;
+
 use crate::packet::generic::{TyreCompound, TyreCompoundVisual};
 use crate::packet::header::PacketHeader;
 
@@ -11,7 +13,7 @@ use crate::packet::header::PacketHeader;
 /// sector_3_time:   Sector 3 time in milliseconds
 /// lap_valid_flags: Bit flags specifying if the lap / sectors are valid
 /// ```
-#[derive(Debug, Default, Eq, PartialEq)]
+#[derive(Debug, Clone, Serialize, Default, Eq, PartialEq)]
 pub struct LapHistoryData {
     pub lap_time: u32,
     pub sector_1_time: u16,
@@ -56,7 +58,7 @@ impl LapHistoryData {
 /// 0x04        Sector 2 is valid
 /// 0x08        Sector 3 is valid
 /// ```
-#[derive(Debug, Clone, Copy, Eq, PartialEq)]
+#[derive(Debug, Clone, Serialize, Copy, Eq, PartialEq)]
 pub enum ValidSectorFlag {
     Lap = 0x0001,
     Sector1 = 0x0002,
@@ -73,7 +75,7 @@ pub enum ValidSectorFlag {
 /// tyre_compound_visual: Visual tyres used by this driver
 /// ```
 /// See also [`TyreCompound`] and [`TyreCompoundVisual`].
-#[derive(Debug, Default, PartialEq, Clone, Copy)]
+#[derive(Debug, Default, PartialEq, Clone, Serialize, Copy)]
 pub struct TyreStintData {
     pub end_lap: u8,
     pub tyre_compound: TyreCompound,
@@ -105,7 +107,7 @@ pub struct TyreStintData {
 /// lap_history:              List of lap history
 /// tyre_stints:              List of tyre stints
 /// ```
-#[derive(Debug, PartialEq)]
+#[derive(Debug, Clone, Serialize, PartialEq)]
 pub struct PacketSessionHistoryData {
     pub header: PacketHeader,
     pub car_index: u8,

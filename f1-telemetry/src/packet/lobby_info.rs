@@ -1,8 +1,10 @@
+use serde::Serialize;
+
 use crate::packet::generic::{Nationality, Team};
 
 use super::header::PacketHeader;
 
-#[derive(Debug, Copy, Clone, PartialEq)]
+#[derive(Debug, Copy, Clone, Serialize, PartialEq)]
 pub enum ReadyStatus {
     NotReady,
     Ready,
@@ -26,7 +28,7 @@ impl Default for ReadyStatus {
 /// car_number:    Car number of the player
 /// ready_status:  Player's ready status
 /// ```
-#[derive(Debug, Default, PartialEq)]
+#[derive(Debug, Clone, Serialize, Default, PartialEq)]
 pub struct Player {
     pub ai_controlled: bool,
     pub team: Team,
@@ -47,7 +49,7 @@ pub struct Player {
 /// num_players: Number of players in the lobby data
 /// players:     List of Players
 /// ```
-#[derive(Debug, PartialEq)]
+#[derive(Debug, Clone, Serialize, PartialEq)]
 pub struct PacketLobbyInfoData {
     pub header: PacketHeader,
     pub num_players: u8,

@@ -1,8 +1,10 @@
+use serde::Serialize;
+
 use crate::packet::generic::{Flag, TyreCompound, TyreCompoundVisual, WheelData};
 
 use super::header::PacketHeader;
 
-#[derive(Debug, Clone, Copy, Eq, PartialEq)]
+#[derive(Debug, Clone, Serialize, Copy, Eq, PartialEq)]
 pub enum TractionControl {
     Off,
     Low,
@@ -15,7 +17,7 @@ impl Default for TractionControl {
     }
 }
 
-#[derive(Debug, Clone, Copy, Eq, PartialEq)]
+#[derive(Debug, Clone, Serialize, Copy, Eq, PartialEq)]
 pub enum FuelMix {
     Lean,
     Standard,
@@ -30,7 +32,7 @@ impl Default for FuelMix {
 }
 
 #[allow(clippy::upper_case_acronyms)]
-#[derive(Debug, Clone, Copy, Eq, PartialEq)]
+#[derive(Debug, Clone, Serialize, Copy, Eq, PartialEq)]
 pub enum DRS {
     NotAllowed,
     Allowed,
@@ -44,7 +46,7 @@ impl Default for DRS {
 }
 
 #[allow(clippy::upper_case_acronyms)]
-#[derive(Debug, Clone, Copy, Eq, PartialEq)]
+#[derive(Debug, Clone, Serialize, Copy, Eq, PartialEq)]
 pub enum ERSDeployMode {
     None,
     Low,
@@ -128,7 +130,7 @@ impl Default for ERSDeployMode {
 /// ```
 ///
 /// See also: [`DRS`], [`ERSDeployMode`], [`Flag`], [`FuelMix`], [`TractionControl`], [`TyreCompoundVisual`], [`TyreCompound`]
-#[derive(Debug, Default, PartialEq)]
+#[derive(Debug, Clone, Serialize, Default, PartialEq)]
 pub struct CarStatusData {
     pub traction_control: TractionControl,
     pub anti_lock_brakes: bool,
@@ -172,7 +174,7 @@ pub struct CarStatusData {
 /// header:          Header
 /// car_status_data: List of cars
 /// ```
-#[derive(Debug, PartialEq)]
+#[derive(Debug, Clone, Serialize, PartialEq)]
 pub struct PacketCarStatusData {
     pub header: PacketHeader,
     pub car_status_data: Vec<CarStatusData>,

@@ -1,3 +1,5 @@
+use serde::Serialize;
+
 use car_damage::PacketCarDamageData;
 use car_setup::PacketCarSetupData;
 use car_status::PacketCarStatusData;
@@ -38,7 +40,7 @@ impl From<Box<bincode::ErrorKind>> for UnpackError {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone, Serialize)]
 pub enum Packet {
     Motion(PacketMotionData),
     Session(PacketSessionData),
@@ -73,7 +75,7 @@ impl Packet {
     }
 }
 
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+#[derive(Debug, Copy, Clone, Serialize, Eq, PartialEq)]
 pub enum PacketType {
     Motion,
     Session,

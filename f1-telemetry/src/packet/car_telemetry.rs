@@ -1,8 +1,10 @@
+use serde::Serialize;
+
 use crate::packet::generic::WheelData;
 
 use super::header::PacketHeader;
 
-#[derive(Debug, Clone, Copy, Eq, PartialEq)]
+#[derive(Debug, Clone, Serialize, Copy, Eq, PartialEq)]
 pub enum SurfaceType {
     Tarmac,
     RumbleStrip,
@@ -47,7 +49,7 @@ impl Default for SurfaceType {
 /// ```
 ///
 /// See also [`SurfaceType`]
-#[derive(Debug, Default, PartialEq)]
+#[derive(Debug, Clone, Serialize, Default, PartialEq)]
 pub struct CarTelemetryData {
     pub speed: u16,
     pub throttle: f32,
@@ -92,7 +94,7 @@ pub struct CarTelemetryData {
 /// 0x2000              Left Stick Click
 /// 0x4000              Right Stick Click
 /// ```
-#[derive(Debug, Clone, Copy, Eq, PartialEq)]
+#[derive(Debug, Clone, Serialize, Copy, Eq, PartialEq)]
 pub enum ButtonFlag {
     Cross = 0x0001,
     Triangle = 0x0002,
@@ -112,7 +114,7 @@ pub enum ButtonFlag {
 }
 
 #[allow(clippy::upper_case_acronyms)]
-#[derive(Debug, Copy, Clone, PartialEq)]
+#[derive(Debug, Copy, Clone, Serialize, PartialEq)]
 pub enum MFDPanel {
     CarSetup,
     Pits,
@@ -140,7 +142,7 @@ pub enum MFDPanel {
 ///                     this information is available as an event packet.
 /// ```
 /// See also [`ButtonFlag`]
-#[derive(Debug, PartialEq)]
+#[derive(Debug, Clone, Serialize, PartialEq)]
 pub struct PacketCarTelemetryData {
     pub header: PacketHeader,
     pub car_telemetry_data: Vec<CarTelemetryData>,

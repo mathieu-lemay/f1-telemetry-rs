@@ -1,10 +1,10 @@
-use serde::Deserialize;
+use serde::Serialize;
 
 use crate::packet::generic::Flag;
 
 use super::header::PacketHeader;
 
-#[derive(Debug, Clone, Copy, Eq, PartialEq, Deserialize)]
+#[derive(Debug, Clone, Serialize, Copy, Eq, PartialEq)]
 pub enum Weather {
     Clear,
     LightCloud,
@@ -20,7 +20,7 @@ impl Default for Weather {
     }
 }
 
-#[derive(Debug, Clone, Copy, Eq, PartialEq, Deserialize)]
+#[derive(Debug, Clone, Serialize, Copy, Eq, PartialEq)]
 pub enum TemperatureChange {
     Up,
     Down,
@@ -33,7 +33,7 @@ impl Default for TemperatureChange {
     }
 }
 
-#[derive(Debug, Clone, Copy, Eq, PartialEq)]
+#[derive(Debug, Clone, Serialize, Copy, Eq, PartialEq)]
 pub enum SessionType {
     Unknown,
     Practice1,
@@ -76,7 +76,7 @@ impl Default for SessionType {
     }
 }
 
-#[derive(Debug, Clone, Copy, Eq, PartialEq)]
+#[derive(Debug, Clone, Serialize, Copy, Eq, PartialEq)]
 pub enum Track {
     Melbourne,
     PaulRicard,
@@ -143,7 +143,7 @@ impl Track {
     }
 }
 
-#[derive(Debug, Clone, Copy, Eq, PartialEq)]
+#[derive(Debug, Clone, Serialize, Copy, Eq, PartialEq)]
 pub enum Formula {
     F1Modern,
     F1Classic,
@@ -151,7 +151,7 @@ pub enum Formula {
     F1Generic,
 }
 
-#[derive(Debug, Clone, Copy, Eq, PartialEq)]
+#[derive(Debug, Clone, Serialize, Copy, Eq, PartialEq)]
 pub enum SafetyCar {
     None,
     Full,
@@ -182,7 +182,7 @@ impl Default for SafetyCar {
 /// samples:           List of forecast samples
 /// accuracy:          Accuracy of the forecasts
 /// ```
-#[derive(Debug, Default, Eq, PartialEq)]
+#[derive(Debug, Clone, Serialize, Default, Eq, PartialEq)]
 pub struct WeatherForecast {
     pub number_of_samples: u8,
     pub samples: Vec<WeatherForecastSample>,
@@ -202,7 +202,7 @@ pub struct WeatherForecast {
 /// air_temperature_change:   Air temperature change.
 /// rain_percentage:          Rain percentage
 /// ```
-#[derive(Debug, Copy, Clone, Eq, PartialEq, Default)]
+#[derive(Debug, Copy, Clone, Serialize, Eq, PartialEq, Default)]
 pub struct WeatherForecastSample {
     pub session_type: SessionType,
     pub time_offset: u8,
@@ -222,13 +222,13 @@ pub struct WeatherForecastSample {
 /// zone_flag:  Flag active in the zone. See [`Flag`].
 /// ```
 /// See also [`Flag`].
-#[derive(Debug, PartialEq, Clone, Copy)]
+#[derive(Debug, PartialEq, Clone, Serialize, Copy)]
 pub struct MarshalZone {
     pub zone_start: f32,
     pub zone_flag: Flag,
 }
 
-#[derive(Debug, Eq, PartialEq)]
+#[derive(Debug, Clone, Serialize, Eq, PartialEq)]
 pub enum ForecastAccuracy {
     Perfect,
     Approximate,
@@ -241,7 +241,7 @@ impl Default for ForecastAccuracy {
     }
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, Clone, Serialize, PartialEq)]
 pub enum BrakingAssist {
     Off,
     Low,
@@ -249,21 +249,21 @@ pub enum BrakingAssist {
     High,
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, Clone, Serialize, PartialEq)]
 pub enum GearboxAssist {
     Manual,
     ManualAndSuggestedGear,
     Automatic,
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, Clone, Serialize, PartialEq)]
 pub enum DynamicRacingLine {
     Off,
     CornersOnly,
     Full,
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, Clone, Serialize, PartialEq)]
 pub enum DynamicRacingLineType {
     TwoDimensions,
     ThreeDimensions,
@@ -284,7 +284,7 @@ pub enum DynamicRacingLineType {
 /// ```
 /// See also: [`BrakingAssist`], [`DynamicRacingLine`], [`DynamicRacingLineType`] and
 /// [`GearboxAssist`].
-#[derive(Debug, PartialEq)]
+#[derive(Debug, Clone, Serialize, PartialEq)]
 pub struct DrivingAssists {
     pub steering_assist: bool,
     pub braking_assist: BrakingAssist,
@@ -336,7 +336,7 @@ pub struct DrivingAssists {
 /// ```
 /// See also: [`DrivingAssists`], [`Formula`], [`MarshalZone`], [`SafetyCar`], [`SessionType`],
 /// [`Track`], [`WeatherForecastSample`] and [`Weather`]
-#[derive(Debug, PartialEq)]
+#[derive(Debug, Clone, Serialize, PartialEq)]
 pub struct PacketSessionData {
     pub header: PacketHeader,
     pub weather: Weather,

@@ -1,3 +1,5 @@
+use serde::Serialize;
+
 use crate::packet::generic::WheelData;
 
 use super::header::PacketHeader;
@@ -29,7 +31,7 @@ use super::header::PacketHeader;
 /// pitch:                Pitch angle in radians
 /// roll:                 Roll angle in radians
 /// ```
-#[derive(Debug, PartialEq)]
+#[derive(Debug, Clone, Serialize, PartialEq)]
 pub struct CarMotionData {
     pub world_position_x: f32,
     pub world_position_y: f32,
@@ -78,7 +80,7 @@ pub struct CarMotionData {
 /// angular_acceleration_z:  Angular acceleration z-component
 /// front_wheels_angle:      Current front wheels angle in radians
 /// ```
-#[derive(Debug, PartialEq)]
+#[derive(Debug, Clone, Serialize, PartialEq)]
 pub struct PacketMotionData {
     pub header: PacketHeader,
     pub motion_data: Vec<CarMotionData>,

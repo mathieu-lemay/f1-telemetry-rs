@@ -1,6 +1,6 @@
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Clone, Copy, Eq, PartialEq)]
+#[derive(Debug, Clone, Serialize, Copy, Eq, PartialEq)]
 pub enum Flag {
     None,
     Green,
@@ -16,7 +16,7 @@ impl Default for Flag {
     }
 }
 
-#[derive(Debug, Clone, Copy, Eq, PartialEq)]
+#[derive(Debug, Clone, Serialize, Copy, Eq, PartialEq)]
 pub enum Nationality {
     American,
     Argentinean,
@@ -115,7 +115,7 @@ impl Default for Nationality {
     }
 }
 
-#[derive(Debug, Clone, Copy, Eq, PartialEq)]
+#[derive(Debug, Clone, Serialize, Copy, Eq, PartialEq)]
 pub enum ResultStatus {
     Invalid,
     Inactive,
@@ -140,7 +140,7 @@ impl ResultStatus {
 }
 
 #[allow(clippy::upper_case_acronyms)]
-#[derive(Debug, Clone, Copy, Eq, PartialEq, Hash, Ord, PartialOrd)]
+#[derive(Debug, Clone, Serialize, Copy, Eq, PartialEq, Hash, Ord, PartialOrd)]
 pub enum Team {
     Mercedes,
     Ferrari,
@@ -266,7 +266,7 @@ impl Default for Team {
     }
 }
 
-#[derive(Debug, Clone, Copy, Eq, PartialEq)]
+#[derive(Debug, Clone, Serialize, Copy, Eq, PartialEq)]
 pub enum TyreCompound {
     C5,
     C4,
@@ -291,7 +291,7 @@ impl Default for TyreCompound {
     }
 }
 
-#[derive(Debug, Clone, Copy, Eq, PartialEq)]
+#[derive(Debug, Clone, Serialize, Copy, Eq, PartialEq)]
 pub enum TyreCompoundVisual {
     Soft,
     Medium,
@@ -334,7 +334,7 @@ impl TyreCompoundVisual {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Default, Deserialize)]
+#[derive(Debug, Clone, Serialize, Copy, PartialEq, Default, Deserialize)]
 pub struct WheelData<T>
 where
     T: Clone + Copy,

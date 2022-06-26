@@ -1,3 +1,5 @@
+use serde::Serialize;
+
 use crate::packet::generic::{ResultStatus, TyreCompound, TyreCompoundVisual};
 
 use super::header::PacketHeader;
@@ -20,7 +22,7 @@ use super::header::PacketHeader;
 /// tyre_stints_actual: Actual tyres used by this driver
 /// tyre_stints_visual: Visual tyres used by this driver
 /// ```
-#[derive(Debug, PartialEq)]
+#[derive(Debug, Clone, Serialize, PartialEq)]
 pub struct FinalClassification {
     pub position: u8,
     pub num_laps: u8,
@@ -49,7 +51,7 @@ pub struct FinalClassification {
 /// num_cars:              Number of cars in the final classification
 /// final_classifications: List of final classifications.
 /// ```
-#[derive(Debug, PartialEq)]
+#[derive(Debug, Clone, Serialize, PartialEq)]
 pub struct PacketFinalClassificationData {
     pub header: PacketHeader,
     pub num_cars: u8,
