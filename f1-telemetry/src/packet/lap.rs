@@ -32,85 +32,91 @@ impl Default for DriverStatus {
     }
 }
 
-/// This type is used for the `lap_data` array of the [`PacketLapData`] type.
-///
-/// ## Specification
-/// ```text
-/// last_lap_time:                 Last lap time in milliseconds
-/// current_lap_time:              Current time around the lap in milliseconds
-/// sector_1_time:                 Sector 1 time in milliseconds
-/// sector_2_time:                 Sector 2 time in milliseconds
-/// best_lap_time:                 Best lap time of the session in milliseconds
-/// best_lap_num:                  Lap number best time achieved on
-/// best_lap_sector_1_time:        Sector 1 time of best lap in the session in milliseconds
-/// best_lap_sector_2_time:        Sector 2 time of best lap in the session in milliseconds
-/// best_lap_sector_3_time:        Sector 3 time of best lap in the session in milliseconds
-/// best_overall_sector_1_time:    Best overall sector 1 time of the session in milliseconds
-/// best_overall_sector_1_lap_num: Lap number best overall sector 1 time achieved on
-/// best_overall_sector_2_time:    Best overall sector 2 time of the session in milliseconds
-/// best_overall_sector_2_lap_num: Lap number best overall sector 2 time achieved on
-/// best_overall_sector_3_time:    Best overall sector 3 time of the session in milliseconds
-/// best_overall_sector_3_lap_num: Lap number best overall sector 3 time achieved on
-/// lap_distance:                  Distance vehicle is around current lap in metres – could
-///                                be negative if line hasn’t been crossed yet
-/// total_distance:                Total distance travelled in session in metres – could
-///                                be negative if line hasn’t been crossed yet
-/// safety_car_delta:              Delta in seconds for safety car
-/// car_position:                  Car race position
-/// current_lap_num:               Current lap number
-/// pit_status:                    Pitting status. See [`PitStatus`].
-/// number_pit_stops:              Number of pit stops taken in this race
-/// sector:                        0 = sector1, 1 = sector2, 2 = sector3
-/// current_lap_invalid:           Current lap invalid
-/// penalties:                     Accumulated time penalties in seconds to be added
-/// warnings:                      Accumulated number of warnings issued
-/// number_unserved_drive_through: Number of drive through penalties left to serve
-/// number_unserved_stop_go:       Number of stop and go penalties left to serve
-/// grid_position:                 Grid position the vehicle started the race in
-/// driver_status:                 Status of driver. See [`DriverStatus`].
-/// result_status:                 Result status. See [`ResultStatus`].
-/// pit_lane_timer_active:         Pit lane timing, 0 = inactive, 1 = active
-/// pit_lane_time_in_lane:         If active, the current time spent in the pit lane in milliseconds
-/// pit_stop_time:                 Time of the actual pit stop in milliseconds
-/// pit_stop_should_serve_penalty: Whether the car should serve a penalty at this stop
-/// ```
-/// See also: [`DriverStatus`], [`PitStatus`], [`ResultStatus`]
+#[derive(Debug, Clone, Eq, PartialEq, Serialize)]
+pub enum Sector {
+    Sector1,
+    Sector2,
+    Sector3,
+}
+
+impl Default for Sector {
+    fn default() -> Self {
+        Self::Sector1
+    }
+}
+
+/// Lap data for a car on track
 #[derive(Debug, Clone, Default, PartialEq, Serialize)]
 pub struct LapData {
+    /// Last lap time in milliseconds
     pub last_lap_time: u32,
+    /// Current time around the lap in milliseconds
     pub current_lap_time: u32,
+    /// Sector 1 time in milliseconds
     pub sector_1_time: u16,
+    /// Sector 2 time in milliseconds
     pub sector_2_time: u16,
+    /// Best lap time of the session in milliseconds
     pub best_lap_time: u32,
+    /// Lap number best time achieved on
     pub best_lap_num: u8,
+    /// Sector 1 time of best lap in the session in milliseconds
     pub best_lap_sector_1_time: u16,
+    /// Sector 2 time of best lap in the session in milliseconds
     pub best_lap_sector_2_time: u16,
+    /// Sector 3 time of best lap in the session in milliseconds
     pub best_lap_sector_3_time: u16,
+    /// Best overall sector 1 time of the session in milliseconds
     pub best_overall_sector_1_time: u16,
+    /// Lap number best overall sector 1 time achieved on
     pub best_overall_sector_1_lap_num: u8,
+    /// Best overall sector 2 time of the session in milliseconds
     pub best_overall_sector_2_time: u16,
+    /// Lap number best overall sector 2 time achieved on
     pub best_overall_sector_2_lap_num: u8,
+    /// Best overall sector 3 time of the session in milliseconds
     pub best_overall_sector_3_time: u16,
+    /// Lap number best overall sector 3 time achieved on
     pub best_overall_sector_3_lap_num: u8,
+    /// Distance vehicle is around current lap in metres – could be negative if line hasn’t been crossed yet
     pub lap_distance: f32,
+    /// Total distance travelled in session in metres – could be negative if line hasn’t been crossed yet
     pub total_distance: f32,
+    /// Delta in seconds for safety car
     pub safety_car_delta: f32,
+    /// Car race position
     pub car_position: u8,
+    /// Current lap number
     pub current_lap_num: u8,
+    /// Pitting status
     pub pit_status: PitStatus,
+    /// Number of pit stops taken in this race
     pub number_pit_stops: u8,
-    pub sector: u8,
+    /// Current sector
+    pub sector: Sector,
+    /// Current lap invalid
     pub current_lap_invalid: bool,
+    /// Accumulated time penalties in seconds to be added
     pub penalties: u8,
+    /// Accumulated number of warnings issued
     pub warnings: u8,
+    /// Number of drive through penalties left to serve
     pub number_unserved_drive_through: u8,
+    /// Number of stop and go penalties left to serve
     pub number_unserved_stop_go: u8,
+    /// Grid position the vehicle started the race in
     pub grid_position: u8,
+    /// Status of driver
     pub driver_status: DriverStatus,
+    /// Result status
     pub result_status: ResultStatus,
+    /// Is the pit lane timer active or not
     pub pit_lane_timer_active: bool,
+    /// If active, the current time spent in the pit lane in milliseconds
     pub pit_lane_time_in_lane: u16,
+    /// Time of the actual pit stop in milliseconds
     pub pit_stop_time: u16,
+    /// Whether the car should serve a penalty at this stop
     pub pit_stop_should_serve_penalty: bool,
 }
 
@@ -121,10 +127,12 @@ pub struct LapData {
 /// ## Specification
 /// ```text
 /// header:   Header
-/// lap_data: Lap data for all cars on track
+/// lap_data:
 /// ```
 #[derive(Debug, Clone, PartialEq, Serialize)]
 pub struct PacketLapData {
+    /// Packet header
     pub header: PacketHeader,
+    /// Lap data for all cars on track
     pub lap_data: Vec<LapData>,
 }

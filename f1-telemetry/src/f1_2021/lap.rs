@@ -3,7 +3,7 @@ use std::io::BufRead;
 use serde::Deserialize;
 
 use crate::packet::header::PacketHeader;
-use crate::packet::lap::{DriverStatus, LapData, PacketLapData, PitStatus};
+use crate::packet::lap::{DriverStatus, LapData, PacketLapData, PitStatus, Sector};
 use crate::packet::UnpackError;
 use crate::utils::assert_packet_size;
 
@@ -16,6 +16,15 @@ fn unpack_pit_status(value: u8) -> Result<PitStatus, UnpackError> {
         1 => Ok(PitStatus::Pitting),
         2 => Ok(PitStatus::PitLane),
         _ => Err(UnpackError(format!("Invalid PitStatus value: {}", value))),
+    }
+}
+
+fn unpack_sector(value: u8) -> Result<Sector, UnpackError> {
+    match value {
+        0 => Ok(Sector::Sector1),
+        1 => Ok(Sector::Sector2),
+        2 => Ok(Sector::Sector3),
+        _ => Err(UnpackError(format!("Invalid Sector value: {}", value))),
     }
 }
 
@@ -102,6 +111,7 @@ struct RawLapData {
 impl LapData {
     fn from_2021(car_lap_data: &RawLapData) -> Result<Self, UnpackError> {
         let pit_status = unpack_pit_status(car_lap_data.pit_status)?;
+        let sector = unpack_sector(car_lap_data.sector)?;
         let driver_status = unpack_driver_status(car_lap_data.driver_status)?;
         let result_status = unpack_result_status(car_lap_data.result_status)?;
 
@@ -117,7 +127,7 @@ impl LapData {
             current_lap_num: car_lap_data.current_lap_num,
             pit_status,
             number_pit_stops: car_lap_data.number_pit_stops,
-            sector: car_lap_data.sector,
+            sector,
             current_lap_invalid: car_lap_data.current_lap_invalid,
             penalties: car_lap_data.penalties,
             warnings: car_lap_data.warnings,
