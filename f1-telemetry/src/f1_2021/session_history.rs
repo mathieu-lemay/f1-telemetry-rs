@@ -58,20 +58,14 @@ impl PacketSessionHistoryData {
         header: PacketHeader,
         session_history_data: RawSessionHistoryData,
     ) -> Result<Self, UnpackError> {
-        let mut lap_history: Vec<LapHistoryData> = Vec::with_capacity(NUMBER_LAP_HISTORY_DATA);
-
-        for lh in session_history_data.lap_history_1 {
-            lap_history.push(LapHistoryData::from_2021(&lh)?);
-        }
-        for lh in session_history_data.lap_history_2 {
-            lap_history.push(LapHistoryData::from_2021(&lh)?);
-        }
-        for lh in session_history_data.lap_history_3 {
-            lap_history.push(LapHistoryData::from_2021(&lh)?);
-        }
-        for lh in session_history_data.lap_history_4 {
-            lap_history.push(LapHistoryData::from_2021(&lh)?);
-        }
+        let lap_history = session_history_data
+            .lap_history_1
+            .iter()
+            .chain(session_history_data.lap_history_2.iter())
+            .chain(session_history_data.lap_history_3.iter())
+            .chain(session_history_data.lap_history_4.iter())
+            .map(LapHistoryData::from_2021)
+            .collect::<Result<Vec<LapHistoryData>, UnpackError>>()?;
 
         let tyre_stints: Vec<TyreStintData> = session_history_data
             .tyre_stints

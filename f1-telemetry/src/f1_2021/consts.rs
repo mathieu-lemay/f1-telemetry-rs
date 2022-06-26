@@ -1,7 +1,7 @@
 pub const NUMBER_CARS: usize = 22;
 pub const NUMBER_MARSHAL_ZONES: usize = 21;
-pub const NUMBER_WEATHER_FORECASTS: usize = 56;
-pub const NUMBER_LAP_HISTORY_DATA: usize = 100;
+// pub const NUMBER_WEATHER_FORECASTS: usize = 56;
+// pub const NUMBER_LAP_HISTORY_DATA: usize = 100;
 
 pub const HEADER_SIZE: usize = 24;
 

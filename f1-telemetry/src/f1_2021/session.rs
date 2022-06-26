@@ -281,21 +281,13 @@ impl PacketSessionData {
         let dynamic_racing_line_type =
             unpack_dynamic_racing_line_type(session_data.dynamic_racing_line_type)?;
 
-        let mut weather_forecast_samples: Vec<WeatherForecastSample> =
-            Vec::with_capacity(NUMBER_WEATHER_FORECASTS);
-
-        for wf in session_data.weather_forecast_samples_1 {
-            weather_forecast_samples.push(WeatherForecastSample::from_2021(&wf)?);
-        }
-        for wf in session_data.weather_forecast_samples_2 {
-            weather_forecast_samples.push(WeatherForecastSample::from_2021(&wf)?);
-        }
-
-        let weather_forecast_samples = weather_forecast_samples
+        let weather_forecast_samples = session_data
+            .weather_forecast_samples_1
             .iter()
+            .chain(session_data.weather_forecast_samples_2.iter())
             .take(session_data.num_weather_forecast_samples as usize)
-            .cloned()
-            .collect();
+            .map(WeatherForecastSample::from_2021)
+            .collect::<Result<Vec<WeatherForecastSample>, UnpackError>>()?;
 
         Ok(Self {
             header,
