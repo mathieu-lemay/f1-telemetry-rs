@@ -102,6 +102,7 @@ impl FinalClassification {
             num_tyre_stints: fc.num_tyre_stints,
             tyre_stints_actual,
             tyre_stints_visual,
+            ..Default::default()
         })
     }
 }

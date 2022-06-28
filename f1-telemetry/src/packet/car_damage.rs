@@ -18,6 +18,7 @@ use super::header::PacketHeader;
 /// diffuser_damage:         Diffuser damage (percentage)
 /// sidepod_damage:          Sidepod damage (percentage)
 /// drs_fault:               Indicator for DRS fault
+/// ers_fault:               Indicator for ERS fault
 /// gear_box_damage:         Gear box damage (percentage)
 /// engine_damage:           Engine damage (percentage)
 /// engine_mguh_wear:        Engine wear MGU-H (percentage)
@@ -26,6 +27,8 @@ use super::header::PacketHeader;
 /// engine_ice_wear:         Engine wear ICE (percentage)
 /// engine_mguk_wear:        Engine wear MGU-K (percentage)
 /// engine_tc_wear:          Engine wear TC (percentage)
+/// engine_blown:            Wether engine is blown or not
+/// engine_seized:           Wether engine is seized or not
 /// ```
 #[derive(Debug, Clone, Default, PartialEq, Serialize)]
 pub struct CarDamageData {
@@ -39,6 +42,7 @@ pub struct CarDamageData {
     pub diffuser_damage: u8,
     pub sidepod_damage: u8,
     pub drs_fault: bool,
+    pub ers_fault: bool,
     pub gear_box_damage: u8,
     pub engine_damage: u8,
     pub engine_mguh_wear: u8,
@@ -47,6 +51,8 @@ pub struct CarDamageData {
     pub engine_ice_wear: u8,
     pub engine_mguk_wear: u8,
     pub engine_tc_wear: u8,
+    pub engine_blown: bool,
+    pub engine_seized: bool,
 }
 
 /// This packet details car damage parameters for all the cars in the race.

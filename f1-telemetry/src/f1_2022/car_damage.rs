@@ -13,7 +13,7 @@ use super::consts::*;
 /// This packet details car damage parameters for all the cars in the race.
 ///
 /// Frequency: 2 per second
-/// Size: 882 bytes
+/// Size: 948 bytes
 /// Version: 1
 ///
 /// ```text
@@ -28,6 +28,7 @@ use super::consts::*;
 /// diffuser_damage:         Diffuser damage (percentage)
 /// sidepod_damage:          Sidepod damage (percentage)
 /// drs_fault:               Indicator for DRS fault, 0 = OK, 1 = fault
+/// ers_fault:               Indicator for ERS fault, 0 = OK, 1 = fault
 /// gear_box_damage:         Gear box damage (percentage)
 /// engine_damage:           Engine damage (percentage)
 /// engine_mguh_wear:        Engine wear MGU-H (percentage)
@@ -36,6 +37,8 @@ use super::consts::*;
 /// engine_ice_wear:         Engine wear ICE (percentage)
 /// engine_mguk_wear:        Engine wear MGU-K (percentage)
 /// engine_tc_wear:          Engine wear TC (percentage)
+/// engine_blown:            Engine blown, 0 = OK, 1 = fault
+/// engine_seized:           Engine seized, 0 = OK, 1 = fault
 /// ```
 #[derive(Deserialize)]
 struct RawCarDamage {
@@ -49,6 +52,7 @@ struct RawCarDamage {
     diffuser_damage: u8,
     sidepod_damage: u8,
     drs_fault: bool,
+    ers_fault: bool,
     gear_box_damage: u8,
     engine_damage: u8,
     engine_mguh_wear: u8,
@@ -57,10 +61,12 @@ struct RawCarDamage {
     engine_ice_wear: u8,
     engine_mguk_wear: u8,
     engine_tc_wear: u8,
+    engine_blown: bool,
+    engine_seized: bool,
 }
 
 impl CarDamageData {
-    fn from_2021(packet: &RawCarDamage) -> Result<Self, UnpackError> {
+    fn from_2022(packet: &RawCarDamage) -> Result<Self, UnpackError> {
         Ok(CarDamageData {
             tyres_wear: packet.tyres_wear,
             tyres_damage: packet.tyres_damage,
@@ -72,6 +78,7 @@ impl CarDamageData {
             diffuser_damage: packet.diffuser_damage,
             sidepod_damage: packet.sidepod_damage,
             drs_fault: packet.drs_fault,
+            ers_fault: packet.ers_fault,
             gear_box_damage: packet.gear_box_damage,
             engine_damage: packet.engine_damage,
             engine_mguh_wear: packet.engine_mguh_wear,
@@ -80,7 +87,8 @@ impl CarDamageData {
             engine_ice_wear: packet.engine_ice_wear,
             engine_mguk_wear: packet.engine_mguk_wear,
             engine_tc_wear: packet.engine_tc_wear,
-            ..Default::default()
+            engine_blown: packet.engine_blown,
+            engine_seized: packet.engine_seized,
         })
     }
 }
@@ -96,7 +104,7 @@ pub fn parse_car_damage_data<T: BufRead>(
 
     let car_damage_data = car_damage
         .iter()
-        .map(CarDamageData::from_2021)
+        .map(CarDamageData::from_2022)
         .collect::<Result<Vec<CarDamageData>, UnpackError>>()?;
 
     Ok(PacketCarDamageData {

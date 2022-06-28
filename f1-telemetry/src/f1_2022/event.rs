@@ -97,7 +97,7 @@ fn unpack_infringement_type(value: u8) -> Result<InfringementType, UnpackError> 
 /// This packet gives details of events that happen during the course of a session.
 ///
 /// Frequency: When the event occurs
-/// Size: 36 bytes
+/// Size: 40 bytes
 /// Version: 1
 ///
 /// ## Specification
@@ -275,10 +275,13 @@ struct PenaltyDetails {
 
 /// ## Specification
 /// ```text
-/// vehicle_idx:                 Vehicle index of the vehicle triggering speed trap
-/// speed:                       Top speed achieved in kilometres per hour
-/// overall_fastest_in_session:  Overall fastest speed in session = 1, otherwise 0
-/// personal_fastest_in_session: Fastest speed for driver in session = 1, otherwise 0
+/// vehicle_idx:                    Vehicle index of the vehicle triggering speed trap
+/// speed:                          Top speed achieved in kilometres per hour
+/// is_overall_fastest_in_session:  Overall fastest speed in session = 1, otherwise 0
+/// is_personal_fastest_in_session: Fastest speed for driver in session = 1, otherwise 0
+/// fastest_vehicle_idx_in_session: Vehicle index of the vehicle that is the fastest
+///                                 in this session
+/// fastest_speed_in_session:       Speed of the vehicle that is the fastest in this session
 /// ```
 #[derive(Deserialize)]
 struct SpeedTrapDetails {
@@ -286,6 +289,8 @@ struct SpeedTrapDetails {
     speed: f32,
     is_overall_fastest_in_session: bool,
     is_personal_fastest_in_session: bool,
+    fastest_vehicle_idx_in_session: u8,
+    fastest_speed_in_session: f32,
 }
 
 /// ## Specification
@@ -411,7 +416,8 @@ pub(crate) fn parse_event_data<T: BufRead>(
                 speed: details.speed,
                 is_overall_fastest_in_session: Some(details.is_overall_fastest_in_session),
                 is_personal_fastest_in_session: Some(details.is_personal_fastest_in_session),
-                ..Default::default()
+                fastest_vehicle_idx_in_session: Some(details.fastest_vehicle_idx_in_session),
+                fastest_speed_in_session: Some(details.fastest_speed_in_session),
             };
             Ok(Event::SpeedTrap(evt_detail))
         }

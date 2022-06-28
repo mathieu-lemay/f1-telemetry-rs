@@ -2,7 +2,7 @@ use std::io::BufRead;
 
 use serde::Deserialize;
 
-use crate::f1_2021::generic::{
+use crate::f1_2022::generic::{
     unpack_result_status, unpack_tyre_compound, unpack_tyre_compound_visual,
 };
 use crate::packet::final_classification::{FinalClassification, PacketFinalClassificationData};
@@ -18,7 +18,7 @@ use super::consts::*;
 /// is not always possible to send lap times on the final frame because of network delay.
 ///
 /// Frequency: Once at the end of a race
-/// Size: 1015 bytes
+/// Size: 839 bytes
 /// Version: 1
 ///
 /// ## Specification
@@ -37,22 +37,21 @@ struct RawFinalClassificationData {
 ///
 /// ## Specification
 /// ```text
-/// position:            Finishing position
-/// num_laps:            Number of laps completed
-/// grid_position:       Grid position of the car
-/// points:              Number of points scored
-/// num_pit_stops:       Number of pit stops made
-/// result_status:       Result status - 0 = invalid, 1 = inactive, 2 = active
-///                      3 = finished, 4 did not finish, 5 = disqualified
-///                      6 = not classified, 7 = retired
-/// best_lap_time:       Best lap time of the session in milliseconds
-/// total_race_time:     Total race time in seconds without penalties
-/// penalties_time:      Total penalties accumulated in seconds
-/// num_penalties:       Number of penalties applied to this driver
-/// num_tyre_stints:     Number of tyres stints up to maximum
-/// tyre_stints_actual:  Actual tyres used by this driver
-/// tyre_stints_visual:  Visual tyres used by this driver
-/// tyre_stints_end_lap: The lap number stints end on
+/// position:           Finishing position
+/// num_laps:           Number of laps completed
+/// grid_position:      Grid position of the car
+/// points:             Number of points scored
+/// num_pit_stops:      Number of pit stops made
+/// result_status:      Result status - 0 = invalid, 1 = inactive, 2 = active
+///                     3 = finished, 4 did not finish, 5 = disqualified
+///                     6 = not classified, 7 = retired
+/// best_lap_time:      Best lap time of the session in milliseconds
+/// total_race_time:    Total race time in seconds without penalties
+/// penalties_time:     Total penalties accumulated in seconds
+/// num_penalties:      Number of penalties applied to this driver
+/// num_tyre_stints:    Number of tyres stints up to maximum
+/// tyre_stints_actual: Actual tyres used by this driver
+/// tyre_stints_visual: Visual tyres used by this driver
 /// ```
 #[derive(Deserialize)]
 struct RawFinalClassification {
@@ -69,10 +68,11 @@ struct RawFinalClassification {
     num_tyre_stints: u8,
     tyre_stints_actual: [u8; 8],
     tyre_stints_visual: [u8; 8],
+    tyre_stints_end_lap: [u8; 8],
 }
 
 impl FinalClassification {
-    fn from_2021(fc: &RawFinalClassification) -> Result<Self, UnpackError> {
+    fn from_2022(fc: &RawFinalClassification) -> Result<Self, UnpackError> {
         let result_status = unpack_result_status(fc.result_status)?;
         let total_race_time = seconds_to_millis(fc.total_race_time);
 
@@ -88,6 +88,8 @@ impl FinalClassification {
             .map(|&t| unpack_tyre_compound_visual(t))
             .collect::<Result<Vec<TyreCompoundVisual>, UnpackError>>()?;
 
+        let tyre_stints_end_lap = fc.tyre_stints_end_lap.to_vec();
+
         Ok(FinalClassification {
             position: fc.position,
             num_laps: fc.num_laps,
@@ -102,7 +104,7 @@ impl FinalClassification {
             num_tyre_stints: fc.num_tyre_stints,
             tyre_stints_actual,
             tyre_stints_visual,
-            ..Default::default()
+            tyre_stints_end_lap,
         })
     }
 }
@@ -119,7 +121,7 @@ pub(crate) fn parse_final_classification_data<T: BufRead>(
     let final_classifications = final_classification
         .final_classifications
         .iter()
-        .map(FinalClassification::from_2021)
+        .map(FinalClassification::from_2022)
         .collect::<Result<Vec<FinalClassification>, UnpackError>>()?;
 
     Ok(PacketFinalClassificationData {

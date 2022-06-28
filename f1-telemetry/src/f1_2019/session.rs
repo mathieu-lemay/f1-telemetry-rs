@@ -192,6 +192,10 @@ impl PacketSessionData {
             pit_stop_window_latest_lap: None,
             pit_stop_rejoin_position: None,
             driving_assists: None,
+            game_mode: None,
+            rule_set: None,
+            time_of_day: None,
+            session_length: None,
         })
     }
 }

@@ -47,6 +47,7 @@ pub enum SessionType {
     OneShotQualifying,
     Race,
     Race2,
+    Race3,
     TimeTrial,
 }
 
@@ -65,6 +66,7 @@ impl SessionType {
             SessionType::OneShotQualifying => "One-Shot Qualifying",
             SessionType::Race => "Race",
             SessionType::Race2 => "Race 2",
+            SessionType::Race3 => "Race 3",
             SessionType::TimeTrial => "Time Trial",
         }
     }
@@ -279,6 +281,48 @@ pub struct DrivingAssists {
     pub dynamic_racing_line_type: DynamicRacingLineType,
 }
 
+#[derive(Debug, Clone, PartialEq, Serialize)]
+pub enum GameMode {
+    EventMode,
+    GrandPrix,
+    TimeTrial,
+    Splitscreen,
+    OnlineCustom,
+    OnlineLeague,
+    CareerInvitational,
+    ChampionshipInvitational,
+    Championship,
+    OnlineChampionship,
+    OnlineWeeklyEvent,
+    Career22,
+    Career22Online,
+    Benchmark,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize)]
+pub enum RuleSet {
+    PracticeAndQualifying,
+    Race,
+    TimeTrial,
+    TimeAttack,
+    CheckpointChallenge,
+    Autocross,
+    Drift,
+    AverageSpeedZone,
+    RivalDuel,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize)]
+pub enum SessionLength {
+    None,
+    VeryShort,
+    Short,
+    Medium,
+    MediumLong,
+    Long,
+    Full,
+}
+
 /// The session packet includes details about the current session in progress
 ///
 /// Frequency: 2 per second
@@ -308,7 +352,7 @@ pub struct PacketSessionData {
     pub session_duration: u16,
     /// Pit speed limit in kilometres per hour
     pub pit_speed_limit: u8,
-    /// Whether the game is paused
+    /// Whether the game is paused (network game only)
     pub game_paused: bool,
     /// Whether the player is spectating
     pub is_spectating: bool,
@@ -342,4 +386,12 @@ pub struct PacketSessionData {
     pub pit_stop_rejoin_position: Option<u8>,
     /// Status of various driving assistances
     pub driving_assists: Option<DrivingAssists>,
+    /// Game mode
+    pub game_mode: Option<GameMode>,
+    /// Rule set
+    pub rule_set: Option<RuleSet>,
+    /// Local time of day (minutes since midnight)
+    pub time_of_day: Option<u32>,
+    /// Session Length
+    pub session_length: Option<SessionLength>,
 }

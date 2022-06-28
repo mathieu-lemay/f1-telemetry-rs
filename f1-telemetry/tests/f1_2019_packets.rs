@@ -596,6 +596,10 @@ fn test_parse_2019_session_packet() {
         pit_stop_window_latest_lap: None,
         pit_stop_rejoin_position: None,
         driving_assists: None,
+        game_mode: None,
+        rule_set: None,
+        time_of_day: None,
+        session_length: None,
     };
 
     assert_eq!(actual, expected);
@@ -1021,6 +1025,8 @@ fn test_parse_2019_lap_packet() {
                 ..Default::default()
             },
         ],
+        time_trial_personal_best_car_idx: None,
+        time_trial_rival_car_idx: None,
     };
 
     assert_eq!(actual, expected);

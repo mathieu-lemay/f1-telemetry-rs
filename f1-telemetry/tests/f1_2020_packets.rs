@@ -726,6 +726,10 @@ fn test_parse_2020_session_packet() {
         pit_stop_window_latest_lap: None,
         pit_stop_rejoin_position: None,
         driving_assists: None,
+        game_mode: None,
+        rule_set: None,
+        time_of_day: None,
+        session_length: None,
     };
 
     assert_eq!(actual, expected);
@@ -1353,6 +1357,8 @@ fn test_parse_2020_lap_packet() {
             LapData::default(),
             LapData::default(),
         ],
+        time_trial_personal_best_car_idx: None,
+        time_trial_rival_car_idx: None,
     };
 
     assert_eq!(actual, expected);
@@ -3380,6 +3386,7 @@ fn test_parse_2020_final_classification_packet() {
                     TyreCompoundVisual::Invalid,
                     TyreCompoundVisual::Invalid,
                 ],
+                ..Default::default()
             },
             FinalClassification {
                 position: 5,
@@ -3413,6 +3420,7 @@ fn test_parse_2020_final_classification_packet() {
                     TyreCompoundVisual::Invalid,
                     TyreCompoundVisual::Invalid,
                 ],
+                ..Default::default()
             },
             FinalClassification {
                 position: 7,
@@ -3446,6 +3454,7 @@ fn test_parse_2020_final_classification_packet() {
                     TyreCompoundVisual::Invalid,
                     TyreCompoundVisual::Invalid,
                 ],
+                ..Default::default()
             },
             FinalClassification {
                 position: 2,
@@ -3479,6 +3488,7 @@ fn test_parse_2020_final_classification_packet() {
                     TyreCompoundVisual::Invalid,
                     TyreCompoundVisual::Invalid,
                 ],
+                ..Default::default()
             },
             FinalClassification {
                 position: 10,
@@ -3512,6 +3522,7 @@ fn test_parse_2020_final_classification_packet() {
                     TyreCompoundVisual::Invalid,
                     TyreCompoundVisual::Invalid,
                 ],
+                ..Default::default()
             },
             FinalClassification {
                 position: 6,
@@ -3545,6 +3556,7 @@ fn test_parse_2020_final_classification_packet() {
                     TyreCompoundVisual::Invalid,
                     TyreCompoundVisual::Invalid,
                 ],
+                ..Default::default()
             },
             FinalClassification {
                 position: 16,
@@ -3578,6 +3590,7 @@ fn test_parse_2020_final_classification_packet() {
                     TyreCompoundVisual::Invalid,
                     TyreCompoundVisual::Invalid,
                 ],
+                ..Default::default()
             },
             FinalClassification {
                 position: 4,
@@ -3611,6 +3624,7 @@ fn test_parse_2020_final_classification_packet() {
                     TyreCompoundVisual::Invalid,
                     TyreCompoundVisual::Invalid,
                 ],
+                ..Default::default()
             },
             FinalClassification {
                 position: 15,
@@ -3644,6 +3658,7 @@ fn test_parse_2020_final_classification_packet() {
                     TyreCompoundVisual::Invalid,
                     TyreCompoundVisual::Invalid,
                 ],
+                ..Default::default()
             },
             FinalClassification {
                 position: 9,
@@ -3677,6 +3692,7 @@ fn test_parse_2020_final_classification_packet() {
                     TyreCompoundVisual::Invalid,
                     TyreCompoundVisual::Invalid,
                 ],
+                ..Default::default()
             },
             FinalClassification {
                 position: 14,
@@ -3710,6 +3726,7 @@ fn test_parse_2020_final_classification_packet() {
                     TyreCompoundVisual::Invalid,
                     TyreCompoundVisual::Invalid,
                 ],
+                ..Default::default()
             },
             FinalClassification {
                 position: 12,
@@ -3743,6 +3760,7 @@ fn test_parse_2020_final_classification_packet() {
                     TyreCompoundVisual::Invalid,
                     TyreCompoundVisual::Invalid,
                 ],
+                ..Default::default()
             },
             FinalClassification {
                 position: 13,
@@ -3776,6 +3794,7 @@ fn test_parse_2020_final_classification_packet() {
                     TyreCompoundVisual::Invalid,
                     TyreCompoundVisual::Invalid,
                 ],
+                ..Default::default()
             },
             FinalClassification {
                 position: 3,
@@ -3809,6 +3828,7 @@ fn test_parse_2020_final_classification_packet() {
                     TyreCompoundVisual::Invalid,
                     TyreCompoundVisual::Invalid,
                 ],
+                ..Default::default()
             },
             FinalClassification {
                 position: 19,
@@ -3842,6 +3862,7 @@ fn test_parse_2020_final_classification_packet() {
                     TyreCompoundVisual::Invalid,
                     TyreCompoundVisual::Invalid,
                 ],
+                ..Default::default()
             },
             FinalClassification {
                 position: 11,
@@ -3875,6 +3896,7 @@ fn test_parse_2020_final_classification_packet() {
                     TyreCompoundVisual::Invalid,
                     TyreCompoundVisual::Invalid,
                 ],
+                ..Default::default()
             },
             FinalClassification {
                 position: 17,
@@ -3908,6 +3930,7 @@ fn test_parse_2020_final_classification_packet() {
                     TyreCompoundVisual::Invalid,
                     TyreCompoundVisual::Invalid,
                 ],
+                ..Default::default()
             },
             FinalClassification {
                 position: 8,
@@ -3941,6 +3964,7 @@ fn test_parse_2020_final_classification_packet() {
                     TyreCompoundVisual::Invalid,
                     TyreCompoundVisual::Invalid,
                 ],
+                ..Default::default()
             },
             FinalClassification {
                 position: 18,
@@ -3974,6 +3998,7 @@ fn test_parse_2020_final_classification_packet() {
                     TyreCompoundVisual::Invalid,
                     TyreCompoundVisual::Invalid,
                 ],
+                ..Default::default()
             },
             FinalClassification {
                 position: 20,
@@ -4007,6 +4032,7 @@ fn test_parse_2020_final_classification_packet() {
                     TyreCompoundVisual::Invalid,
                     TyreCompoundVisual::Invalid,
                 ],
+                ..Default::default()
             },
             FinalClassification {
                 position: 0,
@@ -4040,6 +4066,7 @@ fn test_parse_2020_final_classification_packet() {
                     TyreCompoundVisual::Invalid,
                     TyreCompoundVisual::Invalid,
                 ],
+                ..Default::default()
             },
             FinalClassification {
                 position: 0,
@@ -4073,6 +4100,7 @@ fn test_parse_2020_final_classification_packet() {
                     TyreCompoundVisual::Invalid,
                     TyreCompoundVisual::Invalid,
                 ],
+                ..Default::default()
             },
         ],
     };

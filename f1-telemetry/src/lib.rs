@@ -6,6 +6,7 @@ use packet::{parse_packet, Packet, UnpackError};
 mod f1_2019;
 mod f1_2020;
 mod f1_2021;
+mod f1_2022;
 pub mod packet;
 mod utils;
 

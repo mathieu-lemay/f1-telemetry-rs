@@ -14,7 +14,7 @@ use participants::PacketParticipantsData;
 use session::PacketSessionData;
 use session_history::PacketSessionHistoryData;
 
-use super::{f1_2019, f1_2020, f1_2021};
+use super::{f1_2019, f1_2020, f1_2021, f1_2022};
 
 pub mod car_damage;
 pub mod car_setup;
@@ -99,6 +99,7 @@ pub(crate) fn parse_packet(size: usize, packet: &[u8]) -> Result<Packet, UnpackE
         2019 => Ok(f1_2019::parse_packet(size, packet)?),
         2020 => Ok(f1_2020::parse_packet(size, packet)?),
         2021 => Ok(f1_2021::parse_packet(size, packet)?),
+        2022 => Ok(f1_2022::parse_packet(size, packet)?),
         _ => Err(UnpackError(format!(
             "Invalid packet: unknown format ({})",
             packet_format

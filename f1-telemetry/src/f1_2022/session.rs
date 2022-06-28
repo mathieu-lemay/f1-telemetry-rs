@@ -2,7 +2,7 @@ use std::io::BufRead;
 
 use serde::Deserialize;
 
-use crate::f1_2021::generic::unpack_flag;
+use crate::f1_2022::generic::unpack_flag;
 use crate::packet::header::PacketHeader;
 use crate::packet::session::*;
 use crate::packet::UnpackError;
@@ -36,7 +36,8 @@ fn unpack_session_type(value: u8) -> Result<SessionType, UnpackError> {
         9 => Ok(SessionType::OneShotQualifying),
         10 => Ok(SessionType::Race),
         11 => Ok(SessionType::Race2),
-        12 => Ok(SessionType::TimeTrial),
+        12 => Ok(SessionType::Race3),
+        13 => Ok(SessionType::TimeTrial),
         _ => Err(UnpackError(format!("Invalid SessionType value: {}", value))),
     }
 }
@@ -165,6 +166,57 @@ fn unpack_dynamic_racing_line_type(value: u8) -> Result<DynamicRacingLineType, U
     }
 }
 
+fn unpack_game_mode(value: u8) -> Result<GameMode, UnpackError> {
+    match value {
+        0 => Ok(GameMode::EventMode),
+        3 => Ok(GameMode::GrandPrix),
+        5 => Ok(GameMode::TimeTrial),
+        6 => Ok(GameMode::Splitscreen),
+        7 => Ok(GameMode::OnlineCustom),
+        8 => Ok(GameMode::OnlineLeague),
+        11 => Ok(GameMode::CareerInvitational),
+        12 => Ok(GameMode::ChampionshipInvitational),
+        13 => Ok(GameMode::Championship),
+        14 => Ok(GameMode::OnlineChampionship),
+        15 => Ok(GameMode::OnlineWeeklyEvent),
+        19 => Ok(GameMode::Career22),
+        20 => Ok(GameMode::Career22Online),
+        127 => Ok(GameMode::Benchmark),
+        _ => Err(UnpackError(format!("Invalid GameMode value: {}", value))),
+    }
+}
+
+fn unpack_rule_set(value: u8) -> Result<RuleSet, UnpackError> {
+    match value {
+        0 => Ok(RuleSet::PracticeAndQualifying),
+        1 => Ok(RuleSet::Race),
+        2 => Ok(RuleSet::TimeTrial),
+        4 => Ok(RuleSet::TimeAttack),
+        6 => Ok(RuleSet::CheckpointChallenge),
+        8 => Ok(RuleSet::Autocross),
+        9 => Ok(RuleSet::Drift),
+        10 => Ok(RuleSet::AverageSpeedZone),
+        11 => Ok(RuleSet::RivalDuel),
+        _ => Err(UnpackError(format!("Invalid RuleSet value: {}", value))),
+    }
+}
+
+fn unpack_session_length(value: u8) -> Result<SessionLength, UnpackError> {
+    match value {
+        0 => Ok(SessionLength::None),
+        2 => Ok(SessionLength::VeryShort),
+        3 => Ok(SessionLength::Short),
+        4 => Ok(SessionLength::Medium),
+        5 => Ok(SessionLength::MediumLong),
+        6 => Ok(SessionLength::Long),
+        7 => Ok(SessionLength::Full),
+        _ => Err(UnpackError(format!(
+            "Invalid SessionLength value: {}",
+            value
+        ))),
+    }
+}
+
 /// The session packet includes details about the current session in progress.
 ///
 /// Frequency: 2 per second
@@ -217,6 +269,11 @@ fn unpack_dynamic_racing_line_type(value: u8) -> Result<DynamicRacingLineType, U
 /// drs_assist:                     0 = off, 1 = on
 /// dynamic_racing_line:            0 = off, 1 = corners only, 2 = full
 /// dynamic_racing_line_type:       0 = 2D, 1 = 3D
+/// game_mode:                      Game mode id
+/// rule_set:                       Rule set id
+/// time_of_day:                    Local time of day (minutes since midnight)
+/// session_length:                 0 = None, 2 = Very Short, 3 = Short, 4 = Medium
+///                                 5 = Medium Long, 6 = Long, 7 = Full
 /// ```
 #[derive(Deserialize)]
 struct RawSessionData {
@@ -260,10 +317,14 @@ struct RawSessionData {
     drs_assist: bool,
     dynamic_racing_line: u8,
     dynamic_racing_line_type: u8,
+    game_mode: u8,
+    rule_set: u8,
+    time_of_day: u32,
+    session_length: u8,
 }
 
 impl PacketSessionData {
-    fn from_2021(header: PacketHeader, session_data: RawSessionData) -> Result<Self, UnpackError> {
+    fn from_2022(header: PacketHeader, session_data: RawSessionData) -> Result<Self, UnpackError> {
         let weather = unpack_weather(session_data.weather)?;
         let session_type = unpack_session_type(session_data.session_type)?;
         let track = unpack_track(session_data.track)?;
@@ -271,7 +332,7 @@ impl PacketSessionData {
         let marshal_zones: Vec<MarshalZone> = session_data
             .marshal_zones
             .iter()
-            .map(MarshalZone::from_2021)
+            .map(MarshalZone::from_2022)
             .collect::<Result<Vec<MarshalZone>, UnpackError>>()?;
         let safety_car_status = unpack_safety_car(session_data.safety_car_status)?;
         let forecast_accuracy = unpack_forecast_accuracy(session_data.forecast_accuracy)?;
@@ -280,13 +341,16 @@ impl PacketSessionData {
         let dynamic_racing_line = unpack_dynamic_racing_line(session_data.dynamic_racing_line)?;
         let dynamic_racing_line_type =
             unpack_dynamic_racing_line_type(session_data.dynamic_racing_line_type)?;
+        let game_mode = unpack_game_mode(session_data.game_mode)?;
+        let rule_set = unpack_rule_set(session_data.rule_set)?;
+        let session_length = unpack_session_length(session_data.session_length)?;
 
         let weather_forecast_samples = session_data
             .weather_forecast_samples_1
             .iter()
             .chain(session_data.weather_forecast_samples_2.iter())
             .take(session_data.num_weather_forecast_samples as usize)
-            .map(WeatherForecastSample::from_2021)
+            .map(WeatherForecastSample::from_2022)
             .collect::<Result<Vec<WeatherForecastSample>, UnpackError>>()?;
 
         Ok(Self {
@@ -333,10 +397,10 @@ impl PacketSessionData {
                 dynamic_racing_line,
                 dynamic_racing_line_type,
             }),
-            game_mode: None,
-            rule_set: None,
-            time_of_day: None,
-            session_length: None,
+            game_mode: Some(game_mode),
+            rule_set: Some(rule_set),
+            time_of_day: Some(session_data.time_of_day),
+            session_length: Some(session_length),
         })
     }
 }
@@ -355,7 +419,7 @@ struct RawMarshalZone {
 }
 
 impl MarshalZone {
-    fn from_2021(mz: &RawMarshalZone) -> Result<MarshalZone, UnpackError> {
+    fn from_2022(mz: &RawMarshalZone) -> Result<MarshalZone, UnpackError> {
         let zone_flag = unpack_flag(mz.zone_flag)?;
 
         Ok(MarshalZone {
@@ -394,7 +458,7 @@ struct RawWeatherForecast {
 }
 
 impl WeatherForecastSample {
-    fn from_2021(wf: &RawWeatherForecast) -> Result<WeatherForecastSample, UnpackError> {
+    fn from_2022(wf: &RawWeatherForecast) -> Result<WeatherForecastSample, UnpackError> {
         let session_type = unpack_session_type(wf.session_type)?;
         let weather = unpack_weather(wf.weather)?;
         let track_temperature_change = unpack_temperature_change(wf.track_temperature_change)?;
@@ -421,7 +485,7 @@ pub(crate) fn parse_session_data<T: BufRead>(
     assert_packet_size(size, SESSION_PACKET_SIZE)?;
 
     let session_data: RawSessionData = bincode::deserialize_from(reader)?;
-    let packet = PacketSessionData::from_2021(header, session_data)?;
+    let packet = PacketSessionData::from_2022(header, session_data)?;
 
     Ok(packet)
 }

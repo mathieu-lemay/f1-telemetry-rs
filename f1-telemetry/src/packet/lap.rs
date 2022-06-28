@@ -135,4 +135,8 @@ pub struct PacketLapData {
     pub header: PacketHeader,
     /// Lap data for all cars on track
     pub lap_data: Vec<LapData>,
+    /// Index of Personal Best car in time trial (if available)
+    pub time_trial_personal_best_car_idx: Option<u8>,
+    /// Index of Rival car in time trial (if available)
+    pub time_trial_rival_car_idx: Option<u8>,
 }

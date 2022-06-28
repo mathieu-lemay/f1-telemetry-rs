@@ -21,8 +21,9 @@ use super::header::PacketHeader;
 /// num_tyre_stints:    Number of tyres stints up to maximum
 /// tyre_stints_actual: Actual tyres used by this driver
 /// tyre_stints_visual: Visual tyres used by this driver
+/// tyre_stints_end_lap: The lap number stints end on
 /// ```
-#[derive(Debug, Clone, PartialEq, Serialize)]
+#[derive(Debug, Clone, Default, PartialEq, Serialize)]
 pub struct FinalClassification {
     pub position: u8,
     pub num_laps: u8,
@@ -37,6 +38,7 @@ pub struct FinalClassification {
     pub num_tyre_stints: u8,
     pub tyre_stints_actual: Vec<TyreCompound>,
     pub tyre_stints_visual: Vec<TyreCompoundVisual>,
+    pub tyre_stints_end_lap: Vec<u8>,
 }
 
 /// This packet details the final classification at the end of the race, and the data will match

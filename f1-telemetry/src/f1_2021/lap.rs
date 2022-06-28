@@ -159,5 +159,10 @@ pub(crate) fn parse_lap_data<T: BufRead>(
         .map(LapData::from_2021)
         .collect::<Result<Vec<LapData>, UnpackError>>()?;
 
-    Ok(PacketLapData { header, lap_data })
+    Ok(PacketLapData {
+        header,
+        lap_data,
+        time_trial_personal_best_car_idx: None,
+        time_trial_rival_car_idx: None,
+    })
 }

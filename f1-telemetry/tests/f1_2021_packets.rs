@@ -746,6 +746,10 @@ fn test_parse_2021_session_packet() {
             dynamic_racing_line: DynamicRacingLine::CornersOnly,
             dynamic_racing_line_type: DynamicRacingLineType::ThreeDimensions,
         }),
+        game_mode: None,
+        rule_set: None,
+        time_of_day: None,
+        session_length: None,
     };
 
     assert_eq!(actual, expected);
@@ -1313,6 +1317,8 @@ fn test_parse_2021_lap_packet() {
             LapData::default(),
             LapData::default(),
         ],
+        time_trial_personal_best_car_idx: None,
+        time_trial_rival_car_idx: None,
     };
 
     assert_eq!(actual, expected);
@@ -1368,8 +1374,6 @@ fn test_parse_2021_participants_packet() {
     };
 
     assert_eq!(actual.header.packet_format, 2021);
-
-    // let expected = PacketParticipantsData {
 
     let expected = PacketParticipantsData {
         header: actual.header.clone(),
@@ -3794,6 +3798,7 @@ fn test_parse_2021_final_classification_packet() {
                     TyreCompoundVisual::Invalid,
                     TyreCompoundVisual::Invalid,
                 ],
+                ..Default::default()
             },
             FinalClassification {
                 position: 7,
@@ -3827,6 +3832,7 @@ fn test_parse_2021_final_classification_packet() {
                     TyreCompoundVisual::Invalid,
                     TyreCompoundVisual::Invalid,
                 ],
+                ..Default::default()
             },
             FinalClassification {
                 position: 13,
@@ -3860,6 +3866,7 @@ fn test_parse_2021_final_classification_packet() {
                     TyreCompoundVisual::Invalid,
                     TyreCompoundVisual::Invalid,
                 ],
+                ..Default::default()
             },
             FinalClassification {
                 position: 4,
@@ -3893,6 +3900,7 @@ fn test_parse_2021_final_classification_packet() {
                     TyreCompoundVisual::Invalid,
                     TyreCompoundVisual::Invalid,
                 ],
+                ..Default::default()
             },
             FinalClassification {
                 position: 2,
@@ -3926,6 +3934,7 @@ fn test_parse_2021_final_classification_packet() {
                     TyreCompoundVisual::Invalid,
                     TyreCompoundVisual::Invalid,
                 ],
+                ..Default::default()
             },
             FinalClassification {
                 position: 19,
@@ -3959,6 +3968,7 @@ fn test_parse_2021_final_classification_packet() {
                     TyreCompoundVisual::Invalid,
                     TyreCompoundVisual::Invalid,
                 ],
+                ..Default::default()
             },
             FinalClassification {
                 position: 8,
@@ -3992,6 +4002,7 @@ fn test_parse_2021_final_classification_packet() {
                     TyreCompoundVisual::Invalid,
                     TyreCompoundVisual::Invalid,
                 ],
+                ..Default::default()
             },
             FinalClassification {
                 position: 15,
@@ -4025,6 +4036,7 @@ fn test_parse_2021_final_classification_packet() {
                     TyreCompoundVisual::Invalid,
                     TyreCompoundVisual::Invalid,
                 ],
+                ..Default::default()
             },
             FinalClassification {
                 position: 6,
@@ -4058,6 +4070,7 @@ fn test_parse_2021_final_classification_packet() {
                     TyreCompoundVisual::Invalid,
                     TyreCompoundVisual::Invalid,
                 ],
+                ..Default::default()
             },
             FinalClassification {
                 position: 3,
@@ -4091,6 +4104,7 @@ fn test_parse_2021_final_classification_packet() {
                     TyreCompoundVisual::Invalid,
                     TyreCompoundVisual::Invalid,
                 ],
+                ..Default::default()
             },
             FinalClassification {
                 position: 17,
@@ -4124,6 +4138,7 @@ fn test_parse_2021_final_classification_packet() {
                     TyreCompoundVisual::Invalid,
                     TyreCompoundVisual::Invalid,
                 ],
+                ..Default::default()
             },
             FinalClassification {
                 position: 11,
@@ -4157,6 +4172,7 @@ fn test_parse_2021_final_classification_packet() {
                     TyreCompoundVisual::Invalid,
                     TyreCompoundVisual::Invalid,
                 ],
+                ..Default::default()
             },
             FinalClassification {
                 position: 5,
@@ -4190,6 +4206,7 @@ fn test_parse_2021_final_classification_packet() {
                     TyreCompoundVisual::Invalid,
                     TyreCompoundVisual::Invalid,
                 ],
+                ..Default::default()
             },
             FinalClassification {
                 position: 9,
@@ -4223,6 +4240,7 @@ fn test_parse_2021_final_classification_packet() {
                     TyreCompoundVisual::Invalid,
                     TyreCompoundVisual::Invalid,
                 ],
+                ..Default::default()
             },
             FinalClassification {
                 position: 10,
@@ -4256,6 +4274,7 @@ fn test_parse_2021_final_classification_packet() {
                     TyreCompoundVisual::Invalid,
                     TyreCompoundVisual::Invalid,
                 ],
+                ..Default::default()
             },
             FinalClassification {
                 position: 18,
@@ -4289,6 +4308,7 @@ fn test_parse_2021_final_classification_packet() {
                     TyreCompoundVisual::Invalid,
                     TyreCompoundVisual::Invalid,
                 ],
+                ..Default::default()
             },
             FinalClassification {
                 position: 12,
@@ -4322,6 +4342,7 @@ fn test_parse_2021_final_classification_packet() {
                     TyreCompoundVisual::Invalid,
                     TyreCompoundVisual::Invalid,
                 ],
+                ..Default::default()
             },
             FinalClassification {
                 position: 20,
@@ -4355,6 +4376,7 @@ fn test_parse_2021_final_classification_packet() {
                     TyreCompoundVisual::Invalid,
                     TyreCompoundVisual::Invalid,
                 ],
+                ..Default::default()
             },
             FinalClassification {
                 position: 16,
@@ -4388,6 +4410,7 @@ fn test_parse_2021_final_classification_packet() {
                     TyreCompoundVisual::Invalid,
                     TyreCompoundVisual::Invalid,
                 ],
+                ..Default::default()
             },
             FinalClassification {
                 position: 1,
@@ -4421,6 +4444,7 @@ fn test_parse_2021_final_classification_packet() {
                     TyreCompoundVisual::Invalid,
                     TyreCompoundVisual::Invalid,
                 ],
+                ..Default::default()
             },
             FinalClassification {
                 position: 0,
@@ -4454,6 +4478,7 @@ fn test_parse_2021_final_classification_packet() {
                     TyreCompoundVisual::Invalid,
                     TyreCompoundVisual::Invalid,
                 ],
+                ..Default::default()
             },
             FinalClassification {
                 position: 0,
@@ -4487,6 +4512,7 @@ fn test_parse_2021_final_classification_packet() {
                     TyreCompoundVisual::Invalid,
                     TyreCompoundVisual::Invalid,
                 ],
+                ..Default::default()
             },
         ],
     };
@@ -4749,6 +4775,7 @@ fn test_parse_2021_car_damage_packet() {
                 engine_ice_wear: 0,
                 engine_mguk_wear: 0,
                 engine_tc_wear: 0,
+                ..Default::default()
             },
             CarDamageData {
                 tyres_wear: WheelData {
@@ -4784,6 +4811,7 @@ fn test_parse_2021_car_damage_packet() {
                 engine_ice_wear: 0,
                 engine_mguk_wear: 0,
                 engine_tc_wear: 0,
+                ..Default::default()
             },
             CarDamageData {
                 tyres_wear: WheelData {
@@ -4819,6 +4847,7 @@ fn test_parse_2021_car_damage_packet() {
                 engine_ice_wear: 0,
                 engine_mguk_wear: 0,
                 engine_tc_wear: 0,
+                ..Default::default()
             },
             CarDamageData {
                 tyres_wear: WheelData {
@@ -4854,6 +4883,7 @@ fn test_parse_2021_car_damage_packet() {
                 engine_ice_wear: 0,
                 engine_mguk_wear: 0,
                 engine_tc_wear: 0,
+                ..Default::default()
             },
             CarDamageData {
                 tyres_wear: WheelData {
@@ -4889,6 +4919,7 @@ fn test_parse_2021_car_damage_packet() {
                 engine_ice_wear: 0,
                 engine_mguk_wear: 0,
                 engine_tc_wear: 0,
+                ..Default::default()
             },
             CarDamageData {
                 tyres_wear: WheelData {
@@ -4924,6 +4955,7 @@ fn test_parse_2021_car_damage_packet() {
                 engine_ice_wear: 0,
                 engine_mguk_wear: 0,
                 engine_tc_wear: 0,
+                ..Default::default()
             },
             CarDamageData {
                 tyres_wear: WheelData {
@@ -4959,6 +4991,7 @@ fn test_parse_2021_car_damage_packet() {
                 engine_ice_wear: 0,
                 engine_mguk_wear: 0,
                 engine_tc_wear: 0,
+                ..Default::default()
             },
             CarDamageData {
                 tyres_wear: WheelData {
@@ -4994,6 +5027,7 @@ fn test_parse_2021_car_damage_packet() {
                 engine_ice_wear: 0,
                 engine_mguk_wear: 0,
                 engine_tc_wear: 0,
+                ..Default::default()
             },
             CarDamageData {
                 tyres_wear: WheelData {
@@ -5029,6 +5063,7 @@ fn test_parse_2021_car_damage_packet() {
                 engine_ice_wear: 0,
                 engine_mguk_wear: 0,
                 engine_tc_wear: 0,
+                ..Default::default()
             },
             CarDamageData {
                 tyres_wear: WheelData {
@@ -5064,6 +5099,7 @@ fn test_parse_2021_car_damage_packet() {
                 engine_ice_wear: 0,
                 engine_mguk_wear: 0,
                 engine_tc_wear: 0,
+                ..Default::default()
             },
             CarDamageData {
                 tyres_wear: WheelData {
@@ -5099,6 +5135,7 @@ fn test_parse_2021_car_damage_packet() {
                 engine_ice_wear: 0,
                 engine_mguk_wear: 0,
                 engine_tc_wear: 0,
+                ..Default::default()
             },
             CarDamageData {
                 tyres_wear: WheelData {
@@ -5134,6 +5171,7 @@ fn test_parse_2021_car_damage_packet() {
                 engine_ice_wear: 0,
                 engine_mguk_wear: 0,
                 engine_tc_wear: 0,
+                ..Default::default()
             },
             CarDamageData {
                 tyres_wear: WheelData {
@@ -5169,6 +5207,7 @@ fn test_parse_2021_car_damage_packet() {
                 engine_ice_wear: 0,
                 engine_mguk_wear: 0,
                 engine_tc_wear: 0,
+                ..Default::default()
             },
             CarDamageData {
                 tyres_wear: WheelData {
@@ -5204,6 +5243,7 @@ fn test_parse_2021_car_damage_packet() {
                 engine_ice_wear: 0,
                 engine_mguk_wear: 0,
                 engine_tc_wear: 0,
+                ..Default::default()
             },
             CarDamageData {
                 tyres_wear: WheelData {
@@ -5239,6 +5279,7 @@ fn test_parse_2021_car_damage_packet() {
                 engine_ice_wear: 0,
                 engine_mguk_wear: 0,
                 engine_tc_wear: 0,
+                ..Default::default()
             },
             CarDamageData {
                 tyres_wear: WheelData {
@@ -5274,6 +5315,7 @@ fn test_parse_2021_car_damage_packet() {
                 engine_ice_wear: 0,
                 engine_mguk_wear: 0,
                 engine_tc_wear: 0,
+                ..Default::default()
             },
             CarDamageData {
                 tyres_wear: WheelData {
@@ -5309,6 +5351,7 @@ fn test_parse_2021_car_damage_packet() {
                 engine_ice_wear: 0,
                 engine_mguk_wear: 0,
                 engine_tc_wear: 0,
+                ..Default::default()
             },
             CarDamageData {
                 tyres_wear: WheelData {
@@ -5344,6 +5387,7 @@ fn test_parse_2021_car_damage_packet() {
                 engine_ice_wear: 0,
                 engine_mguk_wear: 0,
                 engine_tc_wear: 0,
+                ..Default::default()
             },
             CarDamageData {
                 tyres_wear: WheelData {
@@ -5379,6 +5423,7 @@ fn test_parse_2021_car_damage_packet() {
                 engine_ice_wear: 0,
                 engine_mguk_wear: 0,
                 engine_tc_wear: 0,
+                ..Default::default()
             },
             CarDamageData {
                 tyres_wear: WheelData {
@@ -5414,6 +5459,7 @@ fn test_parse_2021_car_damage_packet() {
                 engine_ice_wear: 0,
                 engine_mguk_wear: 0,
                 engine_tc_wear: 0,
+                ..Default::default()
             },
             CarDamageData {
                 tyres_wear: WheelData {
@@ -5449,6 +5495,7 @@ fn test_parse_2021_car_damage_packet() {
                 engine_ice_wear: 0,
                 engine_mguk_wear: 0,
                 engine_tc_wear: 0,
+                ..Default::default()
             },
             CarDamageData {
                 tyres_wear: WheelData {
@@ -5484,6 +5531,7 @@ fn test_parse_2021_car_damage_packet() {
                 engine_ice_wear: 0,
                 engine_mguk_wear: 0,
                 engine_tc_wear: 0,
+                ..Default::default()
             },
         ],
     };

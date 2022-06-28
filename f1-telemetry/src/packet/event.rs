@@ -139,9 +139,13 @@ pub struct SpeedTrap {
     /// Top speed achieved in kilometres per hour
     pub speed: f32,
     /// Was this the overall fastest speed in the session (F1 2021+)
-    pub overall_fastest_in_session: Option<bool>,
+    pub is_overall_fastest_in_session: Option<bool>,
     /// Was this the car's fastest speed in the session (F1 2021+)
-    pub personal_fastest_in_session: Option<bool>,
+    pub is_personal_fastest_in_session: Option<bool>,
+    /// Vehicle index of the vehicle that is the fastest in this session (F1 2022+)
+    pub fastest_vehicle_idx_in_session: Option<u8>,
+    /// Speed of the vehicle that is the fastest in this session
+    pub fastest_speed_in_session: Option<f32>,
 }
 
 /// Description of a start lights event
