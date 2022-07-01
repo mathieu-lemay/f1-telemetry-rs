@@ -234,6 +234,11 @@ impl GameState {
             Event::FastestLap(f) => Some(fmt::milliseconds_to_msf(f.lap_time)),
             Event::Penalty(p) => Some(format!("{:?}", p.penalty_type)),
             Event::SpeedTrap(s) => Some(format!("{:.1} km/h", s.speed)),
+            Event::StartLights(s) => Some(format!(
+                "{}{}",
+                "●".repeat(s.number_of_lights as usize),
+                "○".repeat(5 - s.number_of_lights as usize)
+            )),
             _ => None,
         };
 

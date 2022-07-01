@@ -35,6 +35,12 @@ impl EventsView {
     }
 
     pub(super) fn update(&self, game_state: &GameState) {
+        let event = &game_state.event_info.event;
+
+        if let Event::Buttons(_) = event {
+            return;
+        }
+
         self.message_label.hide();
         self.info_bar.hide();
 
