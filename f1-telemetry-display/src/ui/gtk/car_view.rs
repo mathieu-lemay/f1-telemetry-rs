@@ -2,9 +2,10 @@ use cairo::{Context, Format, ImageSurface};
 use gtk::prelude::*;
 use gtk::{Align, Orientation, Widget};
 
+use f1_telemetry::packet::generic::Team;
+
 use crate::models::GameState;
 use crate::ui::gtk::car;
-use f1_telemetry::packet::generic::Team;
 
 pub struct CarView {
     container: gtk::Box,

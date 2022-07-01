@@ -1,9 +1,11 @@
-use super::cairo::{Context, Format, ImageSurface};
+use gtk::prelude::*;
+use gtk::{Align, Orientation, Widget};
+
 use crate::models::GameState;
 use crate::ui::gtk::tyre_temp;
 use crate::ui::gtk::tyre_temp::TyreTemp;
-use gtk::prelude::*;
-use gtk::{Align, Orientation, Widget};
+
+use super::cairo::{Context, Format, ImageSurface};
 
 pub(super) struct TyreTempView {
     container: gtk::Box,

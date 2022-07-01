@@ -1,8 +1,9 @@
 use std::borrow::Cow;
 
-use crate::models::{EventInfo, Participant, SessionInfo};
 use f1_telemetry::packet::generic::ResultStatus;
 use f1_telemetry::packet::participants::Driver;
+
+use crate::models::{EventInfo, Participant, SessionInfo};
 
 pub trait AsPercentage {
     fn as_percentage(&self) -> String;

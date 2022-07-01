@@ -1,5 +1,6 @@
-use super::cairo::Context;
 use crate::ui::gtk::car::draw_rounded_rectangle;
+
+use super::cairo::Context;
 
 const TYRE_WIDTH: f64 = 100.0;
 const TYRE_HEIGHT: f64 = 150.0;

@@ -1,12 +1,15 @@
-use f1_telemetry::packet::Packet;
-use f1_telemetry::Stream;
-use gio::prelude::*;
-use gtk::prelude::*;
+extern crate cairo;
 
 use std::cell::RefCell;
 use std::rc::Rc;
 use std::thread;
 use std::time::Duration;
+
+use gio::prelude::*;
+use gtk::prelude::*;
+
+use f1_telemetry::packet::Packet;
+use f1_telemetry::Stream;
 
 use crate::models::*;
 use crate::ui::Ui;
@@ -30,8 +33,6 @@ mod style;
 mod throttle_view;
 mod tyre_temp;
 mod tyre_temp_view;
-
-extern crate cairo;
 
 pub(crate) struct GtkUi {
     app: gtk::Application,

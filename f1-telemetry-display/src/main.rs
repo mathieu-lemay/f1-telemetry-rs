@@ -5,8 +5,9 @@ extern crate simplelog;
 use std::fs::OpenOptions;
 
 use clap::{App, Arg, ArgMatches};
-use f1_telemetry::Stream;
 use simplelog::*;
+
+use f1_telemetry::Stream;
 
 use crate::ui::get_ui;
 

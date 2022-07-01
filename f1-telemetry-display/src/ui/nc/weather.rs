@@ -2,8 +2,9 @@ use ncurses::{mvwaddstr, WINDOW};
 
 use f1_telemetry::packet::session::Weather;
 
-use super::fmt;
 use crate::models::SessionInfo;
+
+use super::fmt;
 
 const OVERCAST: &str = "
                _

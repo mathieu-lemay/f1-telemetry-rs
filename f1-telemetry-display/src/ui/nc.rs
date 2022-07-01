@@ -1,11 +1,12 @@
+use std::thread;
+use std::time::Duration;
+
+use ncurses::*;
+
 use f1_telemetry::packet::generic::{ResultStatus, TyreCompoundVisual};
 use f1_telemetry::packet::session::{SafetyCar, SessionType};
 use f1_telemetry::packet::Packet;
 use f1_telemetry::Stream;
-use ncurses::*;
-
-use std::thread;
-use std::time::Duration;
 
 use crate::fmt as cfmt;
 use crate::models::*;

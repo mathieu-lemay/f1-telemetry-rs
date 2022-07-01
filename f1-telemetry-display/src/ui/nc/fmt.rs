@@ -1,7 +1,8 @@
+use std::time::{SystemTime, UNIX_EPOCH};
+
 use ncurses::*;
 
 use f1_telemetry::packet::generic::{Team, TyreCompoundVisual};
-use std::time::{SystemTime, UNIX_EPOCH};
 
 const PERCENTAGE_BAR_SLICES: i8 = 20;
 

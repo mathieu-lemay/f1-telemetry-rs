@@ -1,6 +1,8 @@
-use super::car::render_component;
-use crate::models::{MotionInfo, TelemetryInfo};
 use ncurses::{mvwaddstr, werase, WINDOW};
+
+use crate::models::{MotionInfo, TelemetryInfo};
+
+use super::car::render_component;
 
 const SUSP_RIGHT_NORMAL: &str = "
    O

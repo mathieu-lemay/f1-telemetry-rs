@@ -1,7 +1,8 @@
-use crate::fmt::{AsPercentage, AsWeight};
-use crate::models::GameState;
 use gtk::prelude::IsA;
 use gtk::{Align, GridExt, LabelExt, StyleContextExt, Widget, WidgetExt};
+
+use crate::fmt::{AsPercentage, AsWeight};
+use crate::models::GameState;
 
 pub(super) struct RaceDataView {
     container: gtk::Grid,
