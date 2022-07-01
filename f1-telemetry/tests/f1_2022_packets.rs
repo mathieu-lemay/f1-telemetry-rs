@@ -1,5 +1,3 @@
-use serial_test::serial;
-
 use f1_telemetry::packet::car_damage::{CarDamageData, PacketCarDamageData};
 use f1_telemetry::packet::car_setup::{CarSetupData, PacketCarSetupData};
 use f1_telemetry::packet::car_status::{
@@ -35,7 +33,6 @@ use f1_telemetry::packet::Packet;
 mod utils;
 
 #[test]
-#[serial]
 fn test_parse_2022_motion_packet() {
     let stream = utils::get_stream();
 
@@ -542,7 +539,6 @@ fn test_parse_2022_motion_packet() {
 }
 
 #[test]
-#[serial]
 fn test_parse_2022_session_packet() {
     let stream = utils::get_stream();
 
@@ -727,7 +723,6 @@ fn test_parse_2022_session_packet() {
 }
 
 #[test]
-#[serial]
 fn test_parse_2022_lap_packet() {
     let stream = utils::get_stream();
 
@@ -1496,7 +1491,6 @@ fn test_parse_2022_lap_packet() {
 }
 
 #[test]
-#[serial]
 fn test_parse_2022_event_packet() {
     let stream = utils::get_stream();
 
@@ -1530,7 +1524,6 @@ fn test_parse_2022_event_packet() {
 }
 
 #[test]
-#[serial]
 fn test_parse_2022_participants_packet() {
     let stream = utils::get_stream();
 
@@ -1798,7 +1791,6 @@ fn test_parse_2022_participants_packet() {
 }
 
 #[test]
-#[serial]
 fn test_parse_2022_car_setups_packet() {
     let stream = utils::get_stream();
 
@@ -2345,7 +2337,6 @@ fn test_parse_2022_car_setups_packet() {
 }
 
 #[test]
-#[serial]
 fn test_parse_2022_car_telemetry_packet() {
     let stream = utils::get_stream();
 
@@ -3320,7 +3311,6 @@ fn test_parse_2022_car_telemetry_packet() {
 }
 
 #[test]
-#[serial]
 fn test_parse_2022_car_status_packet() {
     let stream = utils::get_stream();
 
@@ -4021,7 +4011,6 @@ fn test_parse_2022_car_status_packet() {
 }
 
 #[test]
-#[serial]
 fn test_parse_2022_final_classification_packet() {
     let stream = utils::get_stream();
 
@@ -4739,7 +4728,6 @@ fn test_parse_2022_final_classification_packet() {
 }
 
 #[test]
-#[serial]
 fn test_parse_2022_lobby_info_packet() {
     let stream = utils::get_stream();
 
@@ -4942,7 +4930,6 @@ fn test_parse_2022_lobby_info_packet() {
 }
 
 #[test]
-#[serial]
 fn test_parse_2022_car_damage_packet() {
     let stream = utils::get_stream();
 
@@ -5729,7 +5716,6 @@ fn test_parse_2022_car_damage_packet() {
 }
 
 #[test]
-#[serial]
 fn test_parse_2022_session_history_packet() {
     let stream = utils::get_stream();
 

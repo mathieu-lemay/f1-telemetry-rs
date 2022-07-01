@@ -1,11 +1,8 @@
-use serial_test::serial;
-
 use f1_telemetry::packet::UnpackError;
 
 mod utils;
 
 #[test]
-#[serial]
 fn test_empty_stream_returns_nothing() {
     let stream = utils::get_stream();
 
@@ -15,7 +12,6 @@ fn test_empty_stream_returns_nothing() {
 }
 
 #[test]
-#[serial]
 fn test_invalid_packet_returns_an_error() {
     let stream = utils::get_stream();
     let socket = utils::get_connected_socket(&stream);
