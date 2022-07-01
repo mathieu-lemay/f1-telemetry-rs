@@ -2,7 +2,8 @@
 name = "f1-telemetry-display"
 version = "0.1.0"
 authors = ["Mathieu Lemay <acidrain1@gmail.com>"]
-edition = "2018"
+edition = "2021"
+default-run = "f1-telemetry-display"
 
 [dependencies]
 f1-telemetry = { path = "../f1-telemetry" }
