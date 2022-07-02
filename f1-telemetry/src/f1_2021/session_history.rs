@@ -53,41 +53,6 @@ struct RawSessionHistoryData {
     tyre_stints: [RawTyreStintData; 8],
 }
 
-impl PacketSessionHistoryData {
-    fn from_2021(
-        header: PacketHeader,
-        session_history_data: RawSessionHistoryData,
-    ) -> Result<Self, UnpackError> {
-        let lap_history = session_history_data
-            .lap_history_1
-            .iter()
-            .chain(session_history_data.lap_history_2.iter())
-            .chain(session_history_data.lap_history_3.iter())
-            .chain(session_history_data.lap_history_4.iter())
-            .map(LapHistoryData::from_2021)
-            .collect::<Result<Vec<LapHistoryData>, UnpackError>>()?;
-
-        let tyre_stints: Vec<TyreStintData> = session_history_data
-            .tyre_stints
-            .iter()
-            .map(TyreStintData::from_2021)
-            .collect::<Result<Vec<TyreStintData>, UnpackError>>()?;
-
-        Ok(Self {
-            header,
-            car_index: session_history_data.car_index,
-            number_of_laps: session_history_data.number_of_laps,
-            number_of_tyre_stints: session_history_data.number_of_tyre_stints,
-            best_lap_time_lap_number: session_history_data.best_lap_time_lap_number,
-            best_sector_1_lap_number: session_history_data.best_sector_1_lap_number,
-            best_sector_2_lap_number: session_history_data.best_sector_2_lap_number,
-            best_sector_3_lap_number: session_history_data.best_sector_3_lap_number,
-            lap_history,
-            tyre_stints,
-        })
-    }
-}
-
 /// Description of a lap history entry
 ///
 /// ## Specification
@@ -107,9 +72,11 @@ struct RawLapHistoryData {
     valid_sectors: u8,
 }
 
-impl LapHistoryData {
-    fn from_2021(lh: &RawLapHistoryData) -> Result<LapHistoryData, UnpackError> {
-        Ok(LapHistoryData {
+impl TryFrom<&RawLapHistoryData> for LapHistoryData {
+    type Error = UnpackError;
+
+    fn try_from(lh: &RawLapHistoryData) -> Result<Self, Self::Error> {
+        Ok(Self {
             lap_time: lh.lap_time,
             sector_1_time: lh.sector_1_time,
             sector_2_time: lh.sector_2_time,
@@ -134,12 +101,14 @@ struct RawTyreStintData {
     tyre_compound_visual: u8,
 }
 
-impl TyreStintData {
-    fn from_2021(ts: &RawTyreStintData) -> Result<TyreStintData, UnpackError> {
+impl TryFrom<&RawTyreStintData> for TyreStintData {
+    type Error = UnpackError;
+
+    fn try_from(ts: &RawTyreStintData) -> Result<Self, Self::Error> {
         let tyre_compound = unpack_tyre_compound(ts.tyre_compound)?;
         let tyre_compound_visual = unpack_tyre_compound_visual(ts.tyre_compound_visual)?;
 
-        Ok(TyreStintData {
+        Ok(Self {
             end_lap: ts.end_lap,
             tyre_compound,
             tyre_compound_visual,
@@ -155,7 +124,32 @@ pub(crate) fn parse_session_history_data<T: BufRead>(
     assert_packet_size(size, SESSION_HISTORY_PACKET_SIZE)?;
 
     let session_history_data: RawSessionHistoryData = bincode::deserialize_from(reader)?;
-    let packet = PacketSessionHistoryData::from_2021(header, session_history_data)?;
 
-    Ok(packet)
+    let lap_history = session_history_data
+        .lap_history_1
+        .iter()
+        .chain(session_history_data.lap_history_2.iter())
+        .chain(session_history_data.lap_history_3.iter())
+        .chain(session_history_data.lap_history_4.iter())
+        .map(|lh| lh.try_into())
+        .collect::<Result<Vec<LapHistoryData>, UnpackError>>()?;
+
+    let tyre_stints: Vec<TyreStintData> = session_history_data
+        .tyre_stints
+        .iter()
+        .map(|ts| ts.try_into())
+        .collect::<Result<Vec<TyreStintData>, UnpackError>>()?;
+
+    Ok(PacketSessionHistoryData {
+        header,
+        car_index: session_history_data.car_index,
+        number_of_laps: session_history_data.number_of_laps,
+        number_of_tyre_stints: session_history_data.number_of_tyre_stints,
+        best_lap_time_lap_number: session_history_data.best_lap_time_lap_number,
+        best_sector_1_lap_number: session_history_data.best_sector_1_lap_number,
+        best_sector_2_lap_number: session_history_data.best_sector_2_lap_number,
+        best_sector_3_lap_number: session_history_data.best_sector_3_lap_number,
+        lap_history,
+        tyre_stints,
+    })
 }

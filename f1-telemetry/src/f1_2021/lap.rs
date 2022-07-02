@@ -108,8 +108,10 @@ struct RawLapData {
     pit_stop_should_serve_penalty: bool,
 }
 
-impl LapData {
-    fn from_2021(car_lap_data: &RawLapData) -> Result<Self, UnpackError> {
+impl TryFrom<&RawLapData> for LapData {
+    type Error = UnpackError;
+
+    fn try_from(car_lap_data: &RawLapData) -> Result<Self, Self::Error> {
         let pit_status = unpack_pit_status(car_lap_data.pit_status)?;
         let sector = unpack_sector(car_lap_data.sector)?;
         let driver_status = unpack_driver_status(car_lap_data.driver_status)?;
@@ -156,7 +158,7 @@ pub(crate) fn parse_lap_data<T: BufRead>(
 
     let lap_data = lap_data
         .iter()
-        .map(LapData::from_2021)
+        .map(|ld| ld.try_into())
         .collect::<Result<Vec<LapData>, UnpackError>>()?;
 
     Ok(PacketLapData {

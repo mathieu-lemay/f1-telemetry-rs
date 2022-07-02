@@ -59,38 +59,6 @@ struct RawMotionData {
     front_wheels_angle: f32,
 }
 
-impl PacketMotionData {
-    fn from_2021(header: PacketHeader, motion_data: RawMotionData) -> Self {
-        let car_motion = motion_data
-            .car_motion
-            .iter()
-            .map(CarMotionData::from_2021)
-            .collect();
-
-        Self {
-            header,
-            motion_data: car_motion,
-            player_car_data: PlayerCarData {
-                suspension_position: motion_data.suspension_position,
-                suspension_velocity: motion_data.suspension_velocity,
-                suspension_acceleration: motion_data.suspension_acceleration,
-                wheel_speed: motion_data.wheel_speed,
-                wheel_slip: motion_data.wheel_slip,
-                local_velocity_x: motion_data.local_velocity_x,
-                local_velocity_y: motion_data.local_velocity_y,
-                local_velocity_z: motion_data.local_velocity_z,
-                angular_velocity_x: motion_data.angular_velocity_x,
-                angular_velocity_y: motion_data.angular_velocity_y,
-                angular_velocity_z: motion_data.angular_velocity_z,
-                angular_acceleration_x: motion_data.angular_acceleration_x,
-                angular_acceleration_y: motion_data.angular_acceleration_y,
-                angular_acceleration_z: motion_data.angular_acceleration_z,
-                front_wheels_angle: motion_data.front_wheels_angle,
-            },
-        }
-    }
-}
-
 /// ## Specification
 /// ```text
 /// world_position_x:     World space X position
@@ -134,8 +102,8 @@ struct RawCarMotion {
     roll: f32,
 }
 
-impl CarMotionData {
-    fn from_2021(car_motion: &RawCarMotion) -> Self {
+impl From<&RawCarMotion> for CarMotionData {
+    fn from(car_motion: &RawCarMotion) -> Self {
         Self {
             world_position_x: car_motion.world_position_x,
             world_position_y: car_motion.world_position_y,
@@ -158,6 +126,28 @@ impl CarMotionData {
         }
     }
 }
+
+impl From<RawMotionData> for PlayerCarData {
+    fn from(motion_data: RawMotionData) -> Self {
+        Self {
+            suspension_position: motion_data.suspension_position,
+            suspension_velocity: motion_data.suspension_velocity,
+            suspension_acceleration: motion_data.suspension_acceleration,
+            wheel_speed: motion_data.wheel_speed,
+            wheel_slip: motion_data.wheel_slip,
+            local_velocity_x: motion_data.local_velocity_x,
+            local_velocity_y: motion_data.local_velocity_y,
+            local_velocity_z: motion_data.local_velocity_z,
+            angular_velocity_x: motion_data.angular_velocity_x,
+            angular_velocity_y: motion_data.angular_velocity_y,
+            angular_velocity_z: motion_data.angular_velocity_z,
+            angular_acceleration_x: motion_data.angular_acceleration_x,
+            angular_acceleration_y: motion_data.angular_acceleration_y,
+            angular_acceleration_z: motion_data.angular_acceleration_z,
+            front_wheels_angle: motion_data.front_wheels_angle,
+        }
+    }
+}
 pub(crate) fn parse_motion_data<T: BufRead>(
     reader: &mut T,
     header: PacketHeader,
@@ -167,5 +157,11 @@ pub(crate) fn parse_motion_data<T: BufRead>(
 
     let motion_data: RawMotionData = bincode::deserialize_from(reader)?;
 
-    Ok(PacketMotionData::from_2021(header, motion_data))
+    let car_motion = motion_data.car_motion.iter().map(|cm| cm.into()).collect();
+
+    Ok(PacketMotionData {
+        header,
+        motion_data: car_motion,
+        player_car_data: motion_data.into(),
+    })
 }

@@ -128,8 +128,10 @@ struct RawCarTelemetry {
     surface_types: WheelData<u8>,
 }
 
-impl CarTelemetryData {
-    fn from_2022(packet: &RawCarTelemetry) -> Result<Self, UnpackError> {
+impl TryFrom<&RawCarTelemetry> for CarTelemetryData {
+    type Error = UnpackError;
+
+    fn try_from(packet: &RawCarTelemetry) -> Result<Self, Self::Error> {
         let surface_types = WheelData {
             rear_left: unpack_surface_type(packet.surface_types.rear_left)?,
             rear_right: unpack_surface_type(packet.surface_types.rear_right)?,
@@ -170,7 +172,7 @@ pub(crate) fn parse_car_telemetry_data<T: BufRead>(
     let car_telemetry_data = packet
         .car_telemetry
         .iter()
-        .map(CarTelemetryData::from_2022)
+        .map(|ct| ct.try_into())
         .collect::<Result<Vec<CarTelemetryData>, UnpackError>>()?;
 
     let mfd_panel = unpack_mfd_panel(packet.mfd_panel_index)?;

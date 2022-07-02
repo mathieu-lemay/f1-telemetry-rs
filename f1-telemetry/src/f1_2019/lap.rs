@@ -94,8 +94,10 @@ struct RawLapData {
     result_status: u8,
 }
 
-impl LapData {
-    fn from_2019(car_lap_data: &RawLapData) -> Result<Self, UnpackError> {
+impl TryFrom<&RawLapData> for LapData {
+    type Error = UnpackError;
+
+    fn try_from(car_lap_data: &RawLapData) -> Result<Self, Self::Error> {
         let last_lap_time = seconds_to_millis(car_lap_data.last_lap_time as f64);
         let current_lap_time = seconds_to_millis(car_lap_data.current_lap_time as f64);
         let sector_1_time = seconds_to_millis(car_lap_data.sector_1_time as f64) as u16;
@@ -140,7 +142,7 @@ pub(crate) fn parse_lap_data<T: BufRead>(
 
     let lap_data = lap_data
         .iter()
-        .map(LapData::from_2019)
+        .map(|l| l.try_into())
         .collect::<Result<Vec<LapData>, UnpackError>>()?;
 
     Ok(PacketLapData {

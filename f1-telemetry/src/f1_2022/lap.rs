@@ -52,32 +52,6 @@ struct RawPacketData {
     time_trial_rival_car_idx: u8,
 }
 
-impl PacketLapData {
-    fn from_2022(header: PacketHeader, packet_data: RawPacketData) -> Result<Self, UnpackError> {
-        let lap_data = packet_data
-            .lap_data
-            .iter()
-            .map(LapData::from_2022)
-            .collect::<Result<Vec<LapData>, UnpackError>>()?;
-
-        let time_trial_personal_best_car_idx = match packet_data.time_trial_personal_best_car_idx {
-            255 => None,
-            idx => Some(idx),
-        };
-        let time_trial_rival_car_idx = match packet_data.time_trial_rival_car_idx {
-            255 => None,
-            idx => Some(idx),
-        };
-
-        Ok(Self {
-            header,
-            lap_data,
-            time_trial_personal_best_car_idx,
-            time_trial_rival_car_idx,
-        })
-    }
-}
-
 /// The lap data packet gives details of all the cars in the session.
 ///
 /// Frequency: Rate as specified in menus
@@ -144,8 +118,10 @@ struct RawLapData {
     pit_stop_should_serve_penalty: bool,
 }
 
-impl LapData {
-    fn from_2022(car_lap_data: &RawLapData) -> Result<Self, UnpackError> {
+impl TryFrom<&RawLapData> for LapData {
+    type Error = UnpackError;
+
+    fn try_from(car_lap_data: &RawLapData) -> Result<Self, Self::Error> {
         let pit_status = unpack_pit_status(car_lap_data.pit_status)?;
         let sector = unpack_sector(car_lap_data.sector)?;
         let driver_status = unpack_driver_status(car_lap_data.driver_status)?;
@@ -190,5 +166,25 @@ pub(crate) fn parse_lap_data<T: BufRead>(
 
     let packet_data: RawPacketData = bincode::deserialize_from(reader)?;
 
-    PacketLapData::from_2022(header, packet_data)
+    let lap_data = packet_data
+        .lap_data
+        .iter()
+        .map(|ld| ld.try_into())
+        .collect::<Result<Vec<LapData>, UnpackError>>()?;
+
+    let time_trial_personal_best_car_idx = match packet_data.time_trial_personal_best_car_idx {
+        255 => None,
+        idx => Some(idx),
+    };
+    let time_trial_rival_car_idx = match packet_data.time_trial_rival_car_idx {
+        255 => None,
+        idx => Some(idx),
+    };
+
+    Ok(PacketLapData {
+        header,
+        lap_data,
+        time_trial_personal_best_car_idx,
+        time_trial_rival_car_idx,
+    })
 }

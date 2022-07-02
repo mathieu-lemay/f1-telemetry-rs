@@ -155,67 +155,6 @@ struct RawSessionData {
     weather_forecast_samples: [RawWeatherForecast; NUMBER_WEATHER_FORECASTS],
 }
 
-impl PacketSessionData {
-    fn from_2020(header: PacketHeader, session_data: RawSessionData) -> Result<Self, UnpackError> {
-        let weather = unpack_weather(session_data.weather)?;
-        let session_type = unpack_session_type(session_data.session_type)?;
-        let track = unpack_track(session_data.track)?;
-        let formula = unpack_formula(session_data.formula)?;
-        let marshal_zones: Vec<MarshalZone> = session_data
-            .marshal_zones
-            .iter()
-            .map(MarshalZone::from_2020)
-            .collect::<Result<Vec<MarshalZone>, UnpackError>>()?;
-        let safety_car_status = unpack_safety_car(session_data.safety_car_status)?;
-        let weather_forecast_samples: Vec<WeatherForecastSample> = session_data
-            .weather_forecast_samples
-            .iter()
-            .take(session_data.num_weather_forecast_samples as usize)
-            .map(WeatherForecastSample::from_2020)
-            .collect::<Result<Vec<WeatherForecastSample>, UnpackError>>()?;
-
-        Ok(Self {
-            header,
-            weather,
-            track_temperature: session_data.track_temperature,
-            air_temperature: session_data.air_temperature,
-            total_laps: session_data.total_laps,
-            track_length: session_data.track_length,
-            session_type,
-            track,
-            formula,
-            session_time_left: session_data.session_time_left,
-            session_duration: session_data.session_duration,
-            pit_speed_limit: session_data.pit_speed_limit,
-            game_paused: session_data.game_paused,
-            is_spectating: session_data.is_spectating,
-            spectator_car_index: session_data.spectator_car_index,
-            sli_pro_native_support: session_data.sli_pro_native_support,
-            num_marshal_zones: session_data.num_marshal_zones,
-            marshal_zones,
-            safety_car_status,
-            network_game: session_data.network_game,
-            weather_forecast: Some(WeatherForecast {
-                number_of_samples: session_data.num_weather_forecast_samples,
-                samples: weather_forecast_samples,
-                ..Default::default()
-            }),
-            ai_difficulty: None,
-            season_identifier: None,
-            weekend_identifier: None,
-            session_identifier: None,
-            pit_stop_window_ideal_lap: None,
-            pit_stop_window_latest_lap: None,
-            pit_stop_rejoin_position: None,
-            driving_assists: None,
-            game_mode: None,
-            rule_set: None,
-            time_of_day: None,
-            session_length: None,
-        })
-    }
-}
-
 /// Description of a marshal zone
 ///
 /// ## Specification
@@ -229,11 +168,13 @@ struct RawMarshalZone {
     zone_flag: i8,
 }
 
-impl MarshalZone {
-    fn from_2020(mz: &RawMarshalZone) -> Result<MarshalZone, UnpackError> {
+impl TryFrom<&RawMarshalZone> for MarshalZone {
+    type Error = UnpackError;
+
+    fn try_from(mz: &RawMarshalZone) -> Result<Self, Self::Error> {
         let zone_flag = unpack_flag(mz.zone_flag)?;
 
-        Ok(MarshalZone {
+        Ok(Self {
             zone_start: mz.zone_start,
             zone_flag,
         })
@@ -262,11 +203,13 @@ struct RawWeatherForecast {
     air_temperature: i8,
 }
 
-impl WeatherForecastSample {
-    fn from_2020(wf: &RawWeatherForecast) -> Result<WeatherForecastSample, UnpackError> {
+impl TryFrom<&RawWeatherForecast> for WeatherForecastSample {
+    type Error = UnpackError;
+
+    fn try_from(wf: &RawWeatherForecast) -> Result<Self, Self::Error> {
         let session_type = unpack_session_type(wf.session_type)?;
         let weather = unpack_weather(wf.weather)?;
-        Ok(WeatherForecastSample {
+        Ok(Self {
             session_type,
             time_offset: wf.time_offset,
             weather,
@@ -285,7 +228,61 @@ pub(crate) fn parse_session_data<T: BufRead>(
     assert_packet_size(size, SESSION_PACKET_SIZE)?;
 
     let session_data: RawSessionData = bincode::deserialize_from(reader)?;
-    let packet = PacketSessionData::from_2020(header, session_data)?;
 
-    Ok(packet)
+    let weather = unpack_weather(session_data.weather)?;
+    let session_type = unpack_session_type(session_data.session_type)?;
+    let track = unpack_track(session_data.track)?;
+    let formula = unpack_formula(session_data.formula)?;
+    let marshal_zones: Vec<MarshalZone> = session_data
+        .marshal_zones
+        .iter()
+        .map(|mz| mz.try_into())
+        .collect::<Result<Vec<MarshalZone>, UnpackError>>()?;
+    let safety_car_status = unpack_safety_car(session_data.safety_car_status)?;
+    let weather_forecast_samples: Vec<WeatherForecastSample> = session_data
+        .weather_forecast_samples
+        .iter()
+        .take(session_data.num_weather_forecast_samples as usize)
+        .map(|wf| wf.try_into())
+        .collect::<Result<Vec<WeatherForecastSample>, UnpackError>>()?;
+
+    Ok(PacketSessionData {
+        header,
+        weather,
+        track_temperature: session_data.track_temperature,
+        air_temperature: session_data.air_temperature,
+        total_laps: session_data.total_laps,
+        track_length: session_data.track_length,
+        session_type,
+        track,
+        formula,
+        session_time_left: session_data.session_time_left,
+        session_duration: session_data.session_duration,
+        pit_speed_limit: session_data.pit_speed_limit,
+        game_paused: session_data.game_paused,
+        is_spectating: session_data.is_spectating,
+        spectator_car_index: session_data.spectator_car_index,
+        sli_pro_native_support: session_data.sli_pro_native_support,
+        num_marshal_zones: session_data.num_marshal_zones,
+        marshal_zones,
+        safety_car_status,
+        network_game: session_data.network_game,
+        weather_forecast: Some(WeatherForecast {
+            number_of_samples: session_data.num_weather_forecast_samples,
+            samples: weather_forecast_samples,
+            ..Default::default()
+        }),
+        ai_difficulty: None,
+        season_identifier: None,
+        weekend_identifier: None,
+        session_identifier: None,
+        pit_stop_window_ideal_lap: None,
+        pit_stop_window_latest_lap: None,
+        pit_stop_rejoin_position: None,
+        driving_assists: None,
+        game_mode: None,
+        rule_set: None,
+        time_of_day: None,
+        session_length: None,
+    })
 }

@@ -59,8 +59,10 @@ struct RawCarDamage {
     engine_tc_wear: u8,
 }
 
-impl CarDamageData {
-    fn from_2021(packet: &RawCarDamage) -> Result<Self, UnpackError> {
+impl TryFrom<&RawCarDamage> for CarDamageData {
+    type Error = UnpackError;
+
+    fn try_from(packet: &RawCarDamage) -> Result<Self, Self::Error> {
         Ok(CarDamageData {
             tyres_wear: packet.tyres_wear,
             tyres_damage: packet.tyres_damage,
@@ -96,7 +98,7 @@ pub fn parse_car_damage_data<T: BufRead>(
 
     let car_damage_data = car_damage
         .iter()
-        .map(CarDamageData::from_2021)
+        .map(|cd| cd.try_into())
         .collect::<Result<Vec<CarDamageData>, UnpackError>>()?;
 
     Ok(PacketCarDamageData {

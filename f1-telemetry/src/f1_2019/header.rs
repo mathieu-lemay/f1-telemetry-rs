@@ -49,8 +49,10 @@ pub(super) struct Header {
     player_car_index: u8,
 }
 
-impl PacketHeader {
-    fn from_2019(header: &Header) -> Result<Self, UnpackError> {
+impl TryFrom<Header> for PacketHeader {
+    type Error = UnpackError;
+
+    fn try_from(header: Header) -> Result<Self, Self::Error> {
         let packet_type = parse_packet_type(header.packet_id)?;
 
         let session_time = seconds_to_millis(header.session_time as f64);
@@ -92,5 +94,5 @@ pub(crate) fn parse_header<T: BufRead>(
 
     let header: Header = bincode::deserialize_from(reader)?;
 
-    PacketHeader::from_2019(&header)
+    header.try_into()
 }

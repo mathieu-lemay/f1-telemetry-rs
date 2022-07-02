@@ -70,8 +70,8 @@ struct RawCarSetup {
     fuel_load: f32,
 }
 
-impl CarSetupData {
-    fn from_2021(car_setup: &RawCarSetup) -> Self {
+impl From<&RawCarSetup> for CarSetupData {
+    fn from(car_setup: &RawCarSetup) -> Self {
         let tyres_pressure = WheelData {
             rear_left: car_setup.rear_left_tyre_pressure,
             rear_right: car_setup.rear_right_tyre_pressure,
@@ -114,7 +114,7 @@ pub(crate) fn parse_car_setup_data<T: BufRead>(
 
     let car_setups: Vec<CarSetupData> = car_setups
         .iter()
-        .map(CarSetupData::from_2021)
+        .map(|cs| cs.into())
         .collect::<Vec<CarSetupData>>();
 
     Ok(PacketCarSetupData { header, car_setups })

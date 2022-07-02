@@ -61,8 +61,10 @@ struct RawPlayer {
     ready_status: u8,
 }
 
-impl Player {
-    fn from_2022(player: &RawPlayer) -> Result<Self, UnpackError> {
+impl TryFrom<&RawPlayer> for Player {
+    type Error = UnpackError;
+
+    fn try_from(player: &RawPlayer) -> Result<Self, Self::Error> {
         let name: [u8; 48] = {
             let mut whole: [u8; 48] = [0; 48];
             let (part1, part2) = whole.split_at_mut(player.name1.len());
@@ -76,7 +78,7 @@ impl Player {
         let name = unpack_string(&name)?;
         let ready_status = unpack_ready_status(player.ready_status)?;
 
-        Ok(Player {
+        Ok(Self {
             ai_controlled: player.ai_controlled,
             team,
             nationality,
@@ -99,7 +101,7 @@ pub(crate) fn parse_lobby_info_data<T: BufRead>(
     let players = lobby_info
         .players
         .iter()
-        .map(Player::from_2022)
+        .map(|p| p.try_into())
         .collect::<Result<Vec<Player>, UnpackError>>()?;
 
     Ok(PacketLobbyInfoData {

@@ -124,8 +124,10 @@ struct RawCarStatus {
     network_paused: bool,
 }
 
-impl CarStatusData {
-    fn from_2021(packet: &RawCarStatus) -> Result<Self, UnpackError> {
+impl TryFrom<&RawCarStatus> for CarStatusData {
+    type Error = UnpackError;
+
+    fn try_from(packet: &RawCarStatus) -> Result<Self, Self::Error> {
         let traction_control = unpack_traction_control(packet.traction_control)?;
         let fuel_mix = unpack_fuel_mix(packet.fuel_mix)?;
         let drs_status = unpack_drs(packet.drs_allowed)?;
@@ -174,7 +176,7 @@ pub fn parse_car_status_data<T: BufRead>(
 
     let car_status_data = car_status
         .iter()
-        .map(CarStatusData::from_2021)
+        .map(|cs| cs.try_into())
         .collect::<Result<Vec<CarStatusData>, UnpackError>>()?;
 
     Ok(PacketCarStatusData {

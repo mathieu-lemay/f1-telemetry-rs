@@ -71,8 +71,10 @@ struct RawFinalClassification {
     tyre_stints_visual: [u8; 8],
 }
 
-impl FinalClassification {
-    fn from_2021(fc: &RawFinalClassification) -> Result<Self, UnpackError> {
+impl TryFrom<&RawFinalClassification> for FinalClassification {
+    type Error = UnpackError;
+
+    fn try_from(fc: &RawFinalClassification) -> Result<Self, Self::Error> {
         let result_status = unpack_result_status(fc.result_status)?;
         let total_race_time = seconds_to_millis(fc.total_race_time);
 
@@ -119,7 +121,7 @@ pub(crate) fn parse_final_classification_data<T: BufRead>(
     let final_classifications = final_classification
         .final_classifications
         .iter()
-        .map(FinalClassification::from_2021)
+        .map(|fc| fc.try_into())
         .collect::<Result<Vec<FinalClassification>, UnpackError>>()?;
 
     Ok(PacketFinalClassificationData {

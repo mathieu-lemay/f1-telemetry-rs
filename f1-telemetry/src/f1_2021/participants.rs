@@ -191,8 +191,10 @@ struct RawParticipant {
     telemetry: u8,
 }
 
-impl ParticipantData {
-    fn from_2021(participant: &RawParticipant) -> Result<Self, UnpackError> {
+impl TryFrom<&RawParticipant> for ParticipantData {
+    type Error = UnpackError;
+
+    fn try_from(participant: &RawParticipant) -> Result<Self, Self::Error> {
         let name: [u8; 48] = {
             let mut whole: [u8; 48] = [0; 48];
             let (part1, part2) = whole.split_at_mut(participant.name1.len());
@@ -207,7 +209,7 @@ impl ParticipantData {
         let name = unpack_string(&name)?;
         let telemetry_access = unpack_telemetry(participant.telemetry)?;
 
-        Ok(ParticipantData {
+        Ok(Self {
             ai_controlled: participant.ai_controlled,
             driver,
             network_id: Some(participant.network_id),
@@ -232,7 +234,7 @@ pub(crate) fn parse_participants_data<T: BufRead>(
     let participants: Vec<ParticipantData> = participant_data
         .participants
         .iter()
-        .map(ParticipantData::from_2021)
+        .map(|p| p.try_into())
         .collect::<Result<Vec<ParticipantData>, UnpackError>>()?;
 
     Ok(PacketParticipantsData {
