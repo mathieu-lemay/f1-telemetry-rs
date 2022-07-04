@@ -119,6 +119,8 @@ pub enum Driver {
     EnzoFittipaldi,
     DevonButler,
     LukasWeber,
+    MarkWebber,
+    JacquesVilleneuve,
     Player,
     Unknown,
 }

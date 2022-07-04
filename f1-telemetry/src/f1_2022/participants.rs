@@ -10,7 +10,6 @@ use crate::utils::{assert_packet_size, unpack_string};
 
 use super::consts::*;
 
-// TODO: Review when spec is updated with this missing info
 fn unpack_driver(value: u8) -> Result<Driver, UnpackError> {
     match value {
         0 => Ok(Driver::CarlosSainz),
@@ -121,11 +120,11 @@ fn unpack_driver(value: u8) -> Result<Driver, UnpackError> {
         116 => Ok(Driver::RichardVerschoor),
         117 => Ok(Driver::LirimZendeli),
         118 => Ok(Driver::DavidBeckmann),
-        119 => Ok(Driver::GianlucaPetecof),
-        120 => Ok(Driver::MatteoNannini),
         121 => Ok(Driver::AlessioDeledda),
         122 => Ok(Driver::BentViscaal),
         123 => Ok(Driver::EnzoFittipaldi),
+        125 => Ok(Driver::MarkWebber),
+        126 => Ok(Driver::JacquesVilleneuve),
         255 => Ok(Driver::Player),
         _ => Err(UnpackError(format!("Invalid Driver value: {}", value))),
     }

@@ -4732,7 +4732,7 @@ fn test_parse_2022_lobby_info_packet() {
     let stream = utils::get_stream();
 
     // TODO: Validate with real packet from F1 2022
-    utils::send_raw_data(&stream, "e607011201090000000000000000000000000000000000001401290a4172726f6e204241524e4553000000000000000000000000000000000000000000000000000000000000000000000000470001290a4d617274696e2047494c4553000000000000000000000000000000000000000000000000000000000000000000000000460001290a416c6578204d55525241590000000000000000000000000000000000000000000000000000000000000000000000000028000129044c7563617320524f544800000000000000000000000000000000000000000000000000000000000000000000000000005f0001290949676f7220434f52524549410000000000000000000000000000000000000000000000000000000000000000000000004f0001291c536f70686965204c4556415353455552000000000000000000000000000000000000000000000000000000000000000035000129044a6f6e6173205343484946464552000000000000000000000000000000000000000000000000000000000000000000004c0001291c416c61696e20464f52455354000000000000000000000000000000000000000000000000000000000000000000000000500001290d4a6179204c45544f55524e45415500000000000000000000000000000000000000000000000000000000000000000000440001291b4573746f20534141524900000000000000000000000000000000000000000000000000000000000000000000000000001c000129065961736172204154495945480000000000000000000000000000000000000000000000000000000000000000000000002d0001292b4e616f746120495a554d49000000000000000000000000000000000000000000000000000000000000000000000000002a0001291d57696c68656c6d204b4155464d414e4e00000000000000000000000000000000000000000000000000000000000000002f000129154d61726965204c41555253454e0000000000000000000000000000000000000000000000000000000000000000000000410001294d466c6176696f204e49455645530000000000000000000000000000000000000000000000000000000000000000000000240001294350657465722042454c4f55534f5600000000000000000000000000000000000000000000000000000000000000000000570001293f4b6c696d656b204d494348414c534b490000000000000000000000000000000000000000000000000000000000000000200001291053616e746961676f204d4f52454e4f0000000000000000000000000000000000000000000000000000000000000000003c0001290742656e6a616d696e20434f5050454e530000000000000000000000000000000000000000000000000000000000000000360000ff0d506c617965720000000000000000000000000000000000000000000000000000000000000000000000000000000000002a0000ff00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000ff000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000");
+    utils::send_raw_data(&stream, "e607011201090000000000000000000000000000000000001401680a4172726f6e204241524e4553000000000000000000000000000000000000000000000000000000000000000000000000470001680a4d617274696e2047494c4553000000000000000000000000000000000000000000000000000000000000000000000000460001680a416c6578204d55525241590000000000000000000000000000000000000000000000000000000000000000000000000028000168044c7563617320524f544800000000000000000000000000000000000000000000000000000000000000000000000000005f0001680949676f7220434f52524549410000000000000000000000000000000000000000000000000000000000000000000000004f0001681c536f70686965204c4556415353455552000000000000000000000000000000000000000000000000000000000000000035000168044a6f6e6173205343484946464552000000000000000000000000000000000000000000000000000000000000000000004c0001681c416c61696e20464f52455354000000000000000000000000000000000000000000000000000000000000000000000000500001680d4a6179204c45544f55524e45415500000000000000000000000000000000000000000000000000000000000000000000440001681b4573746f20534141524900000000000000000000000000000000000000000000000000000000000000000000000000001c000168065961736172204154495945480000000000000000000000000000000000000000000000000000000000000000000000002d0001682b4e616f746120495a554d49000000000000000000000000000000000000000000000000000000000000000000000000002a0001681d57696c68656c6d204b4155464d414e4e00000000000000000000000000000000000000000000000000000000000000002f000168154d61726965204c41555253454e0000000000000000000000000000000000000000000000000000000000000000000000410001684d466c6176696f204e49455645530000000000000000000000000000000000000000000000000000000000000000000000240001684350657465722042454c4f55534f5600000000000000000000000000000000000000000000000000000000000000000000570001683f4b6c696d656b204d494348414c534b490000000000000000000000000000000000000000000000000000000000000000200001681053616e746961676f204d4f52454e4f0000000000000000000000000000000000000000000000000000000000000000003c0001680742656e6a616d696e20434f5050454e530000000000000000000000000000000000000000000000000000000000000000360000ff0d506c617965720000000000000000000000000000000000000000000000000000000000000000000000000000000000002a0000ff00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000ff000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000");
 
     let p = utils::get_packet(&stream).unwrap().unwrap();
 
@@ -4749,7 +4749,7 @@ fn test_parse_2022_lobby_info_packet() {
         players: vec![
             Player {
                 ai_controlled: true,
-                team: Team::F1GenericCar,
+                team: Team::F1CustomTeam,
                 nationality: Nationality::British,
                 name: "Arron BARNES".to_string(),
                 car_number: Some(71),
@@ -4757,7 +4757,7 @@ fn test_parse_2022_lobby_info_packet() {
             },
             Player {
                 ai_controlled: true,
-                team: Team::F1GenericCar,
+                team: Team::F1CustomTeam,
                 nationality: Nationality::British,
                 name: "Martin GILES".to_string(),
                 car_number: Some(70),
@@ -4765,7 +4765,7 @@ fn test_parse_2022_lobby_info_packet() {
             },
             Player {
                 ai_controlled: true,
-                team: Team::F1GenericCar,
+                team: Team::F1CustomTeam,
                 nationality: Nationality::British,
                 name: "Alex MURRAY".to_string(),
                 car_number: Some(40),
@@ -4773,7 +4773,7 @@ fn test_parse_2022_lobby_info_packet() {
             },
             Player {
                 ai_controlled: true,
-                team: Team::F1GenericCar,
+                team: Team::F1CustomTeam,
                 nationality: Nationality::Austrian,
                 name: "Lucas ROTH".to_string(),
                 car_number: Some(95),
@@ -4781,7 +4781,7 @@ fn test_parse_2022_lobby_info_packet() {
             },
             Player {
                 ai_controlled: true,
-                team: Team::F1GenericCar,
+                team: Team::F1CustomTeam,
                 nationality: Nationality::Brazilian,
                 name: "Igor CORREIA".to_string(),
                 car_number: Some(79),
@@ -4789,7 +4789,7 @@ fn test_parse_2022_lobby_info_packet() {
             },
             Player {
                 ai_controlled: true,
-                team: Team::F1GenericCar,
+                team: Team::F1CustomTeam,
                 nationality: Nationality::French,
                 name: "Sophie LEVASSEUR".to_string(),
                 car_number: Some(53),
@@ -4797,7 +4797,7 @@ fn test_parse_2022_lobby_info_packet() {
             },
             Player {
                 ai_controlled: true,
-                team: Team::F1GenericCar,
+                team: Team::F1CustomTeam,
                 nationality: Nationality::Austrian,
                 name: "Jonas SCHIFFER".to_string(),
                 car_number: Some(76),
@@ -4805,7 +4805,7 @@ fn test_parse_2022_lobby_info_packet() {
             },
             Player {
                 ai_controlled: true,
-                team: Team::F1GenericCar,
+                team: Team::F1CustomTeam,
                 nationality: Nationality::French,
                 name: "Alain FOREST".to_string(),
                 car_number: Some(80),
@@ -4813,7 +4813,7 @@ fn test_parse_2022_lobby_info_packet() {
             },
             Player {
                 ai_controlled: true,
-                team: Team::F1GenericCar,
+                team: Team::F1CustomTeam,
                 nationality: Nationality::Canadian,
                 name: "Jay LETOURNEAU".to_string(),
                 car_number: Some(68),
@@ -4821,7 +4821,7 @@ fn test_parse_2022_lobby_info_packet() {
             },
             Player {
                 ai_controlled: true,
-                team: Team::F1GenericCar,
+                team: Team::F1CustomTeam,
                 nationality: Nationality::Finnish,
                 name: "Esto SAARI".to_string(),
                 car_number: Some(28),
@@ -4829,7 +4829,7 @@ fn test_parse_2022_lobby_info_packet() {
             },
             Player {
                 ai_controlled: true,
-                team: Team::F1GenericCar,
+                team: Team::F1CustomTeam,
                 nationality: Nationality::Bahraini,
                 name: "Yasar ATIYEH".to_string(),
                 car_number: Some(45),
@@ -4837,7 +4837,7 @@ fn test_parse_2022_lobby_info_packet() {
             },
             Player {
                 ai_controlled: true,
-                team: Team::F1GenericCar,
+                team: Team::F1CustomTeam,
                 nationality: Nationality::Japanese,
                 name: "Naota IZUMI".to_string(),
                 car_number: Some(42),
@@ -4845,7 +4845,7 @@ fn test_parse_2022_lobby_info_packet() {
             },
             Player {
                 ai_controlled: true,
-                team: Team::F1GenericCar,
+                team: Team::F1CustomTeam,
                 nationality: Nationality::German,
                 name: "Wilhelm KAUFMANN".to_string(),
                 car_number: Some(47),
@@ -4853,7 +4853,7 @@ fn test_parse_2022_lobby_info_packet() {
             },
             Player {
                 ai_controlled: true,
-                team: Team::F1GenericCar,
+                team: Team::F1CustomTeam,
                 nationality: Nationality::Danish,
                 name: "Marie LAURSEN".to_string(),
                 car_number: Some(65),
@@ -4861,7 +4861,7 @@ fn test_parse_2022_lobby_info_packet() {
             },
             Player {
                 ai_controlled: true,
-                team: Team::F1GenericCar,
+                team: Team::F1CustomTeam,
                 nationality: Nationality::Spanish,
                 name: "Flavio NIEVES".to_string(),
                 car_number: Some(36),
@@ -4869,7 +4869,7 @@ fn test_parse_2022_lobby_info_packet() {
             },
             Player {
                 ai_controlled: true,
-                team: Team::F1GenericCar,
+                team: Team::F1CustomTeam,
                 nationality: Nationality::Russian,
                 name: "Peter BELOUSOV".to_string(),
                 car_number: Some(87),
@@ -4877,7 +4877,7 @@ fn test_parse_2022_lobby_info_packet() {
             },
             Player {
                 ai_controlled: true,
-                team: Team::F1GenericCar,
+                team: Team::F1CustomTeam,
                 nationality: Nationality::Polish,
                 name: "Klimek MICHALSKI".to_string(),
                 car_number: Some(32),
@@ -4885,7 +4885,7 @@ fn test_parse_2022_lobby_info_packet() {
             },
             Player {
                 ai_controlled: true,
-                team: Team::F1GenericCar,
+                team: Team::F1CustomTeam,
                 nationality: Nationality::Colombian,
                 name: "Santiago MORENO".to_string(),
                 car_number: Some(60),
@@ -4893,7 +4893,7 @@ fn test_parse_2022_lobby_info_packet() {
             },
             Player {
                 ai_controlled: true,
-                team: Team::F1GenericCar,
+                team: Team::F1CustomTeam,
                 nationality: Nationality::Belgian,
                 name: "Benjamin COPPENS".to_string(),
                 car_number: Some(54),
