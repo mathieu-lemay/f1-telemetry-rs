@@ -30,6 +30,7 @@ pub struct GameState {
     pub lap_infos: Vec<LapInfo>,
     pub session_best_times: LapAndSectorTimes,
     pub event_info: EventInfo,
+    pub number_of_active_cars: usize,
     pub participants: Vec<Participant>,
     pub car_status: CarStatus,
     pub telemetry_info: TelemetryInfo,
@@ -221,7 +222,7 @@ impl GameState {
 
         let driver_name = match evt.vehicle_idx() {
             Some(idx) => {
-                if self.participants.len() > idx as usize {
+                if self.number_of_active_cars > idx as usize {
                     Some(self.participants[idx as usize].name.clone())
                 } else {
                     None
@@ -250,9 +251,12 @@ impl GameState {
     }
 
     fn parse_participants(&mut self, ppd: &PacketParticipantsData) {
+        self.number_of_active_cars = ppd.num_active_cars as usize;
+
         self.participants = ppd
             .participants
             .iter()
+            .take(self.number_of_active_cars)
             .map(|p| Participant {
                 name: p.name.clone(),
                 driver: p.driver,
@@ -260,28 +264,29 @@ impl GameState {
             })
             .collect();
 
-        match self.participants.len().cmp(&self.lap_infos.len()) {
+        match self.number_of_active_cars.cmp(&self.lap_infos.len()) {
             Ordering::Equal => (),
             Ordering::Greater => {
-                for _ in self.lap_infos.len()..self.participants.len() {
+                for _ in self.lap_infos.len()..self.number_of_active_cars {
                     self.lap_infos.push(LapInfo::default());
                 }
             }
-            Ordering::Less => self.lap_infos.truncate(self.participants.len()),
+            Ordering::Less => self.lap_infos.truncate(self.number_of_active_cars),
         }
         match self
-            .participants
-            .len()
+            .number_of_active_cars
             .cmp(&self.final_classifications.len())
         {
             Ordering::Equal => (),
             Ordering::Greater => {
-                for _ in self.final_classifications.len()..self.participants.len() {
+                for _ in self.final_classifications.len()..self.number_of_active_cars {
                     self.final_classifications
                         .push(FinalClassificationInfo::default());
                 }
             }
-            Ordering::Less => self.final_classifications.truncate(self.participants.len()),
+            Ordering::Less => self
+                .final_classifications
+                .truncate(self.number_of_active_cars),
         }
     }
 
