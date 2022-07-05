@@ -27,6 +27,7 @@ pub struct LapAndSectorTimes {
 pub struct GameState {
     pub session_uid: Option<u64>,
     pub session_info: SessionInfo,
+    pub year: u16,
     pub lap_infos: Vec<LapInfo>,
     pub session_best_times: LapAndSectorTimes,
     pub event_info: EventInfo,
@@ -71,6 +72,7 @@ impl GameState {
             return;
         }
 
+        self.year = packet.header().packet_format;
         self.session_uid = Some(suid);
 
         self.participants = Vec::new();

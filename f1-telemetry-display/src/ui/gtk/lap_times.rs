@@ -91,7 +91,7 @@ impl LapTimesView {
                 &li.current_lap_time.as_minute_time_string(),
                 &li.last_lap_time.as_minute_time_string(),
                 &li.best_lap_time.as_minute_time_string(),
-                &get_team_color(&participant.team),
+                &get_team_color(game_state.year, &participant.team),
                 &li.position,
             ];
 
@@ -150,26 +150,55 @@ impl LapTimesView {
     }
 }
 
-fn get_team_color(team: &Team) -> String {
-    let color = match team {
-        Team::Mercedes => "rgb(0, 53, 48)",
-        Team::Ferrari => "rgb(56, 0, 0)",
-        Team::RedBullRacing => "rgb(15, 0, 65)",
-        Team::Williams => "rgb(0, 33, 65)",
-        Team::RacingPoint => "rgb(62, 38, 51)",
-        Team::Renault => "rgb(65, 62, 0)",
-        Team::ToroRosso => "rgb(18, 40, 65)",
-        Team::Haas => "rgb(30, 30, 30)",
-        Team::McLaren => "rgb(65, 34, 0)",
-        Team::AlfaRomeo => "rgb(40, 0, 0)",
-        Team::AlphaTauri => "rgb(65, 65, 65)",
-        Team::Alpine => "rgb(0, 144, 255)",
-        Team::AstonMartin => "rgb(0, 111, 98)",
-        Team::MyTeam => "rgb(0, 150, 0)",
-        _ => "",
-    };
+fn get_team_color(year: u16, team: &Team) -> &'static str {
+    match (year, team) {
+        (2019, Team::Mercedes) => "rgb(0, 210, 190)",
+        (2019, Team::Ferrari) => "rgb(220, 0, 0)",
+        (2019, Team::RedBullRacing) => "rgb(30, 65, 255)",
+        (2019, Team::Renault) => "rgb(255, 245, 0)",
+        (2019, Team::Haas) => "rgb(240, 215, 135)",
+        (2019, Team::RacingPoint) => "rgb(245, 150, 200)",
+        (2019, Team::ToroRosso) => "rgb(70, 155, 255)",
+        (2019, Team::McLaren) => "rgb(255, 135, 0)",
+        (2019, Team::AlfaRomeo) => "rgb(155, 0, 0)",
+        (2019, Team::Williams) => "rgb(255, 255, 255)",
 
-    String::from(color)
+        (2020, Team::Mercedes) => "rgb(0, 210, 190)",
+        (2020, Team::Ferrari) => "rgb(192, 0, 0)",
+        (2020, Team::RedBullRacing) => "rgb(6, 0, 239)",
+        (2020, Team::Renault) => "rgb(255, 245, 0)",
+        (2020, Team::Haas) => "rgb(120, 120, 120)",
+        (2020, Team::RacingPoint) => "rgb(245, 150, 200)",
+        (2020, Team::AlphaTauri) => "rgb(200, 200, 200)",
+        (2020, Team::McLaren) => "rgb(255, 135, 0)",
+        (2020, Team::AlfaRomeo) => "rgb(150, 0, 0)",
+        (2020, Team::Williams) => "rgb(0, 130, 250)",
+
+        (2021, Team::Mercedes) => "rgb(0, 210, 90)",
+        (2021, Team::Ferrari) => "rgb(220, 0, 0)",
+        (2021, Team::RedBullRacing) => "rgb(6, 0, 239)",
+        (2021, Team::Alpine) => "rgb(0, 144, 255)",
+        (2021, Team::Haas) => "rgb(255, 255, 255)",
+        (2021, Team::AstonMartin) => "rgb(0, 111, 98)",
+        (2021, Team::AlphaTauri) => "rgb(43, 69, 98)",
+        (2021, Team::McLaren) => "rgb(255, 135, 0)",
+        (2021, Team::AlfaRomeo) => "rgb(144, 0, 0)",
+        (2021, Team::Williams) => "rgb(0, 90, 255)",
+
+        (2022, Team::Mercedes) => "rgb(108, 211, 191)",
+        (2022, Team::RedBullRacing) => "rgb(30, 91, 198)",
+        (2022, Team::Ferrari) => "rgb(237, 28, 36)",
+        (2022, Team::McLaren) => "rgb(245, 128, 32)",
+        (2022, Team::Alpine) => "rgb(34, 147, 209)",
+        (2022, Team::AlphaTauri) => "rgb(78, 124, 155)",
+        (2022, Team::AstonMartin) => "rgb(45, 130, 109)",
+        (2022, Team::Williams) => "rgb(55, 190, 221)",
+        (2022, Team::AlfaRomeo) => "rgb(172, 32, 57)",
+        (2022, Team::Haas) => "rgb(182, 186, 189)",
+
+        (_, Team::MyTeam) => "rgb(0, 150, 0)",
+        _ => "rgb(128, 128, 128)",
+    }
 }
 
 fn create_model() -> gtk::TreeStore {
@@ -200,38 +229,14 @@ fn create_model() -> gtk::TreeStore {
     .map(|&c| c as u32)
     .collect::<Vec<u32>>();
 
-    let teams = [
-        Team::Mercedes,
-        Team::RedBullRacing,
-        Team::McLaren,
-        Team::RacingPoint,
-        Team::Renault,
-        Team::Ferrari,
-        Team::AlphaTauri,
-        Team::AlfaRomeo,
-        Team::Haas,
-        Team::Williams,
-    ];
-    for (i, t) in teams.iter().enumerate() {
+    for i in 0..20 {
         let data: [&dyn ToValue; 7] = [
-            &format!("{}", i * 2 + 1),
-            &format!("Player {}", i * 2),
+            &format!("{}", i + 1),
+            &format!("Player {}", i + 1),
             &0.as_minute_time_string(),
             &0.as_minute_time_string(),
             &0.as_minute_time_string(),
-            &get_team_color(t),
-            &1,
-        ];
-
-        model.set(&model.append(None), &col_indices, &data);
-
-        let data: [&dyn ToValue; 7] = [
-            &format!("{}", i * 2 + 2),
-            &format!("Player {}", i * 2 + 1),
-            &0.as_minute_time_string(),
-            &0.as_minute_time_string(),
-            &0.as_minute_time_string(),
-            &get_team_color(t),
+            &get_team_color(0, &Team::Unknown),
             &1,
         ];
 
