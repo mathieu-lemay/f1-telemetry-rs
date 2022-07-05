@@ -75,18 +75,21 @@ fn unpack_infringement_type(value: u8) -> Result<InfringementType, UnpackError> 
         37 => Ok(InfringementType::SafetyCarExceedingAllowedPace),
         38 => Ok(InfringementType::VirtualSafetyCarExceedingAllowedPace),
         39 => Ok(InfringementType::FormationLapBelowAllowedSpeed),
-        40 => Ok(InfringementType::RetiredMechanicalFailure),
-        41 => Ok(InfringementType::RetiredTerminallyDamaged),
-        42 => Ok(InfringementType::SafetyCarFallingTooFarBack),
-        43 => Ok(InfringementType::BlackFlagTimer),
-        44 => Ok(InfringementType::UnservedStopGoPenalty),
-        45 => Ok(InfringementType::UnservedDriveThroughPenalty),
-        46 => Ok(InfringementType::EngineComponentChange),
-        47 => Ok(InfringementType::GearboxChange),
-        48 => Ok(InfringementType::LeagueGridPenalty),
-        49 => Ok(InfringementType::RetryPenalty),
-        50 => Ok(InfringementType::IllegalTimeGain),
-        51 => Ok(InfringementType::MandatoryPitstop),
+        40 => Ok(InfringementType::FormationLapParking),
+        41 => Ok(InfringementType::RetiredMechanicalFailure),
+        42 => Ok(InfringementType::RetiredTerminallyDamaged),
+        43 => Ok(InfringementType::SafetyCarFallingTooFarBack),
+        44 => Ok(InfringementType::BlackFlagTimer),
+        45 => Ok(InfringementType::UnservedStopGoPenalty),
+        46 => Ok(InfringementType::UnservedDriveThroughPenalty),
+        47 => Ok(InfringementType::EngineComponentChange),
+        48 => Ok(InfringementType::GearboxChange),
+        49 => Ok(InfringementType::ParcFermeChange),
+        50 => Ok(InfringementType::LeagueGridPenalty),
+        51 => Ok(InfringementType::RetryPenalty),
+        52 => Ok(InfringementType::IllegalTimeGain),
+        53 => Ok(InfringementType::MandatoryPitstop),
+        54 => Ok(InfringementType::AttributeAssigned),
         _ => Err(UnpackError(format!(
             "Invalid InfringementType value: {}",
             value
@@ -249,18 +252,21 @@ struct RaceWinnerDetails {
 /// 37  Safety car exceeding allowed pace
 /// 38  Virtual safety car exceeding allowed pace
 /// 39  Formation lap below allowed speed
-/// 40  Retired mechanical failure
-/// 41  Retired terminally damaged
-/// 42  Safety car falling too far back
-/// 43  Black flag timer
-/// 44  Unserved stop go penalty
-/// 45  Unserved drive through penalty
-/// 46  Engine component change
-/// 47  Gearbox change
-/// 48  League grid penalty
-/// 49  Retry penalty
-/// 50  Illegal time gain
-/// 51  Mandatory pitstop
+/// 40  Formation lap parking
+/// 41  Retired mechanical failure
+/// 42  Retired terminally damaged
+/// 43  Safety car falling too far back
+/// 44  Black flag timer
+/// 45  Unserved stop go penalty
+/// 46  Unserved drive through penalty
+/// 47  Engine component change
+/// 48  Gearbox change
+/// 49  Parc Fermé change
+/// 50  League grid penalty
+/// 51  Retry penalty
+/// 52  Illegal time gain
+/// 53  Mandatory pitstop
+/// 54  Attribute assigned
 /// ```
 #[derive(Deserialize)]
 struct PenaltyDetails {

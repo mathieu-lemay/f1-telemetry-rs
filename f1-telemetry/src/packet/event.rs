@@ -110,6 +110,9 @@ pub enum InfringementType {
     RetryPenalty,
     IllegalTimeGain,
     MandatoryPitstop,
+    FormationLapParking,
+    ParcFermeChange,
+    AttributeAssigned,
 }
 
 /// Description of a penalty event
