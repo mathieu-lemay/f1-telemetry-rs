@@ -207,12 +207,22 @@ dependencies = [
 ]
 
 [[package]]
+name = "f1-telemetry-common"
+version = "0.1.0"
+dependencies = [
+ "log",
+ "simplelog",
+ "time",
+]
+
+[[package]]
 name = "f1-telemetry-display"
 version = "0.1.0"
 dependencies = [
  "cairo-rs",
  "clap",
  "f1-telemetry",
+ "f1-telemetry-common",
  "gdk",
  "gio",
  "glib",
@@ -229,6 +239,7 @@ version = "0.1.0"
 dependencies = [
  "clap",
  "f1-telemetry",
+ "f1-telemetry-common",
  "futures-util",
  "log",
  "serde_json",

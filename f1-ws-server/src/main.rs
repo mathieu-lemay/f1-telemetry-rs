@@ -4,10 +4,7 @@ use std::time::Duration;
 use clap::Parser;
 use futures_util::{SinkExt, StreamExt};
 use log::{error, info, LevelFilter};
-use simplelog::{
-    format_description, ColorChoice, CombinedLogger, ConfigBuilder, LevelPadding, TermLogger,
-    TerminalMode,
-};
+use simplelog::{ColorChoice, CombinedLogger, TermLogger, TerminalMode};
 use tokio::net::{TcpListener, TcpStream};
 use tokio::sync::broadcast;
 use tokio::sync::broadcast::Receiver;
@@ -15,6 +12,7 @@ use tokio_tungstenite::accept_async;
 use tokio_tungstenite::tungstenite::{Error, Message, Result};
 
 use f1_telemetry::Stream;
+use f1_telemetry_common::logging::get_log_config;
 
 #[derive(Parser)]
 #[command(author, version, about, long_about = None, propagate_version = true)]
@@ -37,21 +35,11 @@ struct AppArgs {
 }
 
 fn init_logger() {
-    let app_logger_config = match ConfigBuilder::new()
-        .set_level_padding(LevelPadding::Right)
-        .set_target_level(LevelFilter::Error)
-        .set_location_level(LevelFilter::Debug)
-        .set_thread_level(LevelFilter::Off)
-        .set_time_format_custom(format_description!("[year]-[month]-[day] [hour]:[minute]:[second].[subsecond digits:3][offset_hour sign:mandatory]:[offset_minute]"))
-        .set_time_offset_to_local() {
-            Ok(b) => b,
-            Err(b) => b,
-        }
-        .build();
+    let config = get_log_config();
 
     CombinedLogger::init(vec![TermLogger::new(
         LevelFilter::Info,
-        app_logger_config,
+        config,
         TerminalMode::Mixed,
         ColorChoice::Auto,
     )])

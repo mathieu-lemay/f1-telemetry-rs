@@ -8,6 +8,7 @@ default-run = "f1-telemetry-display"
 
 [dependencies]
 f1-telemetry = { path = "../f1-telemetry" }
+f1-telemetry-common = { path = "../f1-telemetry-common" }
 clap = { version = "4.0.4", features = ["derive"] }
 log = "^0.4"
 simplelog = "0.12.0"

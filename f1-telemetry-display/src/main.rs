@@ -1,6 +1,5 @@
 #[macro_use]
 extern crate log;
-extern crate simplelog;
 
 use std::fs::OpenOptions;
 
@@ -8,6 +7,7 @@ use clap::{Parser, ValueEnum};
 use simplelog::*;
 
 use f1_telemetry::Stream;
+use f1_telemetry_common::logging::get_log_config;
 
 use crate::ui::get_ui;
 
@@ -43,17 +43,7 @@ fn init_logger() {
         .open("f1-telemetry-display.log")
         .expect("Unable to open log file.");
 
-    let config = match ConfigBuilder::new()
-        .set_level_padding(LevelPadding::Right)
-        .set_target_level(LevelFilter::Error)
-        .set_location_level(LevelFilter::Debug)
-        .set_thread_level(LevelFilter::Off)
-        .set_time_format_custom(format_description!("[year]-[month]-[day] [hour]:[minute]:[second].[subsecond digits:3][offset_hour sign:mandatory]:[offset_minute]"))
-        .set_time_offset_to_local() {
-            Ok(b) => b,
-            Err(b) => b,
-        }
-        .build();
+    let config = get_log_config();
 
     WriteLogger::init(LevelFilter::Debug, config, file).expect("Unable to initialize logger.");
 }
