@@ -2,6 +2,7 @@ use std::cmp::Ordering;
 use std::collections::BTreeMap;
 use std::f32::INFINITY;
 
+use f1_telemetry::packet::car_damage::PacketCarDamageData;
 use f1_telemetry::packet::car_status::PacketCarStatusData;
 use f1_telemetry::packet::car_telemetry::PacketCarTelemetryData;
 use f1_telemetry::packet::event::{Event, PacketEventData};
@@ -50,7 +51,6 @@ impl GameState {
 
     fn parse(&mut self, packet: &Packet) {
         match packet {
-            // Packet::Motion(p) => p.header(),
             Packet::Session(p) => self.parse_session_data(p),
             Packet::Lap(p) => self.parse_lap_data(p),
             Packet::Event(p) => self.parse_event_data(p),
@@ -60,6 +60,7 @@ impl GameState {
             Packet::CarStatus(p) => self.parse_car_status(p),
             Packet::FinalClassification(p) => self.parse_final_classification(p),
             Packet::Motion(p) => self.parse_motion_data(p),
+            Packet::CarDamage(p) => self.parse_car_damage(p),
             _ => {}
         };
     }
@@ -394,7 +395,6 @@ impl GameState {
         self.car_status.tyre_compound = csd.visual_tyre_compound;
         self.car_status.tyre_age_laps = csd.tyre_age_laps.unwrap_or_default();
 
-        // TODO: Implement for 2021+ from car damage packet
         if car_status_data.header.packet_format <= 2020 {
             self.car_status.tyres_damage = csd.tyres_damage.unwrap_or_default();
             self.car_status.left_front_wing_damage = csd.front_left_wing_damage.unwrap_or_default();
@@ -405,6 +405,7 @@ impl GameState {
             self.car_status.gearbox_damage = csd.gear_box_damage.unwrap_or_default();
         }
 
+        // TODO: Deduplicate this
         if self.lap_infos.is_empty() {
             return;
         }
@@ -412,7 +413,6 @@ impl GameState {
         let last_tyre_entry = &self.historical_race_data.tyre_damage.last();
         let new_tyre_entry = TimedWheelData {
             lap,
-            // TODO: Implement for 2021+ from car damage packet
             tyre_damage: csd.tyres_damage.unwrap_or_default(),
         };
         if let Some(last) = last_tyre_entry {
@@ -445,6 +445,41 @@ impl GameState {
             }
         } else {
             self.historical_race_data.fuel_in_tank.push(new_fuel_entry)
+        }
+    }
+
+    fn parse_car_damage(&mut self, car_damage_data: &PacketCarDamageData) {
+        let player_index = car_damage_data.header.player_car_index;
+        let dmg = &car_damage_data.car_damage_data[player_index as usize];
+
+        self.car_status.tyres_damage = dmg.tyres_damage;
+        self.car_status.left_front_wing_damage = dmg.front_left_wing_damage;
+        self.car_status.right_front_wing_damage = dmg.front_right_wing_damage;
+        self.car_status.rear_wing_damage = dmg.rear_wing_damage;
+        self.car_status.engine_damage = dmg.engine_damage;
+        self.car_status.gearbox_damage = dmg.gear_box_damage;
+
+        // TODO: Deduplicate this
+        if self.lap_infos.is_empty() {
+            return;
+        }
+        let lap = self.lap_infos[player_index as usize].current_lap_num as u8;
+        let last_tyre_entry = &self.historical_race_data.tyre_damage.last();
+        let new_tyre_entry = TimedWheelData {
+            lap,
+            tyre_damage: dmg.tyres_damage,
+        };
+        if let Some(last) = last_tyre_entry {
+            if last.sum() > new_tyre_entry.sum() {
+                self.historical_race_data.tyre_damage.clear();
+                self.historical_race_data.tyre_damage.push(new_tyre_entry);
+            } else if last.lap > lap {
+                self.historical_race_data.tyre_damage.clear();
+            } else if last.lap < lap {
+                self.historical_race_data.tyre_damage.push(new_tyre_entry)
+            }
+        } else {
+            self.historical_race_data.tyre_damage.push(new_tyre_entry)
         }
     }
 
