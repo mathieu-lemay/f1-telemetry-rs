@@ -17,15 +17,14 @@ use tokio_tungstenite::tungstenite::{Error, Message, Result};
 use f1_telemetry::Stream;
 
 #[derive(Parser)]
-#[clap(author, version, about, long_about = None)]
-#[clap(propagate_version = true)]
+#[command(author, version, about, long_about = None, propagate_version = true)]
 struct AppArgs {
     /// Host to bind on for the UDP packet listener
-    #[clap(short, long, default_value = "0.0.0.0")]
+    #[clap(long, default_value = "0.0.0.0")]
     host: String,
 
     /// port to bind on for the UDP packet listener
-    #[clap(short, long, default_value = "20777")]
+    #[clap(long, default_value = "20777")]
     port: u16,
 
     /// Host to bind on for the websocket server
