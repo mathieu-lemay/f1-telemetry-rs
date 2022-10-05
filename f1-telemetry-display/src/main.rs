@@ -4,7 +4,7 @@ extern crate simplelog;
 
 use std::fs::OpenOptions;
 
-use clap::{App, Arg, ArgMatches};
+use clap::{Parser, ValueEnum};
 use simplelog::*;
 
 use f1_telemetry::Stream;
@@ -14,6 +14,27 @@ use crate::ui::get_ui;
 mod fmt;
 mod models;
 mod ui;
+
+#[derive(Copy, Clone, PartialEq, Eq, PartialOrd, Ord, ValueEnum)]
+enum UserInterface {
+    Gtk,
+    Ncurses,
+}
+
+#[derive(Parser)]
+#[command(author, version, about, long_about = None, propagate_version = true)]
+struct AppArgs {
+    /// Host to bind on for the UDP packet listener
+    #[clap(long, default_value = "0.0.0.0")]
+    host: String,
+
+    /// port to bind on for the UDP packet listener
+    #[clap(long, default_value = "20777")]
+    port: u16,
+
+    #[arg(long, value_enum, default_value = "gtk")]
+    ui: UserInterface,
+}
 
 fn init_logger() {
     let file = OpenOptions::new()
@@ -26,48 +47,19 @@ fn init_logger() {
     WriteLogger::init(LevelFilter::Debug, config, file).expect("Unable to initialize logger.");
 }
 
-fn get_cli_args<'a>() -> ArgMatches<'a> {
-    App::new("F1 Telemetry Display")
-        .version("1.0")
-        .about("Display telemetry info from F1 games")
-        .arg(
-            Arg::with_name("host")
-                .long("host")
-                .short("h")
-                .default_value("0.0.0.0")
-                .help("Host to bind on"),
-        )
-        .arg(
-            Arg::with_name("port")
-                .long("port")
-                .short("p")
-                .default_value("20777")
-                .help("Port to bind on"),
-        )
-        .arg(
-            Arg::with_name("ui")
-                .long("ui")
-                .short("u")
-                .possible_values(&["ncurses", "gtk"])
-                .default_value("gtk")
-                .help("Choose the user interfaec"),
-        )
-        .get_matches()
-}
-
 fn main() {
     init_logger();
-    let args = get_cli_args();
+    let args = AppArgs::parse();
 
-    let host = args.value_of("host").unwrap();
-    let port = args.value_of("port").unwrap();
-    let ui = args.value_of("ui").unwrap();
-
-    let stream = Stream::new(format!("{}:{}", host, port)).expect("Unable to bind socket");
+    let stream =
+        Stream::new(format!("{}:{}", args.host, args.port)).expect("Unable to bind socket");
 
     info!("Listening on {}", stream.socket().local_addr().unwrap());
 
-    let mut ui = get_ui(ui);
+    let mut ui = get_ui(match args.ui {
+        UserInterface::Gtk => "gtk",
+        UserInterface::Ncurses => "ncurses",
+    });
 
     ui.run(stream);
 

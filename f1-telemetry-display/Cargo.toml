@@ -1,13 +1,14 @@
 [package]
 name = "f1-telemetry-display"
 version = "0.1.0"
+description = "Display telemetry info from F1 games"
 authors = ["Mathieu Lemay <acidrain1@gmail.com>"]
 edition = "2021"
 default-run = "f1-telemetry-display"
 
 [dependencies]
 f1-telemetry = { path = "../f1-telemetry" }
-clap = "^2.33"
+clap = { version = "4.0.4", features = ["derive"] }
 log = "^0.4"
 simplelog = "^0.9"
 ncurses = { version = "5.101", features = ["wide"] }
