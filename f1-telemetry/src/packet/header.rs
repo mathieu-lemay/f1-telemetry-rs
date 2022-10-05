@@ -3,7 +3,7 @@ use serde::Serialize;
 use crate::packet::PacketType;
 
 /// The header for each of the UDP telemetry packets.
-#[derive(Debug, Clone, PartialEq, Serialize)]
+#[derive(Debug, Clone, Eq, PartialEq, Serialize)]
 pub struct PacketHeader {
     /// Game year (ex. 2019)
     pub packet_format: u16,

@@ -345,7 +345,7 @@ impl TyreCompoundVisual {
     }
 }
 
-#[derive(Debug, Copy, Clone, Default, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Copy, Clone, Default, Eq, PartialEq, Serialize, Deserialize)]
 pub struct WheelData<T>
 where
     T: Clone + Copy,

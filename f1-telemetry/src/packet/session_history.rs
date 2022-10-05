@@ -75,7 +75,7 @@ pub enum ValidSectorFlag {
 /// tyre_compound_visual: Visual tyres used by this driver
 /// ```
 /// See also [`TyreCompound`] and [`TyreCompoundVisual`].
-#[derive(Debug, Copy, Clone, Default, PartialEq, Serialize)]
+#[derive(Debug, Copy, Clone, Default, Eq, PartialEq, Serialize)]
 pub struct TyreStintData {
     pub end_lap: u8,
     pub tyre_compound: TyreCompound,
@@ -107,7 +107,7 @@ pub struct TyreStintData {
 /// lap_history:              List of lap history
 /// tyre_stints:              List of tyre stints
 /// ```
-#[derive(Debug, Clone, PartialEq, Serialize)]
+#[derive(Debug, Clone, Eq, PartialEq, Serialize)]
 pub struct PacketSessionHistoryData {
     pub header: PacketHeader,
     pub car_index: u8,

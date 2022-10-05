@@ -89,7 +89,7 @@ pub struct PlayerCarData {
 /// the car being driven with the goal of being able to drive a motion platform setup.
 ///
 /// Frequency: Rate as specified in menus
-#[derive(Debug, Clone, Serialize, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Serialize)]
 pub struct PacketMotionData {
     /// Packet Header
     pub header: PacketHeader,

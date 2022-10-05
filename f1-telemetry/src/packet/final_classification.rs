@@ -23,7 +23,7 @@ use super::header::PacketHeader;
 /// tyre_stints_visual: Visual tyres used by this driver
 /// tyre_stints_end_lap: The lap number stints end on
 /// ```
-#[derive(Debug, Clone, Default, PartialEq, Serialize)]
+#[derive(Debug, Clone, Default, Eq, PartialEq, Serialize)]
 pub struct FinalClassification {
     pub position: u8,
     pub num_laps: u8,
@@ -53,7 +53,7 @@ pub struct FinalClassification {
 /// num_cars:              Number of cars in the final classification
 /// final_classifications: List of final classifications.
 /// ```
-#[derive(Debug, Clone, PartialEq, Serialize)]
+#[derive(Debug, Clone, Eq, PartialEq, Serialize)]
 pub struct PacketFinalClassificationData {
     pub header: PacketHeader,
     pub num_cars: u8,

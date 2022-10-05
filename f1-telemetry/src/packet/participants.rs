@@ -159,7 +159,7 @@ impl Default for Telemetry {
 /// ```
 ///
 /// See also [`Driver`], [`Team`] and [`Telemetry`]
-#[derive(Debug, Clone, Default, PartialEq, Serialize)]
+#[derive(Debug, Clone, Default, Eq, PartialEq, Serialize)]
 pub struct ParticipantData {
     pub ai_controlled: bool,
     pub driver: Driver,
@@ -190,7 +190,7 @@ pub struct ParticipantData {
 ///                  cars on HUD
 /// participants:    List of participants
 /// ```
-#[derive(Debug, Clone, PartialEq, Serialize)]
+#[derive(Debug, Clone, Eq, PartialEq, Serialize)]
 pub struct PacketParticipantsData {
     pub header: PacketHeader,
     pub num_active_cars: u8,

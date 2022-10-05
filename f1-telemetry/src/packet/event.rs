@@ -152,21 +152,21 @@ pub struct SpeedTrap {
 }
 
 /// Description of a start lights event
-#[derive(Debug, Copy, Clone, PartialEq, Serialize)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Serialize)]
 pub struct StartLights {
     /// Number of lights showing
     pub number_of_lights: u8,
 }
 
 /// Description of a drive through penalty served event
-#[derive(Debug, Copy, Clone, PartialEq, Serialize)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Serialize)]
 pub struct DriveThroughPenaltyServed {
     /// Vehicle index of the vehicle serving drive through
     pub vehicle_idx: u8,
 }
 
 /// Description of a stop and go penalty served event
-#[derive(Debug, Copy, Clone, PartialEq, Serialize)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Serialize)]
 pub struct StopGoPenaltyServed {
     /// Vehicle index of the vehicle serving a stop and go
     pub vehicle_idx: u8,
@@ -182,7 +182,7 @@ pub struct Flashback {
 }
 
 /// Description of a buttons event
-#[derive(Debug, Copy, Clone, PartialEq, Serialize)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Serialize)]
 pub struct Buttons {
     /// Bit flags specifying which buttons are being pressed currently
     pub button_status: u32,

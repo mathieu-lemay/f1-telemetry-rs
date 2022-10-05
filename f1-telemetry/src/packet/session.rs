@@ -230,7 +230,7 @@ impl Default for ForecastAccuracy {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize)]
+#[derive(Debug, Clone, Eq, PartialEq, Serialize)]
 pub enum BrakingAssist {
     Off,
     Low,
@@ -238,28 +238,28 @@ pub enum BrakingAssist {
     High,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize)]
+#[derive(Debug, Clone, Eq, PartialEq, Serialize)]
 pub enum GearboxAssist {
     Manual,
     ManualAndSuggestedGear,
     Automatic,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize)]
+#[derive(Debug, Clone, Eq, PartialEq, Serialize)]
 pub enum DynamicRacingLine {
     Off,
     CornersOnly,
     Full,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize)]
+#[derive(Debug, Clone, Eq, PartialEq, Serialize)]
 pub enum DynamicRacingLineType {
     TwoDimensions,
     ThreeDimensions,
 }
 
 /// Status of various driving assistances
-#[derive(Debug, Clone, PartialEq, Serialize)]
+#[derive(Debug, Clone, Eq, PartialEq, Serialize)]
 pub struct DrivingAssists {
     /// Wether steering assist is on or not
     pub steering_assist: bool,
@@ -281,7 +281,7 @@ pub struct DrivingAssists {
     pub dynamic_racing_line_type: DynamicRacingLineType,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize)]
+#[derive(Debug, Clone, Eq, PartialEq, Serialize)]
 pub enum GameMode {
     EventMode,
     GrandPrix,
@@ -299,7 +299,7 @@ pub enum GameMode {
     Benchmark,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize)]
+#[derive(Debug, Clone, Eq, PartialEq, Serialize)]
 pub enum RuleSet {
     PracticeAndQualifying,
     Race,
@@ -312,7 +312,7 @@ pub enum RuleSet {
     RivalDuel,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize)]
+#[derive(Debug, Clone, Eq, PartialEq, Serialize)]
 pub enum SessionLength {
     None,
     VeryShort,

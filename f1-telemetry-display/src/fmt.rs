@@ -1,4 +1,5 @@
 use std::borrow::Cow;
+use std::fmt::Write as _;
 
 use f1_telemetry::packet::generic::ResultStatus;
 use f1_telemetry::packet::participants::Driver;
@@ -158,11 +159,11 @@ pub fn format_event_info(event_info: &EventInfo) -> String {
     );
 
     if let Some(driver) = &event_info.driver_name {
-        msg.push_str(&format!(": {}", driver));
+        let _ = write!(msg, ": {}", driver); // Safe to ignore Err
     }
 
     if let Some(detail) = &event_info.detail {
-        msg.push_str(&format!(" ({})", detail));
+        let _ = write!(msg, " ({})", detail); // Safe to ignore Err
     }
 
     msg

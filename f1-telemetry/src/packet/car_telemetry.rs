@@ -114,7 +114,7 @@ pub enum ButtonFlag {
 }
 
 #[allow(clippy::upper_case_acronyms)]
-#[derive(Debug, Copy, Clone, PartialEq, Serialize)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Serialize)]
 pub enum MFDPanel {
     CarSetup,
     Pits,

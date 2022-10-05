@@ -15,7 +15,7 @@ mod fmt;
 mod models;
 mod ui;
 
-#[derive(Copy, Clone, PartialEq, Eq, PartialOrd, Ord, ValueEnum)]
+#[derive(Copy, Clone, Eq, PartialEq, PartialOrd, Ord, ValueEnum)]
 enum UserInterface {
     Gtk,
     Ncurses,
