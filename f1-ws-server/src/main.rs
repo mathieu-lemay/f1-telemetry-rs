@@ -37,15 +37,16 @@ struct AppArgs {
 }
 
 fn init_logger() {
-    let app_logger_config = ConfigBuilder::new()
+    let app_logger_config = match ConfigBuilder::new()
         .set_level_padding(LevelPadding::Right)
         .set_target_level(LevelFilter::Error)
         .set_location_level(LevelFilter::Debug)
         .set_thread_level(LevelFilter::Off)
         .set_time_format_custom(format_description!("[year]-[month]-[day] [hour]:[minute]:[second].[subsecond digits:3][offset_hour sign:mandatory]:[offset_minute]"))
-        // .set_time_format_custom(format_description!("[year]-[month]-[day] [hour]:[minute]:[second].[subsecond digits:3]"))
-        // .set_time_offset_to_local().unwrap()
-        // .add_filter_allow_str("pipeline_runner")
+        .set_time_offset_to_local() {
+            Ok(b) => b,
+            Err(b) => b,
+        }
         .build();
 
     CombinedLogger::init(vec![TermLogger::new(
