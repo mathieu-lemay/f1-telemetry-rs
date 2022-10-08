@@ -4,7 +4,7 @@ use std::time::Duration;
 use clap::Parser;
 use futures_util::{SinkExt, StreamExt};
 use log::{error, info, LevelFilter};
-use simplelog::{ColorChoice, CombinedLogger, TermLogger, TerminalMode};
+use simplelog::{ColorChoice, TerminalMode};
 use tokio::net::{TcpListener, TcpStream};
 use tokio::sync::broadcast;
 use tokio::sync::broadcast::Receiver;
@@ -12,7 +12,7 @@ use tokio_tungstenite::accept_async;
 use tokio_tungstenite::tungstenite::{Error, Message, Result};
 
 use f1_telemetry::Stream;
-use f1_telemetry_common::logging::get_log_config;
+use f1_telemetry_common::logging::LogBuilder;
 
 #[derive(Parser)]
 #[command(author, version, about, long_about = None, propagate_version = true)]
@@ -34,23 +34,14 @@ struct AppArgs {
     server_port: u16,
 }
 
-fn init_logger() {
-    let config = get_log_config();
-
-    CombinedLogger::init(vec![TermLogger::new(
-        LevelFilter::Info,
-        config,
-        TerminalMode::Mixed,
-        ColorChoice::Auto,
-    )])
-    .expect("Error initializing logger");
-}
-
 #[tokio::main]
 async fn main() {
-    init_logger();
-
     let args = AppArgs::parse();
+
+    LogBuilder::new()
+        .with_term_logger(LevelFilter::Info, TerminalMode::Mixed, ColorChoice::Auto)
+        .build()
+        .expect("Error initializing loggger.");
 
     let addr = format!("{}:{}", args.host, args.port);
     let packet_stream = Stream::new(&addr).expect("Unable to bind packet socket");

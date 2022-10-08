@@ -1,13 +1,11 @@
 #[macro_use]
 extern crate log;
 
-use std::fs::OpenOptions;
-
 use clap::{Parser, ValueEnum};
 use simplelog::*;
 
 use f1_telemetry::Stream;
-use f1_telemetry_common::logging::get_log_config;
+use f1_telemetry_common::logging::LogBuilder;
 
 use crate::ui::get_ui;
 
@@ -36,21 +34,14 @@ struct AppArgs {
     ui: UserInterface,
 }
 
-fn init_logger() {
-    let file = OpenOptions::new()
-        .create(true)
-        .append(true)
-        .open("f1-telemetry-display.log")
-        .expect("Unable to open log file.");
-
-    let config = get_log_config();
-
-    WriteLogger::init(LevelFilter::Debug, config, file).expect("Unable to initialize logger.");
-}
-
 fn main() {
-    init_logger();
     let args = AppArgs::parse();
+
+    LogBuilder::new()
+        .with_file_logger(LevelFilter::Info, "f1-telemetry-display.log")
+        .expect("Unable to open log file.")
+        .build()
+        .expect("Error initializing loggger.");
 
     let stream =
         Stream::new(format!("{}:{}", args.host, args.port)).expect("Unable to bind socket");
