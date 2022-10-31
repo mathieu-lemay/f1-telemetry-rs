@@ -1,15 +1,16 @@
-use f1_telemetry::Stream;
+use async_trait::async_trait;
 
 use crate::ui::{gtk::GtkUi, nc::NcursesUi};
 
 mod gtk;
 mod nc;
 
+#[async_trait]
 pub trait Ui {
     fn new() -> Self
     where
         Self: Sized;
-    fn run(&mut self, stream: Stream);
+    async fn run(&mut self);
     fn destroy(&self);
 }
 

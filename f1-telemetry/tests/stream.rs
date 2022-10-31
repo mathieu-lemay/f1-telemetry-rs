@@ -2,27 +2,18 @@ use f1_telemetry::packet::UnpackError;
 
 mod utils;
 
-#[test]
-fn test_empty_stream_returns_nothing() {
-    let stream = utils::get_stream();
-
-    let p = stream.next();
-
-    assert!(p.unwrap().is_none());
-}
-
-#[test]
-fn test_invalid_packet_returns_an_error() {
-    let stream = utils::get_stream();
-    let socket = utils::get_connected_socket(&stream);
+#[tokio::test]
+async fn test_invalid_packet_returns_an_error() {
+    let stream = utils::get_stream().await;
+    let socket = utils::get_connected_socket(&stream).await;
 
     let data = vec![0xe4, 0x07];
-    let res = socket.send(&data);
+    let res = socket.send(&data).await;
 
     assert!(res.is_ok());
     assert_eq!(res.unwrap(), data.len());
 
-    let p = utils::get_packet(&stream);
+    let p = stream.next().await;
 
     assert_eq!(
         p.unwrap_err(),

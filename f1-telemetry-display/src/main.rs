@@ -1,9 +1,15 @@
 #[macro_use]
+extern crate lazy_static;
+#[macro_use]
 extern crate log;
 
 use clap::{Parser, ValueEnum};
 use simplelog::*;
+use tokio::sync::mpsc;
+use tokio::sync::mpsc::{UnboundedReceiver, UnboundedSender};
+use tokio::sync::RwLock;
 
+use f1_telemetry::packet::Packet;
 use f1_telemetry::Stream;
 use f1_telemetry_common::logging::LogBuilder;
 
@@ -34,7 +40,24 @@ struct AppArgs {
     ui: UserInterface,
 }
 
-fn main() {
+struct StaticChannel {
+    tx: UnboundedSender<Packet>,
+    rx: RwLock<UnboundedReceiver<Packet>>,
+}
+
+lazy_static! {
+    pub(crate) static ref CHANNEL: StaticChannel = {
+        let (tx, rx) = mpsc::unbounded_channel();
+
+        StaticChannel {
+            tx,
+            rx: RwLock::new(rx),
+        }
+    };
+}
+
+#[tokio::main]
+async fn main() {
     let args = AppArgs::parse();
 
     LogBuilder::new()
@@ -43,17 +66,36 @@ fn main() {
         .build()
         .expect("Error initializing loggger.");
 
-    let stream =
-        Stream::new(format!("{}:{}", args.host, args.port)).expect("Unable to bind socket");
+    start_stream(args.host, args.port).await;
+    run(&args.ui).await;
+}
+
+async fn start_stream(host: String, port: u16) {
+    let stream = Stream::new(format!("{}:{}", host, port))
+        .await
+        .expect("Unable to bind socket");
 
     info!("Listening on {}", stream.socket().local_addr().unwrap());
 
-    let mut ui = get_ui(match args.ui {
+    tokio::spawn(async move {
+        loop {
+            match stream.next().await {
+                Ok(p) => {
+                    let _ = CHANNEL.tx.send(p);
+                }
+                Err(_e) => {
+                    error!("{:?}", _e);
+                }
+            }
+        }
+    });
+}
+
+async fn run(ui_type: &UserInterface) {
+    let mut ui = get_ui(match ui_type {
         UserInterface::Gtk => "gtk",
         UserInterface::Ncurses => "ncurses",
     });
-
-    ui.run(stream);
-
+    ui.run().await;
     ui.destroy();
 }

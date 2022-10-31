@@ -1,12 +1,15 @@
-use std::thread;
 use std::time::Duration;
 
+use async_trait::async_trait;
 use ncurses::*;
+use tokio::sync::mpsc;
+use tokio::sync::mpsc::error::SendError;
+use tokio::sync::mpsc::UnboundedSender;
+use tokio::time::sleep;
 
 use f1_telemetry::packet::generic::{ResultStatus, TyreCompoundVisual};
 use f1_telemetry::packet::session::{SafetyCar, SessionType};
 use f1_telemetry::packet::Packet;
-use f1_telemetry::Stream;
 
 use crate::fmt as cfmt;
 use crate::models::*;
@@ -24,7 +27,7 @@ const WINDOW_Y_OFFSET: i32 = 5;
 const LEFT_BORDER_X_OFFSET: i32 = 2;
 const CURRENT_CAR_DATA_Y_OFFSET: i32 = 24;
 
-#[derive(Eq, PartialEq)]
+#[derive(Debug, Eq, PartialEq)]
 pub enum View {
     Dashboard,
     TrackOverview,
@@ -50,7 +53,7 @@ struct LapDetailView {
     handling_swnd: WINDOW,
 }
 
-pub(crate) struct NcursesUi {
+pub struct NcursesUi {
     main_window: WINDOW,
     active_view: View,
     dashboard_view: DashboardView,
@@ -59,6 +62,14 @@ pub(crate) struct NcursesUi {
     session_rotation: bool,
 }
 
+enum Event {
+    UpdateGame(Packet),
+    SwitchView(View),
+    EnableRotation,
+    Quit,
+}
+
+#[async_trait]
 impl Ui for NcursesUi {
     fn new() -> Self {
         setlocale(ncurses::LcCategory::all, "");
@@ -81,7 +92,7 @@ impl Ui for NcursesUi {
         cbreak();
         noecho();
         keypad(mwnd, true);
-        timeout(0);
+        timeout(-1);
         fmt::init_colors();
 
         wresize(mwnd, h, w);
@@ -139,38 +150,89 @@ impl Ui for NcursesUi {
         }
     }
 
-    fn run(&mut self, stream: Stream) {
+    async fn run(&mut self) {
+        let (tx, mut rx) = mpsc::unbounded_channel();
+
+        let sender = tx.clone();
+        let stream_thread = tokio::spawn(async move {
+            while let Some(p) = crate::CHANNEL.rx.write().await.recv().await {
+                let _ = sender.send(Event::UpdateGame(p));
+            }
+        });
+
+        let sender = tx.clone();
+        let input_thread = tokio::spawn(async move {
+            let _ = process_input(sender.clone()).await;
+        });
+
         let mut game_state = GameState::default();
 
-        loop {
-            match stream.next() {
-                Ok(p) => match p {
-                    Some(p) => {
-                        game_state.update(&p);
-                        self.render(&game_state, &p);
-                    }
-                    None => thread::sleep(Duration::from_millis(5)),
-                },
-                Err(_e) => {
-                    error!("{:?}", _e);
+        while let Some(evt) = rx.recv().await {
+            match evt {
+                Event::UpdateGame(p) => {
+                    debug!("Packet");
+                    trace!("Packet: {:?}", p);
+                    game_state.update(&p);
+                    self.render(&game_state, &p).await;
+                }
+                Event::SwitchView(v) => {
+                    debug!("Switch View: {:?}", v);
+                    self.disable_rotation();
+                    self.switch_view(v);
+                }
+                Event::EnableRotation => {
+                    debug!("Enable Rotation");
+                    self.enable_rotation();
+                }
+                Event::Quit => {
+                    debug!("Quit");
+                    break;
                 }
             }
-
-            let quit = self.process_input();
-
-            if quit {
-                break;
-            }
         }
+
+        debug!("Aborting input thread...");
+        input_thread.abort();
+        debug!("Done");
+
+        debug!("Aborting stream thread...");
+        stream_thread.abort();
+        debug!("Done");
+
+        rx.close();
     }
 
     fn destroy(&self) {
+        debug!("Timeout to 0");
+        timeout(0);
+
+        ungetch(KEY_ENTER); // Workaround for app hanging
+        while let Some(c) = get_wch() {
+            debug!("Purging key {:?}", c);
+        }
+        ungetch(KEY_ENTER); // Workaround for app hanging
+
+        debug!("Done purging keys");
+
         endwin();
     }
 }
 
+unsafe impl Send for NcursesUi {}
+
 impl NcursesUi {
-    fn render(&mut self, game_state: &GameState, packet: &Packet) {
+    fn create_win(h: i32, w: i32, y: i32, x: i32, title: Option<&str>) -> WINDOW {
+        let wnd = newwin(h, w, y, x);
+        box_(wnd, 0, 0);
+
+        if let Some(title) = title {
+            mvwaddstr(wnd, 0, 2, &format!(" {} ", title));
+        };
+
+        wnd
+    }
+
+    async fn render(&mut self, game_state: &GameState, packet: &Packet) {
         self.render_main_view(game_state, packet);
 
         if self.session_rotation {
@@ -184,65 +246,22 @@ impl NcursesUi {
         };
     }
 
-    fn process_input(&mut self) -> bool {
-        let ch = ncurses::get_wch();
-        let mut quit = false;
-
-        if let Some(ch) = ch {
-            match ch {
-                ncurses::WchResult::Char(49) => {
-                    // 1
-                    self.disable_rotation();
-                    self.switch_view(View::Dashboard);
-                }
-                ncurses::WchResult::Char(50) => {
-                    // 2
-                    self.disable_rotation();
-                    self.switch_view(View::TrackOverview);
-                }
-                ncurses::WchResult::Char(51) => {
-                    // 3
-                    self.disable_rotation();
-                    self.switch_view(View::LapDetail);
-                }
-                ncurses::WchResult::Char(52) => {
-                    //4
-                    self.enable_rotation()
-                }
-                ncurses::WchResult::Char(113) => {
-                    // q
-                    quit = true;
-                }
-                // ncurses::WchResult::Char(c) => {
-                //     ncurses::mvaddstr(0, 0, format!("Pressed Char: {}", c).as_str());
-                // }
-                // ncurses::WchResult::KeyCode(c) => {
-                //     ncurses::mvaddstr(0, 0, format!("Pressed Key: {}", c).as_str());
-                //     ncurses::clrtoeol();
-                // }
-                _ => {}
-            }
-        };
-
-        quit
-    }
-
-    pub fn enable_rotation(&mut self) {
+    fn enable_rotation(&mut self) {
         self.session_rotation = true
     }
 
-    pub fn disable_rotation(&mut self) {
+    fn disable_rotation(&mut self) {
         self.session_rotation = false
     }
 
-    pub fn rotate_view(&mut self, game_state_session: SessionType) {
+    fn rotate_view(&mut self, game_state_session: SessionType) {
         match game_state_session {
             SessionType::Race => self.switch_view(View::Dashboard),
             _ => self.switch_view(View::LapDetail),
         }
     }
 
-    pub fn switch_view(&mut self, view: View) {
+    fn switch_view(&mut self, view: View) {
         if view == self.active_view {
             return;
         }
@@ -262,17 +281,7 @@ impl NcursesUi {
     fn commit(&self, w: WINDOW) {
         fmt::wreset(w);
         wrefresh(w);
-    }
-
-    fn create_win(h: i32, w: i32, y: i32, x: i32, title: Option<&str>) -> WINDOW {
-        let wnd = newwin(h, w, y, x);
-        box_(wnd, 0, 0);
-
-        if let Some(title) = title {
-            mvwaddstr(wnd, 0, 2, &format!(" {} ", title));
-        };
-
-        wnd
+        redrawwin(w);
     }
 
     fn render_main_view(&mut self, game_state: &GameState, packet: &Packet) {
@@ -856,4 +865,40 @@ fn addstr_center(w: WINDOW, y: i32, str_: &str) {
     mv(y, 0);
     clrtoeol();
     mvwaddstr(w, y, fmt::center(w, str_), str_);
+}
+
+async fn process_input(tx: UnboundedSender<Event>) -> Result<(), SendError<Event>> {
+    loop {
+        let ch = ncurses::get_wch();
+
+        if let Some(ch) = ch {
+            match ch {
+                ncurses::WchResult::Char(49) => {
+                    // 1
+                    tx.send(Event::SwitchView(View::Dashboard))?;
+                }
+                ncurses::WchResult::Char(50) => {
+                    // 2
+                    tx.send(Event::SwitchView(View::TrackOverview))?;
+                }
+                ncurses::WchResult::Char(51) => {
+                    // 3
+                    tx.send(Event::SwitchView(View::LapDetail))?;
+                }
+                ncurses::WchResult::Char(52) => {
+                    //4
+                    tx.send(Event::EnableRotation)?;
+                }
+                ncurses::WchResult::Char(113) => {
+                    // q
+                    tx.send(Event::Quit)?;
+                }
+                _ => {}
+            }
+        } else {
+            debug!("No key");
+        };
+
+        sleep(Duration::from_millis(5)).await;
+    }
 }
