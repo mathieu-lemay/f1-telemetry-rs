@@ -1,3 +1,5 @@
+use std::net::SocketAddr;
+
 use tokio::net::{ToSocketAddrs, UdpSocket};
 use tokio::runtime::Runtime;
 
@@ -30,6 +32,15 @@ impl Stream {
         }
     }
 
+    pub async fn next_from(&self) -> Result<(Packet, SocketAddr), UnpackError> {
+        let mut buf = [0; 2048]; // All packets fit in 2048 bytes
+
+        match self.socket.recv_from(&mut buf).await {
+            Ok((len, addr)) => parse_packet(len, &buf).map(|p| (p, addr)),
+            Err(e) => Err(UnpackError(format!("Error reading from socket: {:?}", e))),
+        }
+    }
+
     pub fn socket(&self) -> &UdpSocket {
         &self.socket
     }
@@ -50,5 +61,8 @@ impl SyncStream {
 
     pub fn next(&self) -> Result<Packet, UnpackError> {
         self.rt.block_on(self.stream.next())
+    }
+    pub fn next_from(&self) -> Result<(Packet, SocketAddr), UnpackError> {
+        self.rt.block_on(self.stream.next_from())
     }
 }
