@@ -11,17 +11,17 @@ use super::header::PacketHeader;
 /// between -1.0f and 1.0f.
 #[derive(Debug, Clone, PartialEq, Serialize)]
 pub struct CarMotionData {
-    /// World space X position
+    /// World space X position (in m)
     pub world_position_x: f32,
-    /// World space Y position
+    /// World space Y position (in m)
     pub world_position_y: f32,
-    /// World space Z position
+    /// World space Z position (in m)
     pub world_position_z: f32,
-    /// Velocity in world space X
+    /// Velocity in world space X (in m/s)
     pub world_velocity_x: f32,
-    /// Velocity in world space Y
+    /// Velocity in world space Y (in m/s)
     pub world_velocity_y: f32,
-    /// Velocity in world space Z
+    /// Velocity in world space Z (in m/s)
     pub world_velocity_z: f32,
     /// World space forward X direction (normalised)
     pub world_forward_dir_x: i16,
@@ -95,6 +95,7 @@ pub struct PacketMotionData {
     pub header: PacketHeader,
     /// List of motion data
     pub motion_data: Vec<CarMotionData>,
-    /// Extra data specific to the player's car
-    pub player_car_data: PlayerCarData,
+    /// Extra data specific to the player's car.
+    /// Removed in F1 23. Replaced by MotionEx packet.
+    pub player_car_data: Option<PlayerCarData>,
 }

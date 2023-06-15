@@ -313,13 +313,14 @@ impl GameState {
         let player_index = motion_data.header.player_car_index;
         let md = &motion_data.motion_data[player_index as usize];
 
-        self.motion_info.suspension_position = motion_data.player_car_data.suspension_position;
-        self.motion_info.suspension_velocity = motion_data.player_car_data.suspension_velocity;
-        self.motion_info.suspension_acceleration =
-            motion_data.player_car_data.suspension_acceleration;
-        self.motion_info.wheel_speed = motion_data.player_car_data.wheel_speed;
-        self.motion_info.wheel_slip = motion_data.player_car_data.wheel_slip;
-        self.motion_info.front_wheels_angle = motion_data.player_car_data.front_wheels_angle;
+        if let Some(pcd) = &motion_data.player_car_data {
+            self.motion_info.suspension_position = pcd.suspension_position;
+            self.motion_info.suspension_velocity = pcd.suspension_velocity;
+            self.motion_info.suspension_acceleration = pcd.suspension_acceleration;
+            self.motion_info.wheel_speed = pcd.wheel_speed;
+            self.motion_info.wheel_slip = pcd.wheel_slip;
+            self.motion_info.front_wheels_angle = pcd.front_wheels_angle;
+        }
         self.motion_info.g_force_lateral = md.g_force_lateral;
         self.motion_info.g_force_longitudinal = md.g_force_longitudinal;
         self.motion_info.g_force_vertical = md.g_force_vertical;

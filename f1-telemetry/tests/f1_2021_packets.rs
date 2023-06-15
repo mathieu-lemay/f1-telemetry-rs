@@ -490,7 +490,7 @@ async fn test_parse_2021_motion_packet() {
                 roll: 0.0,
             },
         ],
-        player_car_data: PlayerCarData {
+        player_car_data: Some(PlayerCarData {
             suspension_position: WheelData {
                 rear_left: 3.48383,
                 rear_right: 5.019466,
@@ -531,7 +531,7 @@ async fn test_parse_2021_motion_packet() {
             angular_acceleration_y: -0.26576725,
             angular_acceleration_z: -0.6107175,
             front_wheels_angle: 0.0,
-        },
+        }),
     };
 
     assert_eq!(actual, expected);

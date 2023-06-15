@@ -440,7 +440,7 @@ async fn test_parse_2019_motion_packet() {
                 roll: 0.019960029,
             },
         ],
-        player_car_data: PlayerCarData {
+        player_car_data: Some(PlayerCarData {
             suspension_position: WheelData::new(16.994642, 8.856616, 10.02546, 3.0912032),
             suspension_velocity: WheelData::new(-28.865864, -41.108833, 52.830387, 40.053856),
             suspension_acceleration: WheelData::new(-1971.4028, -3529.0164, 3126.438, 1537.9934),
@@ -456,7 +456,7 @@ async fn test_parse_2019_motion_packet() {
             angular_acceleration_y: 3.947086,
             angular_acceleration_z: 3.0085795,
             front_wheels_angle: -0.0,
-        },
+        }),
     };
 
     assert_eq!(actual, expected);
