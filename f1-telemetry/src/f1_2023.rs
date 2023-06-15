@@ -2,7 +2,7 @@ use std::io::Cursor;
 
 //use car_damage::parse_car_damage_data;
 //use car_setup::parse_car_setup_data;
-//use car_status::parse_car_status_data;
+use car_status::parse_car_status_data;
 //use car_telemetry::parse_car_telemetry_data;
 //use event::parse_event_data;
 //use final_classification::parse_final_classification_data;
@@ -18,12 +18,12 @@ use crate::packet::{Packet, PacketType, UnpackError};
 
 //mod car_damage;
 //mod car_setup;
-//mod car_status;
+mod car_status;
 //mod car_telemetry;
 mod consts;
 //mod event;
 //mod final_classification;
-//mod generic;
+mod generic;
 mod header;
 //mod lap;
 //mod lobby_info;
@@ -72,11 +72,11 @@ pub(crate) fn parse_packet(size: usize, packet: &[u8]) -> Result<Packet, UnpackE
 
         //Ok(Packet::CarTelemetry(packet))
         //}
-        //PacketType::CarStatus => {
-        //let packet = parse_car_status_data(&mut cursor, header, size)?;
+        PacketType::CarStatus => {
+            let packet = parse_car_status_data(&mut cursor, header, size)?;
 
-        //Ok(Packet::CarStatus(packet))
-        //}
+            Ok(Packet::CarStatus(packet))
+        }
         //PacketType::FinalClassification => {
         //let packet = parse_final_classification_data(&mut cursor, header, size)?;
 

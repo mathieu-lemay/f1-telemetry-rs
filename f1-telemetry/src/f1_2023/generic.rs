@@ -9,7 +9,6 @@ pub(crate) fn unpack_flag(value: i8) -> Result<Flag, UnpackError> {
         1 => Ok(Flag::Green),
         2 => Ok(Flag::Blue),
         3 => Ok(Flag::Yellow),
-        4 => Ok(Flag::Red),
         -1 => Ok(Flag::Invalid),
         _ => Err(UnpackError(format!("Invalid Flag value: {}", value))),
     }
@@ -182,6 +181,7 @@ pub(crate) fn unpack_tyre_compound(value: u8) -> Result<TyreCompound, UnpackErro
         18 => Ok(TyreCompound::C3),
         19 => Ok(TyreCompound::C2),
         20 => Ok(TyreCompound::C1),
+        21 => Ok(TyreCompound::C0),
         7 => Ok(TyreCompound::Inter),
         8 => Ok(TyreCompound::Wet),
         9 => Ok(TyreCompound::ClassicDry),

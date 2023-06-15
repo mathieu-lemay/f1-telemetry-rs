@@ -2,13 +2,13 @@ use std::io::BufRead;
 
 use serde::Deserialize;
 
-use crate::f1_2022::generic::{unpack_flag, unpack_tyre_compound, unpack_tyre_compound_visual};
 use crate::packet::car_status::*;
 use crate::packet::header::PacketHeader;
 use crate::packet::UnpackError;
 use crate::utils::assert_packet_size;
 
 use super::consts::*;
+use super::generic::{unpack_flag, unpack_tyre_compound, unpack_tyre_compound_visual};
 
 fn unpack_traction_control(value: u8) -> Result<TractionControl, UnpackError> {
     match value {
@@ -57,7 +57,7 @@ fn unpack_ers_deploy_mode(value: u8) -> Result<ERSDeployMode, UnpackError> {
 /// This packet details car statuses for all the cars in the race. It includes values such as the damage readings on the car.
 ///
 /// Frequency: Rate as specified in menus
-/// Size: 1058 bytes
+/// Size: 1239 bytes
 /// Version: 1
 ///
 /// ## Specification
@@ -76,8 +76,8 @@ fn unpack_ers_deploy_mode(value: u8) -> Result<ERSDeployMode, UnpackError> {
 /// drs_allowed:                 0 = not allowed, 1 = allowed
 /// drs_activation_distance:     0 = DRS not available, non-zero - DRS will be available
 ///                              in [X] metres
-/// actual_tyre_compound:        F1 modern - 16 = c5, 17 = c4, 18 = c3, 19 = c2, 20 = c1
-///                              7 = inter, 8 = wet
+/// actual_tyre_compound:        F1 modern - 16 = C5, 17 = C4, 18 = C3, 19 = C2, 20 = C1
+///                              21 = C0, 7 = inter, 8 = wet
 ///                              F1 classic - 9 = dry, 10 = wet
 ///                              F2 – 11 = super soft, 12 = soft, 13 = medium, 14 = hard
 ///                              15 = wet
@@ -88,7 +88,9 @@ fn unpack_ers_deploy_mode(value: u8) -> Result<ERSDeployMode, UnpackError> {
 ///                              21 = medium , 22 = hard
 /// tyres_age_laps               Age in laps of the current set of tyres
 /// vehicle_fia_flags:           -1 = invalid/unknown, 0 = none, 1 = green
-///                              2 = blue, 3 = yellow, 4 = red
+///                              2 = blue, 3 = yellow
+/// engine_power_ice:            Engine power output of ICE (W)
+/// engine_power_mguk:           Engine power output of MGU-K (W)
 /// ers_store_energy:            ERS energy store in joules
 /// ers_deploy_mode:             ERS deployment mode, 0 = none, 1 = medium
 ///                              2 = hotlap, 3 = overtake
@@ -116,6 +118,8 @@ struct RawCarStatus {
     visual_tyre_compound: u8,
     tyres_age_laps: u8,
     vehicle_fia_flags: i8,
+    engine_power_ice: f32,
+    engine_power_mguk: f32,
     ers_store_energy: f32,
     ers_deploy_mode: u8,
     ers_harvested_this_lap_mguk: f32,
@@ -154,6 +158,8 @@ impl TryFrom<&RawCarStatus> for CarStatusData {
             visual_tyre_compound,
             tyre_age_laps: Some(packet.tyres_age_laps),
             vehicle_fia_flag,
+            engine_power_ice: Some(packet.engine_power_ice),
+            engine_power_mguk: Some(packet.engine_power_mguk),
             ers_store_energy: packet.ers_store_energy,
             ers_deploy_mode,
             ers_harvested_this_lap_mguk: packet.ers_harvested_this_lap_mguk,

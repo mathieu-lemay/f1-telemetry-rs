@@ -7,7 +7,7 @@ pub const HEADER_SIZE: usize = 29;
 
 //pub const CAR_DAMAGE_PACKET_SIZE: usize = 948;
 //pub const CAR_SETUPS_PACKET_SIZE: usize = 1102;
-//pub const CAR_STATUS_PACKET_SIZE: usize = 1058;
+pub const CAR_STATUS_PACKET_SIZE: usize = 1239;
 //pub const CAR_TELEMETRY_PACKET_SIZE: usize = 1347;
 //pub const EVENT_PACKET_SIZE: usize = 40;
 //pub const FINAL_CLASSIFICATION_PACKET_SIZE: usize = 1015;
