@@ -100,7 +100,7 @@ fn unpack_infringement_type(value: u8) -> Result<InfringementType, UnpackError> 
 /// This packet gives details of events that happen during the course of a session.
 ///
 /// Frequency: When the event occurs
-/// Size: 40 bytes
+/// Size: 45 bytes
 /// Version: 1
 ///
 /// ## Specification
@@ -131,6 +131,7 @@ fn unpack_infringement_type(value: u8) -> Result<InfringementType, UnpackError> 
 /// Stop go served          SGSV    Stop go penalty served
 /// Flashback               FLBK    Flashback activated
 /// Button status           BUTN    Button status changed
+/// Overtake                OVTK    Overtake occurred
 /// ```
 #[derive(Deserialize)]
 struct RawEvent {
@@ -347,6 +348,17 @@ struct ButtonsDetails {
     button_status: u32,
 }
 
+/// ## Specification
+/// ```text
+/// overtaking_vehicle_idx:      Vehicle index of the vehicle overtaking
+/// being_overtaken_vehicle_idx: Vehicle index of the vehicle being overtaken
+/// ```
+#[derive(Deserialize)]
+struct OvertakeDetails {
+    overtaking_vehicle_idx: u8,
+    being_overtaken_vehicle_idx: u8,
+}
+
 pub(crate) fn parse_event_data<T: BufRead>(
     mut reader: &mut T,
     header: PacketHeader,
@@ -468,6 +480,15 @@ pub(crate) fn parse_event_data<T: BufRead>(
                 button_status: details.button_status,
             };
             Ok(Event::Buttons(evt_detail))
+        }
+        "OVTK" => {
+            let details: OvertakeDetails = bincode::deserialize_from(reader)?;
+
+            let evt_detail = Overtake {
+                overtaking_vehicle_idx: details.overtaking_vehicle_idx,
+                being_overtaken_vehicle_idx: details.being_overtaken_vehicle_idx,
+            };
+            Ok(Event::Overtake(evt_detail))
         }
         _ => Err(UnpackError(format!("Invalid Event Code: {}", event_code))),
     }?;

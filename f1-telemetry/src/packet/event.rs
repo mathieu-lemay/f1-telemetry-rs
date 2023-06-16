@@ -188,19 +188,31 @@ pub struct Buttons {
     pub button_status: u32,
 }
 
+/// Description of an overtake event
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Serialize)]
+pub struct Overtake {
+    /// Vehicle index of the vehicle overtaking
+    pub overtaking_vehicle_idx: u8,
+    /// Vehicle index of the vehicle being overtaken
+    pub being_overtaken_vehicle_idx: u8,
+}
+
 /// List of possible events
 ///
-/// The following packets were introduced in F1 2020:
+/// The following events were introduced in F1 2020:
 /// * [`Event::Penalty`]
 /// * [`Event::SpeedTrap`]
 ///
-/// The following packets were introduced in F1 2021:
+/// The following events were introduced in F1 2021:
 /// * [`Event::StartLights`]
 /// * [`Event::LightsOut`]
 /// * [`Event::DriveThroughPenaltyServed`]
 /// * [`Event::StopGoPenaltyServed`]
 /// * [`Event::Flashback`]
 /// * [`Event::Buttons`]
+///
+/// The following event was introduced in F1 23:
+/// * [`Event::Overtake`]
 #[allow(clippy::upper_case_acronyms)]
 #[derive(Debug, Copy, Clone, PartialEq, Serialize)]
 pub enum Event {
@@ -238,6 +250,8 @@ pub enum Event {
     Flashback(Flashback),
     /// Button status changed
     Buttons(Buttons),
+    /// Overtake
+    Overtake(Overtake),
 }
 
 impl Event {
@@ -261,6 +275,7 @@ impl Event {
             Event::StopGoPenaltyServed(_) => "Stop and go penalty served",
             Event::Flashback(_) => "Flashback activated",
             Event::Buttons(_) => "Button status changed",
+            Event::Overtake(_) => "Overtake",
         }
     }
 
@@ -275,6 +290,16 @@ impl Event {
             Event::SpeedTrap(e) => Some(e.vehicle_idx),
             Event::DriveThroughPenaltyServed(e) => Some(e.vehicle_idx),
             Event::StopGoPenaltyServed(e) => Some(e.vehicle_idx),
+            Event::Overtake(e) => Some(e.overtaking_vehicle_idx),
+            _ => None,
+        }
+    }
+
+    /// Index of the other vehicle involved in the event, if any.
+    pub fn other_vehicle_idx(self) -> Option<u8> {
+        match self {
+            Event::Penalty(e) => Some(e.other_vehicle_idx),
+            Event::Overtake(e) => Some(e.being_overtaken_vehicle_idx),
             _ => None,
         }
     }
