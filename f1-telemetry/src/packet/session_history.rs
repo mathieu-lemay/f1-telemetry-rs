@@ -4,21 +4,23 @@ use crate::packet::generic::{TyreCompound, TyreCompoundVisual};
 use crate::packet::header::PacketHeader;
 
 /// This type is used for the `lap_history` array of the [`PacketSessionHistoryData`] type.
-///
-/// ## Specification
-/// ```text
-/// lap_time:        Lap time in milliseconds
-/// sector_1_time:   Sector 1 time in milliseconds
-/// sector_2_time:   Sector 2 time in milliseconds
-/// sector_3_time:   Sector 3 time in milliseconds
-/// lap_valid_flags: Bit flags specifying if the lap / sectors are valid
-/// ```
 #[derive(Debug, Clone, Default, Eq, PartialEq, Serialize)]
 pub struct LapHistoryData {
+    /// Lap time in milliseconds
     pub lap_time: u32,
+    /// Sector 1 time in milliseconds
     pub sector_1_time: u16,
+    /// Sector 1 whole minute part. New in F1 23.
+    pub sector_1_time_minutes: u8,
+    /// Sector 2 time in milliseconds
     pub sector_2_time: u16,
+    /// Sector 2 whole minute part. New in F1 23.
+    pub sector_2_time_minutes: u8,
+    /// Sector 3 time in milliseconds
     pub sector_3_time: u16,
+    /// Sector 3 whole minute part. New in F1 23.
+    pub sector_3_time_minutes: u8,
+    /// Bit flags specifying if the lap / sectors are valid
     pub valid_sectors: u8,
 }
 

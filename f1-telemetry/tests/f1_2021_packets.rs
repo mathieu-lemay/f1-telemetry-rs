@@ -5558,6 +5558,7 @@ async fn test_parse_2021_session_history_packet() {
                 sector_2_time: 23305,
                 sector_3_time: 29485,
                 valid_sectors: 15,
+                ..Default::default()
             },
             LapHistoryData {
                 lap_time: 0,
@@ -5565,6 +5566,7 @@ async fn test_parse_2021_session_history_packet() {
                 sector_2_time: 0,
                 sector_3_time: 0,
                 valid_sectors: 15,
+                ..Default::default()
             },
             LapHistoryData::default(),
             LapHistoryData::default(),

@@ -15,5 +15,5 @@ pub const LAP_DATA_PACKET_SIZE: usize = 1131;
 //pub const LOBBY_INFO_PACKET_SIZE: usize = 1191;
 pub const MOTION_PACKET_SIZE: usize = 1349;
 //pub const PARTICIPANTS_PACKET_SIZE: usize = 1257;
-//pub const SESSION_HISTORY_PACKET_SIZE: usize = 1155;
+pub const SESSION_HISTORY_PACKET_SIZE: usize = 1460;
 //pub const SESSION_PACKET_SIZE: usize = 632;

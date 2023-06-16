@@ -82,6 +82,7 @@ impl TryFrom<&RawLapHistoryData> for LapHistoryData {
             sector_2_time: lh.sector_2_time,
             sector_3_time: lh.sector_3_time,
             valid_sectors: lh.valid_sectors,
+            ..Default::default()
         })
     }
 }

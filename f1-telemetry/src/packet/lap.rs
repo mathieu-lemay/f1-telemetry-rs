@@ -39,11 +39,11 @@ pub struct LapData {
     pub current_lap_time: u32,
     /// Sector 1 time in milliseconds
     pub sector_1_time: u16,
-    /// Sector 1 whole minute part. New in F1 23
+    /// Sector 1 whole minute part. New in F1 23.
     pub sector_1_time_minutes: u8,
     /// Sector 2 time in milliseconds
     pub sector_2_time: u16,
-    /// Sector 2 whole minute part. New in F1 23
+    /// Sector 2 whole minute part. New in F1 23.
     pub sector_2_time_minutes: u8,
     /// Time delta to car in front in milliseconds
     pub delta_to_car_in_front: u16,

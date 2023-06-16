@@ -12,7 +12,7 @@ use lap::parse_lap_data;
 use motion::parse_motion_data;
 //use participants::parse_participants_data;
 //use session::parse_session_data;
-//use session_history::parse_session_history_data;
+use session_history::parse_session_history_data;
 
 use crate::packet::{Packet, PacketType, UnpackError};
 
@@ -30,7 +30,7 @@ mod lap;
 mod motion;
 //mod participants;
 //mod session;
-//mod session_history;
+mod session_history;
 
 pub(crate) fn parse_packet(size: usize, packet: &[u8]) -> Result<Packet, UnpackError> {
     let mut cursor = Cursor::new(packet);
@@ -92,11 +92,11 @@ pub(crate) fn parse_packet(size: usize, packet: &[u8]) -> Result<Packet, UnpackE
 
         //Ok(Packet::CarDamage(packet))
         //}
-        //PacketType::SessionHistory => {
-        //let packet = parse_session_history_data(&mut cursor, header, size)?;
+        PacketType::SessionHistory => {
+            let packet = parse_session_history_data(&mut cursor, header, size)?;
 
-        //Ok(Packet::SessionHistory(packet))
-        //}
+            Ok(Packet::SessionHistory(packet))
+        }
         _ => Err(UnpackError("Not implemented".to_string())),
     }
 }

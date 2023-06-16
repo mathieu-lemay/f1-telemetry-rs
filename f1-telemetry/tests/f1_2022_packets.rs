@@ -5807,6 +5807,7 @@ async fn test_parse_2022_session_history_packet() {
                 sector_2_time: 39878,
                 sector_3_time: 22883,
                 valid_sectors: 15,
+                ..Default::default()
             },
             LapHistoryData {
                 lap_time: 92331,
@@ -5814,6 +5815,7 @@ async fn test_parse_2022_session_history_packet() {
                 sector_2_time: 39969,
                 sector_3_time: 22938,
                 valid_sectors: 15,
+                ..Default::default()
             },
             LapHistoryData {
                 lap_time: 92684,
@@ -5821,6 +5823,7 @@ async fn test_parse_2022_session_history_packet() {
                 sector_2_time: 40155,
                 sector_3_time: 23004,
                 valid_sectors: 15,
+                ..Default::default()
             },
             LapHistoryData {
                 lap_time: 92838,
@@ -5828,6 +5831,7 @@ async fn test_parse_2022_session_history_packet() {
                 sector_2_time: 40229,
                 sector_3_time: 23022,
                 valid_sectors: 15,
+                ..Default::default()
             },
             LapHistoryData {
                 lap_time: 92822,
@@ -5835,6 +5839,7 @@ async fn test_parse_2022_session_history_packet() {
                 sector_2_time: 40218,
                 sector_3_time: 23012,
                 valid_sectors: 15,
+                ..Default::default()
             },
             LapHistoryData {
                 lap_time: 0,
@@ -5842,6 +5847,7 @@ async fn test_parse_2022_session_history_packet() {
                 sector_2_time: 0,
                 sector_3_time: 0,
                 valid_sectors: 15,
+                ..Default::default()
             },
             LapHistoryData::default(),
             LapHistoryData::default(),
