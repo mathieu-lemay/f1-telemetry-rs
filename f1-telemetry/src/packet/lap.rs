@@ -4,21 +4,17 @@ use crate::packet::generic::ResultStatus;
 
 use super::header::PacketHeader;
 
-#[derive(Debug, Copy, Clone, Eq, PartialEq, Serialize)]
+#[derive(Debug, Copy, Clone, Default, Eq, PartialEq, Serialize)]
 pub enum PitStatus {
+    #[default]
     None,
     Pitting,
     PitLane,
 }
 
-impl Default for PitStatus {
-    fn default() -> Self {
-        Self::None
-    }
-}
-
-#[derive(Debug, Copy, Clone, Eq, PartialEq, Serialize)]
+#[derive(Debug, Copy, Clone, Default, Eq, PartialEq, Serialize)]
 pub enum DriverStatus {
+    #[default]
     Garage,
     FlyingLap,
     InLap,
@@ -26,23 +22,12 @@ pub enum DriverStatus {
     OnTrack,
 }
 
-impl Default for DriverStatus {
-    fn default() -> Self {
-        Self::Garage
-    }
-}
-
-#[derive(Debug, Clone, Eq, PartialEq, Serialize)]
+#[derive(Debug, Clone, Default, Eq, PartialEq, Serialize)]
 pub enum Sector {
+    #[default]
     Sector1,
     Sector2,
     Sector3,
-}
-
-impl Default for Sector {
-    fn default() -> Self {
-        Self::Sector1
-    }
 }
 
 /// Lap data for a car on track
@@ -123,12 +108,6 @@ pub struct LapData {
 /// The lap data packet gives details of all the cars in the session.
 ///
 /// Frequency: Rate as specified in menus
-///
-/// ## Specification
-/// ```text
-/// header:   Header
-/// lap_data:
-/// ```
 #[derive(Debug, Clone, PartialEq, Serialize)]
 pub struct PacketLapData {
     /// Packet header

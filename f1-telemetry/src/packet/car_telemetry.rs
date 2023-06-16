@@ -4,7 +4,7 @@ use crate::packet::generic::WheelData;
 
 use super::header::PacketHeader;
 
-#[derive(Debug, Copy, Clone, Eq, PartialEq, Serialize)]
+#[derive(Debug, Copy, Clone, Default, Eq, PartialEq, Serialize)]
 pub enum SurfaceType {
     Tarmac,
     RumbleStrip,
@@ -18,13 +18,8 @@ pub enum SurfaceType {
     Cobblestone,
     Metal,
     Ridged,
+    #[default]
     Unknown,
-}
-
-impl Default for SurfaceType {
-    fn default() -> Self {
-        Self::Unknown
-    }
 }
 
 /// This type is used for the `car_telemetry_data` array of the [`PacketCarTelemetryData`] type.

@@ -4,62 +4,42 @@ use crate::packet::generic::{Flag, TyreCompound, TyreCompoundVisual, WheelData};
 
 use super::header::PacketHeader;
 
-#[derive(Debug, Copy, Clone, Eq, PartialEq, Serialize)]
+#[derive(Debug, Copy, Clone, Default, Eq, PartialEq, Serialize)]
 pub enum TractionControl {
+    #[default]
     Off,
     Low,
     High,
 }
 
-impl Default for TractionControl {
-    fn default() -> Self {
-        Self::Off
-    }
-}
-
-#[derive(Debug, Copy, Clone, Eq, PartialEq, Serialize)]
+#[derive(Debug, Copy, Clone, Default, Eq, PartialEq, Serialize)]
 pub enum FuelMix {
     Lean,
+    #[default]
     Standard,
     Rich,
     Max,
 }
 
-impl Default for FuelMix {
-    fn default() -> Self {
-        Self::Standard
-    }
-}
-
 #[allow(clippy::upper_case_acronyms)]
-#[derive(Debug, Copy, Clone, Eq, PartialEq, Serialize)]
+#[derive(Debug, Copy, Clone, Default, Eq, PartialEq, Serialize)]
 pub enum DRS {
     NotAllowed,
     Allowed,
+    #[default]
     Unknown,
 }
 
-impl Default for DRS {
-    fn default() -> Self {
-        Self::Unknown
-    }
-}
-
 #[allow(clippy::upper_case_acronyms)]
-#[derive(Debug, Copy, Clone, Eq, PartialEq, Serialize)]
+#[derive(Debug, Copy, Clone, Default, Eq, PartialEq, Serialize)]
 pub enum ERSDeployMode {
+    #[default]
     None,
     Low,
     Medium,
     High,
     Overtake,
     Hotlap,
-}
-
-impl Default for ERSDeployMode {
-    fn default() -> Self {
-        Self::None
-    }
 }
 
 /// This type is used for the 20-element `car_status_data` array of the [`PacketCarStatusData`] type.

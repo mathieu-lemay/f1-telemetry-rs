@@ -1,22 +1,17 @@
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Copy, Clone, Eq, PartialEq, Serialize)]
+#[derive(Debug, Copy, Clone, Default, Eq, PartialEq, Serialize)]
 pub enum Flag {
     None,
     Green,
     Blue,
     Yellow,
     Red,
+    #[default]
     Invalid,
 }
 
-impl Default for Flag {
-    fn default() -> Self {
-        Self::Invalid
-    }
-}
-
-#[derive(Debug, Copy, Clone, Eq, PartialEq, Serialize)]
+#[derive(Debug, Copy, Clone, Default, Eq, PartialEq, Serialize)]
 pub enum Nationality {
     American,
     Argentinean,
@@ -106,17 +101,13 @@ pub enum Nationality {
     Venezuelan,
     Vietnamese,
     Welsh,
+    #[default]
     Invalid,
 }
 
-impl Default for Nationality {
-    fn default() -> Self {
-        Self::Invalid
-    }
-}
-
-#[derive(Debug, Copy, Clone, Eq, PartialEq, Serialize)]
+#[derive(Debug, Copy, Clone, Default, Eq, PartialEq, Serialize)]
 pub enum ResultStatus {
+    #[default]
     Invalid,
     Inactive,
     Active,
@@ -127,12 +118,6 @@ pub enum ResultStatus {
     DidNotFinish,
 }
 
-impl Default for ResultStatus {
-    fn default() -> Self {
-        Self::Invalid
-    }
-}
-
 impl ResultStatus {
     pub fn is_valid(&self) -> bool {
         self != &Self::Invalid
@@ -140,7 +125,7 @@ impl ResultStatus {
 }
 
 #[allow(clippy::upper_case_acronyms)]
-#[derive(Debug, Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash, Serialize)]
+#[derive(Debug, Copy, Clone, Default, Eq, PartialEq, Ord, PartialOrd, Hash, Serialize)]
 pub enum Team {
     Mercedes,
     Ferrari,
@@ -248,6 +233,7 @@ pub enum Team {
     F1CustomTeam,
     MercedesAMGGTBlackSeries,
     MyTeam,
+    #[default]
     Unknown,
 }
 
@@ -271,13 +257,7 @@ impl Team {
     }
 }
 
-impl Default for Team {
-    fn default() -> Self {
-        Team::Unknown
-    }
-}
-
-#[derive(Debug, Copy, Clone, Eq, PartialEq, Serialize)]
+#[derive(Debug, Copy, Clone, Default, Eq, PartialEq, Serialize)]
 pub enum TyreCompound {
     C5,
     C4,
@@ -293,16 +273,11 @@ pub enum TyreCompound {
     F2Medium,
     F2Hard,
     F2Wet,
+    #[default]
     Invalid,
 }
 
-impl Default for TyreCompound {
-    fn default() -> Self {
-        TyreCompound::Invalid
-    }
-}
-
-#[derive(Debug, Copy, Clone, Eq, PartialEq, Serialize)]
+#[derive(Debug, Copy, Clone, Default, Eq, PartialEq, Serialize)]
 pub enum TyreCompoundVisual {
     Soft,
     Medium,
@@ -316,13 +291,8 @@ pub enum TyreCompoundVisual {
     F2Medium,
     F2Hard,
     F2Wet,
+    #[default]
     Invalid,
-}
-
-impl Default for TyreCompoundVisual {
-    fn default() -> Self {
-        TyreCompoundVisual::Invalid
-    }
 }
 
 impl TyreCompoundVisual {

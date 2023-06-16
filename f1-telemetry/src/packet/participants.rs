@@ -4,7 +4,7 @@ use crate::packet::generic::{Nationality, Team};
 
 use super::header::PacketHeader;
 
-#[derive(Debug, Copy, Clone, Eq, PartialEq, Serialize)]
+#[derive(Debug, Copy, Clone, Default, Eq, PartialEq, Serialize)]
 pub enum Driver {
     CarlosSainz,
     DaniilKvyat,
@@ -122,25 +122,15 @@ pub enum Driver {
     MarkWebber,
     JacquesVilleneuve,
     Player,
+    #[default]
     Unknown,
 }
 
-impl Default for Driver {
-    fn default() -> Self {
-        Driver::Unknown
-    }
-}
-
-#[derive(Debug, Copy, Clone, Eq, PartialEq, Serialize)]
+#[derive(Debug, Copy, Clone, Default, Eq, PartialEq, Serialize)]
 pub enum Telemetry {
+    #[default]
     Restricted,
     Public,
-}
-
-impl Default for Telemetry {
-    fn default() -> Self {
-        Self::Restricted
-    }
 }
 
 /// This type is used for the `participants` array of the `PacketParticipantsData` type.

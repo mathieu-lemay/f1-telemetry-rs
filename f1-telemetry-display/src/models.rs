@@ -409,7 +409,7 @@ impl GameState {
         if self.lap_infos.is_empty() {
             return;
         }
-        let lap = self.lap_infos[player_index as usize].current_lap_num as u8;
+        let lap = self.lap_infos[player_index as usize].current_lap_num;
         let last_tyre_entry = &self.historical_race_data.tyre_damage.last();
         let new_tyre_entry = TimedWheelData {
             lap,
@@ -463,7 +463,7 @@ impl GameState {
         if self.lap_infos.is_empty() {
             return;
         }
-        let lap = self.lap_infos[player_index as usize].current_lap_num as u8;
+        let lap = self.lap_infos[player_index as usize].current_lap_num;
         let last_tyre_entry = &self.historical_race_data.tyre_damage.last();
         let new_tyre_entry = TimedWheelData {
             lap,

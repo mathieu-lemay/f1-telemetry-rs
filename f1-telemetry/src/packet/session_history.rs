@@ -68,17 +68,14 @@ pub enum ValidSectorFlag {
 
 /// This type is used for the `tyre_stints` array of the [`PacketSessionHistoryData`] type.
 ///
-/// ## Specification
-/// ```text
-/// end_lap:              Lap the tyre usage ends on (255 if current tyre)
-/// tyre_compound:        Actual tyres used by this driver
-/// tyre_compound_visual: Visual tyres used by this driver
-/// ```
 /// See also [`TyreCompound`] and [`TyreCompoundVisual`].
 #[derive(Debug, Copy, Clone, Default, Eq, PartialEq, Serialize)]
 pub struct TyreStintData {
+    /// Lap the tyre usage ends on (255 if current tyre)
     pub end_lap: u8,
+    /// Actual tyres used by this driver
     pub tyre_compound: TyreCompound,
+    /// Visual tyres used by this driver
     pub tyre_compound_visual: TyreCompoundVisual,
 }
 
@@ -93,30 +90,26 @@ pub struct TyreStintData {
 /// bulk update of all the session histories for the vehicles in that session will be sent.
 ///
 /// Frequency: 20 per second but cycling through cars
-///
-/// ## Specification
-/// ```text
-/// header:                   Header
-/// car_index:                Index of the car this lap data relates to
-/// number_of_laps:           Number laps in the data (including current partial lap)
-/// number_of_tyre_stints:    Number of tyre stints in the data
-/// best_lap_time_lap_number: Lap the best lap time was achieved on
-/// best_sector_1_lap_number: Lap the best Sector 1 time was achieved on
-/// best_sector_2_lap_number: Lap the best Sector 2 time was achieved on
-/// best_sector_3_lap_number: Lap the best Sector 3 time was achieved on
-/// lap_history:              List of lap history
-/// tyre_stints:              List of tyre stints
-/// ```
 #[derive(Debug, Clone, Eq, PartialEq, Serialize)]
 pub struct PacketSessionHistoryData {
+    /// Packet header
     pub header: PacketHeader,
+    /// Index of the car this lap data relates to
     pub car_index: u8,
+    /// Number laps in the data (including current partial lap)
     pub number_of_laps: u8,
+    /// Number of tyre stints in the data
     pub number_of_tyre_stints: u8,
+    /// Lap the best lap time was achieved on
     pub best_lap_time_lap_number: u8,
+    /// Lap the best Sector 1 time was achieved on
     pub best_sector_1_lap_number: u8,
+    /// Lap the best Sector 2 time was achieved on
     pub best_sector_2_lap_number: u8,
+    /// Lap the best Sector 3 time was achieved on
     pub best_sector_3_lap_number: u8,
+    /// List of lap history
     pub lap_history: Vec<LapHistoryData>,
+    /// List of tyre stints
     pub tyre_stints: Vec<TyreStintData>,
 }

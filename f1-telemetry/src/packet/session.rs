@@ -4,8 +4,9 @@ use crate::packet::generic::Flag;
 
 use super::header::PacketHeader;
 
-#[derive(Debug, Copy, Clone, Eq, PartialEq, Serialize)]
+#[derive(Debug, Copy, Clone, Default, Eq, PartialEq, Serialize)]
 pub enum Weather {
+    #[default]
     Clear,
     LightCloud,
     Overcast,
@@ -14,27 +15,17 @@ pub enum Weather {
     Storm,
 }
 
-impl Default for Weather {
-    fn default() -> Self {
-        Self::Clear
-    }
-}
-
-#[derive(Debug, Copy, Clone, Eq, PartialEq, Serialize)]
+#[derive(Debug, Copy, Clone, Default, Eq, PartialEq, Serialize)]
 pub enum TemperatureChange {
-    Up,
+    #[default]
+    Up, // The default in F1 2021 for WeatherForecast
     Down,
     NoChange,
 }
 
-impl Default for TemperatureChange {
-    fn default() -> Self {
-        Self::Up // The default in F1 2021 for default WeatherForecast
-    }
-}
-
-#[derive(Debug, Copy, Clone, Eq, PartialEq, Serialize)]
+#[derive(Debug, Copy, Clone, Default, Eq, PartialEq, Serialize)]
 pub enum SessionType {
+    #[default]
     Unknown,
     Practice1,
     Practice2,
@@ -69,12 +60,6 @@ impl SessionType {
             SessionType::Race3 => "Race 3",
             SessionType::TimeTrial => "Time Trial",
         }
-    }
-}
-
-impl Default for SessionType {
-    fn default() -> Self {
-        Self::Unknown
     }
 }
 
@@ -153,8 +138,9 @@ pub enum Formula {
     F1Generic,
 }
 
-#[derive(Debug, Copy, Clone, Eq, PartialEq, Serialize)]
+#[derive(Debug, Copy, Clone, Default, Eq, PartialEq, Serialize)]
 pub enum SafetyCar {
+    #[default]
     None,
     Full,
     Virtual,
@@ -170,12 +156,6 @@ impl SafetyCar {
     }
 }
 
-impl Default for SafetyCar {
-    fn default() -> Self {
-        Self::None
-    }
-}
-
 /// Weather forecast
 #[derive(Debug, Clone, Default, Eq, PartialEq, Serialize)]
 pub struct WeatherForecast {
@@ -188,7 +168,7 @@ pub struct WeatherForecast {
 }
 
 /// Defines the weather forecast for a given time in the future
-#[derive(Debug, Copy, Clone, Eq, PartialEq, Serialize, Default)]
+#[derive(Debug, Copy, Clone, Default, Eq, PartialEq, Serialize)]
 pub struct WeatherForecastSample {
     /// Type of session the forecast applies to
     pub session_type: SessionType,
@@ -217,17 +197,12 @@ pub struct MarshalZone {
     pub zone_flag: Flag,
 }
 
-#[derive(Debug, Clone, Eq, PartialEq, Serialize)]
+#[derive(Debug, Clone, Default, Eq, PartialEq, Serialize)]
 pub enum ForecastAccuracy {
     Perfect,
     Approximate,
+    #[default]
     Unknown,
-}
-
-impl Default for ForecastAccuracy {
-    fn default() -> Self {
-        ForecastAccuracy::Unknown
-    }
 }
 
 #[derive(Debug, Clone, Eq, PartialEq, Serialize)]

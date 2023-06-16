@@ -4,17 +4,12 @@ use crate::packet::generic::{Nationality, Team};
 
 use super::header::PacketHeader;
 
-#[derive(Debug, Clone, Eq, PartialEq, Serialize)]
+#[derive(Debug, Clone, Default, Eq, PartialEq, Serialize)]
 pub enum ReadyStatus {
+    #[default]
     NotReady,
     Ready,
     Spectating,
-}
-
-impl Default for ReadyStatus {
-    fn default() -> Self {
-        Self::NotReady
-    }
 }
 
 /// This type is used for the `players` array of the [`PacketLobbyInfoData`] type.
