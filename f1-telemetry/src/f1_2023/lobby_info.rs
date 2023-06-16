@@ -2,13 +2,13 @@ use std::io::BufRead;
 
 use serde::Deserialize;
 
-use crate::f1_2022::generic::{unpack_nationality, unpack_team};
 use crate::packet::header::PacketHeader;
-use crate::packet::lobby_info::{PacketLobbyInfoData, Player, ReadyStatus};
+use crate::packet::lobby_info::{PacketLobbyInfoData, Platform, Player, ReadyStatus};
 use crate::packet::UnpackError;
 use crate::utils::{assert_packet_size, unpack_string};
 
 use super::consts::*;
+use super::generic::{unpack_nationality, unpack_team};
 
 fn unpack_ready_status(value: u8) -> Result<ReadyStatus, UnpackError> {
     match value {
@@ -18,12 +18,24 @@ fn unpack_ready_status(value: u8) -> Result<ReadyStatus, UnpackError> {
         _ => Err(UnpackError(format!("Invalid ReadyStatus value: {}", value))),
     }
 }
+
+pub(crate) fn unpack_platform(value: u8) -> Result<Platform, UnpackError> {
+    match value {
+        1 => Ok(Platform::Steam),
+        3 => Ok(Platform::PlayStation),
+        4 => Ok(Platform::Xbox),
+        6 => Ok(Platform::Origin),
+        255 => Ok(Platform::Unknown),
+        _ => Err(UnpackError(format!("Invalid Platform value: {}", value))),
+    }
+}
+
 ///
 /// This packet details the players currently in a multiplayer lobby. It details each player's
 /// selected car, any AI involved in the game and also the ready status of each of the participants.
 ///
 /// Frequency: Two every second when in the lobby
-/// Size: 1191 bytes
+/// Size: 1218 bytes
 /// Version: 1
 ///
 /// ## Specification
@@ -45,6 +57,7 @@ struct RawLobbyInfo {
 /// ai_controlled: Whether the vehicle is AI (1) or Human (0) controlled
 /// team_id:       Team id - see appendix (255 if no team currently selected)
 /// nationality:   Nationality of the player
+/// platform:      1 = Steam, 3 = PlayStation, 4 = Xbox, 6 = Origin, 255 = unknown
 /// name:          Name of participant in UTF-8 format – null terminated
 ///                Will be truncated with ... (U+2026) if too long
 /// car_number:    Car number of the player
@@ -55,6 +68,7 @@ struct RawPlayer {
     ai_controlled: bool,
     team_id: u8,
     nationality: u8,
+    platform: u8,
     name1: [u8; 32], // FIXME: Ugly hack
     name2: [u8; 16],
     car_number: u8,
@@ -75,6 +89,7 @@ impl TryFrom<&RawPlayer> for Player {
 
         let team = unpack_team(player.team_id)?;
         let nationality = unpack_nationality(player.nationality)?;
+        let platform = unpack_platform(player.platform)?;
         let name = unpack_string(&name)?;
         let ready_status = unpack_ready_status(player.ready_status)?;
 
@@ -82,6 +97,7 @@ impl TryFrom<&RawPlayer> for Player {
             ai_controlled: player.ai_controlled,
             team,
             nationality,
+            platform,
             name,
             car_number: Some(player.car_number),
             ready_status,

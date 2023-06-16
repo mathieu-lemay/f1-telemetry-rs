@@ -4,7 +4,7 @@ use serde::Deserialize;
 
 use crate::f1_2021::generic::{unpack_nationality, unpack_team};
 use crate::packet::header::PacketHeader;
-use crate::packet::lobby_info::{PacketLobbyInfoData, Player, ReadyStatus};
+use crate::packet::lobby_info::{PacketLobbyInfoData, Platform, Player, ReadyStatus};
 use crate::packet::UnpackError;
 use crate::utils::{assert_packet_size, unpack_string};
 
@@ -82,6 +82,7 @@ impl TryFrom<&RawPlayer> for Player {
             ai_controlled: player.ai_controlled,
             team,
             nationality,
+            platform: Platform::Unknown,
             name,
             car_number: Some(player.car_number),
             ready_status,

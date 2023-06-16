@@ -12,6 +12,16 @@ pub enum ReadyStatus {
     Spectating,
 }
 
+#[derive(Debug, Copy, Clone, Default, Eq, PartialEq, Serialize)]
+pub enum Platform {
+    Steam,
+    PlayStation,
+    Xbox,
+    Origin,
+    #[default]
+    Unknown,
+}
+
 /// This type is used for the `players` array of the [`PacketLobbyInfoData`] type.
 ///
 /// ## Specification
@@ -19,6 +29,7 @@ pub enum ReadyStatus {
 /// ai_controlled: Whether the vehicle is AI or Human.
 /// team:          Team of the player
 /// nationality:   Nationality of the player
+/// platform:      Gaming platform used by the player. New in F1 23.
 /// name:          Name of participant in UTF-8 format – null terminated
 /// car_number:    Car number of the player
 /// ready_status:  Player's ready status
@@ -28,6 +39,7 @@ pub struct Player {
     pub ai_controlled: bool,
     pub team: Team,
     pub nationality: Nationality,
+    pub platform: Platform,
     pub name: String,
     pub car_number: Option<u8>,
     pub ready_status: ReadyStatus,

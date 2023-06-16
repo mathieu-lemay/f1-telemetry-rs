@@ -4815,6 +4815,7 @@ async fn test_parse_2022_lobby_info_packet() {
                 name: "Arron BARNES".to_string(),
                 car_number: Some(71),
                 ready_status: ReadyStatus::NotReady,
+                ..Default::default()
             },
             Player {
                 ai_controlled: true,
@@ -4823,6 +4824,7 @@ async fn test_parse_2022_lobby_info_packet() {
                 name: "Martin GILES".to_string(),
                 car_number: Some(70),
                 ready_status: ReadyStatus::NotReady,
+                ..Default::default()
             },
             Player {
                 ai_controlled: true,
@@ -4831,6 +4833,7 @@ async fn test_parse_2022_lobby_info_packet() {
                 name: "Alex MURRAY".to_string(),
                 car_number: Some(40),
                 ready_status: ReadyStatus::NotReady,
+                ..Default::default()
             },
             Player {
                 ai_controlled: true,
@@ -4839,6 +4842,7 @@ async fn test_parse_2022_lobby_info_packet() {
                 name: "Lucas ROTH".to_string(),
                 car_number: Some(95),
                 ready_status: ReadyStatus::NotReady,
+                ..Default::default()
             },
             Player {
                 ai_controlled: true,
@@ -4847,6 +4851,7 @@ async fn test_parse_2022_lobby_info_packet() {
                 name: "Igor CORREIA".to_string(),
                 car_number: Some(79),
                 ready_status: ReadyStatus::NotReady,
+                ..Default::default()
             },
             Player {
                 ai_controlled: true,
@@ -4855,6 +4860,7 @@ async fn test_parse_2022_lobby_info_packet() {
                 name: "Sophie LEVASSEUR".to_string(),
                 car_number: Some(53),
                 ready_status: ReadyStatus::NotReady,
+                ..Default::default()
             },
             Player {
                 ai_controlled: true,
@@ -4863,6 +4869,7 @@ async fn test_parse_2022_lobby_info_packet() {
                 name: "Jonas SCHIFFER".to_string(),
                 car_number: Some(76),
                 ready_status: ReadyStatus::NotReady,
+                ..Default::default()
             },
             Player {
                 ai_controlled: true,
@@ -4871,6 +4878,7 @@ async fn test_parse_2022_lobby_info_packet() {
                 name: "Alain FOREST".to_string(),
                 car_number: Some(80),
                 ready_status: ReadyStatus::NotReady,
+                ..Default::default()
             },
             Player {
                 ai_controlled: true,
@@ -4879,6 +4887,7 @@ async fn test_parse_2022_lobby_info_packet() {
                 name: "Jay LETOURNEAU".to_string(),
                 car_number: Some(68),
                 ready_status: ReadyStatus::NotReady,
+                ..Default::default()
             },
             Player {
                 ai_controlled: true,
@@ -4887,6 +4896,7 @@ async fn test_parse_2022_lobby_info_packet() {
                 name: "Esto SAARI".to_string(),
                 car_number: Some(28),
                 ready_status: ReadyStatus::NotReady,
+                ..Default::default()
             },
             Player {
                 ai_controlled: true,
@@ -4895,6 +4905,7 @@ async fn test_parse_2022_lobby_info_packet() {
                 name: "Yasar ATIYEH".to_string(),
                 car_number: Some(45),
                 ready_status: ReadyStatus::NotReady,
+                ..Default::default()
             },
             Player {
                 ai_controlled: true,
@@ -4903,6 +4914,7 @@ async fn test_parse_2022_lobby_info_packet() {
                 name: "Naota IZUMI".to_string(),
                 car_number: Some(42),
                 ready_status: ReadyStatus::NotReady,
+                ..Default::default()
             },
             Player {
                 ai_controlled: true,
@@ -4911,6 +4923,7 @@ async fn test_parse_2022_lobby_info_packet() {
                 name: "Wilhelm KAUFMANN".to_string(),
                 car_number: Some(47),
                 ready_status: ReadyStatus::NotReady,
+                ..Default::default()
             },
             Player {
                 ai_controlled: true,
@@ -4919,6 +4932,7 @@ async fn test_parse_2022_lobby_info_packet() {
                 name: "Marie LAURSEN".to_string(),
                 car_number: Some(65),
                 ready_status: ReadyStatus::NotReady,
+                ..Default::default()
             },
             Player {
                 ai_controlled: true,
@@ -4927,6 +4941,7 @@ async fn test_parse_2022_lobby_info_packet() {
                 name: "Flavio NIEVES".to_string(),
                 car_number: Some(36),
                 ready_status: ReadyStatus::NotReady,
+                ..Default::default()
             },
             Player {
                 ai_controlled: true,
@@ -4935,6 +4950,7 @@ async fn test_parse_2022_lobby_info_packet() {
                 name: "Peter BELOUSOV".to_string(),
                 car_number: Some(87),
                 ready_status: ReadyStatus::NotReady,
+                ..Default::default()
             },
             Player {
                 ai_controlled: true,
@@ -4943,6 +4959,7 @@ async fn test_parse_2022_lobby_info_packet() {
                 name: "Klimek MICHALSKI".to_string(),
                 car_number: Some(32),
                 ready_status: ReadyStatus::NotReady,
+                ..Default::default()
             },
             Player {
                 ai_controlled: true,
@@ -4951,6 +4968,7 @@ async fn test_parse_2022_lobby_info_packet() {
                 name: "Santiago MORENO".to_string(),
                 car_number: Some(60),
                 ready_status: ReadyStatus::NotReady,
+                ..Default::default()
             },
             Player {
                 ai_controlled: true,
@@ -4959,6 +4977,7 @@ async fn test_parse_2022_lobby_info_packet() {
                 name: "Benjamin COPPENS".to_string(),
                 car_number: Some(54),
                 ready_status: ReadyStatus::NotReady,
+                ..Default::default()
             },
             Player {
                 ai_controlled: false,
@@ -4967,6 +4986,7 @@ async fn test_parse_2022_lobby_info_packet() {
                 name: "Player".to_string(),
                 car_number: Some(42),
                 ready_status: ReadyStatus::NotReady,
+                ..Default::default()
             },
             Player {
                 ai_controlled: false,
@@ -4975,6 +4995,7 @@ async fn test_parse_2022_lobby_info_packet() {
                 name: "".to_string(),
                 car_number: Some(0),
                 ready_status: ReadyStatus::NotReady,
+                ..Default::default()
             },
             Player {
                 ai_controlled: false,
@@ -4983,6 +5004,7 @@ async fn test_parse_2022_lobby_info_packet() {
                 name: "".to_string(),
                 car_number: Some(0),
                 ready_status: ReadyStatus::NotReady,
+                ..Default::default()
             },
         ],
     };
