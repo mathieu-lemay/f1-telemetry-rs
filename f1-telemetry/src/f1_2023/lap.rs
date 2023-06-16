@@ -55,7 +55,7 @@ struct RawPacketData {
 /// The lap data packet gives details of all the cars in the session.
 ///
 /// Frequency: Rate as specified in menus
-/// Size: 972 bytes
+/// Size: 1131 bytes
 /// Version: 1
 ///
 /// ## Specification
@@ -63,7 +63,11 @@ struct RawPacketData {
 /// last_lap_time:                 Last lap time in milliseconds
 /// current_lap_time:              Current time around the lap in milliseconds
 /// sector_1_time:                 Sector 1 time in milliseconds
+/// sector_1_time_minutes:         Sector 1 whole minute part
 /// sector_2_time:                 Sector 2 time in milliseconds
+/// sector_2_time_minutes:         Sector 2 whole minute part
+/// delta_to_car_in_front:         Time delta to car in front in milliseconds
+/// delta_to_race_leader:          Time delta to race leader in milliseconds
 /// lap_distance:                  Distance vehicle is around current lap in metres – could
 ///                                be negative if line hasn’t been crossed yet
 /// total_distance:                Total distance travelled in session in metres – could
@@ -76,7 +80,8 @@ struct RawPacketData {
 /// sector:                        0 = sector1, 1 = sector2, 2 = sector3
 /// current_lap_invalid:           Current lap invalid - 0 = valid, 1 = invalid
 /// penalties:                     Accumulated time penalties in seconds to be added
-/// warnings:                      Accumulated number of warnings issued
+/// total_warnings:                Accumulated number of warnings issued
+/// corner_cutting_warnings:       Accumulated number of corner cutting warnings issued
 /// number_unserved_drive_through: Number of drive through penalties left to serve
 /// number_unserved_stop_go:       Number of stop and go penalties left to serve
 /// grid_position:                 Grid position the vehicle started the race in
@@ -95,7 +100,11 @@ struct RawLapData {
     last_lap_time: u32,
     current_lap_time: u32,
     sector_1_time: u16,
+    sector_1_time_minutes: u8,
     sector_2_time: u16,
+    sector_2_time_minutes: u8,
+    delta_to_car_in_front: u16,
+    delta_to_race_leader: u16,
     lap_distance: f32,
     total_distance: f32,
     safety_car_delta: f32,
@@ -106,7 +115,8 @@ struct RawLapData {
     sector: u8,
     current_lap_invalid: bool,
     penalties: u8,
-    warnings: u8,
+    total_warnings: u8,
+    corner_cutting_warnings: u8,
     number_unserved_drive_through: u8,
     number_unserved_stop_go: u8,
     grid_position: u8,
@@ -131,7 +141,11 @@ impl TryFrom<&RawLapData> for LapData {
             last_lap_time: car_lap_data.last_lap_time,
             current_lap_time: car_lap_data.current_lap_time,
             sector_1_time: car_lap_data.sector_1_time,
+            sector_1_time_minutes: car_lap_data.sector_1_time_minutes,
             sector_2_time: car_lap_data.sector_2_time,
+            sector_2_time_minutes: car_lap_data.sector_2_time_minutes,
+            delta_to_car_in_front: car_lap_data.delta_to_car_in_front,
+            delta_to_race_leader: car_lap_data.delta_to_race_leader,
             lap_distance: car_lap_data.lap_distance,
             total_distance: car_lap_data.total_distance,
             safety_car_delta: car_lap_data.safety_car_delta,
@@ -142,7 +156,8 @@ impl TryFrom<&RawLapData> for LapData {
             sector,
             current_lap_invalid: car_lap_data.current_lap_invalid,
             penalties: car_lap_data.penalties,
-            warnings: car_lap_data.warnings,
+            total_warnings: car_lap_data.total_warnings,
+            corner_cutting_warnings: car_lap_data.corner_cutting_warnings,
             number_unserved_drive_through: car_lap_data.number_unserved_drive_through,
             number_unserved_stop_go: car_lap_data.number_unserved_stop_go,
             grid_position: car_lap_data.grid_position,

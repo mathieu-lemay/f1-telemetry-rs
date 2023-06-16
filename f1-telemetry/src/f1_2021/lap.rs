@@ -132,7 +132,7 @@ impl TryFrom<&RawLapData> for LapData {
             sector,
             current_lap_invalid: car_lap_data.current_lap_invalid,
             penalties: car_lap_data.penalties,
-            warnings: car_lap_data.warnings,
+            total_warnings: car_lap_data.warnings,
             number_unserved_drive_through: car_lap_data.number_unserved_drive_through,
             number_unserved_stop_go: car_lap_data.number_unserved_stop_go,
             grid_position: car_lap_data.grid_position,

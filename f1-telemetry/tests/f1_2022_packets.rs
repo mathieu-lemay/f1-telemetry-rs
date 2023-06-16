@@ -766,7 +766,7 @@ async fn test_parse_2022_lap_packet() {
                 sector: Sector::Sector1,
                 current_lap_invalid: false,
                 penalties: 0,
-                warnings: 0,
+                total_warnings: 0,
                 number_unserved_drive_through: 0,
                 number_unserved_stop_go: 0,
                 grid_position: 9,
@@ -776,6 +776,7 @@ async fn test_parse_2022_lap_packet() {
                 pit_lane_time_in_lane: 0,
                 pit_stop_time: 0,
                 pit_stop_should_serve_penalty: false,
+                ..Default::default()
             },
             LapData {
                 last_lap_time: 0,
@@ -803,7 +804,7 @@ async fn test_parse_2022_lap_packet() {
                 sector: Sector::Sector1,
                 current_lap_invalid: false,
                 penalties: 0,
-                warnings: 0,
+                total_warnings: 0,
                 number_unserved_drive_through: 0,
                 number_unserved_stop_go: 0,
                 grid_position: 19,
@@ -813,6 +814,7 @@ async fn test_parse_2022_lap_packet() {
                 pit_lane_time_in_lane: 0,
                 pit_stop_time: 0,
                 pit_stop_should_serve_penalty: false,
+                ..Default::default()
             },
             LapData {
                 last_lap_time: 0,
@@ -840,7 +842,7 @@ async fn test_parse_2022_lap_packet() {
                 sector: Sector::Sector1,
                 current_lap_invalid: false,
                 penalties: 0,
-                warnings: 0,
+                total_warnings: 0,
                 number_unserved_drive_through: 0,
                 number_unserved_stop_go: 0,
                 grid_position: 5,
@@ -850,6 +852,7 @@ async fn test_parse_2022_lap_packet() {
                 pit_lane_time_in_lane: 0,
                 pit_stop_time: 0,
                 pit_stop_should_serve_penalty: false,
+                ..Default::default()
             },
             LapData {
                 last_lap_time: 0,
@@ -877,7 +880,7 @@ async fn test_parse_2022_lap_packet() {
                 sector: Sector::Sector1,
                 current_lap_invalid: false,
                 penalties: 0,
-                warnings: 0,
+                total_warnings: 0,
                 number_unserved_drive_through: 0,
                 number_unserved_stop_go: 0,
                 grid_position: 18,
@@ -887,6 +890,7 @@ async fn test_parse_2022_lap_packet() {
                 pit_lane_time_in_lane: 0,
                 pit_stop_time: 0,
                 pit_stop_should_serve_penalty: false,
+                ..Default::default()
             },
             LapData {
                 last_lap_time: 0,
@@ -914,7 +918,7 @@ async fn test_parse_2022_lap_packet() {
                 sector: Sector::Sector1,
                 current_lap_invalid: false,
                 penalties: 0,
-                warnings: 0,
+                total_warnings: 0,
                 number_unserved_drive_through: 0,
                 number_unserved_stop_go: 0,
                 grid_position: 15,
@@ -924,6 +928,7 @@ async fn test_parse_2022_lap_packet() {
                 pit_lane_time_in_lane: 0,
                 pit_stop_time: 0,
                 pit_stop_should_serve_penalty: false,
+                ..Default::default()
             },
             LapData {
                 last_lap_time: 0,
@@ -951,7 +956,7 @@ async fn test_parse_2022_lap_packet() {
                 sector: Sector::Sector2,
                 current_lap_invalid: false,
                 penalties: 0,
-                warnings: 0,
+                total_warnings: 0,
                 number_unserved_drive_through: 0,
                 number_unserved_stop_go: 0,
                 grid_position: 1,
@@ -961,6 +966,7 @@ async fn test_parse_2022_lap_packet() {
                 pit_lane_time_in_lane: 0,
                 pit_stop_time: 0,
                 pit_stop_should_serve_penalty: false,
+                ..Default::default()
             },
             LapData {
                 last_lap_time: 0,
@@ -988,7 +994,7 @@ async fn test_parse_2022_lap_packet() {
                 sector: Sector::Sector1,
                 current_lap_invalid: false,
                 penalties: 0,
-                warnings: 0,
+                total_warnings: 0,
                 number_unserved_drive_through: 0,
                 number_unserved_stop_go: 0,
                 grid_position: 20,
@@ -998,6 +1004,7 @@ async fn test_parse_2022_lap_packet() {
                 pit_lane_time_in_lane: 0,
                 pit_stop_time: 0,
                 pit_stop_should_serve_penalty: false,
+                ..Default::default()
             },
             LapData {
                 last_lap_time: 0,
@@ -1025,7 +1032,7 @@ async fn test_parse_2022_lap_packet() {
                 sector: Sector::Sector1,
                 current_lap_invalid: false,
                 penalties: 0,
-                warnings: 0,
+                total_warnings: 0,
                 number_unserved_drive_through: 0,
                 number_unserved_stop_go: 0,
                 grid_position: 6,
@@ -1035,6 +1042,7 @@ async fn test_parse_2022_lap_packet() {
                 pit_lane_time_in_lane: 0,
                 pit_stop_time: 0,
                 pit_stop_should_serve_penalty: false,
+                ..Default::default()
             },
             LapData {
                 last_lap_time: 0,
@@ -1062,7 +1070,7 @@ async fn test_parse_2022_lap_packet() {
                 sector: Sector::Sector1,
                 current_lap_invalid: false,
                 penalties: 0,
-                warnings: 0,
+                total_warnings: 0,
                 number_unserved_drive_through: 0,
                 number_unserved_stop_go: 0,
                 grid_position: 16,
@@ -1072,6 +1080,7 @@ async fn test_parse_2022_lap_packet() {
                 pit_lane_time_in_lane: 0,
                 pit_stop_time: 0,
                 pit_stop_should_serve_penalty: false,
+                ..Default::default()
             },
             LapData {
                 last_lap_time: 0,
@@ -1099,7 +1108,7 @@ async fn test_parse_2022_lap_packet() {
                 sector: Sector::Sector1,
                 current_lap_invalid: false,
                 penalties: 0,
-                warnings: 0,
+                total_warnings: 0,
                 number_unserved_drive_through: 0,
                 number_unserved_stop_go: 0,
                 grid_position: 10,
@@ -1109,6 +1118,7 @@ async fn test_parse_2022_lap_packet() {
                 pit_lane_time_in_lane: 0,
                 pit_stop_time: 0,
                 pit_stop_should_serve_penalty: false,
+                ..Default::default()
             },
             LapData {
                 last_lap_time: 0,
@@ -1136,7 +1146,7 @@ async fn test_parse_2022_lap_packet() {
                 sector: Sector::Sector1,
                 current_lap_invalid: false,
                 penalties: 0,
-                warnings: 0,
+                total_warnings: 0,
                 number_unserved_drive_through: 0,
                 number_unserved_stop_go: 0,
                 grid_position: 17,
@@ -1146,6 +1156,7 @@ async fn test_parse_2022_lap_packet() {
                 pit_lane_time_in_lane: 0,
                 pit_stop_time: 0,
                 pit_stop_should_serve_penalty: false,
+                ..Default::default()
             },
             LapData {
                 last_lap_time: 0,
@@ -1173,7 +1184,7 @@ async fn test_parse_2022_lap_packet() {
                 sector: Sector::Sector1,
                 current_lap_invalid: false,
                 penalties: 0,
-                warnings: 0,
+                total_warnings: 0,
                 number_unserved_drive_through: 0,
                 number_unserved_stop_go: 0,
                 grid_position: 3,
@@ -1183,6 +1194,7 @@ async fn test_parse_2022_lap_packet() {
                 pit_lane_time_in_lane: 0,
                 pit_stop_time: 0,
                 pit_stop_should_serve_penalty: false,
+                ..Default::default()
             },
             LapData {
                 last_lap_time: 0,
@@ -1210,7 +1222,7 @@ async fn test_parse_2022_lap_packet() {
                 sector: Sector::Sector1,
                 current_lap_invalid: false,
                 penalties: 0,
-                warnings: 0,
+                total_warnings: 0,
                 number_unserved_drive_through: 0,
                 number_unserved_stop_go: 0,
                 grid_position: 8,
@@ -1220,6 +1232,7 @@ async fn test_parse_2022_lap_packet() {
                 pit_lane_time_in_lane: 0,
                 pit_stop_time: 0,
                 pit_stop_should_serve_penalty: false,
+                ..Default::default()
             },
             LapData {
                 last_lap_time: 0,
@@ -1247,7 +1260,7 @@ async fn test_parse_2022_lap_packet() {
                 sector: Sector::Sector1,
                 current_lap_invalid: false,
                 penalties: 0,
-                warnings: 0,
+                total_warnings: 0,
                 number_unserved_drive_through: 0,
                 number_unserved_stop_go: 0,
                 grid_position: 14,
@@ -1257,6 +1270,7 @@ async fn test_parse_2022_lap_packet() {
                 pit_lane_time_in_lane: 0,
                 pit_stop_time: 0,
                 pit_stop_should_serve_penalty: false,
+                ..Default::default()
             },
             LapData {
                 last_lap_time: 0,
@@ -1284,7 +1298,7 @@ async fn test_parse_2022_lap_packet() {
                 sector: Sector::Sector1,
                 current_lap_invalid: false,
                 penalties: 0,
-                warnings: 0,
+                total_warnings: 0,
                 number_unserved_drive_through: 0,
                 number_unserved_stop_go: 0,
                 grid_position: 13,
@@ -1294,6 +1308,7 @@ async fn test_parse_2022_lap_packet() {
                 pit_lane_time_in_lane: 0,
                 pit_stop_time: 0,
                 pit_stop_should_serve_penalty: false,
+                ..Default::default()
             },
             LapData {
                 last_lap_time: 0,
@@ -1321,7 +1336,7 @@ async fn test_parse_2022_lap_packet() {
                 sector: Sector::Sector1,
                 current_lap_invalid: false,
                 penalties: 0,
-                warnings: 0,
+                total_warnings: 0,
                 number_unserved_drive_through: 0,
                 number_unserved_stop_go: 0,
                 grid_position: 12,
@@ -1331,6 +1346,7 @@ async fn test_parse_2022_lap_packet() {
                 pit_lane_time_in_lane: 0,
                 pit_stop_time: 0,
                 pit_stop_should_serve_penalty: false,
+                ..Default::default()
             },
             LapData {
                 last_lap_time: 0,
@@ -1358,7 +1374,7 @@ async fn test_parse_2022_lap_packet() {
                 sector: Sector::Sector1,
                 current_lap_invalid: false,
                 penalties: 0,
-                warnings: 0,
+                total_warnings: 0,
                 number_unserved_drive_through: 0,
                 number_unserved_stop_go: 0,
                 grid_position: 11,
@@ -1368,6 +1384,7 @@ async fn test_parse_2022_lap_packet() {
                 pit_lane_time_in_lane: 0,
                 pit_stop_time: 0,
                 pit_stop_should_serve_penalty: false,
+                ..Default::default()
             },
             LapData {
                 last_lap_time: 0,
@@ -1395,7 +1412,7 @@ async fn test_parse_2022_lap_packet() {
                 sector: Sector::Sector1,
                 current_lap_invalid: false,
                 penalties: 0,
-                warnings: 0,
+                total_warnings: 0,
                 number_unserved_drive_through: 0,
                 number_unserved_stop_go: 0,
                 grid_position: 7,
@@ -1405,6 +1422,7 @@ async fn test_parse_2022_lap_packet() {
                 pit_lane_time_in_lane: 0,
                 pit_stop_time: 0,
                 pit_stop_should_serve_penalty: false,
+                ..Default::default()
             },
             LapData {
                 last_lap_time: 0,
@@ -1432,7 +1450,7 @@ async fn test_parse_2022_lap_packet() {
                 sector: Sector::Sector1,
                 current_lap_invalid: false,
                 penalties: 0,
-                warnings: 0,
+                total_warnings: 0,
                 number_unserved_drive_through: 0,
                 number_unserved_stop_go: 0,
                 grid_position: 4,
@@ -1442,6 +1460,7 @@ async fn test_parse_2022_lap_packet() {
                 pit_lane_time_in_lane: 0,
                 pit_stop_time: 0,
                 pit_stop_should_serve_penalty: false,
+                ..Default::default()
             },
             LapData {
                 last_lap_time: 0,
@@ -1469,7 +1488,7 @@ async fn test_parse_2022_lap_packet() {
                 sector: Sector::Sector1,
                 current_lap_invalid: false,
                 penalties: 2,
-                warnings: 0,
+                total_warnings: 0,
                 number_unserved_drive_through: 0,
                 number_unserved_stop_go: 0,
                 grid_position: 2,
@@ -1479,6 +1498,7 @@ async fn test_parse_2022_lap_packet() {
                 pit_lane_time_in_lane: 0,
                 pit_stop_time: 0,
                 pit_stop_should_serve_penalty: false,
+                ..Default::default()
             },
             LapData::default(),
             LapData::default(),

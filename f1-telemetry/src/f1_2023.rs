@@ -7,7 +7,7 @@ use car_status::parse_car_status_data;
 use event::parse_event_data;
 //use final_classification::parse_final_classification_data;
 use header::parse_header;
-//use lap::parse_lap_data;
+use lap::parse_lap_data;
 //use lobby_info::parse_lobby_info_data;
 use motion::parse_motion_data;
 //use participants::parse_participants_data;
@@ -25,7 +25,7 @@ mod event;
 //mod final_classification;
 mod generic;
 mod header;
-//mod lap;
+mod lap;
 //mod lobby_info;
 mod motion;
 //mod participants;
@@ -47,11 +47,11 @@ pub(crate) fn parse_packet(size: usize, packet: &[u8]) -> Result<Packet, UnpackE
 
         //Ok(Packet::Session(packet))
         //}
-        //PacketType::LapData => {
-        //let packet = parse_lap_data(&mut cursor, header, size)?;
+        PacketType::LapData => {
+            let packet = parse_lap_data(&mut cursor, header, size)?;
 
-        //Ok(Packet::Lap(packet))
-        //}
+            Ok(Packet::Lap(packet))
+        }
         PacketType::Event => {
             let packet = parse_event_data(&mut cursor, header, size)?;
 
