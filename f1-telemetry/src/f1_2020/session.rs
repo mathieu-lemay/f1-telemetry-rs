@@ -284,5 +284,12 @@ pub(crate) fn parse_session_data<T: BufRead>(
         rule_set: None,
         time_of_day: None,
         session_length: None,
+        speed_units_lead_player: None,
+        temperature_units_lead_player: None,
+        speed_units_secondary_player: None,
+        temperature_units_secondary_player: None,
+        num_safety_car_periods: None,
+        num_virtual_safety_car_periods: None,
+        num_red_flag_periods: None,
     })
 }

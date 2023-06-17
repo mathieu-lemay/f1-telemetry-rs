@@ -298,6 +298,18 @@ pub enum SessionLength {
     Full,
 }
 
+#[derive(Debug, Clone, Eq, PartialEq, Serialize)]
+pub enum SpeedUnits {
+    MPH,
+    KPH,
+}
+
+#[derive(Debug, Clone, Eq, PartialEq, Serialize)]
+pub enum TemperatureUnits {
+    Celsius,
+    Fahrenheit,
+}
+
 /// The session packet includes details about the current session in progress
 ///
 /// Frequency: 2 per second
@@ -369,4 +381,18 @@ pub struct PacketSessionData {
     pub time_of_day: Option<u32>,
     /// Session Length
     pub session_length: Option<SessionLength>,
+    /// Speed units of the lead player. New in F1 23.
+    pub speed_units_lead_player: Option<SpeedUnits>,
+    /// Temperature units of the lead player. New in F1 23.
+    pub temperature_units_lead_player: Option<TemperatureUnits>,
+    /// Speed units of the secondary player. New in F1 23.
+    pub speed_units_secondary_player: Option<SpeedUnits>,
+    /// Temperature units of the secondary player. New in F1 23.
+    pub temperature_units_secondary_player: Option<TemperatureUnits>,
+    /// Number of safety cars called during session. New in F1 23.
+    pub num_safety_car_periods: Option<u8>,
+    /// Number of virtual safety cars called. New in F1 23.
+    pub num_virtual_safety_car_periods: Option<u8>,
+    /// Number of red flags called during session. New in F1 23.
+    pub num_red_flag_periods: Option<u8>,
 }

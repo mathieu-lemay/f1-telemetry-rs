@@ -717,6 +717,13 @@ async fn test_parse_2022_session_packet() {
         rule_set: Some(RuleSet::Race),
         time_of_day: Some(1130),
         session_length: Some(SessionLength::Short),
+        speed_units_lead_player: None,
+        temperature_units_lead_player: None,
+        speed_units_secondary_player: None,
+        temperature_units_secondary_player: None,
+        num_safety_car_periods: None,
+        num_virtual_safety_car_periods: None,
+        num_red_flag_periods: None,
     };
 
     assert_eq!(actual, expected);
