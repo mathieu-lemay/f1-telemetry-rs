@@ -1,6 +1,6 @@
 use serde::Serialize;
 
-use crate::packet::generic::{Nationality, Team};
+use crate::packet::generic::{Nationality, Platform, Team};
 
 use super::header::PacketHeader;
 
@@ -10,16 +10,6 @@ pub enum ReadyStatus {
     NotReady,
     Ready,
     Spectating,
-}
-
-#[derive(Debug, Copy, Clone, Default, Eq, PartialEq, Serialize)]
-pub enum Platform {
-    Steam,
-    PlayStation,
-    Xbox,
-    Origin,
-    #[default]
-    Unknown,
 }
 
 /// This type is used for the `players` array of the [`PacketLobbyInfoData`] type.

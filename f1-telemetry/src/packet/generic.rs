@@ -281,6 +281,16 @@ impl Team {
 }
 
 #[derive(Debug, Copy, Clone, Default, Eq, PartialEq, Serialize)]
+pub enum Platform {
+    Steam,
+    PlayStation,
+    Xbox,
+    Origin,
+    #[default]
+    Unknown,
+}
+
+#[derive(Debug, Copy, Clone, Default, Eq, PartialEq, Serialize)]
 pub enum TyreCompound {
     C0,
     C1,

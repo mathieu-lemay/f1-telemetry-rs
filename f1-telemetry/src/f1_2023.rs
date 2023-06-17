@@ -10,7 +10,7 @@ use header::parse_header;
 use lap::parse_lap_data;
 use lobby_info::parse_lobby_info_data;
 use motion::parse_motion_data;
-//use participants::parse_participants_data;
+use participants::parse_participants_data;
 //use session::parse_session_data;
 use session_history::parse_session_history_data;
 
@@ -28,7 +28,7 @@ mod header;
 mod lap;
 mod lobby_info;
 mod motion;
-//mod participants;
+mod participants;
 //mod session;
 mod session_history;
 
@@ -57,11 +57,11 @@ pub(crate) fn parse_packet(size: usize, packet: &[u8]) -> Result<Packet, UnpackE
 
             Ok(Packet::Event(packet))
         }
-        //PacketType::Participants => {
-        //let packet = parse_participants_data(&mut cursor, header, size)?;
+        PacketType::Participants => {
+            let packet = parse_participants_data(&mut cursor, header, size)?;
 
-        //Ok(Packet::Participants(packet))
-        //}
+            Ok(Packet::Participants(packet))
+        }
         //PacketType::CarSetups => {
         //let packet = parse_car_setup_data(&mut cursor, header, size)?;
 

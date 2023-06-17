@@ -219,6 +219,7 @@ impl TryFrom<&RawParticipant> for ParticipantData {
             nationality,
             name,
             telemetry_access,
+            ..Default::default()
         })
     }
 }

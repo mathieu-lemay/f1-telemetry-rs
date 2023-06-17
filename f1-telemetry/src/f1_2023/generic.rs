@@ -1,5 +1,5 @@
 use crate::packet::generic::{
-    Flag, Nationality, ResultStatus, Team, TyreCompound, TyreCompoundVisual,
+    Flag, Nationality, Platform, ResultStatus, Team, TyreCompound, TyreCompoundVisual,
 };
 use crate::packet::UnpackError;
 
@@ -177,6 +177,17 @@ pub(crate) fn unpack_team(value: u8) -> Result<Team, UnpackError> {
         140 => Ok(Team::ArtGP2022),
         255 => Ok(Team::MyTeam),
         _ => Err(UnpackError(format!("Invalid Team value: {}", value))),
+    }
+}
+
+pub(crate) fn unpack_platform(value: u8) -> Result<Platform, UnpackError> {
+    match value {
+        1 => Ok(Platform::Steam),
+        3 => Ok(Platform::PlayStation),
+        4 => Ok(Platform::Xbox),
+        6 => Ok(Platform::Origin),
+        255 => Ok(Platform::Unknown),
+        _ => Err(UnpackError(format!("Invalid Platform value: {}", value))),
     }
 }
 

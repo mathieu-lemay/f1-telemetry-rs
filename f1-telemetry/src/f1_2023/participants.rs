@@ -2,13 +2,13 @@ use std::io::BufRead;
 
 use serde::Deserialize;
 
-use crate::f1_2022::generic::{unpack_nationality, unpack_team};
 use crate::packet::header::PacketHeader;
 use crate::packet::participants::{Driver, PacketParticipantsData, ParticipantData, Telemetry};
 use crate::packet::UnpackError;
 use crate::utils::{assert_packet_size, unpack_string};
 
 use super::consts::*;
+use super::generic::{unpack_nationality, unpack_platform, unpack_team};
 
 fn unpack_driver(value: u8) -> Result<Driver, UnpackError> {
     match value {
@@ -148,7 +148,7 @@ fn unpack_telemetry(value: u8) -> Result<Telemetry, UnpackError> {
 /// The array should be indexed by vehicle index.
 ///
 /// Frequency: Every 5 seconds
-/// Size: 1257 bytes
+/// Size: 1306 bytes
 /// Version: 1
 ///
 /// ## Specification
@@ -166,16 +166,18 @@ struct RawParticipantData {
 
 /// ## Specification
 /// ```text
-/// ai_controlled:  Whether the vehicle is AI (1) or Human (0) controlled
-/// driver_id:      Driver id - see appendix
-/// network_id:     Network id – unique identifier for network players
-/// team_id:        Team id - see appendix
-/// my_team:        My team flag – 1 = My Team, 0 = otherwise
-/// race_number:    Race number of the car
-/// nationality:    Nationality of the driver
-/// name:           Name of participant in UTF-8 format – null terminated
-///                 Will be truncated with … (U+2026) if too long
-/// your_telemetry: The player's UDP setting, 0 = restricted, 1 = public
+/// ai_controlled:     Whether the vehicle is AI (1) or Human (0) controlled
+/// driver_id:         Driver id - see appendix
+/// network_id:        Network id – unique identifier for network players
+/// team_id:           Team id - see appendix
+/// my_team:           My team flag – 1 = My Team, 0 = otherwise
+/// race_number:       Race number of the car
+/// nationality:       Nationality of the driver
+/// name:              Name of participant in UTF-8 format – null terminated
+///                    Will be truncated with … (U+2026) if too long
+/// your_telemetry:    The player's UDP setting, 0 = restricted, 1 = public
+/// show_online_names: The player's show online names setting, 0 = off, 1 = on
+/// platform:          1 = Steam, 3 = PlayStation, 4 = Xbox, 6 = Origin, 255 = unknown
 /// ```
 #[derive(Deserialize)]
 struct RawParticipant {
@@ -189,6 +191,8 @@ struct RawParticipant {
     name1: [u8; 32], // FIXME: Ugly hack
     name2: [u8; 16],
     telemetry: u8,
+    show_online_names: bool,
+    platform: u8,
 }
 
 impl TryFrom<&RawParticipant> for ParticipantData {
@@ -208,6 +212,7 @@ impl TryFrom<&RawParticipant> for ParticipantData {
         let nationality = unpack_nationality(participant.nationality)?;
         let name = unpack_string(&name)?;
         let telemetry_access = unpack_telemetry(participant.telemetry)?;
+        let platform = unpack_platform(participant.platform)?;
 
         Ok(Self {
             ai_controlled: participant.ai_controlled,
@@ -219,6 +224,8 @@ impl TryFrom<&RawParticipant> for ParticipantData {
             nationality,
             name,
             telemetry_access,
+            show_online_names: participant.show_online_names,
+            platform,
         })
     }
 }

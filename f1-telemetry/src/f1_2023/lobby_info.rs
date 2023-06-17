@@ -3,12 +3,12 @@ use std::io::BufRead;
 use serde::Deserialize;
 
 use crate::packet::header::PacketHeader;
-use crate::packet::lobby_info::{PacketLobbyInfoData, Platform, Player, ReadyStatus};
+use crate::packet::lobby_info::{PacketLobbyInfoData, Player, ReadyStatus};
 use crate::packet::UnpackError;
 use crate::utils::{assert_packet_size, unpack_string};
 
 use super::consts::*;
-use super::generic::{unpack_nationality, unpack_team};
+use super::generic::{unpack_nationality, unpack_platform, unpack_team};
 
 fn unpack_ready_status(value: u8) -> Result<ReadyStatus, UnpackError> {
     match value {
@@ -16,17 +16,6 @@ fn unpack_ready_status(value: u8) -> Result<ReadyStatus, UnpackError> {
         1 => Ok(ReadyStatus::Ready),
         2 => Ok(ReadyStatus::Spectating),
         _ => Err(UnpackError(format!("Invalid ReadyStatus value: {}", value))),
-    }
-}
-
-pub(crate) fn unpack_platform(value: u8) -> Result<Platform, UnpackError> {
-    match value {
-        1 => Ok(Platform::Steam),
-        3 => Ok(Platform::PlayStation),
-        4 => Ok(Platform::Xbox),
-        6 => Ok(Platform::Origin),
-        255 => Ok(Platform::Unknown),
-        _ => Err(UnpackError(format!("Invalid Platform value: {}", value))),
     }
 }
 

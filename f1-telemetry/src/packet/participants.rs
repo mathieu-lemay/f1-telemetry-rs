@@ -2,7 +2,7 @@ use serde::Serialize;
 
 use crate::packet::generic::{Nationality, Team};
 
-use super::header::PacketHeader;
+use super::{generic::Platform, header::PacketHeader};
 
 #[derive(Debug, Copy, Clone, Default, Eq, PartialEq, Serialize)]
 pub enum Driver {
@@ -135,31 +135,31 @@ pub enum Telemetry {
 
 /// This type is used for the `participants` array of the `PacketParticipantsData` type.
 ///
-/// ## Specification
-/// ```text
-/// ai_controlled:  Set to true if the vehicle is AI controlled.
-/// driver:         Driver. See [`Driver`].
-/// network_id:     Network id – unique identifier for network players
-/// team:           Team. See [`Team`].
-/// my_team:        My team flag – true = My Team, false = otherwise
-/// race_number:    Race number of the car.
-/// nationality:    Nationality of the driver.
-/// name:           Name of participant.
-/// your_telemetry: The player's UDP setting. See [`Telemetry`].
-/// ```
-///
 /// See also [`Driver`], [`Team`] and [`Telemetry`]
 #[derive(Debug, Clone, Default, Eq, PartialEq, Serialize)]
 pub struct ParticipantData {
+    /// Set to true if the vehicle is AI controlled.
     pub ai_controlled: bool,
+    /// Driver. See [`Driver`].
     pub driver: Driver,
+    /// Network id – unique identifier for network players
     pub network_id: Option<u8>,
+    /// Team. See [`Team`].
     pub team: Team,
+    /// My team flag – true = My Team, false = otherwise
     pub my_team: bool,
+    /// Race number of the car.
     pub race_number: u8,
+    /// Nationality of the driver.
     pub nationality: Nationality,
+    /// Name of participant.
     pub name: String,
+    /// The player's UDP setting. See [`Telemetry`].
     pub telemetry_access: Telemetry,
+    /// The player's show online names setting
+    pub show_online_names: bool,
+    /// Gaming platform used by the player. New in F1 23.
+    pub platform: Platform,
 }
 
 /// This is a list of participants in the race. If the vehicle is controlled by AI, then the name
@@ -172,17 +172,13 @@ pub struct ParticipantData {
 /// The array should be indexed by vehicle index.
 ///
 /// Frequency: Every 5 seconds
-///
-/// ## Specification
-/// ```text
-/// header:          Header
-/// num_active_cars: Number of active cars in the data – should match number of
-///                  cars on HUD
-/// participants:    List of participants
-/// ```
 #[derive(Debug, Clone, Eq, PartialEq, Serialize)]
 pub struct PacketParticipantsData {
+    /// Packet header
     pub header: PacketHeader,
+    /// Number of active cars in the data – should match number of
+    /// cars on HUD
     pub num_active_cars: u8,
+    /// List of participants
     pub participants: Vec<ParticipantData>,
 }
