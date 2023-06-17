@@ -2,13 +2,14 @@ use std::io::BufRead;
 
 use serde::Deserialize;
 
-use super::generic::unpack_flag;
 use crate::packet::header::PacketHeader;
 use crate::packet::session::*;
 use crate::packet::UnpackError;
 use crate::utils::assert_packet_size;
 
 use super::consts::*;
+use super::generic::unpack_flag;
+use super::generic::unpack_session_type;
 
 fn unpack_weather(value: u8) -> Result<Weather, UnpackError> {
     match value {
@@ -19,26 +20,6 @@ fn unpack_weather(value: u8) -> Result<Weather, UnpackError> {
         4 => Ok(Weather::HeavyRain),
         5 => Ok(Weather::Storm),
         _ => Err(UnpackError(format!("Invalid Weather value: {}", value))),
-    }
-}
-
-fn unpack_session_type(value: u8) -> Result<SessionType, UnpackError> {
-    match value {
-        0 => Ok(SessionType::Unknown),
-        1 => Ok(SessionType::Practice1),
-        2 => Ok(SessionType::Practice2),
-        3 => Ok(SessionType::Practice3),
-        4 => Ok(SessionType::PracticeShort),
-        5 => Ok(SessionType::Qualifying1),
-        6 => Ok(SessionType::Qualifying2),
-        7 => Ok(SessionType::Qualifying3),
-        8 => Ok(SessionType::QualifyingShort),
-        9 => Ok(SessionType::OneShotQualifying),
-        10 => Ok(SessionType::Race),
-        11 => Ok(SessionType::Race2),
-        12 => Ok(SessionType::Race3),
-        13 => Ok(SessionType::TimeTrial),
-        _ => Err(UnpackError(format!("Invalid SessionType value: {}", value))),
     }
 }
 

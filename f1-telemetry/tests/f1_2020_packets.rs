@@ -10,7 +10,7 @@ use f1_telemetry::packet::final_classification::{
     FinalClassification, PacketFinalClassificationData,
 };
 use f1_telemetry::packet::generic::{
-    Flag, Nationality, ResultStatus, Team, TyreCompound, TyreCompoundVisual, WheelData,
+    Flag, Nationality, ResultStatus, SessionType, Team, TyreCompound, TyreCompoundVisual, WheelData,
 };
 use f1_telemetry::packet::lap::{DriverStatus, LapData, PacketLapData, PitStatus, Sector};
 use f1_telemetry::packet::lobby_info::{PacketLobbyInfoData, Player, ReadyStatus};
@@ -19,8 +19,8 @@ use f1_telemetry::packet::participants::{
     Driver, PacketParticipantsData, ParticipantData, Telemetry,
 };
 use f1_telemetry::packet::session::{
-    Formula, MarshalZone, PacketSessionData, SafetyCar, SessionType, Track, Weather,
-    WeatherForecast, WeatherForecastSample,
+    Formula, MarshalZone, PacketSessionData, SafetyCar, Track, Weather, WeatherForecast,
+    WeatherForecastSample,
 };
 use f1_telemetry::packet::Packet;
 

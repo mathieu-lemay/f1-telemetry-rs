@@ -7,11 +7,13 @@ use f1_telemetry::packet::car_status::PacketCarStatusData;
 use f1_telemetry::packet::car_telemetry::PacketCarTelemetryData;
 use f1_telemetry::packet::event::{Event, PacketEventData};
 use f1_telemetry::packet::final_classification::PacketFinalClassificationData;
-use f1_telemetry::packet::generic::{ResultStatus, Team, TyreCompoundVisual, WheelData};
+use f1_telemetry::packet::generic::{
+    ResultStatus, SessionType, Team, TyreCompoundVisual, WheelData,
+};
 use f1_telemetry::packet::lap::{PacketLapData, PitStatus};
 use f1_telemetry::packet::motion::PacketMotionData;
 use f1_telemetry::packet::participants::{Driver, PacketParticipantsData};
-use f1_telemetry::packet::session::{PacketSessionData, SafetyCar, SessionType, Weather};
+use f1_telemetry::packet::session::{PacketSessionData, SafetyCar, Weather};
 use f1_telemetry::packet::Packet;
 
 use crate::fmt;

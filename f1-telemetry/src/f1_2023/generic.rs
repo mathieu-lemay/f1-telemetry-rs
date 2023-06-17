@@ -1,5 +1,5 @@
 use crate::packet::generic::{
-    Flag, Nationality, Platform, ResultStatus, Team, TyreCompound, TyreCompoundVisual,
+    Flag, Nationality, Platform, ResultStatus, SessionType, Team, TyreCompound, TyreCompoundVisual,
 };
 use crate::packet::UnpackError;
 
@@ -252,5 +252,25 @@ pub(crate) fn unpack_tyre_compound_visual(value: u8) -> Result<TyreCompoundVisua
             "Invalid TyreCompoundVisual value: {}",
             value
         ))),
+    }
+}
+
+pub(crate) fn unpack_session_type(value: u8) -> Result<SessionType, UnpackError> {
+    match value {
+        0 => Ok(SessionType::Unknown),
+        1 => Ok(SessionType::Practice1),
+        2 => Ok(SessionType::Practice2),
+        3 => Ok(SessionType::Practice3),
+        4 => Ok(SessionType::PracticeShort),
+        5 => Ok(SessionType::Qualifying1),
+        6 => Ok(SessionType::Qualifying2),
+        7 => Ok(SessionType::Qualifying3),
+        8 => Ok(SessionType::QualifyingShort),
+        9 => Ok(SessionType::OneShotQualifying),
+        10 => Ok(SessionType::Race),
+        11 => Ok(SessionType::Race2),
+        12 => Ok(SessionType::Race3),
+        13 => Ok(SessionType::TimeTrial),
+        _ => Err(UnpackError(format!("Invalid SessionType value: {}", value))),
     }
 }

@@ -349,6 +349,46 @@ impl TyreCompoundVisual {
     }
 }
 
+#[derive(Debug, Copy, Clone, Default, Eq, PartialEq, Serialize)]
+pub enum SessionType {
+    #[default]
+    Unknown,
+    Practice1,
+    Practice2,
+    Practice3,
+    PracticeShort,
+    Qualifying1,
+    Qualifying2,
+    Qualifying3,
+    QualifyingShort,
+    OneShotQualifying,
+    Race,
+    Race2,
+    Race3,
+    TimeTrial,
+}
+
+impl SessionType {
+    pub fn name<'a>(self) -> &'a str {
+        match self {
+            SessionType::Unknown => "Unknown",
+            SessionType::Practice1 => "Free Practice 1",
+            SessionType::Practice2 => "Free Practice 2",
+            SessionType::Practice3 => "Free Practice 3",
+            SessionType::PracticeShort => "Free Practice (Short)",
+            SessionType::Qualifying1 => "Qualifying 1",
+            SessionType::Qualifying2 => "Qualifying 2",
+            SessionType::Qualifying3 => "Qualifying 3",
+            SessionType::QualifyingShort => "Qualifying (Short)",
+            SessionType::OneShotQualifying => "One-Shot Qualifying",
+            SessionType::Race => "Race",
+            SessionType::Race2 => "Race 2",
+            SessionType::Race3 => "Race 3",
+            SessionType::TimeTrial => "Time Trial",
+        }
+    }
+}
+
 #[derive(Debug, Copy, Clone, Default, Eq, PartialEq, Serialize, Deserialize)]
 pub struct WheelData<T>
 where

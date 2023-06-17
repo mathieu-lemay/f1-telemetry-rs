@@ -11,7 +11,7 @@ use f1_telemetry::packet::final_classification::{
     FinalClassification, PacketFinalClassificationData,
 };
 use f1_telemetry::packet::generic::{
-    Flag, Nationality, ResultStatus, Team, TyreCompound, TyreCompoundVisual, WheelData,
+    Flag, Nationality, ResultStatus, SessionType, Team, TyreCompound, TyreCompoundVisual, WheelData,
 };
 use f1_telemetry::packet::lap::{DriverStatus, LapData, PacketLapData, PitStatus, Sector};
 use f1_telemetry::packet::lobby_info::{PacketLobbyInfoData, Player, ReadyStatus};
@@ -22,8 +22,7 @@ use f1_telemetry::packet::participants::{
 use f1_telemetry::packet::session::{
     BrakingAssist, DrivingAssists, DynamicRacingLine, DynamicRacingLineType, ForecastAccuracy,
     Formula, GameMode, GearboxAssist, MarshalZone, PacketSessionData, RuleSet, SafetyCar,
-    SessionLength, SessionType, TemperatureChange, Track, Weather, WeatherForecast,
-    WeatherForecastSample,
+    SessionLength, TemperatureChange, Track, Weather, WeatherForecast, WeatherForecastSample,
 };
 use f1_telemetry::packet::session_history::{
     LapHistoryData, PacketSessionHistoryData, TyreStintData,

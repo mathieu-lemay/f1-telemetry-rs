@@ -1,5 +1,6 @@
 pub const NUMBER_CARS: usize = 22;
 pub const NUMBER_MARSHAL_ZONES: usize = 21;
+pub const NUMBER_TYRE_SETS: usize = 20;
 // pub const NUMBER_WEATHER_FORECASTS: usize = 56;
 // pub const NUMBER_LAP_HISTORY_DATA: usize = 100;
 
@@ -17,3 +18,4 @@ pub const MOTION_PACKET_SIZE: usize = 1349;
 pub const PARTICIPANTS_PACKET_SIZE: usize = 1306;
 pub const SESSION_HISTORY_PACKET_SIZE: usize = 1460;
 pub const SESSION_PACKET_SIZE: usize = 644;
+pub const TYRE_SETS_PACKET_SIZE: usize = 231;

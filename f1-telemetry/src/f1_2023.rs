@@ -16,6 +16,8 @@ use session_history::parse_session_history_data;
 
 use crate::packet::{Packet, PacketType, UnpackError};
 
+use self::tyre_sets::parse_tyre_sets_data;
+
 mod car_damage;
 mod car_setup;
 mod car_status;
@@ -31,6 +33,7 @@ mod motion;
 mod participants;
 mod session;
 mod session_history;
+mod tyre_sets;
 
 pub(crate) fn parse_packet(size: usize, packet: &[u8]) -> Result<Packet, UnpackError> {
     let mut cursor = Cursor::new(packet);
@@ -96,6 +99,11 @@ pub(crate) fn parse_packet(size: usize, packet: &[u8]) -> Result<Packet, UnpackE
             let packet = parse_session_history_data(&mut cursor, header, size)?;
 
             Ok(Packet::SessionHistory(packet))
+        }
+        PacketType::TyreSets => {
+            let packet = parse_tyre_sets_data(&mut cursor, header, size)?;
+
+            Ok(Packet::TyreSets(packet))
         }
     }
 }

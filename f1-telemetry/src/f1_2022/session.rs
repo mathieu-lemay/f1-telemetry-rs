@@ -2,13 +2,14 @@ use std::io::BufRead;
 
 use serde::Deserialize;
 
-use crate::f1_2022::generic::unpack_flag;
+use crate::packet::generic::SessionType;
 use crate::packet::header::PacketHeader;
 use crate::packet::session::*;
 use crate::packet::UnpackError;
 use crate::utils::assert_packet_size;
 
 use super::consts::*;
+use super::generic::unpack_flag;
 
 fn unpack_weather(value: u8) -> Result<Weather, UnpackError> {
     match value {

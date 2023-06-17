@@ -7,8 +7,8 @@ use tokio::sync::mpsc::error::SendError;
 use tokio::sync::mpsc::UnboundedSender;
 use tokio::time::sleep;
 
-use f1_telemetry::packet::generic::{ResultStatus, TyreCompoundVisual};
-use f1_telemetry::packet::session::{SafetyCar, SessionType};
+use f1_telemetry::packet::generic::{ResultStatus, SessionType, TyreCompoundVisual};
+use f1_telemetry::packet::session::SafetyCar;
 use f1_telemetry::packet::Packet;
 
 use crate::fmt as cfmt;

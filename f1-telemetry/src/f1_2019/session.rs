@@ -2,6 +2,7 @@ use std::io::BufRead;
 
 use serde::Deserialize;
 
+use crate::packet::generic::SessionType;
 use crate::packet::header::PacketHeader;
 use crate::packet::session::*;
 use crate::packet::UnpackError;

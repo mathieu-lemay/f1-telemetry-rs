@@ -7,7 +7,7 @@ use f1_telemetry::packet::car_telemetry::{
 };
 use f1_telemetry::packet::event::{Event, FastestLap, PacketEventData};
 use f1_telemetry::packet::generic::{
-    Flag, Nationality, ResultStatus, Team, TyreCompound, TyreCompoundVisual, WheelData,
+    Flag, Nationality, ResultStatus, SessionType, Team, TyreCompound, TyreCompoundVisual, WheelData,
 };
 use f1_telemetry::packet::lap::{DriverStatus, LapData, PacketLapData, PitStatus, Sector};
 use f1_telemetry::packet::motion::{CarMotionData, PacketMotionData, PlayerCarData};
@@ -15,7 +15,7 @@ use f1_telemetry::packet::participants::{
     Driver, PacketParticipantsData, ParticipantData, Telemetry,
 };
 use f1_telemetry::packet::session::{
-    Formula, MarshalZone, PacketSessionData, SafetyCar, SessionType, Track, Weather,
+    Formula, MarshalZone, PacketSessionData, SafetyCar, Track, Weather,
 };
 use f1_telemetry::packet::Packet;
 
