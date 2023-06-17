@@ -14,17 +14,17 @@ pub(super) struct TyreTempView {
 
 impl TyreTempView {
     pub(super) fn new() -> Self {
-        let tyre_box = gtk::BoxBuilder::new()
+        let tyre_box = gtk::Box::builder()
             .orientation(Orientation::Vertical)
             .valign(Align::Center)
             .build();
 
         let surface = ImageSurface::create(Format::ARgb32, 400, 600).expect("Can't create surface");
-        let ctx = Context::new(&surface);
+        let ctx = Context::new(&surface).expect("Unable to create cairo context.");
 
         init_tyres(&ctx);
 
-        let car = gtk::ImageBuilder::new().surface(&surface).build();
+        let car = gtk::Image::builder().surface(&surface).build();
         tyre_box.pack_start(&car, false, false, 0);
 
         Self {
@@ -69,13 +69,17 @@ impl TyreTempView {
 
 fn init_tyres(ctx: &Context) {
     let initial_temp = TyreTemp::from_surface_inner(90, 100);
-    tyre_temp::draw_tyres(
+    let res = tyre_temp::draw_tyres(
         ctx,
         &initial_temp,
         &initial_temp,
         &initial_temp,
         &initial_temp,
-    )
+    );
+
+    if let Err(e) = res {
+        error!("Error drawing tyres: {:?}", e);
+    }
 }
 
 fn update_tyres(
@@ -85,5 +89,9 @@ fn update_tyres(
     rl_temp: &TyreTemp,
     rr_temp: &TyreTemp,
 ) {
-    tyre_temp::draw_tyres(ctx, fl_temp, fr_temp, rl_temp, rr_temp)
+    let res = tyre_temp::draw_tyres(ctx, fl_temp, fr_temp, rl_temp, rr_temp);
+
+    if let Err(e) = res {
+        error!("Error drawing tyres: {:?}", e);
+    }
 }

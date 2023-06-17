@@ -1,5 +1,5 @@
 use gtk::prelude::*;
-use gtk::{InfoBar, InfoBarBuilder, Label, LabelBuilder, MessageType, ResponseType, Widget};
+use gtk::{InfoBar, Label, MessageType, ResponseType, Widget};
 
 use f1_telemetry::packet::event::Event;
 
@@ -13,7 +13,7 @@ pub(super) struct EventsView {
 
 impl EventsView {
     pub(super) fn new() -> Self {
-        let info_bar = InfoBarBuilder::new()
+        let info_bar = InfoBar::builder()
             .show_close_button(true)
             .no_show_all(true)
             .build();
@@ -24,9 +24,9 @@ impl EventsView {
             }
         });
 
-        let message_label = LabelBuilder::new().name("events").build();
+        let message_label = Label::builder().name("events").build();
 
-        info_bar.get_content_area().add(&message_label);
+        info_bar.content_area().add(&message_label);
 
         Self {
             info_bar,

@@ -13,7 +13,7 @@ pub(super) struct HeaderView {
 
 impl HeaderView {
     pub(super) fn new() -> Self {
-        let container = gtk::BoxBuilder::new()
+        let container = gtk::Box::builder()
             .orientation(Orientation::Vertical)
             .build();
         let session_name = create_label("session_name");
@@ -51,7 +51,7 @@ impl HeaderView {
 }
 
 fn create_label(name: &str) -> gtk::Label {
-    gtk::LabelBuilder::new()
+    gtk::Label::builder()
         .name(name)
         .halign(Align::Center)
         .build()

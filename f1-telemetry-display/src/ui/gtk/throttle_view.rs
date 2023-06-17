@@ -20,27 +20,27 @@ impl ThrottleView {
         let brake_lbl = create_pedal_lbl("Brake");
         let brake_bar = create_pedal_bar("brake");
 
-        let gear_speed_box = gtk::BoxBuilder::new()
+        let gear_speed_box = gtk::Box::builder()
             .orientation(Orientation::Vertical)
             .valign(Align::Center)
             .build();
-        let speed_lbl = gtk::LabelBuilder::new()
+        let speed_lbl = gtk::Label::builder()
             .name("speed")
             .halign(Align::Center)
             .build();
-        let gear_lbl = gtk::LabelBuilder::new()
+        let gear_lbl = gtk::Label::builder()
             .name("gear")
             .halign(Align::Center)
             .build();
 
-        let container = gtk::GridBuilder::new()
+        let container = gtk::Grid::builder()
             .row_spacing(12)
             .column_spacing(12)
             .vexpand(true)
             .hexpand(true)
             .build();
 
-        container.get_style_context().add_class("pedal_input");
+        container.style_context().add_class("pedal_input");
         container.attach(&throttle_lbl, 0, 0, 1, 1);
         container.attach(&throttle_bar, 1, 0, 1, 1);
         container.attach(&brake_lbl, 0, 1, 1, 1);
@@ -84,14 +84,14 @@ impl ThrottleView {
 }
 
 fn create_pedal_lbl(label: &str) -> gtk::Label {
-    gtk::LabelBuilder::new()
+    gtk::Label::builder()
         .label(label)
         .halign(Align::Start)
         .build()
 }
 
 fn create_pedal_bar(name: &str) -> gtk::LevelBar {
-    gtk::LevelBarBuilder::new()
+    gtk::LevelBar::builder()
         .name(name)
         .min_value(0.0)
         .max_value(1.0)

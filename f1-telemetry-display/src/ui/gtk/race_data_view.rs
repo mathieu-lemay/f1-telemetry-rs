@@ -1,5 +1,5 @@
-use gtk::prelude::IsA;
-use gtk::{Align, GridExt, LabelExt, StyleContextExt, Widget, WidgetExt};
+use gtk::prelude::*;
+use gtk::{Align, Widget};
 
 use crate::fmt::{AsPercentage, AsWeight};
 use crate::models::GameState;
@@ -15,23 +15,23 @@ impl RaceDataView {
         let tyre_wear_label = create_data_label("Avg Tyre Wear");
         let fuel_usage_label = create_data_label("Avg Fuel Usage");
 
-        let average_tyre_wear = gtk::LabelBuilder::new()
+        let average_tyre_wear = gtk::Label::builder()
             .name("wear")
             .halign(Align::Center)
             .build();
-        let average_fuel = gtk::LabelBuilder::new()
+        let average_fuel = gtk::Label::builder()
             .name("fuel")
             .halign(Align::Center)
             .build();
 
-        let container = gtk::GridBuilder::new()
+        let container = gtk::Grid::builder()
             .row_spacing(12)
             .column_spacing(15)
             .vexpand(true)
             .hexpand(true)
             .build();
 
-        container.get_style_context().add_class("race_data");
+        container.style_context().add_class("race_data");
         container.attach(&tyre_wear_label, 0, 0, 1, 1);
         container.attach(&average_tyre_wear, 1, 0, 1, 1);
         container.attach(&fuel_usage_label, 0, 1, 1, 1);
@@ -81,7 +81,7 @@ impl RaceDataView {
 }
 
 fn create_data_label(label: &str) -> gtk::Label {
-    gtk::LabelBuilder::new()
+    gtk::Label::builder()
         .label(label)
         .halign(Align::Center)
         .build()

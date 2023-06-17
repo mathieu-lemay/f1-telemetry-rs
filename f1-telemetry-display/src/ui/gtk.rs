@@ -41,8 +41,9 @@ unsafe impl Send for GtkUi {}
 #[async_trait]
 impl Ui for GtkUi {
     fn new() -> Self {
-        let app = gtk::Application::new(Some("org.acidrain.f1-telemetry-rs"), Default::default())
-            .expect("Initialization failed...");
+        let app = gtk::Application::builder()
+            .application_id("org.acidrain.f1-telemetry-rs")
+            .build();
 
         Self { app }
     }
@@ -52,7 +53,7 @@ impl Ui for GtkUi {
             let provider = gtk::CssProvider::new();
             provider.load_from_path("custom.css").unwrap_or_default();
             gtk::StyleContext::add_provider_for_screen(
-                &gdk::Screen::get_default().expect("Error initializing gtk css provider."),
+                &gdk::Screen::default().expect("Error initializing gtk css provider."),
                 &provider,
                 gtk::STYLE_PROVIDER_PRIORITY_USER,
             );
@@ -62,7 +63,7 @@ impl Ui for GtkUi {
                 .load_from_data(BASE_STYLE.as_bytes())
                 .expect("Failed to load CSS");
             gtk::StyleContext::add_provider_for_screen(
-                &gdk::Screen::get_default().expect("Error initializing gtk css provider."),
+                &gdk::Screen::default().expect("Error initializing gtk css provider."),
                 &provider,
                 gtk::STYLE_PROVIDER_PRIORITY_APPLICATION,
             );
@@ -87,7 +88,7 @@ impl Ui for GtkUi {
             });
         });
 
-        self.app.run(&Vec::new());
+        self.app.run();
     }
 
     fn destroy(&self) {}
@@ -111,7 +112,9 @@ fn process_packet(game_state: &RefCell<GameState>, widgets: &Rc<Widgets>, packet
             widgets.tyre_temp_view.update(&game_state);
         }
         Packet::CarStatus(_) => {
-            widgets.car_view.update(&game_state);
+            if let Err(e) = widgets.car_view.update(&game_state) {
+                error!("Error updating car view: {:?}", e);
+            }
             widgets.race_data_view.update(&game_state)
         }
         Packet::Event(_) => widgets.events_view.update(&game_state),
@@ -131,23 +134,24 @@ struct Widgets {
 
 impl Widgets {
     fn new(app: &gtk::Application) -> Self {
-        let window = gtk::ApplicationWindow::new(app);
-
-        window.set_title("F1 Telemetry");
-        window.set_icon_name(Some("application-default-icon"));
-        window.set_border_width(10);
-        window.set_position(gtk::WindowPosition::Center);
+        let window = gtk::ApplicationWindow::builder()
+            .application(app)
+            .title("F1 Telemetry")
+            .icon_name("application-default-icon")
+            .border_width(10)
+            .window_position(gtk::WindowPosition::Center)
+            .build();
 
         let header = HeaderView::new();
 
         let lap_times_view = LapTimesView::new();
         let throttle_view = ThrottleView::new();
-        let car_view = CarView::new();
+        let car_view = CarView::new().expect("Error creating car view");
         let events_view = EventsView::new();
         let tyre_temp_view = TyreTempView::new();
         let race_data_view = RaceDataView::new();
 
-        let widgets_grid = gtk::GridBuilder::new()
+        let widgets_grid = gtk::Grid::builder()
             .row_spacing(12)
             .vexpand(true)
             .hexpand(true)
@@ -159,7 +163,7 @@ impl Widgets {
         widgets_grid.attach(tyre_temp_view.widget(), 2, 0, 1, 1);
         widgets_grid.attach(race_data_view.widget(), 1, 1, 1, 1);
 
-        let main_view_box = gtk::BoxBuilder::new()
+        let main_view_box = gtk::Box::builder()
             .orientation(gtk::Orientation::Vertical)
             .spacing(12)
             .build();

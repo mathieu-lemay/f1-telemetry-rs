@@ -70,33 +70,37 @@ impl LapTimesView {
     pub(super) fn set_participants(&self, game_state: &GameState) {
         self.model.clear();
 
-        let col_indices = [
-            Column::Position,
-            Column::Name,
-            Column::CurrentLapTime,
-            Column::LastLapTime,
-            Column::BestLapTime,
-            Column::BackgroundColor,
-            Column::TruePosition,
-        ]
-        .iter()
-        .map(|&c| c as u32)
-        .collect::<Vec<u32>>();
-
         for (participant, li) in game_state.get_valid_lap_info() {
-            let data: [&dyn ToValue; 7] = [
-                &fmt::format_position(li.position, &li.status),
-                &fmt::format_driver_name(participant, game_state.session_info.is_online)
-                    .to_string(),
-                &li.current_lap_time.as_minute_time_string(),
-                &li.last_lap_time.as_minute_time_string(),
-                &li.best_lap_time.as_minute_time_string(),
-                &get_team_color(&participant.team),
-                &li.position,
+            let data: [(u32, &dyn ToValue); 7] = [
+                (
+                    Column::Position as u32,
+                    &fmt::format_position(li.position, &li.status),
+                ),
+                (
+                    Column::Name as u32,
+                    &fmt::format_driver_name(participant, game_state.session_info.is_online)
+                        .to_string(),
+                ),
+                (
+                    Column::CurrentLapTime as u32,
+                    &li.current_lap_time.as_minute_time_string(),
+                ),
+                (
+                    Column::LastLapTime as u32,
+                    &li.last_lap_time.as_minute_time_string(),
+                ),
+                (
+                    Column::BestLapTime as u32,
+                    &li.best_lap_time.as_minute_time_string(),
+                ),
+                (
+                    Column::BackgroundColor as u32,
+                    &get_team_color(&participant.team),
+                ),
+                (Column::TruePosition as u32, &li.position),
             ];
 
-            self.model
-                .set(&self.model.append(None), &col_indices, &data);
+            self.model.set(&self.model.append(None), &data);
         }
     }
 
@@ -105,46 +109,51 @@ impl LapTimesView {
     }
 
     pub(super) fn update(&self, game_state: &GameState) {
-        let iter = match self.model.get_iter_first() {
+        let iter = match self.model.iter_first() {
             Some(i) => i,
             None => return,
         };
 
-        let col_indices = [
-            Column::Position,
-            Column::CurrentLapTime,
-            Column::LastLapTime,
-            Column::BestLapTime,
-            Column::LastLapColor,
-            Column::BestLapColor,
-            Column::TruePosition,
-        ]
-        .iter()
-        .map(|&c| c as u32)
-        .collect::<Vec<u32>>();
-
         for (_, li) in game_state.get_valid_lap_info() {
-            let data: [&dyn ToValue; 7] = [
-                &fmt::format_position(li.position, &li.status),
-                &li.current_lap_time.as_minute_time_string(),
-                &li.last_lap_time.as_minute_time_string(),
-                &li.best_lap_time.as_minute_time_string(),
-                &FastestLapType::from(
-                    li.last_lap_time,
-                    li.best_lap_time,
-                    game_state.session_best_times.lap,
-                )
-                .color(),
-                &FastestLapType::from(
-                    li.last_lap_time,
-                    li.best_lap_time,
-                    game_state.session_best_times.lap,
-                )
-                .color(),
-                &li.position,
+            let data: [(u32, &dyn ToValue); 7] = [
+                (
+                    Column::Position as u32,
+                    &fmt::format_position(li.position, &li.status),
+                ),
+                (
+                    Column::CurrentLapTime as u32,
+                    &li.current_lap_time.as_minute_time_string(),
+                ),
+                (
+                    Column::LastLapTime as u32,
+                    &li.last_lap_time.as_minute_time_string(),
+                ),
+                (
+                    Column::BestLapTime as u32,
+                    &li.best_lap_time.as_minute_time_string(),
+                ),
+                (
+                    Column::LastLapColor as u32,
+                    &FastestLapType::from(
+                        li.last_lap_time,
+                        li.best_lap_time,
+                        game_state.session_best_times.lap,
+                    )
+                    .color(),
+                ),
+                (
+                    Column::BestLapColor as u32,
+                    &FastestLapType::from(
+                        li.last_lap_time,
+                        li.best_lap_time,
+                        game_state.session_best_times.lap,
+                    )
+                    .color(),
+                ),
+                (Column::TruePosition as u32, &li.position),
             ];
 
-            self.model.set(&iter, &col_indices, &data);
+            self.model.set(&iter, &data);
             self.model.iter_next(&iter);
         }
     }
@@ -174,31 +183,18 @@ fn get_team_color(team: &Team) -> String {
 
 fn create_model() -> gtk::TreeStore {
     let col_types = [
-        glib::Type::String,
-        glib::Type::String,
-        glib::Type::String,
-        glib::Type::String,
-        glib::Type::String,
-        glib::Type::String,
-        glib::Type::String,
-        glib::Type::String,
+        glib::Type::STRING,
+        glib::Type::STRING,
+        glib::Type::STRING,
+        glib::Type::STRING,
+        glib::Type::STRING,
+        glib::Type::STRING,
+        glib::Type::STRING,
+        glib::Type::STRING,
         glib::Type::I8,
     ];
 
     let model = gtk::TreeStore::new(&col_types);
-
-    let col_indices = [
-        Column::Position,
-        Column::Name,
-        Column::CurrentLapTime,
-        Column::LastLapTime,
-        Column::BestLapTime,
-        Column::BackgroundColor,
-        Column::TruePosition,
-    ]
-    .iter()
-    .map(|&c| c as u32)
-    .collect::<Vec<u32>>();
 
     let teams = [
         Team::Mercedes,
@@ -213,29 +209,29 @@ fn create_model() -> gtk::TreeStore {
         Team::Williams,
     ];
     for (i, t) in teams.iter().enumerate() {
-        let data: [&dyn ToValue; 7] = [
-            &format!("{}", i * 2 + 1),
-            &format!("Player {}", i * 2),
-            &0.as_minute_time_string(),
-            &0.as_minute_time_string(),
-            &0.as_minute_time_string(),
-            &get_team_color(t),
-            &1,
+        let data: [(u32, &dyn ToValue); 7] = [
+            (Column::Position as u32, &format!("{}", i * 2 + 1)),
+            (Column::Name as u32, &format!("Player {}", i * 2)),
+            (Column::CurrentLapTime as u32, &0.as_minute_time_string()),
+            (Column::LastLapTime as u32, &0.as_minute_time_string()),
+            (Column::BestLapTime as u32, &0.as_minute_time_string()),
+            (Column::BackgroundColor as u32, &get_team_color(t)),
+            (Column::TruePosition as u32, &1),
         ];
 
-        model.set(&model.append(None), &col_indices, &data);
+        model.set(&model.append(None), &data);
 
-        let data: [&dyn ToValue; 7] = [
-            &format!("{}", i * 2 + 2),
-            &format!("Player {}", i * 2 + 1),
-            &0.as_minute_time_string(),
-            &0.as_minute_time_string(),
-            &0.as_minute_time_string(),
-            &get_team_color(t),
-            &1,
+        let data: [(u32, &dyn ToValue); 7] = [
+            (Column::Position as u32, &format!("{}", i * 2 + 2)),
+            (Column::Name as u32, &format!("Player {}", i * 2 + 1)),
+            (Column::CurrentLapTime as u32, &0.as_minute_time_string()),
+            (Column::LastLapTime as u32, &0.as_minute_time_string()),
+            (Column::BestLapTime as u32, &0.as_minute_time_string()),
+            (Column::BackgroundColor as u32, &get_team_color(t)),
+            (Column::TruePosition as u32, &1),
         ];
 
-        model.set(&model.append(None), &col_indices, &data);
+        model.set(&model.append(None), &data);
     }
 
     model
@@ -253,7 +249,7 @@ fn create_tree_view(model: &gtk::TreeStore) -> gtk::TreeView {
 
     tree_view.set_hover_selection(false);
 
-    let selection = tree_view.get_selection();
+    let selection = tree_view.selection();
     selection.set_select_function(Some(Box::new(|_, _, _, _| false)));
 
     add_lap_info_columns(&tree_view);
@@ -289,16 +285,16 @@ fn add_column(
     foreground_color_column: Option<Column>,
 ) {
     let renderer = gtk::CellRendererText::new();
-    let col = gtk::TreeViewColumn::new();
-    col.pack_start(&renderer, true);
-    col.set_title(title);
-    col.set_fixed_width(width.unwrap_or(COLUMN_DEFAULT_WIDTH));
-    col.add_attribute(&renderer, "text", column as i32);
-    col.add_attribute(&renderer, "background", Column::BackgroundColor as i32);
-
+    let mut attributes = vec![
+        ("text", column as i32),
+        ("background", Column::BackgroundColor as i32),
+    ];
     if let Some(c) = foreground_color_column {
-        col.add_attribute(&renderer, "foreground", c as i32);
+        attributes.push(("foreground", c as i32));
     }
+
+    let col = gtk::TreeViewColumn::with_attributes(title, &renderer, &attributes);
+    col.set_fixed_width(width.unwrap_or(COLUMN_DEFAULT_WIDTH));
 
     treeview.append_column(&col);
 }

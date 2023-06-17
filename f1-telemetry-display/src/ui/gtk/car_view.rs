@@ -13,27 +13,27 @@ pub struct CarView {
 }
 
 impl CarView {
-    pub fn new() -> Self {
-        let car_box = gtk::BoxBuilder::new()
+    pub fn new() -> Result<Self, cairo::Error> {
+        let car_box = gtk::Box::builder()
             .orientation(Orientation::Vertical)
             .valign(Align::Center)
             .build();
 
         let surface = ImageSurface::create(Format::ARgb32, 350, 600).expect("Can't create surface");
-        let cr = Context::new(&surface);
+        let cr = Context::new(&surface).expect("Unable to create cairo context.");
 
-        init_car(&cr);
+        init_car(&cr)?;
 
-        let car = gtk::ImageBuilder::new().surface(&surface).build();
+        let car = gtk::Image::builder().surface(&surface).build();
         car_box.pack_start(&car, false, false, 0);
 
-        Self {
+        Ok(Self {
             container: car_box,
             _car: cr,
-        }
+        })
     }
 
-    pub(super) fn update(&self, game_state: &GameState) {
+    pub(super) fn update(&self, game_state: &GameState) -> Result<(), cairo::Error> {
         let cs = &game_state.car_status;
         let front_left = cs.tyres_damage.front_left;
         let front_right = cs.tyres_damage.front_right;
@@ -58,8 +58,10 @@ impl CarView {
             left_wing as f64,
             right_wing as f64,
             color,
-        );
+        )?;
         self.container.queue_draw();
+
+        Ok(())
     }
 
     pub(super) fn widget(&self) -> &impl IsA<Widget> {
@@ -89,11 +91,13 @@ fn get_color_from_team(team: &Team) -> (f64, f64, f64) {
     (r, g, b)
 }
 
-fn init_car(ctx: &Context) {
-    car::draw_full_body(ctx, None);
-    car::draw_tyres(ctx, 0.0, 0.0, 0.0, 0.0);
-    car::draw_right_wing(ctx, 0.0);
-    car::draw_left_wing(ctx, 0.0);
+fn init_car(ctx: &Context) -> Result<(), cairo::Error> {
+    car::draw_full_body(ctx, None)?;
+    car::draw_tyres(ctx, 0.0, 0.0, 0.0, 0.0)?;
+    car::draw_right_wing(ctx, 0.0)?;
+    car::draw_left_wing(ctx, 0.0)?;
+
+    Ok(())
 }
 
 #[allow(clippy::too_many_arguments)]
@@ -106,9 +110,11 @@ fn update_car(
     left_wing_damage: f64,
     right_wing_damage: f64,
     team_colour: (f64, f64, f64),
-) {
-    car::draw_tyres(ctx, fl_damage, fr_damage, rl_damage, rr_damage);
-    car::draw_body(ctx, Some(team_colour));
-    car::draw_right_wing(ctx, right_wing_damage);
-    car::draw_left_wing(ctx, left_wing_damage);
+) -> Result<(), cairo::Error> {
+    car::draw_tyres(ctx, fl_damage, fr_damage, rl_damage, rr_damage)?;
+    car::draw_body(ctx, Some(team_colour))?;
+    car::draw_right_wing(ctx, right_wing_damage)?;
+    car::draw_left_wing(ctx, left_wing_damage)?;
+
+    Ok(())
 }

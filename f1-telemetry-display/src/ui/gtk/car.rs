@@ -108,7 +108,7 @@ fn draw_right_wing_shape(ctx: &Context) {
     ctx.close_path();
 }
 
-pub(crate) fn draw_left_wing(ctx: &Context, damage: f64) {
+pub(crate) fn draw_left_wing(ctx: &Context, damage: f64) -> Result<(), cairo::Error> {
     let (r, g, b) = get_wing_damage_colour(damage);
     ctx.set_source_rgb(r, g, b);
 
@@ -116,7 +116,7 @@ pub(crate) fn draw_left_wing(ctx: &Context, damage: f64) {
 
     ctx.fill()
 }
-pub(crate) fn draw_right_wing(ctx: &Context, damage: f64) {
+pub(crate) fn draw_right_wing(ctx: &Context, damage: f64) -> Result<(), cairo::Error> {
     let (r, g, b) = get_wing_damage_colour(damage);
     ctx.set_source_rgb(r, g, b);
 
@@ -125,27 +125,33 @@ pub(crate) fn draw_right_wing(ctx: &Context, damage: f64) {
     ctx.fill()
 }
 
-pub(crate) fn draw_full_body(ctx: &Context, team_colour: Option<(f64, f64, f64)>) {
-    draw_suspension(ctx);
-    draw_body(ctx, team_colour);
+pub(crate) fn draw_full_body(
+    ctx: &Context,
+    team_colour: Option<(f64, f64, f64)>,
+) -> Result<(), cairo::Error> {
+    draw_suspension(ctx)?;
+    draw_body(ctx, team_colour)
 }
 
-pub(crate) fn draw_body(ctx: &Context, team_colour: Option<(f64, f64, f64)>) {
+pub(crate) fn draw_body(
+    ctx: &Context,
+    team_colour: Option<(f64, f64, f64)>,
+) -> Result<(), cairo::Error> {
     let (r, g, b) = (1.0, 1.0, 1.0);
     ctx.set_source_rgb(r, g, b);
     draw_body_shape(ctx);
 
-    ctx.fill_preserve();
+    ctx.fill_preserve()?;
     let (r, g, b) = team_colour.unwrap_or((0.8, 0.8, 0.8));
     ctx.set_source_rgb(r * 3.0, g * 3.0, b * 3.0);
     ctx.set_line_width(5.0);
-    ctx.stroke();
+    ctx.stroke()
 }
 
-fn draw_suspension(ctx: &Context) {
+fn draw_suspension(ctx: &Context) -> Result<(), cairo::Error> {
     ctx.set_source_rgb(0.8, 0.8, 0.8);
     draw_suspension_shape(ctx);
-    ctx.fill();
+    ctx.fill()
 }
 
 fn draw_suspension_shape(ctx: &Context) {
@@ -364,31 +370,37 @@ pub(crate) fn draw_rounded_rectangle(
     ctx.close_path();
 }
 
-pub(crate) fn draw_left_front_tyre(ctx: &Context, damage: f64) {
-    draw_tyre(ctx, LEFT_FRONT_TYRE_X, LEFT_FRONT_TYRE_Y, damage);
+pub(crate) fn draw_left_front_tyre(ctx: &Context, damage: f64) -> Result<(), cairo::Error> {
+    draw_tyre(ctx, LEFT_FRONT_TYRE_X, LEFT_FRONT_TYRE_Y, damage)
 }
 
-pub(crate) fn draw_right_front_tyre(ctx: &Context, damage: f64) {
+pub(crate) fn draw_right_front_tyre(ctx: &Context, damage: f64) -> Result<(), cairo::Error> {
     draw_tyre(ctx, RIGHT_FRONT_TYRE_X, RIGHT_FRONT_TYRE_Y, damage)
 }
 
-pub(crate) fn draw_left_rear_tyre(ctx: &Context, damage: f64) {
+pub(crate) fn draw_left_rear_tyre(ctx: &Context, damage: f64) -> Result<(), cairo::Error> {
     draw_tyre(ctx, LEFT_REAR_TYRE_X, LEFT_REAR_TYRE_Y, damage)
 }
 
-pub(crate) fn draw_right_rear_tyre(ctx: &Context, damage: f64) {
+pub(crate) fn draw_right_rear_tyre(ctx: &Context, damage: f64) -> Result<(), cairo::Error> {
     draw_tyre(ctx, RIGHT_REAR_TYRE_X, RIGHT_REAR_TYRE_Y, damage)
 }
 
-pub fn draw_tyres(ctx: &Context, fl_damage: f64, fr_damage: f64, rl_damage: f64, rr_damage: f64) {
-    draw_left_front_tyre(ctx, fl_damage);
-    draw_right_front_tyre(ctx, fr_damage);
-    draw_left_rear_tyre(ctx, rl_damage);
-    draw_right_rear_tyre(ctx, rr_damage);
+pub fn draw_tyres(
+    ctx: &Context,
+    fl_damage: f64,
+    fr_damage: f64,
+    rl_damage: f64,
+    rr_damage: f64,
+) -> Result<(), cairo::Error> {
+    draw_left_front_tyre(ctx, fl_damage)?;
+    draw_right_front_tyre(ctx, fr_damage)?;
+    draw_left_rear_tyre(ctx, rl_damage)?;
+    draw_right_rear_tyre(ctx, rr_damage)?;
     ctx.stroke()
 }
 
-fn draw_tyre(ctx: &Context, x_: f64, y_: f64, damage: f64) {
+fn draw_tyre(ctx: &Context, x_: f64, y_: f64, damage: f64) -> Result<(), cairo::Error> {
     let (r, g, b) = get_tyre_damage_colour(damage);
     ctx.set_source_rgb(r, g, b);
 

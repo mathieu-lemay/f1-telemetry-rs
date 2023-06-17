@@ -49,42 +49,42 @@ pub(crate) fn draw_tyres(
     fr_temp: &TyreTemp,
     rl_temp: &TyreTemp,
     rr_temp: &TyreTemp,
-) {
-    draw_left_front_tyre(ctx, fl_temp);
-    draw_right_front_tyre(ctx, fr_temp);
-    draw_left_rear_tyre(ctx, rl_temp);
-    draw_right_rear_tyre(ctx, rr_temp);
+) -> Result<(), cairo::Error> {
+    draw_left_front_tyre(ctx, fl_temp)?;
+    draw_right_front_tyre(ctx, fr_temp)?;
+    draw_left_rear_tyre(ctx, rl_temp)?;
+    draw_right_rear_tyre(ctx, rr_temp)?;
     ctx.stroke()
 }
 
-pub fn draw_left_front_tyre(ctx: &Context, temp: &TyreTemp) {
+pub fn draw_left_front_tyre(ctx: &Context, temp: &TyreTemp) -> Result<(), cairo::Error> {
     draw_tyre(ctx, LEFT_FRONT_TYRE_X, LEFT_FRONT_TYRE_Y, temp)
 }
 
-pub fn draw_right_front_tyre(ctx: &Context, temp: &TyreTemp) {
+pub fn draw_right_front_tyre(ctx: &Context, temp: &TyreTemp) -> Result<(), cairo::Error> {
     draw_tyre(ctx, RIGHT_FRONT_TYRE_X, RIGHT_FRONT_TYRE_Y, temp)
 }
 
-pub fn draw_left_rear_tyre(ctx: &Context, temp: &TyreTemp) {
+pub fn draw_left_rear_tyre(ctx: &Context, temp: &TyreTemp) -> Result<(), cairo::Error> {
     draw_tyre(ctx, LEFT_REAR_TYRE_X, LEFT_REAR_TYRE_Y, temp)
 }
 
-pub fn draw_right_rear_tyre(ctx: &Context, temp: &TyreTemp) {
+pub fn draw_right_rear_tyre(ctx: &Context, temp: &TyreTemp) -> Result<(), cairo::Error> {
     draw_tyre(ctx, RIGHT_REAR_TYRE_X, RIGHT_REAR_TYRE_Y, temp)
 }
 
-fn draw_tyre(ctx: &Context, x_: f64, y_: f64, temp: &TyreTemp) {
+fn draw_tyre(ctx: &Context, x_: f64, y_: f64, temp: &TyreTemp) -> Result<(), cairo::Error> {
     let (r, g, b) = get_tyre_inner_temp_colour(temp.inner);
     ctx.set_source_rgb(r, g, b);
 
     draw_rounded_rectangle(ctx, x_, y_, TYRE_WIDTH, TYRE_HEIGHT, TYRE_RADIUS);
 
-    ctx.fill_preserve();
+    ctx.fill_preserve()?;
 
     let (r, g, b) = get_tyre_surface_temp_colour(temp.surface);
     ctx.set_source_rgb(r, g, b);
     ctx.set_line_width(7.0);
-    ctx.stroke();
+    ctx.stroke()
 }
 
 fn get_tyre_inner_temp_colour(temp: u16) -> (f64, f64, f64) {
