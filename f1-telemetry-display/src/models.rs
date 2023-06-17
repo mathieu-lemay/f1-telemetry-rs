@@ -387,8 +387,8 @@ impl GameState {
             li.tyre_compound = cs.visual_tyre_compound;
         }
 
-        let player_index = car_status_data.header.player_car_index;
-        let csd = &car_status_data.car_status_data[player_index as usize];
+        let player_index = car_status_data.header.player_car_index as usize;
+        let csd = &car_status_data.car_status_data[player_index];
 
         self.car_status.fuel_in_tank = csd.fuel_in_tank;
         self.car_status.fuel_remaining_laps = csd.fuel_remaining_laps;
@@ -406,10 +406,12 @@ impl GameState {
         }
 
         // TODO: Deduplicate this
-        if self.lap_infos.is_empty() {
+        let lap = self.get_player_current_lap(player_index);
+        if lap.is_none() {
             return;
         }
-        let lap = self.lap_infos[player_index as usize].current_lap_num;
+
+        let lap = lap.unwrap();
         let last_tyre_entry = &self.historical_race_data.tyre_damage.last();
         let new_tyre_entry = TimedWheelData {
             lap,
@@ -449,8 +451,8 @@ impl GameState {
     }
 
     fn parse_car_damage(&mut self, car_damage_data: &PacketCarDamageData) {
-        let player_index = car_damage_data.header.player_car_index;
-        let dmg = &car_damage_data.car_damage_data[player_index as usize];
+        let player_index = car_damage_data.header.player_car_index as usize;
+        let dmg = &car_damage_data.car_damage_data[player_index];
 
         self.car_status.tyres_damage = dmg.tyres_damage;
         self.car_status.left_front_wing_damage = dmg.front_left_wing_damage;
@@ -460,10 +462,12 @@ impl GameState {
         self.car_status.gearbox_damage = dmg.gear_box_damage;
 
         // TODO: Deduplicate this
-        if self.lap_infos.is_empty() {
+        let lap = self.get_player_current_lap(player_index);
+        if lap.is_none() {
             return;
         }
-        let lap = self.lap_infos[player_index as usize].current_lap_num;
+
+        let lap = lap.unwrap();
         let last_tyre_entry = &self.historical_race_data.tyre_damage.last();
         let new_tyre_entry = TimedWheelData {
             lap,
@@ -481,6 +485,20 @@ impl GameState {
         } else {
             self.historical_race_data.tyre_damage.push(new_tyre_entry)
         }
+    }
+
+    fn get_player_current_lap(&self, player_index: usize) -> Option<u8> {
+        if player_index >= self.lap_infos.len() {
+            warn!(
+                "Trying to get lap data for index {}, but we have only {} entries",
+                player_index,
+                self.lap_infos.len()
+            );
+
+            return None;
+        }
+
+        Some(self.lap_infos[player_index].current_lap_num)
     }
 
     pub(crate) fn compute_theoretical_best_lap(&self) -> u32 {
