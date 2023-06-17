@@ -18,7 +18,7 @@ use super::consts::*;
 /// is not always possible to send lap times on the final frame because of network delay.
 ///
 /// Frequency: Once at the end of a race
-/// Size: 839 bytes
+/// Size: 1015 bytes
 /// Version: 1
 ///
 /// ## Specification

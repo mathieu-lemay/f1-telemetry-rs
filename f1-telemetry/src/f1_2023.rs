@@ -5,7 +5,7 @@ use std::io::Cursor;
 use car_status::parse_car_status_data;
 //use car_telemetry::parse_car_telemetry_data;
 use event::parse_event_data;
-//use final_classification::parse_final_classification_data;
+use final_classification::parse_final_classification_data;
 use header::parse_header;
 use lap::parse_lap_data;
 use lobby_info::parse_lobby_info_data;
@@ -22,7 +22,7 @@ mod car_status;
 //mod car_telemetry;
 mod consts;
 mod event;
-//mod final_classification;
+mod final_classification;
 mod generic;
 mod header;
 mod lap;
@@ -77,11 +77,11 @@ pub(crate) fn parse_packet(size: usize, packet: &[u8]) -> Result<Packet, UnpackE
 
             Ok(Packet::CarStatus(packet))
         }
-        //PacketType::FinalClassification => {
-        //let packet = parse_final_classification_data(&mut cursor, header, size)?;
+        PacketType::FinalClassification => {
+            let packet = parse_final_classification_data(&mut cursor, header, size)?;
 
-        //Ok(Packet::FinalClassification(packet))
-        //}
+            Ok(Packet::FinalClassification(packet))
+        }
         PacketType::LobbyInfo => {
             let packet = parse_lobby_info_data(&mut cursor, header, size)?;
 

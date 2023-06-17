@@ -2,9 +2,6 @@ use std::io::BufRead;
 
 use serde::Deserialize;
 
-use crate::f1_2022::generic::{
-    unpack_result_status, unpack_tyre_compound, unpack_tyre_compound_visual,
-};
 use crate::packet::final_classification::{FinalClassification, PacketFinalClassificationData};
 use crate::packet::generic::{TyreCompound, TyreCompoundVisual};
 use crate::packet::header::PacketHeader;
@@ -12,13 +9,14 @@ use crate::packet::UnpackError;
 use crate::utils::{assert_packet_size, seconds_to_millis};
 
 use super::consts::*;
+use super::generic::{unpack_result_status, unpack_tyre_compound, unpack_tyre_compound_visual};
 
 /// This packet details the final classification at the end of the race, and the data will match
 /// with the post race results screen. This is especially useful for multiplayer games where it
 /// is not always possible to send lap times on the final frame because of network delay.
 ///
 /// Frequency: Once at the end of a race
-/// Size: 839 bytes
+/// Size: 1020 bytes
 /// Version: 1
 ///
 /// ## Specification
