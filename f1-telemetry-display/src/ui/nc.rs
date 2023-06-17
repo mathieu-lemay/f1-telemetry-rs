@@ -63,7 +63,7 @@ pub struct NcursesUi {
 }
 
 enum Event {
-    UpdateGame(Packet),
+    UpdateGame(Box<Packet>),
     SwitchView(View),
     EnableRotation,
     Quit,
@@ -156,7 +156,7 @@ impl Ui for NcursesUi {
         let sender = tx.clone();
         let stream_thread = tokio::spawn(async move {
             while let Some(p) = crate::CHANNEL.rx.write().await.recv().await {
-                let _ = sender.send(Event::UpdateGame(p));
+                let _ = sender.send(Event::UpdateGame(Box::new(p)));
             }
         });
 
