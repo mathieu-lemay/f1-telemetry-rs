@@ -17,19 +17,19 @@ use f1_telemetry_common::logging::LogBuilder;
 #[command(author, version, about, long_about = None, propagate_version = true)]
 struct AppArgs {
     /// Host to bind on for the UDP packet listener
-    #[clap(long, default_value = "0.0.0.0")]
-    host: String,
+    #[clap(long, default_value = "0.0.0.0", env)]
+    listener_host: String,
 
     /// port to bind on for the UDP packet listener
-    #[clap(long, default_value = "20777")]
-    port: u16,
+    #[clap(long, default_value = "20777", env)]
+    listener_port: u16,
 
     /// Host to bind on for the websocket server
-    #[clap(long, default_value = "0.0.0.0")]
+    #[clap(long, default_value = "0.0.0.0", env)]
     server_host: String,
 
     /// Port to bind on for the websocket server
-    #[clap(long, default_value = "20888")]
+    #[clap(long, default_value = "20888", env)]
     server_port: u16,
 }
 
@@ -42,7 +42,7 @@ async fn main() {
         .build()
         .expect("Error initializing loggger.");
 
-    let addr = format!("{}:{}", args.host, args.port);
+    let addr = format!("{}:{}", args.listener_host, args.listener_port);
     let packet_stream = Stream::new(&addr)
         .await
         .expect("Unable to bind packet socket");
