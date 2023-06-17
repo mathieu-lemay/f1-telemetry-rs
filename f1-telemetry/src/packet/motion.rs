@@ -96,6 +96,6 @@ pub struct PacketMotionData {
     /// List of motion data
     pub motion_data: Vec<CarMotionData>,
     /// Extra data specific to the player's car.
-    /// Removed in F1 23. Replaced by MotionEx packet.
+    /// Removed in F1 23. Replaced by [`MotionEx`](super::motion_ex::PacketMotionExData) packet.
     pub player_car_data: Option<PlayerCarData>,
 }

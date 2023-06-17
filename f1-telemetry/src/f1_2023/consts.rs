@@ -15,6 +15,7 @@ pub const FINAL_CLASSIFICATION_PACKET_SIZE: usize = 1020;
 pub const LAP_DATA_PACKET_SIZE: usize = 1131;
 pub const LOBBY_INFO_PACKET_SIZE: usize = 1218;
 pub const MOTION_PACKET_SIZE: usize = 1349;
+pub const MOTION_EX_PACKET_SIZE: usize = 217;
 pub const PARTICIPANTS_PACKET_SIZE: usize = 1306;
 pub const SESSION_HISTORY_PACKET_SIZE: usize = 1460;
 pub const SESSION_PACKET_SIZE: usize = 644;

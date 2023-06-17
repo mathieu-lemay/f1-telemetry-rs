@@ -10,6 +10,7 @@ use header::parse_header;
 use lap::parse_lap_data;
 use lobby_info::parse_lobby_info_data;
 use motion::parse_motion_data;
+use motion_ex::parse_motion_ex_data;
 use participants::parse_participants_data;
 use session::parse_session_data;
 use session_history::parse_session_history_data;
@@ -30,6 +31,7 @@ mod header;
 mod lap;
 mod lobby_info;
 mod motion;
+mod motion_ex;
 mod participants;
 mod session;
 mod session_history;
@@ -104,6 +106,11 @@ pub(crate) fn parse_packet(size: usize, packet: &[u8]) -> Result<Packet, UnpackE
             let packet = parse_tyre_sets_data(&mut cursor, header, size)?;
 
             Ok(Packet::TyreSets(packet))
+        }
+        PacketType::MotionEx => {
+            let packet = parse_motion_ex_data(&mut cursor, header, size)?;
+
+            Ok(Packet::MotionEx(packet))
         }
     }
 }

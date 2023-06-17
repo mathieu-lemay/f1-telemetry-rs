@@ -12,6 +12,7 @@ use f1_telemetry::packet::generic::{
 };
 use f1_telemetry::packet::lap::{PacketLapData, PitStatus};
 use f1_telemetry::packet::motion::PacketMotionData;
+use f1_telemetry::packet::motion_ex::PacketMotionExData;
 use f1_telemetry::packet::participants::{Driver, PacketParticipantsData};
 use f1_telemetry::packet::session::{PacketSessionData, SafetyCar, Weather};
 use f1_telemetry::packet::Packet;
@@ -63,6 +64,7 @@ impl GameState {
             Packet::FinalClassification(p) => self.parse_final_classification(p),
             Packet::Motion(p) => self.parse_motion_data(p),
             Packet::CarDamage(p) => self.parse_car_damage(p),
+            Packet::MotionEx(p) => self.parse_motion_ex_data(p),
             _ => {}
         };
     }
@@ -329,6 +331,15 @@ impl GameState {
         self.motion_info.yaw = md.yaw;
         self.motion_info.pitch = md.pitch;
         self.motion_info.roll = md.roll;
+    }
+
+    fn parse_motion_ex_data(&mut self, packet: &PacketMotionExData) {
+        self.motion_info.suspension_position = packet.suspension_position;
+        self.motion_info.suspension_velocity = packet.suspension_velocity;
+        self.motion_info.suspension_acceleration = packet.suspension_acceleration;
+        self.motion_info.wheel_speed = packet.wheel_speed;
+        self.motion_info.wheel_slip = packet.wheel_slip_ratio;
+        self.motion_info.front_wheels_angle = packet.front_wheels_angle;
     }
 
     fn parse_final_classification(&mut self, classification_data: &PacketFinalClassificationData) {
