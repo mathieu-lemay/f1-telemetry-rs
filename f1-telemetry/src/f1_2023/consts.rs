@@ -5,10 +5,10 @@ pub const NUMBER_MARSHAL_ZONES: usize = 21;
 
 pub const HEADER_SIZE: usize = 29;
 
-//pub const CAR_DAMAGE_PACKET_SIZE: usize = 948;
-//pub const CAR_SETUPS_PACKET_SIZE: usize = 1102;
+pub const CAR_DAMAGE_PACKET_SIZE: usize = 953;
+pub const CAR_SETUPS_PACKET_SIZE: usize = 1107;
 pub const CAR_STATUS_PACKET_SIZE: usize = 1239;
-//pub const CAR_TELEMETRY_PACKET_SIZE: usize = 1347;
+pub const CAR_TELEMETRY_PACKET_SIZE: usize = 1352;
 pub const EVENT_PACKET_SIZE: usize = 45;
 pub const FINAL_CLASSIFICATION_PACKET_SIZE: usize = 1020;
 pub const LAP_DATA_PACKET_SIZE: usize = 1131;
