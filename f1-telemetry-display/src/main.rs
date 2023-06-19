@@ -60,11 +60,16 @@ lazy_static! {
 async fn main() {
     let args = AppArgs::parse();
 
-    LogBuilder::new()
+    let mut log_builder = LogBuilder::new()
         .with_file_logger(LevelFilter::Info, "f1-telemetry-display.log")
-        .expect("Unable to open log file.")
-        .build()
-        .expect("Error initializing loggger.");
+        .expect("Unable to open log file.");
+
+    if args.ui == UserInterface::Gtk {
+        log_builder =
+            log_builder.with_term_logger(LevelFilter::Info, TerminalMode::Mixed, ColorChoice::Auto);
+    }
+
+    log_builder.build().expect("Error initializing loggger.");
 
     start_stream(args.host, args.port).await;
     run(&args.ui).await;
