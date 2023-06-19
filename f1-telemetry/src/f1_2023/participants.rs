@@ -125,11 +125,28 @@ fn unpack_driver(value: u8) -> Result<Driver, UnpackError> {
         123 => Ok(Driver::EnzoFittipaldi),
         125 => Ok(Driver::MarkWebber),
         126 => Ok(Driver::JacquesVilleneuve),
+        127 => Ok(Driver::CallieMayer),
+        128 => Ok(Driver::NoahBell),
+        129 => Ok(Driver::JakeHughes),
+        130 => Ok(Driver::FrederikVesti),
+        131 => Ok(Driver::OlliCaldwell),
+        132 => Ok(Driver::LoganSargeant),
+        133 => Ok(Driver::CemBolukbasi),
+        134 => Ok(Driver::AyumuIwasa),
+        135 => Ok(Driver::ClementNovalak),
+        136 => Ok(Driver::JackDoohan),
+        137 => Ok(Driver::AmauryCordeel),
+        138 => Ok(Driver::DennisHauger),
+        139 => Ok(Driver::CalanWilliams),
+        140 => Ok(Driver::JamieChadwick),
+        141 => Ok(Driver::KamuiKobayashi),
+        142 => Ok(Driver::PastorMaldonado),
+        143 => Ok(Driver::MikaHakkinen),
+        144 => Ok(Driver::NigelMansell),
         255 => Ok(Driver::Player),
         _ => Err(UnpackError(format!("Invalid Driver value: {}", value))),
     }
 }
-
 fn unpack_telemetry(value: u8) -> Result<Telemetry, UnpackError> {
     match value {
         0 => Ok(Telemetry::Restricted),
