@@ -186,7 +186,7 @@ pub(crate) fn unpack_platform(value: u8) -> Result<Platform, UnpackError> {
         3 => Ok(Platform::PlayStation),
         4 => Ok(Platform::Xbox),
         6 => Ok(Platform::Origin),
-        255 => Ok(Platform::Unknown),
+        0 | 255 => Ok(Platform::Unknown),
         _ => Err(UnpackError(format!("Invalid Platform value: {}", value))),
     }
 }
