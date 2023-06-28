@@ -151,6 +151,7 @@ fn unpack_game_mode(value: u8) -> Result<GameMode, UnpackError> {
     match value {
         0 => Ok(GameMode::EventMode),
         3 => Ok(GameMode::GrandPrix),
+        4 => Ok(GameMode::GrandPrix23),
         5 => Ok(GameMode::TimeTrial),
         6 => Ok(GameMode::Splitscreen),
         7 => Ok(GameMode::OnlineCustom),
@@ -160,8 +161,11 @@ fn unpack_game_mode(value: u8) -> Result<GameMode, UnpackError> {
         13 => Ok(GameMode::Championship),
         14 => Ok(GameMode::OnlineChampionship),
         15 => Ok(GameMode::OnlineWeeklyEvent),
+        17 => Ok(GameMode::StoryMode),
         19 => Ok(GameMode::Career22),
         20 => Ok(GameMode::Career22Online),
+        21 => Ok(GameMode::Career23),
+        22 => Ok(GameMode::Career23Online),
         127 => Ok(GameMode::Benchmark),
         _ => Err(UnpackError(format!("Invalid GameMode value: {}", value))),
     }

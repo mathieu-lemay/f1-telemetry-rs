@@ -221,6 +221,7 @@ pub struct DrivingAssists {
 pub enum GameMode {
     EventMode,
     GrandPrix,
+    GrandPrix23,
     TimeTrial,
     Splitscreen,
     OnlineCustom,
@@ -230,8 +231,11 @@ pub enum GameMode {
     Championship,
     OnlineChampionship,
     OnlineWeeklyEvent,
+    StoryMode,
     Career22,
     Career22Online,
+    Career23,
+    Career23Online,
     Benchmark,
 }
 
