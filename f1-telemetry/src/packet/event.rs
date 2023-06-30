@@ -203,6 +203,7 @@ pub struct Buttons {
 /// * [`Event::Buttons`]
 #[allow(clippy::upper_case_acronyms)]
 #[derive(Debug, Copy, Clone, PartialEq, Serialize)]
+#[serde(tag = "event_type")]
 pub enum Event {
     /// Sent when the session starts
     SessionStarted,

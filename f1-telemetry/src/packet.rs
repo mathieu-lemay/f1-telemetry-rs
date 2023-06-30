@@ -41,7 +41,7 @@ impl From<Box<bincode::ErrorKind>> for UnpackError {
 }
 
 #[derive(Debug, Clone, Serialize)]
-#[serde(untagged)]
+#[serde(tag = "packet_type")]
 pub enum Packet {
     Motion(PacketMotionData),
     Session(PacketSessionData),
