@@ -53,6 +53,12 @@ pub enum Track {
     SuzukaShort,
     Hanoi,
     Zandvoort,
+    Imola,
+    Portimao,
+    Jeddah,
+    Miami,
+    LasVegas,
+    Losail,
     Unknown,
 }
 
@@ -86,6 +92,12 @@ impl Track {
             Track::SuzukaShort => "Suzuka International Racing Course (Short)",
             Track::Hanoi => "Hanoi Street Circuit",
             Track::Zandvoort => "Circuit Zandvoort",
+            Track::Imola => "Autodromo Internazionale Enzo e Dino Ferrari",
+            Track::Portimao => "Autódromo Internacional do Algarve",
+            Track::Jeddah => "Jeddah Corniche Circuit",
+            Track::Miami => "Miami International Autodrome",
+            Track::LasVegas => "Las Vegas Street Circuit",
+            Track::Losail => "Losail International Circuit",
             Track::Unknown => "[UNKNOWN]",
         }
     }
