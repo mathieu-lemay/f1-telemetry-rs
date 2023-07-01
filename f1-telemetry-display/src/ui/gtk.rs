@@ -103,7 +103,7 @@ fn process_packet(game_state: &RefCell<GameState>, widgets: &Rc<Widgets>, packet
             widgets.header.update(&game_state);
         }
         Packet::Participants(_) => widgets.lap_times_view.set_participants(&game_state),
-        Packet::Lap(_) => {
+        Packet::LapData(_) => {
             widgets.header.update(&game_state);
             widgets.lap_times_view.update(&game_state);
         }

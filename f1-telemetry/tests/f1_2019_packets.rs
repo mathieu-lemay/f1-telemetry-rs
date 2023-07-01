@@ -617,7 +617,7 @@ async fn test_parse_2019_lap_packet() {
     let p = stream.next().await.unwrap();
 
     let actual = match p {
-        Packet::Lap(s) => s,
+        Packet::LapData(s) => s,
         _ => panic!("Invalid packet. Expected Lap, got {:?}", &p),
     };
 

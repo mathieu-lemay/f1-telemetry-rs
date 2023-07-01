@@ -49,7 +49,7 @@ impl From<Box<bincode::ErrorKind>> for UnpackError {
 pub enum Packet {
     Motion(PacketMotionData),
     Session(PacketSessionData),
-    Lap(PacketLapData),
+    LapData(PacketLapData),
     Event(PacketEventData),
     Participants(PacketParticipantsData),
     CarSetups(PacketCarSetupData),
@@ -68,7 +68,7 @@ impl Packet {
         match self {
             Packet::Motion(p) => &p.header,
             Packet::Session(p) => &p.header,
-            Packet::Lap(p) => &p.header,
+            Packet::LapData(p) => &p.header,
             Packet::Event(p) => &p.header,
             Packet::Participants(p) => &p.header,
             Packet::CarSetups(p) => &p.header,

@@ -292,7 +292,7 @@ impl NcursesUi {
             Packet::Event(_) => {
                 self.print_event_info(game_state);
             }
-            Packet::Lap(_) => {
+            Packet::LapData(_) => {
                 self.print_session_info(game_state);
             }
             _ => {}
@@ -301,7 +301,7 @@ impl NcursesUi {
 
     fn render_dashboard_view(&mut self, game_state: &GameState, packet: &Packet) {
         match packet {
-            Packet::Lap(_) => {
+            Packet::LapData(_) => {
                 self.print_dashboard_lap_info(game_state);
                 self.print_track_status_lap_info(game_state);
             }
@@ -323,7 +323,7 @@ impl NcursesUi {
 
     fn render_lap_view(&mut self, game_state: &GameState, packet: &Packet) {
         match packet {
-            Packet::Lap(_) => {
+            Packet::LapData(_) => {
                 self.print_lap_details_lap_info(game_state);
                 self.print_best_sectors_lap_info(game_state);
             }
@@ -340,7 +340,7 @@ impl NcursesUi {
 
     fn render_track_view(&self, game_state: &GameState, packet: &Packet) {
         match packet {
-            Packet::Lap(_) => {
+            Packet::LapData(_) => {
                 self.print_track_status_lap_info(game_state);
             }
             Packet::Session(_) => self.print_weather_info(game_state),

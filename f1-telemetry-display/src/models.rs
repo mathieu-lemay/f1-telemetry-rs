@@ -55,7 +55,7 @@ impl GameState {
     fn parse(&mut self, packet: &Packet) {
         match packet {
             Packet::Session(p) => self.parse_session_data(p),
-            Packet::Lap(p) => self.parse_lap_data(p),
+            Packet::LapData(p) => self.parse_lap_data(p),
             Packet::Event(p) => self.parse_event_data(p),
             Packet::Participants(p) => self.parse_participants(p),
             // Packet::CarqSetups(p) => p.header(),
