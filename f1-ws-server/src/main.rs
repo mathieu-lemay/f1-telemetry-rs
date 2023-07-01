@@ -1,8 +1,9 @@
+use std::io::ErrorKind::BrokenPipe;
 use std::net::SocketAddr;
 
 use clap::Parser;
-use futures_util::{SinkExt, StreamExt};
-use log::{error, info, LevelFilter};
+use futures_util::SinkExt;
+use log::{error, info, warn, LevelFilter};
 use simplelog::{ColorChoice, TerminalMode};
 use tokio::net::{TcpListener, TcpStream};
 use tokio::sync::broadcast;
@@ -88,8 +89,17 @@ async fn accept_connection(peer: SocketAddr, stream: TcpStream, rx: Receiver<Str
         match e {
             Error::ConnectionClosed | Error::Utf8 => (),
             Error::Protocol(err) => info!("Protocol error: {}: {}", err, peer),
+            Error::Io(err) => {
+                if err.kind() == BrokenPipe {
+                    warn!("Client disconnected: {}: {}", err, peer)
+                } else {
+                    error!("Error processing connection: {}: {}", err, peer)
+                }
+            }
             err => error!("Error processing connection: {}: {}", err, peer),
         }
+    } else {
+        info!("Connection closed: {}", peer);
     }
 }
 
@@ -98,14 +108,13 @@ async fn handle_connection(
     stream: TcpStream,
     mut rx: Receiver<String>,
 ) -> Result<()> {
-    let ws_stream = accept_async(stream).await.expect("Failed to accept");
+    let mut ws_stream = accept_async(stream).await.expect("Failed to accept");
     info!("New WebSocket connection: {}", peer);
-    let (mut ws_sender, _) = ws_stream.split();
 
     loop {
         match rx.recv().await {
             Ok(p) => {
-                ws_sender.send(Message::Text(p)).await?;
+                ws_stream.send(Message::Text(p)).await?;
             }
             Err(_e) => {
                 error!("{:?}", _e);
