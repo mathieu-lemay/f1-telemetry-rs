@@ -2,13 +2,13 @@ use std::io::BufRead;
 
 use serde::Deserialize;
 
-use crate::f1_2021::generic::{unpack_tyre_compound, unpack_tyre_compound_visual};
 use crate::packet::header::PacketHeader;
 use crate::packet::session_history::{LapHistoryData, PacketSessionHistoryData, TyreStintData};
 use crate::packet::UnpackError;
 use crate::utils::assert_packet_size;
 
 use super::consts::*;
+use super::generic::{unpack_tyre_compound, unpack_tyre_compound_visual};
 
 /// This packet contains lap times and tyre usage for the session.
 ///
@@ -21,7 +21,7 @@ use super::consts::*;
 /// bulk update of all the session histories for the vehicles in that session will be sent.
 ///
 /// Frequency: 20 per second but cycling through cars
-/// Size: 1155 bytes
+/// Size: 1460 bytes
 /// Version: 1
 ///
 /// ## Specification
@@ -63,12 +63,15 @@ struct RawSessionHistoryData {
 /// sector_3_time:   Sector 3 time in milliseconds
 /// lap_valid_flags: Bit flags specifying if the lap / sectors are valid
 /// ```
-#[derive(Deserialize)]
+#[derive(Default, Deserialize)]
 struct RawLapHistoryData {
     lap_time: u32,
     sector_1_time: u16,
+    sector_1_time_minutes: u8,
     sector_2_time: u16,
+    sector_2_time_minutes: u8,
     sector_3_time: u16,
+    sector_3_time_minutes: u8,
     valid_sectors: u8,
 }
 
@@ -79,10 +82,12 @@ impl TryFrom<&RawLapHistoryData> for LapHistoryData {
         Ok(Self {
             lap_time: lh.lap_time,
             sector_1_time: lh.sector_1_time,
+            sector_1_time_minutes: lh.sector_1_time_minutes,
             sector_2_time: lh.sector_2_time,
+            sector_2_time_minutes: lh.sector_2_time_minutes,
             sector_3_time: lh.sector_3_time,
+            sector_3_time_minutes: lh.sector_3_time_minutes,
             valid_sectors: lh.valid_sectors,
-            ..Default::default()
         })
     }
 }

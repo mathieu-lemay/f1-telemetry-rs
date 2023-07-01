@@ -85,6 +85,7 @@ impl TryFrom<&RawPlayer> for Player {
             name,
             car_number: Some(player.car_number),
             ready_status,
+            ..Default::default()
         })
     }
 }

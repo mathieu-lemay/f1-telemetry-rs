@@ -10,7 +10,7 @@ use f1_telemetry::packet::final_classification::{
     FinalClassification, PacketFinalClassificationData,
 };
 use f1_telemetry::packet::generic::{
-    Flag, Nationality, ResultStatus, Team, TyreCompound, TyreCompoundVisual, WheelData,
+    Flag, Nationality, ResultStatus, SessionType, Team, TyreCompound, TyreCompoundVisual, WheelData,
 };
 use f1_telemetry::packet::lap::{DriverStatus, LapData, PacketLapData, PitStatus, Sector};
 use f1_telemetry::packet::lobby_info::{PacketLobbyInfoData, Player, ReadyStatus};
@@ -19,8 +19,8 @@ use f1_telemetry::packet::participants::{
     Driver, PacketParticipantsData, ParticipantData, Telemetry,
 };
 use f1_telemetry::packet::session::{
-    Formula, MarshalZone, PacketSessionData, SafetyCar, SessionType, Track, Weather,
-    WeatherForecast, WeatherForecastSample,
+    Formula, MarshalZone, PacketSessionData, SafetyCar, Track, Weather, WeatherForecast,
+    WeatherForecastSample,
 };
 use f1_telemetry::packet::Packet;
 
@@ -485,7 +485,7 @@ async fn test_parse_2020_motion_packet() {
                 roll: 0.0,
             },
         ],
-        player_car_data: PlayerCarData {
+        player_car_data: Some(PlayerCarData {
             suspension_position: WheelData::new(26.20373, 26.403694, 19.53884, 19.719767),
             suspension_velocity: WheelData::new(-614.7353, -618.4027, -805.08936, -812.2999),
             suspension_acceleration: WheelData::new(131.04732, 129.56093, 1071.8608, 1079.6766),
@@ -501,7 +501,7 @@ async fn test_parse_2020_motion_packet() {
             angular_acceleration_y: 3.3884582e-5,
             angular_acceleration_z: 0.01779745,
             front_wheels_angle: -0.0,
-        },
+        }),
     };
 
     assert_eq!(actual, expected);
@@ -726,6 +726,13 @@ async fn test_parse_2020_session_packet() {
         rule_set: None,
         time_of_day: None,
         session_length: None,
+        speed_units_lead_player: None,
+        temperature_units_lead_player: None,
+        speed_units_secondary_player: None,
+        temperature_units_secondary_player: None,
+        num_safety_car_periods: None,
+        num_virtual_safety_car_periods: None,
+        num_red_flag_periods: None,
     };
 
     assert_eq!(actual, expected);

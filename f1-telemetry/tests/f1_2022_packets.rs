@@ -11,7 +11,7 @@ use f1_telemetry::packet::final_classification::{
     FinalClassification, PacketFinalClassificationData,
 };
 use f1_telemetry::packet::generic::{
-    Flag, Nationality, ResultStatus, Team, TyreCompound, TyreCompoundVisual, WheelData,
+    Flag, Nationality, ResultStatus, SessionType, Team, TyreCompound, TyreCompoundVisual, WheelData,
 };
 use f1_telemetry::packet::lap::{DriverStatus, LapData, PacketLapData, PitStatus, Sector};
 use f1_telemetry::packet::lobby_info::{PacketLobbyInfoData, Player, ReadyStatus};
@@ -22,8 +22,7 @@ use f1_telemetry::packet::participants::{
 use f1_telemetry::packet::session::{
     BrakingAssist, DrivingAssists, DynamicRacingLine, DynamicRacingLineType, ForecastAccuracy,
     Formula, GameMode, GearboxAssist, MarshalZone, PacketSessionData, RuleSet, SafetyCar,
-    SessionLength, SessionType, TemperatureChange, Track, Weather, WeatherForecast,
-    WeatherForecastSample,
+    SessionLength, TemperatureChange, Track, Weather, WeatherForecast, WeatherForecastSample,
 };
 use f1_telemetry::packet::session_history::{
     LapHistoryData, PacketSessionHistoryData, TyreStintData,
@@ -491,7 +490,7 @@ async fn test_parse_2022_motion_packet() {
                 roll: 0.0,
             },
         ],
-        player_car_data: PlayerCarData {
+        player_car_data: Some(PlayerCarData {
             suspension_position: WheelData {
                 rear_left: 33.834785,
                 rear_right: 33.0201,
@@ -532,7 +531,7 @@ async fn test_parse_2022_motion_packet() {
             angular_acceleration_y: 4.89582,
             angular_acceleration_z: 3.8755999,
             front_wheels_angle: 0.2473143,
-        },
+        }),
     };
 
     assert_eq!(actual, expected);
@@ -717,6 +716,13 @@ async fn test_parse_2022_session_packet() {
         rule_set: Some(RuleSet::Race),
         time_of_day: Some(1130),
         session_length: Some(SessionLength::Short),
+        speed_units_lead_player: None,
+        temperature_units_lead_player: None,
+        speed_units_secondary_player: None,
+        temperature_units_secondary_player: None,
+        num_safety_car_periods: None,
+        num_virtual_safety_car_periods: None,
+        num_red_flag_periods: None,
     };
 
     assert_eq!(actual, expected);
@@ -766,7 +772,7 @@ async fn test_parse_2022_lap_packet() {
                 sector: Sector::Sector1,
                 current_lap_invalid: false,
                 penalties: 0,
-                warnings: 0,
+                total_warnings: 0,
                 number_unserved_drive_through: 0,
                 number_unserved_stop_go: 0,
                 grid_position: 9,
@@ -776,6 +782,7 @@ async fn test_parse_2022_lap_packet() {
                 pit_lane_time_in_lane: 0,
                 pit_stop_time: 0,
                 pit_stop_should_serve_penalty: false,
+                ..Default::default()
             },
             LapData {
                 last_lap_time: 0,
@@ -803,7 +810,7 @@ async fn test_parse_2022_lap_packet() {
                 sector: Sector::Sector1,
                 current_lap_invalid: false,
                 penalties: 0,
-                warnings: 0,
+                total_warnings: 0,
                 number_unserved_drive_through: 0,
                 number_unserved_stop_go: 0,
                 grid_position: 19,
@@ -813,6 +820,7 @@ async fn test_parse_2022_lap_packet() {
                 pit_lane_time_in_lane: 0,
                 pit_stop_time: 0,
                 pit_stop_should_serve_penalty: false,
+                ..Default::default()
             },
             LapData {
                 last_lap_time: 0,
@@ -840,7 +848,7 @@ async fn test_parse_2022_lap_packet() {
                 sector: Sector::Sector1,
                 current_lap_invalid: false,
                 penalties: 0,
-                warnings: 0,
+                total_warnings: 0,
                 number_unserved_drive_through: 0,
                 number_unserved_stop_go: 0,
                 grid_position: 5,
@@ -850,6 +858,7 @@ async fn test_parse_2022_lap_packet() {
                 pit_lane_time_in_lane: 0,
                 pit_stop_time: 0,
                 pit_stop_should_serve_penalty: false,
+                ..Default::default()
             },
             LapData {
                 last_lap_time: 0,
@@ -877,7 +886,7 @@ async fn test_parse_2022_lap_packet() {
                 sector: Sector::Sector1,
                 current_lap_invalid: false,
                 penalties: 0,
-                warnings: 0,
+                total_warnings: 0,
                 number_unserved_drive_through: 0,
                 number_unserved_stop_go: 0,
                 grid_position: 18,
@@ -887,6 +896,7 @@ async fn test_parse_2022_lap_packet() {
                 pit_lane_time_in_lane: 0,
                 pit_stop_time: 0,
                 pit_stop_should_serve_penalty: false,
+                ..Default::default()
             },
             LapData {
                 last_lap_time: 0,
@@ -914,7 +924,7 @@ async fn test_parse_2022_lap_packet() {
                 sector: Sector::Sector1,
                 current_lap_invalid: false,
                 penalties: 0,
-                warnings: 0,
+                total_warnings: 0,
                 number_unserved_drive_through: 0,
                 number_unserved_stop_go: 0,
                 grid_position: 15,
@@ -924,6 +934,7 @@ async fn test_parse_2022_lap_packet() {
                 pit_lane_time_in_lane: 0,
                 pit_stop_time: 0,
                 pit_stop_should_serve_penalty: false,
+                ..Default::default()
             },
             LapData {
                 last_lap_time: 0,
@@ -951,7 +962,7 @@ async fn test_parse_2022_lap_packet() {
                 sector: Sector::Sector2,
                 current_lap_invalid: false,
                 penalties: 0,
-                warnings: 0,
+                total_warnings: 0,
                 number_unserved_drive_through: 0,
                 number_unserved_stop_go: 0,
                 grid_position: 1,
@@ -961,6 +972,7 @@ async fn test_parse_2022_lap_packet() {
                 pit_lane_time_in_lane: 0,
                 pit_stop_time: 0,
                 pit_stop_should_serve_penalty: false,
+                ..Default::default()
             },
             LapData {
                 last_lap_time: 0,
@@ -988,7 +1000,7 @@ async fn test_parse_2022_lap_packet() {
                 sector: Sector::Sector1,
                 current_lap_invalid: false,
                 penalties: 0,
-                warnings: 0,
+                total_warnings: 0,
                 number_unserved_drive_through: 0,
                 number_unserved_stop_go: 0,
                 grid_position: 20,
@@ -998,6 +1010,7 @@ async fn test_parse_2022_lap_packet() {
                 pit_lane_time_in_lane: 0,
                 pit_stop_time: 0,
                 pit_stop_should_serve_penalty: false,
+                ..Default::default()
             },
             LapData {
                 last_lap_time: 0,
@@ -1025,7 +1038,7 @@ async fn test_parse_2022_lap_packet() {
                 sector: Sector::Sector1,
                 current_lap_invalid: false,
                 penalties: 0,
-                warnings: 0,
+                total_warnings: 0,
                 number_unserved_drive_through: 0,
                 number_unserved_stop_go: 0,
                 grid_position: 6,
@@ -1035,6 +1048,7 @@ async fn test_parse_2022_lap_packet() {
                 pit_lane_time_in_lane: 0,
                 pit_stop_time: 0,
                 pit_stop_should_serve_penalty: false,
+                ..Default::default()
             },
             LapData {
                 last_lap_time: 0,
@@ -1062,7 +1076,7 @@ async fn test_parse_2022_lap_packet() {
                 sector: Sector::Sector1,
                 current_lap_invalid: false,
                 penalties: 0,
-                warnings: 0,
+                total_warnings: 0,
                 number_unserved_drive_through: 0,
                 number_unserved_stop_go: 0,
                 grid_position: 16,
@@ -1072,6 +1086,7 @@ async fn test_parse_2022_lap_packet() {
                 pit_lane_time_in_lane: 0,
                 pit_stop_time: 0,
                 pit_stop_should_serve_penalty: false,
+                ..Default::default()
             },
             LapData {
                 last_lap_time: 0,
@@ -1099,7 +1114,7 @@ async fn test_parse_2022_lap_packet() {
                 sector: Sector::Sector1,
                 current_lap_invalid: false,
                 penalties: 0,
-                warnings: 0,
+                total_warnings: 0,
                 number_unserved_drive_through: 0,
                 number_unserved_stop_go: 0,
                 grid_position: 10,
@@ -1109,6 +1124,7 @@ async fn test_parse_2022_lap_packet() {
                 pit_lane_time_in_lane: 0,
                 pit_stop_time: 0,
                 pit_stop_should_serve_penalty: false,
+                ..Default::default()
             },
             LapData {
                 last_lap_time: 0,
@@ -1136,7 +1152,7 @@ async fn test_parse_2022_lap_packet() {
                 sector: Sector::Sector1,
                 current_lap_invalid: false,
                 penalties: 0,
-                warnings: 0,
+                total_warnings: 0,
                 number_unserved_drive_through: 0,
                 number_unserved_stop_go: 0,
                 grid_position: 17,
@@ -1146,6 +1162,7 @@ async fn test_parse_2022_lap_packet() {
                 pit_lane_time_in_lane: 0,
                 pit_stop_time: 0,
                 pit_stop_should_serve_penalty: false,
+                ..Default::default()
             },
             LapData {
                 last_lap_time: 0,
@@ -1173,7 +1190,7 @@ async fn test_parse_2022_lap_packet() {
                 sector: Sector::Sector1,
                 current_lap_invalid: false,
                 penalties: 0,
-                warnings: 0,
+                total_warnings: 0,
                 number_unserved_drive_through: 0,
                 number_unserved_stop_go: 0,
                 grid_position: 3,
@@ -1183,6 +1200,7 @@ async fn test_parse_2022_lap_packet() {
                 pit_lane_time_in_lane: 0,
                 pit_stop_time: 0,
                 pit_stop_should_serve_penalty: false,
+                ..Default::default()
             },
             LapData {
                 last_lap_time: 0,
@@ -1210,7 +1228,7 @@ async fn test_parse_2022_lap_packet() {
                 sector: Sector::Sector1,
                 current_lap_invalid: false,
                 penalties: 0,
-                warnings: 0,
+                total_warnings: 0,
                 number_unserved_drive_through: 0,
                 number_unserved_stop_go: 0,
                 grid_position: 8,
@@ -1220,6 +1238,7 @@ async fn test_parse_2022_lap_packet() {
                 pit_lane_time_in_lane: 0,
                 pit_stop_time: 0,
                 pit_stop_should_serve_penalty: false,
+                ..Default::default()
             },
             LapData {
                 last_lap_time: 0,
@@ -1247,7 +1266,7 @@ async fn test_parse_2022_lap_packet() {
                 sector: Sector::Sector1,
                 current_lap_invalid: false,
                 penalties: 0,
-                warnings: 0,
+                total_warnings: 0,
                 number_unserved_drive_through: 0,
                 number_unserved_stop_go: 0,
                 grid_position: 14,
@@ -1257,6 +1276,7 @@ async fn test_parse_2022_lap_packet() {
                 pit_lane_time_in_lane: 0,
                 pit_stop_time: 0,
                 pit_stop_should_serve_penalty: false,
+                ..Default::default()
             },
             LapData {
                 last_lap_time: 0,
@@ -1284,7 +1304,7 @@ async fn test_parse_2022_lap_packet() {
                 sector: Sector::Sector1,
                 current_lap_invalid: false,
                 penalties: 0,
-                warnings: 0,
+                total_warnings: 0,
                 number_unserved_drive_through: 0,
                 number_unserved_stop_go: 0,
                 grid_position: 13,
@@ -1294,6 +1314,7 @@ async fn test_parse_2022_lap_packet() {
                 pit_lane_time_in_lane: 0,
                 pit_stop_time: 0,
                 pit_stop_should_serve_penalty: false,
+                ..Default::default()
             },
             LapData {
                 last_lap_time: 0,
@@ -1321,7 +1342,7 @@ async fn test_parse_2022_lap_packet() {
                 sector: Sector::Sector1,
                 current_lap_invalid: false,
                 penalties: 0,
-                warnings: 0,
+                total_warnings: 0,
                 number_unserved_drive_through: 0,
                 number_unserved_stop_go: 0,
                 grid_position: 12,
@@ -1331,6 +1352,7 @@ async fn test_parse_2022_lap_packet() {
                 pit_lane_time_in_lane: 0,
                 pit_stop_time: 0,
                 pit_stop_should_serve_penalty: false,
+                ..Default::default()
             },
             LapData {
                 last_lap_time: 0,
@@ -1358,7 +1380,7 @@ async fn test_parse_2022_lap_packet() {
                 sector: Sector::Sector1,
                 current_lap_invalid: false,
                 penalties: 0,
-                warnings: 0,
+                total_warnings: 0,
                 number_unserved_drive_through: 0,
                 number_unserved_stop_go: 0,
                 grid_position: 11,
@@ -1368,6 +1390,7 @@ async fn test_parse_2022_lap_packet() {
                 pit_lane_time_in_lane: 0,
                 pit_stop_time: 0,
                 pit_stop_should_serve_penalty: false,
+                ..Default::default()
             },
             LapData {
                 last_lap_time: 0,
@@ -1395,7 +1418,7 @@ async fn test_parse_2022_lap_packet() {
                 sector: Sector::Sector1,
                 current_lap_invalid: false,
                 penalties: 0,
-                warnings: 0,
+                total_warnings: 0,
                 number_unserved_drive_through: 0,
                 number_unserved_stop_go: 0,
                 grid_position: 7,
@@ -1405,6 +1428,7 @@ async fn test_parse_2022_lap_packet() {
                 pit_lane_time_in_lane: 0,
                 pit_stop_time: 0,
                 pit_stop_should_serve_penalty: false,
+                ..Default::default()
             },
             LapData {
                 last_lap_time: 0,
@@ -1432,7 +1456,7 @@ async fn test_parse_2022_lap_packet() {
                 sector: Sector::Sector1,
                 current_lap_invalid: false,
                 penalties: 0,
-                warnings: 0,
+                total_warnings: 0,
                 number_unserved_drive_through: 0,
                 number_unserved_stop_go: 0,
                 grid_position: 4,
@@ -1442,6 +1466,7 @@ async fn test_parse_2022_lap_packet() {
                 pit_lane_time_in_lane: 0,
                 pit_stop_time: 0,
                 pit_stop_should_serve_penalty: false,
+                ..Default::default()
             },
             LapData {
                 last_lap_time: 0,
@@ -1469,7 +1494,7 @@ async fn test_parse_2022_lap_packet() {
                 sector: Sector::Sector1,
                 current_lap_invalid: false,
                 penalties: 2,
-                warnings: 0,
+                total_warnings: 0,
                 number_unserved_drive_through: 0,
                 number_unserved_stop_go: 0,
                 grid_position: 2,
@@ -1479,6 +1504,7 @@ async fn test_parse_2022_lap_packet() {
                 pit_lane_time_in_lane: 0,
                 pit_stop_time: 0,
                 pit_stop_should_serve_penalty: false,
+                ..Default::default()
             },
             LapData::default(),
             LapData::default(),
@@ -1553,6 +1579,7 @@ async fn test_parse_2022_participants_packet() {
                 nationality: Nationality::French,
                 name: "GASLY".to_string(),
                 telemetry_access: Telemetry::Public,
+                ..Default::default()
             },
             ParticipantData {
                 ai_controlled: true,
@@ -1564,6 +1591,7 @@ async fn test_parse_2022_participants_packet() {
                 nationality: Nationality::Canadian,
                 name: "STROLL".to_string(),
                 telemetry_access: Telemetry::Public,
+                ..Default::default()
             },
             ParticipantData {
                 ai_controlled: true,
@@ -1575,6 +1603,7 @@ async fn test_parse_2022_participants_packet() {
                 nationality: Nationality::Dutch,
                 name: "VERSTAPPEN".to_string(),
                 telemetry_access: Telemetry::Public,
+                ..Default::default()
             },
             ParticipantData {
                 ai_controlled: true,
@@ -1586,6 +1615,7 @@ async fn test_parse_2022_participants_packet() {
                 nationality: Nationality::Australian,
                 name: "RICCIARDO".to_string(),
                 telemetry_access: Telemetry::Public,
+                ..Default::default()
             },
             ParticipantData {
                 ai_controlled: true,
@@ -1597,6 +1627,7 @@ async fn test_parse_2022_participants_packet() {
                 nationality: Nationality::German,
                 name: "VETTEL".to_string(),
                 telemetry_access: Telemetry::Public,
+                ..Default::default()
             },
             ParticipantData {
                 ai_controlled: true,
@@ -1608,6 +1639,7 @@ async fn test_parse_2022_participants_packet() {
                 nationality: Nationality::Mexican,
                 name: "PÉREZ".to_string(),
                 telemetry_access: Telemetry::Public,
+                ..Default::default()
             },
             ParticipantData {
                 ai_controlled: true,
@@ -1619,6 +1651,7 @@ async fn test_parse_2022_participants_packet() {
                 nationality: Nationality::British,
                 name: "NORRIS".to_string(),
                 telemetry_access: Telemetry::Public,
+                ..Default::default()
             },
             ParticipantData {
                 ai_controlled: true,
@@ -1630,6 +1663,7 @@ async fn test_parse_2022_participants_packet() {
                 nationality: Nationality::Spanish,
                 name: "SAINZ".to_string(),
                 telemetry_access: Telemetry::Public,
+                ..Default::default()
             },
             ParticipantData {
                 ai_controlled: true,
@@ -1641,6 +1675,7 @@ async fn test_parse_2022_participants_packet() {
                 nationality: Nationality::Thai,
                 name: "ALBON".to_string(),
                 telemetry_access: Telemetry::Public,
+                ..Default::default()
             },
             ParticipantData {
                 ai_controlled: true,
@@ -1652,6 +1687,7 @@ async fn test_parse_2022_participants_packet() {
                 nationality: Nationality::Japanese,
                 name: "TSUNODA".to_string(),
                 telemetry_access: Telemetry::Public,
+                ..Default::default()
             },
             ParticipantData {
                 ai_controlled: true,
@@ -1663,6 +1699,7 @@ async fn test_parse_2022_participants_packet() {
                 nationality: Nationality::Canadian,
                 name: "LATIFI".to_string(),
                 telemetry_access: Telemetry::Public,
+                ..Default::default()
             },
             ParticipantData {
                 ai_controlled: true,
@@ -1674,6 +1711,7 @@ async fn test_parse_2022_participants_packet() {
                 nationality: Nationality::British,
                 name: "RUSSELL".to_string(),
                 telemetry_access: Telemetry::Public,
+                ..Default::default()
             },
             ParticipantData {
                 ai_controlled: true,
@@ -1685,6 +1723,7 @@ async fn test_parse_2022_participants_packet() {
                 nationality: Nationality::Chinese,
                 name: "GUANYU".to_string(),
                 telemetry_access: Telemetry::Public,
+                ..Default::default()
             },
             ParticipantData {
                 ai_controlled: true,
@@ -1696,6 +1735,7 @@ async fn test_parse_2022_participants_packet() {
                 nationality: Nationality::German,
                 name: "SCHUMACHER".to_string(),
                 telemetry_access: Telemetry::Public,
+                ..Default::default()
             },
             ParticipantData {
                 ai_controlled: true,
@@ -1707,6 +1747,7 @@ async fn test_parse_2022_participants_packet() {
                 nationality: Nationality::Finnish,
                 name: "BOTTAS".to_string(),
                 telemetry_access: Telemetry::Public,
+                ..Default::default()
             },
             ParticipantData {
                 ai_controlled: true,
@@ -1718,6 +1759,7 @@ async fn test_parse_2022_participants_packet() {
                 nationality: Nationality::Spanish,
                 name: "ALONSO".to_string(),
                 telemetry_access: Telemetry::Public,
+                ..Default::default()
             },
             ParticipantData {
                 ai_controlled: true,
@@ -1729,6 +1771,7 @@ async fn test_parse_2022_participants_packet() {
                 nationality: Nationality::French,
                 name: "OCON".to_string(),
                 telemetry_access: Telemetry::Public,
+                ..Default::default()
             },
             ParticipantData {
                 ai_controlled: true,
@@ -1740,6 +1783,7 @@ async fn test_parse_2022_participants_packet() {
                 nationality: Nationality::Danish,
                 name: "MAGNUSSEN".to_string(),
                 telemetry_access: Telemetry::Public,
+                ..Default::default()
             },
             ParticipantData {
                 ai_controlled: true,
@@ -1751,6 +1795,7 @@ async fn test_parse_2022_participants_packet() {
                 nationality: Nationality::Monegasque,
                 name: "LECLERC".to_string(),
                 telemetry_access: Telemetry::Public,
+                ..Default::default()
             },
             ParticipantData {
                 ai_controlled: false,
@@ -1762,6 +1807,7 @@ async fn test_parse_2022_participants_packet() {
                 nationality: Nationality::British,
                 name: "HAMILTON".to_string(),
                 telemetry_access: Telemetry::Restricted,
+                ..Default::default()
             },
             ParticipantData {
                 ai_controlled: false,
@@ -1773,6 +1819,7 @@ async fn test_parse_2022_participants_packet() {
                 nationality: Nationality::Invalid,
                 name: "".to_string(),
                 telemetry_access: Telemetry::Restricted,
+                ..Default::default()
             },
             ParticipantData {
                 ai_controlled: false,
@@ -1784,6 +1831,7 @@ async fn test_parse_2022_participants_packet() {
                 nationality: Nationality::Invalid,
                 name: "".to_string(),
                 telemetry_access: Telemetry::Restricted,
+                ..Default::default()
             },
         ],
     };
@@ -3347,6 +3395,8 @@ async fn test_parse_2022_car_status_packet() {
                 visual_tyre_compound: TyreCompoundVisual::Soft,
                 tyre_age_laps: Some(0),
                 vehicle_fia_flag: Flag::None,
+                engine_power_ice: None,
+                engine_power_mguk: None,
                 ers_store_energy: 3386449.3,
                 ers_deploy_mode: ERSDeployMode::Medium,
                 ers_harvested_this_lap_mguk: 124809.2,
@@ -3380,6 +3430,8 @@ async fn test_parse_2022_car_status_packet() {
                 visual_tyre_compound: TyreCompoundVisual::Soft,
                 tyre_age_laps: Some(0),
                 vehicle_fia_flag: Flag::None,
+                engine_power_ice: None,
+                engine_power_mguk: None,
                 ers_store_energy: 3298251.3,
                 ers_deploy_mode: ERSDeployMode::Medium,
                 ers_harvested_this_lap_mguk: 124622.19,
@@ -3413,6 +3465,8 @@ async fn test_parse_2022_car_status_packet() {
                 visual_tyre_compound: TyreCompoundVisual::Soft,
                 tyre_age_laps: Some(0),
                 vehicle_fia_flag: Flag::None,
+                engine_power_ice: None,
+                engine_power_mguk: None,
                 ers_store_energy: 3298583.3,
                 ers_deploy_mode: ERSDeployMode::Medium,
                 ers_harvested_this_lap_mguk: 127730.19,
@@ -3446,6 +3500,8 @@ async fn test_parse_2022_car_status_packet() {
                 visual_tyre_compound: TyreCompoundVisual::Soft,
                 tyre_age_laps: Some(0),
                 vehicle_fia_flag: Flag::None,
+                engine_power_ice: None,
+                engine_power_mguk: None,
                 ers_store_energy: 3325991.8,
                 ers_deploy_mode: ERSDeployMode::Medium,
                 ers_harvested_this_lap_mguk: 140065.69,
@@ -3479,6 +3535,8 @@ async fn test_parse_2022_car_status_packet() {
                 visual_tyre_compound: TyreCompoundVisual::Soft,
                 tyre_age_laps: Some(0),
                 vehicle_fia_flag: Flag::None,
+                engine_power_ice: None,
+                engine_power_mguk: None,
                 ers_store_energy: 3502104.5,
                 ers_deploy_mode: ERSDeployMode::Medium,
                 ers_harvested_this_lap_mguk: 122937.336,
@@ -3512,6 +3570,8 @@ async fn test_parse_2022_car_status_packet() {
                 visual_tyre_compound: TyreCompoundVisual::Soft,
                 tyre_age_laps: Some(0),
                 vehicle_fia_flag: Flag::None,
+                engine_power_ice: None,
+                engine_power_mguk: None,
                 ers_store_energy: 2841463.5,
                 ers_deploy_mode: ERSDeployMode::Overtake,
                 ers_harvested_this_lap_mguk: 143144.78,
@@ -3545,6 +3605,8 @@ async fn test_parse_2022_car_status_packet() {
                 visual_tyre_compound: TyreCompoundVisual::Soft,
                 tyre_age_laps: Some(0),
                 vehicle_fia_flag: Flag::None,
+                engine_power_ice: None,
+                engine_power_mguk: None,
                 ers_store_energy: 3262688.5,
                 ers_deploy_mode: ERSDeployMode::Medium,
                 ers_harvested_this_lap_mguk: 122582.09,
@@ -3578,6 +3640,8 @@ async fn test_parse_2022_car_status_packet() {
                 visual_tyre_compound: TyreCompoundVisual::Soft,
                 tyre_age_laps: Some(0),
                 vehicle_fia_flag: Flag::None,
+                engine_power_ice: None,
+                engine_power_mguk: None,
                 ers_store_energy: 2970679.5,
                 ers_deploy_mode: ERSDeployMode::Overtake,
                 ers_harvested_this_lap_mguk: 123268.76,
@@ -3611,6 +3675,8 @@ async fn test_parse_2022_car_status_packet() {
                 visual_tyre_compound: TyreCompoundVisual::Soft,
                 tyre_age_laps: Some(0),
                 vehicle_fia_flag: Flag::None,
+                engine_power_ice: None,
+                engine_power_mguk: None,
                 ers_store_energy: 3331959.8,
                 ers_deploy_mode: ERSDeployMode::Medium,
                 ers_harvested_this_lap_mguk: 145278.86,
@@ -3644,6 +3710,8 @@ async fn test_parse_2022_car_status_packet() {
                 visual_tyre_compound: TyreCompoundVisual::Soft,
                 tyre_age_laps: Some(0),
                 vehicle_fia_flag: Flag::None,
+                engine_power_ice: None,
+                engine_power_mguk: None,
                 ers_store_energy: 3285825.8,
                 ers_deploy_mode: ERSDeployMode::Medium,
                 ers_harvested_this_lap_mguk: 125979.71,
@@ -3677,6 +3745,8 @@ async fn test_parse_2022_car_status_packet() {
                 visual_tyre_compound: TyreCompoundVisual::Soft,
                 tyre_age_laps: Some(0),
                 vehicle_fia_flag: Flag::None,
+                engine_power_ice: None,
+                engine_power_mguk: None,
                 ers_store_energy: 3340689.0,
                 ers_deploy_mode: ERSDeployMode::Medium,
                 ers_harvested_this_lap_mguk: 154308.11,
@@ -3710,6 +3780,8 @@ async fn test_parse_2022_car_status_packet() {
                 visual_tyre_compound: TyreCompoundVisual::Soft,
                 tyre_age_laps: Some(0),
                 vehicle_fia_flag: Flag::None,
+                engine_power_ice: None,
+                engine_power_mguk: None,
                 ers_store_energy: 2906673.5,
                 ers_deploy_mode: ERSDeployMode::Overtake,
                 ers_harvested_this_lap_mguk: 133057.13,
@@ -3743,6 +3815,8 @@ async fn test_parse_2022_car_status_packet() {
                 visual_tyre_compound: TyreCompoundVisual::Soft,
                 tyre_age_laps: Some(0),
                 vehicle_fia_flag: Flag::None,
+                engine_power_ice: None,
+                engine_power_mguk: None,
                 ers_store_energy: 3411201.3,
                 ers_deploy_mode: ERSDeployMode::Medium,
                 ers_harvested_this_lap_mguk: 149200.48,
@@ -3776,6 +3850,8 @@ async fn test_parse_2022_car_status_packet() {
                 visual_tyre_compound: TyreCompoundVisual::Soft,
                 tyre_age_laps: Some(0),
                 vehicle_fia_flag: Flag::None,
+                engine_power_ice: None,
+                engine_power_mguk: None,
                 ers_store_energy: 3338952.8,
                 ers_deploy_mode: ERSDeployMode::Medium,
                 ers_harvested_this_lap_mguk: 140588.25,
@@ -3809,6 +3885,8 @@ async fn test_parse_2022_car_status_packet() {
                 visual_tyre_compound: TyreCompoundVisual::Soft,
                 tyre_age_laps: Some(0),
                 vehicle_fia_flag: Flag::None,
+                engine_power_ice: None,
+                engine_power_mguk: None,
                 ers_store_energy: 3228341.8,
                 ers_deploy_mode: ERSDeployMode::Medium,
                 ers_harvested_this_lap_mguk: 152999.28,
@@ -3842,6 +3920,8 @@ async fn test_parse_2022_car_status_packet() {
                 visual_tyre_compound: TyreCompoundVisual::Soft,
                 tyre_age_laps: Some(0),
                 vehicle_fia_flag: Flag::None,
+                engine_power_ice: None,
+                engine_power_mguk: None,
                 ers_store_energy: 3086907.3,
                 ers_deploy_mode: ERSDeployMode::Overtake,
                 ers_harvested_this_lap_mguk: 154696.95,
@@ -3875,6 +3955,8 @@ async fn test_parse_2022_car_status_packet() {
                 visual_tyre_compound: TyreCompoundVisual::Soft,
                 tyre_age_laps: Some(0),
                 vehicle_fia_flag: Flag::None,
+                engine_power_ice: None,
+                engine_power_mguk: None,
                 ers_store_energy: 3284773.0,
                 ers_deploy_mode: ERSDeployMode::Medium,
                 ers_harvested_this_lap_mguk: 144466.38,
@@ -3908,6 +3990,8 @@ async fn test_parse_2022_car_status_packet() {
                 visual_tyre_compound: TyreCompoundVisual::Soft,
                 tyre_age_laps: Some(0),
                 vehicle_fia_flag: Flag::None,
+                engine_power_ice: None,
+                engine_power_mguk: None,
                 ers_store_energy: 3227985.5,
                 ers_deploy_mode: ERSDeployMode::Overtake,
                 ers_harvested_this_lap_mguk: 149522.6,
@@ -3941,6 +4025,8 @@ async fn test_parse_2022_car_status_packet() {
                 visual_tyre_compound: TyreCompoundVisual::Soft,
                 tyre_age_laps: Some(0),
                 vehicle_fia_flag: Flag::Green,
+                engine_power_ice: None,
+                engine_power_mguk: None,
                 ers_store_energy: 3795030.5,
                 ers_deploy_mode: ERSDeployMode::Overtake,
                 ers_harvested_this_lap_mguk: 67525.43,
@@ -3974,6 +4060,8 @@ async fn test_parse_2022_car_status_packet() {
                 visual_tyre_compound: TyreCompoundVisual::Soft,
                 tyre_age_laps: Some(0),
                 vehicle_fia_flag: Flag::Yellow,
+                engine_power_ice: None,
+                engine_power_mguk: None,
                 ers_store_energy: 3894729.0,
                 ers_deploy_mode: ERSDeployMode::Medium,
                 ers_harvested_this_lap_mguk: 44771.816,
@@ -4755,6 +4843,7 @@ async fn test_parse_2022_lobby_info_packet() {
                 name: "Arron BARNES".to_string(),
                 car_number: Some(71),
                 ready_status: ReadyStatus::NotReady,
+                ..Default::default()
             },
             Player {
                 ai_controlled: true,
@@ -4763,6 +4852,7 @@ async fn test_parse_2022_lobby_info_packet() {
                 name: "Martin GILES".to_string(),
                 car_number: Some(70),
                 ready_status: ReadyStatus::NotReady,
+                ..Default::default()
             },
             Player {
                 ai_controlled: true,
@@ -4771,6 +4861,7 @@ async fn test_parse_2022_lobby_info_packet() {
                 name: "Alex MURRAY".to_string(),
                 car_number: Some(40),
                 ready_status: ReadyStatus::NotReady,
+                ..Default::default()
             },
             Player {
                 ai_controlled: true,
@@ -4779,6 +4870,7 @@ async fn test_parse_2022_lobby_info_packet() {
                 name: "Lucas ROTH".to_string(),
                 car_number: Some(95),
                 ready_status: ReadyStatus::NotReady,
+                ..Default::default()
             },
             Player {
                 ai_controlled: true,
@@ -4787,6 +4879,7 @@ async fn test_parse_2022_lobby_info_packet() {
                 name: "Igor CORREIA".to_string(),
                 car_number: Some(79),
                 ready_status: ReadyStatus::NotReady,
+                ..Default::default()
             },
             Player {
                 ai_controlled: true,
@@ -4795,6 +4888,7 @@ async fn test_parse_2022_lobby_info_packet() {
                 name: "Sophie LEVASSEUR".to_string(),
                 car_number: Some(53),
                 ready_status: ReadyStatus::NotReady,
+                ..Default::default()
             },
             Player {
                 ai_controlled: true,
@@ -4803,6 +4897,7 @@ async fn test_parse_2022_lobby_info_packet() {
                 name: "Jonas SCHIFFER".to_string(),
                 car_number: Some(76),
                 ready_status: ReadyStatus::NotReady,
+                ..Default::default()
             },
             Player {
                 ai_controlled: true,
@@ -4811,6 +4906,7 @@ async fn test_parse_2022_lobby_info_packet() {
                 name: "Alain FOREST".to_string(),
                 car_number: Some(80),
                 ready_status: ReadyStatus::NotReady,
+                ..Default::default()
             },
             Player {
                 ai_controlled: true,
@@ -4819,6 +4915,7 @@ async fn test_parse_2022_lobby_info_packet() {
                 name: "Jay LETOURNEAU".to_string(),
                 car_number: Some(68),
                 ready_status: ReadyStatus::NotReady,
+                ..Default::default()
             },
             Player {
                 ai_controlled: true,
@@ -4827,6 +4924,7 @@ async fn test_parse_2022_lobby_info_packet() {
                 name: "Esto SAARI".to_string(),
                 car_number: Some(28),
                 ready_status: ReadyStatus::NotReady,
+                ..Default::default()
             },
             Player {
                 ai_controlled: true,
@@ -4835,6 +4933,7 @@ async fn test_parse_2022_lobby_info_packet() {
                 name: "Yasar ATIYEH".to_string(),
                 car_number: Some(45),
                 ready_status: ReadyStatus::NotReady,
+                ..Default::default()
             },
             Player {
                 ai_controlled: true,
@@ -4843,6 +4942,7 @@ async fn test_parse_2022_lobby_info_packet() {
                 name: "Naota IZUMI".to_string(),
                 car_number: Some(42),
                 ready_status: ReadyStatus::NotReady,
+                ..Default::default()
             },
             Player {
                 ai_controlled: true,
@@ -4851,6 +4951,7 @@ async fn test_parse_2022_lobby_info_packet() {
                 name: "Wilhelm KAUFMANN".to_string(),
                 car_number: Some(47),
                 ready_status: ReadyStatus::NotReady,
+                ..Default::default()
             },
             Player {
                 ai_controlled: true,
@@ -4859,6 +4960,7 @@ async fn test_parse_2022_lobby_info_packet() {
                 name: "Marie LAURSEN".to_string(),
                 car_number: Some(65),
                 ready_status: ReadyStatus::NotReady,
+                ..Default::default()
             },
             Player {
                 ai_controlled: true,
@@ -4867,6 +4969,7 @@ async fn test_parse_2022_lobby_info_packet() {
                 name: "Flavio NIEVES".to_string(),
                 car_number: Some(36),
                 ready_status: ReadyStatus::NotReady,
+                ..Default::default()
             },
             Player {
                 ai_controlled: true,
@@ -4875,6 +4978,7 @@ async fn test_parse_2022_lobby_info_packet() {
                 name: "Peter BELOUSOV".to_string(),
                 car_number: Some(87),
                 ready_status: ReadyStatus::NotReady,
+                ..Default::default()
             },
             Player {
                 ai_controlled: true,
@@ -4883,6 +4987,7 @@ async fn test_parse_2022_lobby_info_packet() {
                 name: "Klimek MICHALSKI".to_string(),
                 car_number: Some(32),
                 ready_status: ReadyStatus::NotReady,
+                ..Default::default()
             },
             Player {
                 ai_controlled: true,
@@ -4891,6 +4996,7 @@ async fn test_parse_2022_lobby_info_packet() {
                 name: "Santiago MORENO".to_string(),
                 car_number: Some(60),
                 ready_status: ReadyStatus::NotReady,
+                ..Default::default()
             },
             Player {
                 ai_controlled: true,
@@ -4899,6 +5005,7 @@ async fn test_parse_2022_lobby_info_packet() {
                 name: "Benjamin COPPENS".to_string(),
                 car_number: Some(54),
                 ready_status: ReadyStatus::NotReady,
+                ..Default::default()
             },
             Player {
                 ai_controlled: false,
@@ -4907,6 +5014,7 @@ async fn test_parse_2022_lobby_info_packet() {
                 name: "Player".to_string(),
                 car_number: Some(42),
                 ready_status: ReadyStatus::NotReady,
+                ..Default::default()
             },
             Player {
                 ai_controlled: false,
@@ -4915,6 +5023,7 @@ async fn test_parse_2022_lobby_info_packet() {
                 name: "".to_string(),
                 car_number: Some(0),
                 ready_status: ReadyStatus::NotReady,
+                ..Default::default()
             },
             Player {
                 ai_controlled: false,
@@ -4923,6 +5032,7 @@ async fn test_parse_2022_lobby_info_packet() {
                 name: "".to_string(),
                 car_number: Some(0),
                 ready_status: ReadyStatus::NotReady,
+                ..Default::default()
             },
         ],
     };
@@ -5747,6 +5857,7 @@ async fn test_parse_2022_session_history_packet() {
                 sector_2_time: 39878,
                 sector_3_time: 22883,
                 valid_sectors: 15,
+                ..Default::default()
             },
             LapHistoryData {
                 lap_time: 92331,
@@ -5754,6 +5865,7 @@ async fn test_parse_2022_session_history_packet() {
                 sector_2_time: 39969,
                 sector_3_time: 22938,
                 valid_sectors: 15,
+                ..Default::default()
             },
             LapHistoryData {
                 lap_time: 92684,
@@ -5761,6 +5873,7 @@ async fn test_parse_2022_session_history_packet() {
                 sector_2_time: 40155,
                 sector_3_time: 23004,
                 valid_sectors: 15,
+                ..Default::default()
             },
             LapHistoryData {
                 lap_time: 92838,
@@ -5768,6 +5881,7 @@ async fn test_parse_2022_session_history_packet() {
                 sector_2_time: 40229,
                 sector_3_time: 23022,
                 valid_sectors: 15,
+                ..Default::default()
             },
             LapHistoryData {
                 lap_time: 92822,
@@ -5775,6 +5889,7 @@ async fn test_parse_2022_session_history_packet() {
                 sector_2_time: 40218,
                 sector_3_time: 23012,
                 valid_sectors: 15,
+                ..Default::default()
             },
             LapHistoryData {
                 lap_time: 0,
@@ -5782,6 +5897,7 @@ async fn test_parse_2022_session_history_packet() {
                 sector_2_time: 0,
                 sector_3_time: 0,
                 valid_sectors: 15,
+                ..Default::default()
             },
             LapHistoryData::default(),
             LapHistoryData::default(),

@@ -11,7 +11,7 @@ use f1_telemetry::packet::final_classification::{
     FinalClassification, PacketFinalClassificationData,
 };
 use f1_telemetry::packet::generic::{
-    Flag, Nationality, ResultStatus, Team, TyreCompound, TyreCompoundVisual, WheelData,
+    Flag, Nationality, ResultStatus, SessionType, Team, TyreCompound, TyreCompoundVisual, WheelData,
 };
 use f1_telemetry::packet::lap::{DriverStatus, LapData, PacketLapData, PitStatus, Sector};
 use f1_telemetry::packet::lobby_info::{PacketLobbyInfoData, Player, ReadyStatus};
@@ -21,8 +21,8 @@ use f1_telemetry::packet::participants::{
 };
 use f1_telemetry::packet::session::{
     BrakingAssist, DrivingAssists, DynamicRacingLine, DynamicRacingLineType, ForecastAccuracy,
-    Formula, GearboxAssist, MarshalZone, PacketSessionData, SafetyCar, SessionType,
-    TemperatureChange, Track, Weather, WeatherForecast, WeatherForecastSample,
+    Formula, GearboxAssist, MarshalZone, PacketSessionData, SafetyCar, TemperatureChange, Track,
+    Weather, WeatherForecast, WeatherForecastSample,
 };
 use f1_telemetry::packet::session_history::{
     LapHistoryData, PacketSessionHistoryData, TyreStintData,
@@ -490,7 +490,7 @@ async fn test_parse_2021_motion_packet() {
                 roll: 0.0,
             },
         ],
-        player_car_data: PlayerCarData {
+        player_car_data: Some(PlayerCarData {
             suspension_position: WheelData {
                 rear_left: 3.48383,
                 rear_right: 5.019466,
@@ -531,7 +531,7 @@ async fn test_parse_2021_motion_packet() {
             angular_acceleration_y: -0.26576725,
             angular_acceleration_z: -0.6107175,
             front_wheels_angle: 0.0,
-        },
+        }),
     };
 
     assert_eq!(actual, expected);
@@ -746,6 +746,13 @@ async fn test_parse_2021_session_packet() {
         rule_set: None,
         time_of_day: None,
         session_length: None,
+        speed_units_lead_player: None,
+        temperature_units_lead_player: None,
+        speed_units_secondary_player: None,
+        temperature_units_secondary_player: None,
+        num_safety_car_periods: None,
+        num_virtual_safety_car_periods: None,
+        num_red_flag_periods: None,
     };
 
     assert_eq!(actual, expected);
@@ -784,7 +791,7 @@ async fn test_parse_2021_lap_packet() {
                 sector: Sector::Sector3,
                 current_lap_invalid: false,
                 penalties: 0,
-                warnings: 0,
+                total_warnings: 0,
                 number_unserved_drive_through: 0,
                 number_unserved_stop_go: 0,
                 grid_position: 0,
@@ -811,7 +818,7 @@ async fn test_parse_2021_lap_packet() {
                 sector: Sector::Sector3,
                 current_lap_invalid: false,
                 penalties: 0,
-                warnings: 0,
+                total_warnings: 0,
                 number_unserved_drive_through: 0,
                 number_unserved_stop_go: 0,
                 grid_position: 0,
@@ -838,7 +845,7 @@ async fn test_parse_2021_lap_packet() {
                 sector: Sector::Sector3,
                 current_lap_invalid: false,
                 penalties: 0,
-                warnings: 0,
+                total_warnings: 0,
                 number_unserved_drive_through: 0,
                 number_unserved_stop_go: 0,
                 grid_position: 0,
@@ -865,7 +872,7 @@ async fn test_parse_2021_lap_packet() {
                 sector: Sector::Sector3,
                 current_lap_invalid: false,
                 penalties: 0,
-                warnings: 0,
+                total_warnings: 0,
                 number_unserved_drive_through: 0,
                 number_unserved_stop_go: 0,
                 grid_position: 0,
@@ -892,7 +899,7 @@ async fn test_parse_2021_lap_packet() {
                 sector: Sector::Sector3,
                 current_lap_invalid: false,
                 penalties: 0,
-                warnings: 0,
+                total_warnings: 0,
                 number_unserved_drive_through: 0,
                 number_unserved_stop_go: 0,
                 grid_position: 0,
@@ -919,7 +926,7 @@ async fn test_parse_2021_lap_packet() {
                 sector: Sector::Sector3,
                 current_lap_invalid: false,
                 penalties: 0,
-                warnings: 0,
+                total_warnings: 0,
                 number_unserved_drive_through: 0,
                 number_unserved_stop_go: 0,
                 grid_position: 0,
@@ -946,7 +953,7 @@ async fn test_parse_2021_lap_packet() {
                 sector: Sector::Sector3,
                 current_lap_invalid: false,
                 penalties: 0,
-                warnings: 0,
+                total_warnings: 0,
                 number_unserved_drive_through: 0,
                 number_unserved_stop_go: 0,
                 grid_position: 0,
@@ -973,7 +980,7 @@ async fn test_parse_2021_lap_packet() {
                 sector: Sector::Sector3,
                 current_lap_invalid: false,
                 penalties: 0,
-                warnings: 0,
+                total_warnings: 0,
                 number_unserved_drive_through: 0,
                 number_unserved_stop_go: 0,
                 grid_position: 0,
@@ -1000,7 +1007,7 @@ async fn test_parse_2021_lap_packet() {
                 sector: Sector::Sector3,
                 current_lap_invalid: false,
                 penalties: 0,
-                warnings: 0,
+                total_warnings: 0,
                 number_unserved_drive_through: 0,
                 number_unserved_stop_go: 0,
                 grid_position: 0,
@@ -1027,7 +1034,7 @@ async fn test_parse_2021_lap_packet() {
                 sector: Sector::Sector3,
                 current_lap_invalid: false,
                 penalties: 0,
-                warnings: 0,
+                total_warnings: 0,
                 number_unserved_drive_through: 0,
                 number_unserved_stop_go: 0,
                 grid_position: 0,
@@ -1054,7 +1061,7 @@ async fn test_parse_2021_lap_packet() {
                 sector: Sector::Sector3,
                 current_lap_invalid: false,
                 penalties: 0,
-                warnings: 0,
+                total_warnings: 0,
                 number_unserved_drive_through: 0,
                 number_unserved_stop_go: 0,
                 grid_position: 0,
@@ -1081,7 +1088,7 @@ async fn test_parse_2021_lap_packet() {
                 sector: Sector::Sector3,
                 current_lap_invalid: false,
                 penalties: 0,
-                warnings: 0,
+                total_warnings: 0,
                 number_unserved_drive_through: 0,
                 number_unserved_stop_go: 0,
                 grid_position: 0,
@@ -1108,7 +1115,7 @@ async fn test_parse_2021_lap_packet() {
                 sector: Sector::Sector3,
                 current_lap_invalid: false,
                 penalties: 0,
-                warnings: 0,
+                total_warnings: 0,
                 number_unserved_drive_through: 0,
                 number_unserved_stop_go: 0,
                 grid_position: 0,
@@ -1135,7 +1142,7 @@ async fn test_parse_2021_lap_packet() {
                 sector: Sector::Sector3,
                 current_lap_invalid: false,
                 penalties: 0,
-                warnings: 0,
+                total_warnings: 0,
                 number_unserved_drive_through: 0,
                 number_unserved_stop_go: 0,
                 grid_position: 0,
@@ -1162,7 +1169,7 @@ async fn test_parse_2021_lap_packet() {
                 sector: Sector::Sector3,
                 current_lap_invalid: false,
                 penalties: 0,
-                warnings: 0,
+                total_warnings: 0,
                 number_unserved_drive_through: 0,
                 number_unserved_stop_go: 0,
                 grid_position: 0,
@@ -1189,7 +1196,7 @@ async fn test_parse_2021_lap_packet() {
                 sector: Sector::Sector3,
                 current_lap_invalid: false,
                 penalties: 0,
-                warnings: 0,
+                total_warnings: 0,
                 number_unserved_drive_through: 0,
                 number_unserved_stop_go: 0,
                 grid_position: 0,
@@ -1216,7 +1223,7 @@ async fn test_parse_2021_lap_packet() {
                 sector: Sector::Sector3,
                 current_lap_invalid: false,
                 penalties: 0,
-                warnings: 0,
+                total_warnings: 0,
                 number_unserved_drive_through: 0,
                 number_unserved_stop_go: 0,
                 grid_position: 0,
@@ -1243,7 +1250,7 @@ async fn test_parse_2021_lap_packet() {
                 sector: Sector::Sector3,
                 current_lap_invalid: false,
                 penalties: 0,
-                warnings: 0,
+                total_warnings: 0,
                 number_unserved_drive_through: 0,
                 number_unserved_stop_go: 0,
                 grid_position: 0,
@@ -1270,7 +1277,7 @@ async fn test_parse_2021_lap_packet() {
                 sector: Sector::Sector3,
                 current_lap_invalid: false,
                 penalties: 0,
-                warnings: 0,
+                total_warnings: 0,
                 number_unserved_drive_through: 0,
                 number_unserved_stop_go: 0,
                 grid_position: 0,
@@ -1297,7 +1304,7 @@ async fn test_parse_2021_lap_packet() {
                 sector: Sector::Sector3,
                 current_lap_invalid: false,
                 penalties: 0,
-                warnings: 0,
+                total_warnings: 0,
                 number_unserved_drive_through: 0,
                 number_unserved_stop_go: 0,
                 grid_position: 0,
@@ -1383,6 +1390,7 @@ async fn test_parse_2021_participants_packet() {
                 nationality: Nationality::German,
                 name: "SCHUMACHER".to_string(),
                 telemetry_access: Telemetry::Public,
+                ..Default::default()
             },
             ParticipantData {
                 ai_controlled: true,
@@ -1394,6 +1402,7 @@ async fn test_parse_2021_participants_packet() {
                 nationality: Nationality::Finnish,
                 name: "RÄIKKÖNEN".to_string(),
                 telemetry_access: Telemetry::Public,
+                ..Default::default()
             },
             ParticipantData {
                 ai_controlled: true,
@@ -1405,6 +1414,7 @@ async fn test_parse_2021_participants_packet() {
                 nationality: Nationality::Italian,
                 name: "GIOVINAZZI".to_string(),
                 telemetry_access: Telemetry::Public,
+                ..Default::default()
             },
             ParticipantData {
                 ai_controlled: true,
@@ -1416,6 +1426,7 @@ async fn test_parse_2021_participants_packet() {
                 nationality: Nationality::French,
                 name: "GASLY".to_string(),
                 telemetry_access: Telemetry::Public,
+                ..Default::default()
             },
             ParticipantData {
                 ai_controlled: true,
@@ -1427,6 +1438,7 @@ async fn test_parse_2021_participants_packet() {
                 nationality: Nationality::British,
                 name: "NORRIS".to_string(),
                 telemetry_access: Telemetry::Public,
+                ..Default::default()
             },
             ParticipantData {
                 ai_controlled: true,
@@ -1438,6 +1450,7 @@ async fn test_parse_2021_participants_packet() {
                 nationality: Nationality::Canadian,
                 name: "LATIFI".to_string(),
                 telemetry_access: Telemetry::Public,
+                ..Default::default()
             },
             ParticipantData {
                 ai_controlled: true,
@@ -1449,6 +1462,7 @@ async fn test_parse_2021_participants_packet() {
                 nationality: Nationality::Spanish,
                 name: "ALONSO".to_string(),
                 telemetry_access: Telemetry::Public,
+                ..Default::default()
             },
             ParticipantData {
                 ai_controlled: true,
@@ -1460,6 +1474,7 @@ async fn test_parse_2021_participants_packet() {
                 nationality: Nationality::Australian,
                 name: "RICCIARDO".to_string(),
                 telemetry_access: Telemetry::Public,
+                ..Default::default()
             },
             ParticipantData {
                 ai_controlled: true,
@@ -1471,6 +1486,7 @@ async fn test_parse_2021_participants_packet() {
                 nationality: Nationality::Monegasque,
                 name: "LECLERC".to_string(),
                 telemetry_access: Telemetry::Public,
+                ..Default::default()
             },
             ParticipantData {
                 ai_controlled: true,
@@ -1482,6 +1498,7 @@ async fn test_parse_2021_participants_packet() {
                 nationality: Nationality::British,
                 name: "HAMILTON".to_string(),
                 telemetry_access: Telemetry::Public,
+                ..Default::default()
             },
             ParticipantData {
                 ai_controlled: true,
@@ -1493,6 +1510,7 @@ async fn test_parse_2021_participants_packet() {
                 nationality: Nationality::Japanese,
                 name: "TSUNODA".to_string(),
                 telemetry_access: Telemetry::Public,
+                ..Default::default()
             },
             ParticipantData {
                 ai_controlled: true,
@@ -1504,6 +1522,7 @@ async fn test_parse_2021_participants_packet() {
                 nationality: Nationality::British,
                 name: "RUSSELL".to_string(),
                 telemetry_access: Telemetry::Public,
+                ..Default::default()
             },
             ParticipantData {
                 ai_controlled: true,
@@ -1515,6 +1534,7 @@ async fn test_parse_2021_participants_packet() {
                 nationality: Nationality::Finnish,
                 name: "BOTTAS".to_string(),
                 telemetry_access: Telemetry::Public,
+                ..Default::default()
             },
             ParticipantData {
                 ai_controlled: true,
@@ -1526,6 +1546,7 @@ async fn test_parse_2021_participants_packet() {
                 nationality: Nationality::Spanish,
                 name: "SAINZ".to_string(),
                 telemetry_access: Telemetry::Public,
+                ..Default::default()
             },
             ParticipantData {
                 ai_controlled: true,
@@ -1537,6 +1558,7 @@ async fn test_parse_2021_participants_packet() {
                 nationality: Nationality::Mexican,
                 name: "PEREZ".to_string(),
                 telemetry_access: Telemetry::Public,
+                ..Default::default()
             },
             ParticipantData {
                 ai_controlled: true,
@@ -1548,6 +1570,7 @@ async fn test_parse_2021_participants_packet() {
                 nationality: Nationality::Canadian,
                 name: "STROLL".to_string(),
                 telemetry_access: Telemetry::Public,
+                ..Default::default()
             },
             ParticipantData {
                 ai_controlled: true,
@@ -1559,6 +1582,7 @@ async fn test_parse_2021_participants_packet() {
                 nationality: Nationality::German,
                 name: "VETTEL".to_string(),
                 telemetry_access: Telemetry::Public,
+                ..Default::default()
             },
             ParticipantData {
                 ai_controlled: true,
@@ -1570,6 +1594,7 @@ async fn test_parse_2021_participants_packet() {
                 nationality: Nationality::Invalid,
                 name: "MAZEPIN".to_string(),
                 telemetry_access: Telemetry::Public,
+                ..Default::default()
             },
             ParticipantData {
                 ai_controlled: true,
@@ -1581,6 +1606,7 @@ async fn test_parse_2021_participants_packet() {
                 nationality: Nationality::French,
                 name: "OCON".to_string(),
                 telemetry_access: Telemetry::Public,
+                ..Default::default()
             },
             ParticipantData {
                 ai_controlled: false,
@@ -1592,6 +1618,7 @@ async fn test_parse_2021_participants_packet() {
                 nationality: Nationality::Dutch,
                 name: "VERSTAPPEN".to_string(),
                 telemetry_access: Telemetry::Restricted,
+                ..Default::default()
             },
             ParticipantData {
                 ai_controlled: false,
@@ -1603,6 +1630,7 @@ async fn test_parse_2021_participants_packet() {
                 nationality: Nationality::Invalid,
                 name: "".to_string(),
                 telemetry_access: Telemetry::Restricted,
+                ..Default::default()
             },
             ParticipantData {
                 ai_controlled: false,
@@ -1614,6 +1642,7 @@ async fn test_parse_2021_participants_packet() {
                 nationality: Nationality::Invalid,
                 name: "".to_string(),
                 telemetry_access: Telemetry::Restricted,
+                ..Default::default()
             },
         ],
     };
@@ -4536,6 +4565,7 @@ async fn test_parse_2021_lobby_info_packet() {
                 name: "Arron BARNES".to_string(),
                 car_number: Some(71),
                 ready_status: ReadyStatus::NotReady,
+                ..Default::default()
             },
             Player {
                 ai_controlled: true,
@@ -4544,6 +4574,7 @@ async fn test_parse_2021_lobby_info_packet() {
                 name: "Martin GILES".to_string(),
                 car_number: Some(70),
                 ready_status: ReadyStatus::NotReady,
+                ..Default::default()
             },
             Player {
                 ai_controlled: true,
@@ -4552,6 +4583,7 @@ async fn test_parse_2021_lobby_info_packet() {
                 name: "Alex MURRAY".to_string(),
                 car_number: Some(40),
                 ready_status: ReadyStatus::NotReady,
+                ..Default::default()
             },
             Player {
                 ai_controlled: true,
@@ -4560,6 +4592,7 @@ async fn test_parse_2021_lobby_info_packet() {
                 name: "Lucas ROTH".to_string(),
                 car_number: Some(95),
                 ready_status: ReadyStatus::NotReady,
+                ..Default::default()
             },
             Player {
                 ai_controlled: true,
@@ -4568,6 +4601,7 @@ async fn test_parse_2021_lobby_info_packet() {
                 name: "Igor CORREIA".to_string(),
                 car_number: Some(79),
                 ready_status: ReadyStatus::NotReady,
+                ..Default::default()
             },
             Player {
                 ai_controlled: true,
@@ -4576,6 +4610,7 @@ async fn test_parse_2021_lobby_info_packet() {
                 name: "Sophie LEVASSEUR".to_string(),
                 car_number: Some(53),
                 ready_status: ReadyStatus::NotReady,
+                ..Default::default()
             },
             Player {
                 ai_controlled: true,
@@ -4584,6 +4619,7 @@ async fn test_parse_2021_lobby_info_packet() {
                 name: "Jonas SCHIFFER".to_string(),
                 car_number: Some(76),
                 ready_status: ReadyStatus::NotReady,
+                ..Default::default()
             },
             Player {
                 ai_controlled: true,
@@ -4592,6 +4628,7 @@ async fn test_parse_2021_lobby_info_packet() {
                 name: "Alain FOREST".to_string(),
                 car_number: Some(80),
                 ready_status: ReadyStatus::NotReady,
+                ..Default::default()
             },
             Player {
                 ai_controlled: true,
@@ -4600,6 +4637,7 @@ async fn test_parse_2021_lobby_info_packet() {
                 name: "Jay LETOURNEAU".to_string(),
                 car_number: Some(68),
                 ready_status: ReadyStatus::NotReady,
+                ..Default::default()
             },
             Player {
                 ai_controlled: true,
@@ -4608,6 +4646,7 @@ async fn test_parse_2021_lobby_info_packet() {
                 name: "Esto SAARI".to_string(),
                 car_number: Some(28),
                 ready_status: ReadyStatus::NotReady,
+                ..Default::default()
             },
             Player {
                 ai_controlled: true,
@@ -4616,6 +4655,7 @@ async fn test_parse_2021_lobby_info_packet() {
                 name: "Yasar ATIYEH".to_string(),
                 car_number: Some(45),
                 ready_status: ReadyStatus::NotReady,
+                ..Default::default()
             },
             Player {
                 ai_controlled: true,
@@ -4624,6 +4664,7 @@ async fn test_parse_2021_lobby_info_packet() {
                 name: "Naota IZUMI".to_string(),
                 car_number: Some(42),
                 ready_status: ReadyStatus::NotReady,
+                ..Default::default()
             },
             Player {
                 ai_controlled: true,
@@ -4632,6 +4673,7 @@ async fn test_parse_2021_lobby_info_packet() {
                 name: "Wilhelm KAUFMANN".to_string(),
                 car_number: Some(47),
                 ready_status: ReadyStatus::NotReady,
+                ..Default::default()
             },
             Player {
                 ai_controlled: true,
@@ -4640,6 +4682,7 @@ async fn test_parse_2021_lobby_info_packet() {
                 name: "Marie LAURSEN".to_string(),
                 car_number: Some(65),
                 ready_status: ReadyStatus::NotReady,
+                ..Default::default()
             },
             Player {
                 ai_controlled: true,
@@ -4648,6 +4691,7 @@ async fn test_parse_2021_lobby_info_packet() {
                 name: "Flavio NIEVES".to_string(),
                 car_number: Some(36),
                 ready_status: ReadyStatus::NotReady,
+                ..Default::default()
             },
             Player {
                 ai_controlled: true,
@@ -4656,6 +4700,7 @@ async fn test_parse_2021_lobby_info_packet() {
                 name: "Peter BELOUSOV".to_string(),
                 car_number: Some(87),
                 ready_status: ReadyStatus::NotReady,
+                ..Default::default()
             },
             Player {
                 ai_controlled: true,
@@ -4664,6 +4709,7 @@ async fn test_parse_2021_lobby_info_packet() {
                 name: "Klimek MICHALSKI".to_string(),
                 car_number: Some(32),
                 ready_status: ReadyStatus::NotReady,
+                ..Default::default()
             },
             Player {
                 ai_controlled: true,
@@ -4672,6 +4718,7 @@ async fn test_parse_2021_lobby_info_packet() {
                 name: "Santiago MORENO".to_string(),
                 car_number: Some(60),
                 ready_status: ReadyStatus::NotReady,
+                ..Default::default()
             },
             Player {
                 ai_controlled: true,
@@ -4680,6 +4727,7 @@ async fn test_parse_2021_lobby_info_packet() {
                 name: "Benjamin COPPENS".to_string(),
                 car_number: Some(54),
                 ready_status: ReadyStatus::NotReady,
+                ..Default::default()
             },
             Player {
                 ai_controlled: false,
@@ -4688,6 +4736,7 @@ async fn test_parse_2021_lobby_info_packet() {
                 name: "Player".to_string(),
                 car_number: Some(42),
                 ready_status: ReadyStatus::NotReady,
+                ..Default::default()
             },
             Player {
                 ai_controlled: false,
@@ -4696,6 +4745,7 @@ async fn test_parse_2021_lobby_info_packet() {
                 name: "".to_string(),
                 car_number: Some(0),
                 ready_status: ReadyStatus::NotReady,
+                ..Default::default()
             },
             Player {
                 ai_controlled: false,
@@ -4704,6 +4754,7 @@ async fn test_parse_2021_lobby_info_packet() {
                 name: "".to_string(),
                 car_number: Some(0),
                 ready_status: ReadyStatus::NotReady,
+                ..Default::default()
             },
         ],
     };
@@ -5558,6 +5609,7 @@ async fn test_parse_2021_session_history_packet() {
                 sector_2_time: 23305,
                 sector_3_time: 29485,
                 valid_sectors: 15,
+                ..Default::default()
             },
             LapHistoryData {
                 lap_time: 0,
@@ -5565,6 +5617,7 @@ async fn test_parse_2021_session_history_packet() {
                 sector_2_time: 0,
                 sector_3_time: 0,
                 valid_sectors: 15,
+                ..Default::default()
             },
             LapHistoryData::default(),
             LapHistoryData::default(),

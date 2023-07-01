@@ -2,6 +2,7 @@ use serde::Serialize;
 
 use crate::packet::generic::Flag;
 
+use super::generic::SessionType;
 use super::header::PacketHeader;
 
 #[derive(Debug, Copy, Clone, Default, Eq, PartialEq, Serialize)]
@@ -21,46 +22,6 @@ pub enum TemperatureChange {
     Up, // The default in F1 2021 for WeatherForecast
     Down,
     NoChange,
-}
-
-#[derive(Debug, Copy, Clone, Default, Eq, PartialEq, Serialize)]
-pub enum SessionType {
-    #[default]
-    Unknown,
-    Practice1,
-    Practice2,
-    Practice3,
-    PracticeShort,
-    Qualifying1,
-    Qualifying2,
-    Qualifying3,
-    QualifyingShort,
-    OneShotQualifying,
-    Race,
-    Race2,
-    Race3,
-    TimeTrial,
-}
-
-impl SessionType {
-    pub fn name<'a>(self) -> &'a str {
-        match self {
-            SessionType::Unknown => "Unknown",
-            SessionType::Practice1 => "Free Practice 1",
-            SessionType::Practice2 => "Free Practice 2",
-            SessionType::Practice3 => "Free Practice 3",
-            SessionType::PracticeShort => "Free Practice (Short)",
-            SessionType::Qualifying1 => "Qualifying 1",
-            SessionType::Qualifying2 => "Qualifying 2",
-            SessionType::Qualifying3 => "Qualifying 3",
-            SessionType::QualifyingShort => "Qualifying (Short)",
-            SessionType::OneShotQualifying => "One-Shot Qualifying",
-            SessionType::Race => "Race",
-            SessionType::Race2 => "Race 2",
-            SessionType::Race3 => "Race 3",
-            SessionType::TimeTrial => "Time Trial",
-        }
-    }
 }
 
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Serialize)]
@@ -92,6 +53,12 @@ pub enum Track {
     SuzukaShort,
     Hanoi,
     Zandvoort,
+    Imola,
+    Portimao,
+    Jeddah,
+    Miami,
+    LasVegas,
+    Losail,
     Unknown,
 }
 
@@ -125,6 +92,12 @@ impl Track {
             Track::SuzukaShort => "Suzuka International Racing Course (Short)",
             Track::Hanoi => "Hanoi Street Circuit",
             Track::Zandvoort => "Circuit Zandvoort",
+            Track::Imola => "Autodromo Internazionale Enzo e Dino Ferrari",
+            Track::Portimao => "Autódromo Internacional do Algarve",
+            Track::Jeddah => "Jeddah Corniche Circuit",
+            Track::Miami => "Miami International Autodrome",
+            Track::LasVegas => "Las Vegas Street Circuit",
+            Track::Losail => "Losail International Circuit",
             Track::Unknown => "[UNKNOWN]",
         }
     }
@@ -260,6 +233,7 @@ pub struct DrivingAssists {
 pub enum GameMode {
     EventMode,
     GrandPrix,
+    GrandPrix23,
     TimeTrial,
     Splitscreen,
     OnlineCustom,
@@ -269,8 +243,11 @@ pub enum GameMode {
     Championship,
     OnlineChampionship,
     OnlineWeeklyEvent,
+    StoryMode,
     Career22,
     Career22Online,
+    Career23,
+    Career23Online,
     Benchmark,
 }
 
@@ -296,6 +273,18 @@ pub enum SessionLength {
     MediumLong,
     Long,
     Full,
+}
+
+#[derive(Debug, Clone, Eq, PartialEq, Serialize)]
+pub enum SpeedUnits {
+    MPH,
+    KPH,
+}
+
+#[derive(Debug, Clone, Eq, PartialEq, Serialize)]
+pub enum TemperatureUnits {
+    Celsius,
+    Fahrenheit,
 }
 
 /// The session packet includes details about the current session in progress
@@ -369,4 +358,18 @@ pub struct PacketSessionData {
     pub time_of_day: Option<u32>,
     /// Session Length
     pub session_length: Option<SessionLength>,
+    /// Speed units of the lead player. New in F1 23.
+    pub speed_units_lead_player: Option<SpeedUnits>,
+    /// Temperature units of the lead player. New in F1 23.
+    pub temperature_units_lead_player: Option<TemperatureUnits>,
+    /// Speed units of the secondary player. New in F1 23.
+    pub speed_units_secondary_player: Option<SpeedUnits>,
+    /// Temperature units of the secondary player. New in F1 23.
+    pub temperature_units_secondary_player: Option<TemperatureUnits>,
+    /// Number of safety cars called during session. New in F1 23.
+    pub num_safety_car_periods: Option<u8>,
+    /// Number of virtual safety cars called. New in F1 23.
+    pub num_virtual_safety_car_periods: Option<u8>,
+    /// Number of red flags called during session. New in F1 23.
+    pub num_red_flag_periods: Option<u8>,
 }

@@ -7,11 +7,14 @@ use f1_telemetry::packet::car_status::PacketCarStatusData;
 use f1_telemetry::packet::car_telemetry::PacketCarTelemetryData;
 use f1_telemetry::packet::event::{Event, PacketEventData};
 use f1_telemetry::packet::final_classification::PacketFinalClassificationData;
-use f1_telemetry::packet::generic::{ResultStatus, Team, TyreCompoundVisual, WheelData};
+use f1_telemetry::packet::generic::{
+    ResultStatus, SessionType, Team, TyreCompoundVisual, WheelData,
+};
 use f1_telemetry::packet::lap::{PacketLapData, PitStatus};
 use f1_telemetry::packet::motion::PacketMotionData;
+use f1_telemetry::packet::motion_ex::PacketMotionExData;
 use f1_telemetry::packet::participants::{Driver, PacketParticipantsData};
-use f1_telemetry::packet::session::{PacketSessionData, SafetyCar, SessionType, Weather};
+use f1_telemetry::packet::session::{PacketSessionData, SafetyCar, Weather};
 use f1_telemetry::packet::Packet;
 
 use crate::fmt;
@@ -61,6 +64,7 @@ impl GameState {
             Packet::FinalClassification(p) => self.parse_final_classification(p),
             Packet::Motion(p) => self.parse_motion_data(p),
             Packet::CarDamage(p) => self.parse_car_damage(p),
+            Packet::MotionEx(p) => self.parse_motion_ex_data(p),
             _ => {}
         };
     }
@@ -313,19 +317,29 @@ impl GameState {
         let player_index = motion_data.header.player_car_index;
         let md = &motion_data.motion_data[player_index as usize];
 
-        self.motion_info.suspension_position = motion_data.player_car_data.suspension_position;
-        self.motion_info.suspension_velocity = motion_data.player_car_data.suspension_velocity;
-        self.motion_info.suspension_acceleration =
-            motion_data.player_car_data.suspension_acceleration;
-        self.motion_info.wheel_speed = motion_data.player_car_data.wheel_speed;
-        self.motion_info.wheel_slip = motion_data.player_car_data.wheel_slip;
-        self.motion_info.front_wheels_angle = motion_data.player_car_data.front_wheels_angle;
+        if let Some(pcd) = &motion_data.player_car_data {
+            self.motion_info.suspension_position = pcd.suspension_position;
+            self.motion_info.suspension_velocity = pcd.suspension_velocity;
+            self.motion_info.suspension_acceleration = pcd.suspension_acceleration;
+            self.motion_info.wheel_speed = pcd.wheel_speed;
+            self.motion_info.wheel_slip = pcd.wheel_slip;
+            self.motion_info.front_wheels_angle = pcd.front_wheels_angle;
+        }
         self.motion_info.g_force_lateral = md.g_force_lateral;
         self.motion_info.g_force_longitudinal = md.g_force_longitudinal;
         self.motion_info.g_force_vertical = md.g_force_vertical;
         self.motion_info.yaw = md.yaw;
         self.motion_info.pitch = md.pitch;
         self.motion_info.roll = md.roll;
+    }
+
+    fn parse_motion_ex_data(&mut self, packet: &PacketMotionExData) {
+        self.motion_info.suspension_position = packet.suspension_position;
+        self.motion_info.suspension_velocity = packet.suspension_velocity;
+        self.motion_info.suspension_acceleration = packet.suspension_acceleration;
+        self.motion_info.wheel_speed = packet.wheel_speed;
+        self.motion_info.wheel_slip = packet.wheel_slip_ratio;
+        self.motion_info.front_wheels_angle = packet.front_wheels_angle;
     }
 
     fn parse_final_classification(&mut self, classification_data: &PacketFinalClassificationData) {

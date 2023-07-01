@@ -2,7 +2,6 @@ use std::io::BufRead;
 
 use serde::Deserialize;
 
-use crate::packet::generic::SessionType;
 use crate::packet::header::PacketHeader;
 use crate::packet::session::*;
 use crate::packet::UnpackError;
@@ -10,6 +9,7 @@ use crate::utils::assert_packet_size;
 
 use super::consts::*;
 use super::generic::unpack_flag;
+use super::generic::unpack_session_type;
 
 fn unpack_weather(value: u8) -> Result<Weather, UnpackError> {
     match value {
@@ -20,26 +20,6 @@ fn unpack_weather(value: u8) -> Result<Weather, UnpackError> {
         4 => Ok(Weather::HeavyRain),
         5 => Ok(Weather::Storm),
         _ => Err(UnpackError(format!("Invalid Weather value: {}", value))),
-    }
-}
-
-fn unpack_session_type(value: u8) -> Result<SessionType, UnpackError> {
-    match value {
-        0 => Ok(SessionType::Unknown),
-        1 => Ok(SessionType::Practice1),
-        2 => Ok(SessionType::Practice2),
-        3 => Ok(SessionType::Practice3),
-        4 => Ok(SessionType::PracticeShort),
-        5 => Ok(SessionType::Qualifying1),
-        6 => Ok(SessionType::Qualifying2),
-        7 => Ok(SessionType::Qualifying3),
-        8 => Ok(SessionType::QualifyingShort),
-        9 => Ok(SessionType::OneShotQualifying),
-        10 => Ok(SessionType::Race),
-        11 => Ok(SessionType::Race2),
-        12 => Ok(SessionType::Race3),
-        13 => Ok(SessionType::TimeTrial),
-        _ => Err(UnpackError(format!("Invalid SessionType value: {}", value))),
     }
 }
 
@@ -72,6 +52,12 @@ fn unpack_track(value: i8) -> Result<Track, UnpackError> {
         24 => Ok(Track::SuzukaShort),
         25 => Ok(Track::Hanoi),
         26 => Ok(Track::Zandvoort),
+        27 => Ok(Track::Imola),
+        28 => Ok(Track::Portimao),
+        29 => Ok(Track::Jeddah),
+        30 => Ok(Track::Miami),
+        31 => Ok(Track::LasVegas),
+        32 => Ok(Track::Losail),
         -1 => Ok(Track::Unknown),
         _ => Err(UnpackError(format!("Invalid Track value: {}", value))),
     }
@@ -171,6 +157,7 @@ fn unpack_game_mode(value: u8) -> Result<GameMode, UnpackError> {
     match value {
         0 => Ok(GameMode::EventMode),
         3 => Ok(GameMode::GrandPrix),
+        4 => Ok(GameMode::GrandPrix23),
         5 => Ok(GameMode::TimeTrial),
         6 => Ok(GameMode::Splitscreen),
         7 => Ok(GameMode::OnlineCustom),
@@ -180,8 +167,11 @@ fn unpack_game_mode(value: u8) -> Result<GameMode, UnpackError> {
         13 => Ok(GameMode::Championship),
         14 => Ok(GameMode::OnlineChampionship),
         15 => Ok(GameMode::OnlineWeeklyEvent),
+        17 => Ok(GameMode::StoryMode),
         19 => Ok(GameMode::Career22),
         20 => Ok(GameMode::Career22Online),
+        21 => Ok(GameMode::Career23),
+        22 => Ok(GameMode::Career23Online),
         127 => Ok(GameMode::Benchmark),
         _ => Err(UnpackError(format!("Invalid GameMode value: {}", value))),
     }
@@ -218,63 +208,89 @@ fn unpack_session_length(value: u8) -> Result<SessionLength, UnpackError> {
     }
 }
 
+fn unpack_speed_units(value: u8) -> Result<SpeedUnits, UnpackError> {
+    match value {
+        0 => Ok(SpeedUnits::MPH),
+        1 => Ok(SpeedUnits::KPH),
+        _ => Err(UnpackError(format!("Invalid SpeedUnits value: {}", value))),
+    }
+}
+
+fn unpack_temperature_units(value: u8) -> Result<TemperatureUnits, UnpackError> {
+    match value {
+        0 => Ok(TemperatureUnits::Celsius),
+        1 => Ok(TemperatureUnits::Fahrenheit),
+        _ => Err(UnpackError(format!(
+            "Invalid TemperatureUnits value: {}",
+            value
+        ))),
+    }
+}
+
 /// The session packet includes details about the current session in progress.
 ///
 /// Frequency: 2 per second
-/// Size: 625 bytes
+/// Size: 644 bytes
 /// Version: 1
 ///
 /// ## Specification
 /// ```text
-/// header:                         Header
-/// weather:                        Weather - 0 = clear, 1 = light cloud, 2 = overcast
-///                                 3 = light rain, 4 = heavy rain, 5 = storm
-/// track_temperature:              Track temp. in degrees celsius
-/// air_temperature:                Air temp. in degrees celsius
-/// total_laps:                     Total number of laps in this race
-/// track_length:                   Track length in metres
-/// session_type:                   0 = unknown, 1 = P1, 2 = P2, 3 = P3, 4 = Short P
-///                                 5 = Q1, 6 = Q2, 7 = Q3, 8 = Short Q, 9 = OSQ
-///                                 10 = R, 11 = R2, 12 = Time Trial
-/// track_id:                       -1 for unknown, 0-21 for tracks, see appendix
-/// formula:                        Formula, 0 = F1 Modern, 1 = F1 Classic, 2 = F2,
-///                                 3 = F1 Generic
-/// session_time_left:              Time left in session in seconds
-/// session_duration:               Session duration in seconds
-/// pit_speed_limit:                Pit speed limit in kilometres per hour
-/// game_paused:                    Whether the game is paused
-/// is_spectating:                  Whether the player is spectating
-/// spectator_car_index:            Index of the car being spectated
-/// sli_pro_native_support:         SLI Pro support, 0 = inactive, 1 = active
-/// num_marshal_zones:              Number of marshal zones to follow
-/// marshal_zones:                  List of marshal zones – max 21
-/// safety_car_status:              0 = no safety car, 1 = full safety car
-///                                 2 = virtual safety car
-/// network_game:                   0 = offline, 1 = online
-/// num_weather_forecast_samples:   Number of weather samples to follow
-/// weather_forecast_samples:       List of weather forecast samples - max 20
-/// forecast_accuracy:              0 = Perfect, 1 = Approximate
-/// ai_difficulty:                  AI Difficulty rating – 0-110
-/// season_identifier:              Identifier for season - persists across saves
-/// weekend_identifier:             Identifier for weekend - persists across saves
-/// session_identifier:             Identifier for session - persists across saves
-/// pit_stop_window_ideal_lap:      Ideal lap to pit on for current strategy (player)
-/// pit_stop_window_latest_lap:     Latest lap to pit on for current strategy (player)
-/// pit_stop_rejoin_position:       Predicted position to rejoin at (player)
-/// steering_assist:                0 = off, 1 = on
-/// braking_assist:                 0 = off, 1 = low, 2 = medium, 3 = high
-/// gearbox_assist:                 1 = manual, 2 = manual & suggested gear, 3 = auto
-/// pit_assist:                     0 = off, 1 = on
-/// pit_relase_assist:              0 = off, 1 = on
-/// ers_assist:                     0 = off, 1 = on
-/// drs_assist:                     0 = off, 1 = on
-/// dynamic_racing_line:            0 = off, 1 = corners only, 2 = full
-/// dynamic_racing_line_type:       0 = 2D, 1 = 3D
-/// game_mode:                      Game mode id
-/// rule_set:                       Rule set id
-/// time_of_day:                    Local time of day (minutes since midnight)
-/// session_length:                 0 = None, 2 = Very Short, 3 = Short, 4 = Medium
-///                                 5 = Medium Long, 6 = Long, 7 = Full
+/// header:                             Header
+/// weather:                            Weather - 0 = clear, 1 = light cloud, 2 = overcast
+///                                     3 = light rain, 4 = heavy rain, 5 = storm
+/// track_temperature:                  Track temp. in degrees celsius
+/// air_temperature:                    Air temp. in degrees celsius
+/// total_laps:                         Total number of laps in this race
+/// track_length:                       Track length in metres
+/// session_type:                       0 = unknown, 1 = P1, 2 = P2, 3 = P3, 4 = Short P
+///                                     5 = Q1, 6 = Q2, 7 = Q3, 8 = Short Q, 9 = OSQ
+///                                     10 = R, 11 = R2, 12 = Time Trial
+/// track_id:                           -1 for unknown, 0-21 for tracks, see appendix
+/// formula:                            Formula, 0 = F1 Modern, 1 = F1 Classic, 2 = F2,
+///                                     3 = F1 Generic
+/// session_time_left:                  Time left in session in seconds
+/// session_duration:                   Session duration in seconds
+/// pit_speed_limit:                    Pit speed limit in kilometres per hour
+/// game_paused:                        Whether the game is paused
+/// is_spectating:                      Whether the player is spectating
+/// spectator_car_index:                Index of the car being spectated
+/// sli_pro_native_support:             SLI Pro support, 0 = inactive, 1 = active
+/// num_marshal_zones:                  Number of marshal zones to follow
+/// marshal_zones:                      List of marshal zones – max 21
+/// safety_car_status:                  0 = no safety car, 1 = full safety car
+///                                     2 = virtual safety car
+/// network_game:                       0 = offline, 1 = online
+/// num_weather_forecast_samples:       Number of weather samples to follow
+/// weather_forecast_samples:           List of weather forecast samples - max 20
+/// forecast_accuracy:                  0 = Perfect, 1 = Approximate
+/// ai_difficulty:                      AI Difficulty rating – 0-110
+/// season_identifier:                  Identifier for season - persists across saves
+/// weekend_identifier:                 Identifier for weekend - persists across saves
+/// session_identifier:                 Identifier for session - persists across saves
+/// pit_stop_window_ideal_lap:          Ideal lap to pit on for current strategy (player)
+/// pit_stop_window_latest_lap:         Latest lap to pit on for current strategy (player)
+/// pit_stop_rejoin_position:           Predicted position to rejoin at (player)
+/// steering_assist:                    0 = off, 1 = on
+/// braking_assist:                     0 = off, 1 = low, 2 = medium, 3 = high
+/// gearbox_assist:                     1 = manual, 2 = manual & suggested gear, 3 = auto
+/// pit_assist:                         0 = off, 1 = on
+/// pit_relase_assist:                  0 = off, 1 = on
+/// ers_assist:                         0 = off, 1 = on
+/// drs_assist:                         0 = off, 1 = on
+/// dynamic_racing_line:                0 = off, 1 = corners only, 2 = full
+/// dynamic_racing_line_type:           0 = 2D, 1 = 3D
+/// game_mode:                          Game mode id
+/// rule_set:                           Rule set id
+/// time_of_day:                        Local time of day (minutes since midnight)
+/// session_length:                     0 = None, 2 = Very Short, 3 = Short, 4 = Medium
+///                                     5 = Medium Long, 6 = Long, 7 = Full
+/// speed_units_lead_player:            0 = MPH, 1 = KPH
+/// temperature_units_lead_player:      0 = Celsius, 1 = Fahrenheit
+/// speed_units_secondary_player:       0 = MPH, 1 = KPH
+/// temperature_units_secondary_player: 0 = Celsius, 1 = Fahrenheit
+/// num_safety_car_periods:             Number of safety cars called during session
+/// num_virtual_safety_car_periods:     Number of virtual safety cars called
+/// num_red_flag_periods:               Number of red flags called during session
 /// ```
 #[derive(Deserialize)]
 struct RawSessionData {
@@ -322,6 +338,13 @@ struct RawSessionData {
     rule_set: u8,
     time_of_day: u32,
     session_length: u8,
+    speed_units_lead_player: u8,
+    temperature_units_lead_player: u8,
+    speed_units_secondary_player: u8,
+    temperature_units_secondary_player: u8,
+    num_safety_car_periods: u8,
+    num_virtual_safety_car_periods: u8,
+    num_red_flag_periods: u8,
 }
 
 /// Description of a marshal zone
@@ -329,7 +352,7 @@ struct RawSessionData {
 /// ## Specification
 /// ```text
 /// zone_start: Fraction (0..1) of way through the lap the marshal zone starts
-/// zone_flag:  -1 = invalid/unknown, 0 = none, 1 = green, 2 = blue, 3 = yellow, 4 = red
+/// zone_flag:  -1 = invalid/unknown, 0 = none, 1 = green, 2 = blue, 3 = yellow
 /// ```
 #[derive(Deserialize)]
 struct RawMarshalZone {
@@ -428,6 +451,13 @@ pub(crate) fn parse_session_data<T: BufRead>(
     let game_mode = unpack_game_mode(session_data.game_mode)?;
     let rule_set = unpack_rule_set(session_data.rule_set)?;
     let session_length = unpack_session_length(session_data.session_length)?;
+    let speed_units_lead_player = unpack_speed_units(session_data.speed_units_lead_player)?;
+    let temperature_units_lead_player =
+        unpack_temperature_units(session_data.temperature_units_lead_player)?;
+    let speed_units_secondary_player =
+        unpack_speed_units(session_data.speed_units_secondary_player)?;
+    let temperature_units_secondary_player =
+        unpack_temperature_units(session_data.temperature_units_secondary_player)?;
 
     let weather_forecast_samples = session_data
         .weather_forecast_samples_1
@@ -485,12 +515,12 @@ pub(crate) fn parse_session_data<T: BufRead>(
         rule_set: Some(rule_set),
         time_of_day: Some(session_data.time_of_day),
         session_length: Some(session_length),
-        speed_units_lead_player: None,
-        temperature_units_lead_player: None,
-        speed_units_secondary_player: None,
-        temperature_units_secondary_player: None,
-        num_safety_car_periods: None,
-        num_virtual_safety_car_periods: None,
-        num_red_flag_periods: None,
+        speed_units_lead_player: Some(speed_units_lead_player),
+        temperature_units_lead_player: Some(temperature_units_lead_player),
+        speed_units_secondary_player: Some(speed_units_secondary_player),
+        temperature_units_secondary_player: Some(temperature_units_secondary_player),
+        num_safety_car_periods: Some(session_data.num_safety_car_periods),
+        num_virtual_safety_car_periods: Some(session_data.num_virtual_safety_car_periods),
+        num_red_flag_periods: Some(session_data.num_red_flag_periods),
     })
 }

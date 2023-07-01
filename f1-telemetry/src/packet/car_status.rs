@@ -92,6 +92,8 @@ pub enum ERSDeployMode {
 /// tyre_visual_compound:        Visual representation of the tyre compound. See
 ///                              [`TyreCompoundVisual`].
 /// vehicle_fia_flag:            Flag being shown to the car. See [`Flag`].
+/// engine_power_ice:            Engine power output of ICE (W). New in F1 23.
+/// engine_power_mguk:           Engine power output of MGU-K (W). New in F1 23.
 /// ers_store_energy:            ERS energy store in joules
 /// ers_deploy_mode:             ERS deployment mode. See [`ERSDeployMode`]
 /// ers_harvested_this_lap_mguk: ERS energy harvested this lap by MGU-k
@@ -129,6 +131,8 @@ pub struct CarStatusData {
     pub visual_tyre_compound: TyreCompoundVisual,
     pub tyre_age_laps: Option<u8>,
     pub vehicle_fia_flag: Flag,
+    pub engine_power_ice: Option<f32>,
+    pub engine_power_mguk: Option<f32>,
     pub ers_store_energy: f32,
     pub ers_deploy_mode: ERSDeployMode,
     pub ers_harvested_this_lap_mguk: f32,

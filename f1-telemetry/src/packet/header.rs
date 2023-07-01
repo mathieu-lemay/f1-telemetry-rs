@@ -5,8 +5,10 @@ use crate::packet::PacketType;
 /// The header for each of the UDP telemetry packets.
 #[derive(Debug, Clone, Eq, PartialEq, Serialize)]
 pub struct PacketHeader {
-    /// Game year (ex. 2019)
+    /// Packet Format (ex. 2019)
     pub packet_format: u16,
+    /// Game year - last two digits (ex. 23). New in F1 23.
+    pub game_year: u8,
     /// Game major version - "x.00"
     pub game_major_version: u8,
     /// Game minor version - "1.xX"
@@ -21,6 +23,9 @@ pub struct PacketHeader {
     pub session_time: u32,
     /// Identifier for the frame the data was retrieved on
     pub frame_identifier: u32,
+    /// Overall identifier for the frame the data was retrieved
+    /// on, doesn't go back after flashbacks
+    pub overall_frame_identifier: Option<u32>,
     /// Index of player's car in the array
     pub player_car_index: u8,
     /// Index of secondary player's car in the array, if any

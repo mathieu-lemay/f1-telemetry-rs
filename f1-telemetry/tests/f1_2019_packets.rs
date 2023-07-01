@@ -7,7 +7,7 @@ use f1_telemetry::packet::car_telemetry::{
 };
 use f1_telemetry::packet::event::{Event, FastestLap, PacketEventData};
 use f1_telemetry::packet::generic::{
-    Flag, Nationality, ResultStatus, Team, TyreCompound, TyreCompoundVisual, WheelData,
+    Flag, Nationality, ResultStatus, SessionType, Team, TyreCompound, TyreCompoundVisual, WheelData,
 };
 use f1_telemetry::packet::lap::{DriverStatus, LapData, PacketLapData, PitStatus, Sector};
 use f1_telemetry::packet::motion::{CarMotionData, PacketMotionData, PlayerCarData};
@@ -15,7 +15,7 @@ use f1_telemetry::packet::participants::{
     Driver, PacketParticipantsData, ParticipantData, Telemetry,
 };
 use f1_telemetry::packet::session::{
-    Formula, MarshalZone, PacketSessionData, SafetyCar, SessionType, Track, Weather,
+    Formula, MarshalZone, PacketSessionData, SafetyCar, Track, Weather,
 };
 use f1_telemetry::packet::Packet;
 
@@ -440,7 +440,7 @@ async fn test_parse_2019_motion_packet() {
                 roll: 0.019960029,
             },
         ],
-        player_car_data: PlayerCarData {
+        player_car_data: Some(PlayerCarData {
             suspension_position: WheelData::new(16.994642, 8.856616, 10.02546, 3.0912032),
             suspension_velocity: WheelData::new(-28.865864, -41.108833, 52.830387, 40.053856),
             suspension_acceleration: WheelData::new(-1971.4028, -3529.0164, 3126.438, 1537.9934),
@@ -456,7 +456,7 @@ async fn test_parse_2019_motion_packet() {
             angular_acceleration_y: 3.947086,
             angular_acceleration_z: 3.0085795,
             front_wheels_angle: -0.0,
-        },
+        }),
     };
 
     assert_eq!(actual, expected);
@@ -596,6 +596,13 @@ async fn test_parse_2019_session_packet() {
         rule_set: None,
         time_of_day: None,
         session_length: None,
+        speed_units_lead_player: None,
+        temperature_units_lead_player: None,
+        speed_units_secondary_player: None,
+        temperature_units_secondary_player: None,
+        num_safety_car_periods: None,
+        num_virtual_safety_car_periods: None,
+        num_red_flag_periods: None,
     };
 
     assert_eq!(actual, expected);

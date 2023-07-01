@@ -10,11 +10,14 @@ use header::parse_header;
 use lap::parse_lap_data;
 use lobby_info::parse_lobby_info_data;
 use motion::parse_motion_data;
+use motion_ex::parse_motion_ex_data;
 use participants::parse_participants_data;
 use session::parse_session_data;
 use session_history::parse_session_history_data;
 
 use crate::packet::{Packet, PacketType, UnpackError};
+
+use self::tyre_sets::parse_tyre_sets_data;
 
 mod car_damage;
 mod car_setup;
@@ -28,9 +31,11 @@ mod header;
 mod lap;
 mod lobby_info;
 mod motion;
+mod motion_ex;
 mod participants;
 mod session;
 mod session_history;
+mod tyre_sets;
 
 pub(crate) fn parse_packet(size: usize, packet: &[u8]) -> Result<Packet, UnpackError> {
     let mut cursor = Cursor::new(packet);
@@ -97,6 +102,15 @@ pub(crate) fn parse_packet(size: usize, packet: &[u8]) -> Result<Packet, UnpackE
 
             Ok(Packet::SessionHistory(packet))
         }
-        p => Err(UnpackError(format!("Unsupported packet type: {:?}", p))),
+        PacketType::TyreSets => {
+            let packet = parse_tyre_sets_data(&mut cursor, header, size)?;
+
+            Ok(Packet::TyreSets(packet))
+        }
+        PacketType::MotionEx => {
+            let packet = parse_motion_ex_data(&mut cursor, header, size)?;
+
+            Ok(Packet::MotionEx(packet))
+        }
     }
 }

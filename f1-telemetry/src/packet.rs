@@ -10,11 +10,13 @@ use header::PacketHeader;
 use lap::PacketLapData;
 use lobby_info::PacketLobbyInfoData;
 use motion::PacketMotionData;
+use motion_ex::PacketMotionExData;
 use participants::PacketParticipantsData;
 use session::PacketSessionData;
 use session_history::PacketSessionHistoryData;
+use tyre_sets::PacketTyreSetsData;
 
-use super::{f1_2019, f1_2020, f1_2021, f1_2022};
+use super::{f1_2019, f1_2020, f1_2021, f1_2022, f1_2023};
 
 pub mod car_damage;
 pub mod car_setup;
@@ -27,9 +29,11 @@ pub mod header;
 pub mod lap;
 pub mod lobby_info;
 pub mod motion;
+pub mod motion_ex;
 pub mod participants;
 pub mod session;
 pub mod session_history;
+pub mod tyre_sets;
 
 #[derive(Debug, Eq, PartialEq)]
 pub struct UnpackError(pub String);
@@ -55,6 +59,8 @@ pub enum Packet {
     LobbyInfo(PacketLobbyInfoData),
     CarDamage(PacketCarDamageData),
     SessionHistory(PacketSessionHistoryData),
+    TyreSets(PacketTyreSetsData),
+    MotionEx(PacketMotionExData),
 }
 
 impl Packet {
@@ -72,6 +78,8 @@ impl Packet {
             Packet::LobbyInfo(p) => &p.header,
             Packet::CarDamage(p) => &p.header,
             Packet::SessionHistory(p) => &p.header,
+            Packet::TyreSets(p) => &p.header,
+            Packet::MotionEx(p) => &p.header,
         }
     }
 }
@@ -90,6 +98,8 @@ pub enum PacketType {
     LobbyInfo,
     CarDamage,
     SessionHistory,
+    TyreSets,
+    MotionEx,
 }
 
 pub(crate) fn parse_packet(size: usize, packet: &[u8]) -> Result<Packet, UnpackError> {
@@ -100,6 +110,7 @@ pub(crate) fn parse_packet(size: usize, packet: &[u8]) -> Result<Packet, UnpackE
         2020 => Ok(f1_2020::parse_packet(size, packet)?),
         2021 => Ok(f1_2021::parse_packet(size, packet)?),
         2022 => Ok(f1_2022::parse_packet(size, packet)?),
+        2023 => Ok(f1_2023::parse_packet(size, packet)?),
         _ => Err(UnpackError(format!(
             "Invalid packet: unknown format ({})",
             packet_format

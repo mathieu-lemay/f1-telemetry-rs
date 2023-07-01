@@ -163,6 +163,6 @@ pub(crate) fn parse_motion_data<T: BufRead>(
     Ok(PacketMotionData {
         header,
         motion_data: car_motion,
-        player_car_data: motion_data.into(),
+        player_car_data: Some(motion_data.into()),
     })
 }

@@ -6,38 +6,35 @@ use super::header::PacketHeader;
 
 /// This type is used for the `classification_data` array of the [`PacketFinalClassificationData`] type.
 ///
-/// ## Specification
-/// ```text
-/// position:           Finishing position
-/// num_laps:           Number of laps completed
-/// grid_position:      Grid position of the car
-/// points:             Number of points scored
-/// num_pit_stops:      Number of pit stops made
-/// result_status:      Result status
-/// best_lap_time:      Best lap time of the session in milliseconds
-/// total_race_time:    Total race time in milliseconds without penalties
-/// penalties_time:     Total penalties accumulated in seconds
-/// num_penalties:      Number of penalties applied to this driver
-/// num_tyre_stints:    Number of tyres stints up to maximum
-/// tyre_stints_actual: Actual tyres used by this driver
-/// tyre_stints_visual: Visual tyres used by this driver
-/// tyre_stints_end_lap: The lap number stints end on
-/// ```
 #[derive(Debug, Clone, Default, Eq, PartialEq, Serialize)]
 pub struct FinalClassification {
+    /// Finishing position
     pub position: u8,
+    /// Number of laps completed
     pub num_laps: u8,
+    /// Grid position of the car
     pub grid_position: u8,
+    /// Number of points scored
     pub points: u8,
+    /// Number of pit stops made
     pub num_pit_stops: u8,
+    /// Result status
     pub result_status: ResultStatus,
+    /// Best lap time of the session in milliseconds
     pub best_lap_time: u32,
+    /// Total race time in milliseconds without penalties
     pub total_race_time: u32,
+    /// Total penalties accumulated in seconds
     pub penalties_time: u8,
+    /// Number of penalties applied to this driver
     pub num_penalties: u8,
+    /// Number of tyres stints up to maximum
     pub num_tyre_stints: u8,
+    /// Actual tyres used by this driver
     pub tyre_stints_actual: Vec<TyreCompound>,
+    /// Visual tyres used by this driver
     pub tyre_stints_visual: Vec<TyreCompoundVisual>,
+    /// The lap number stints end on
     pub tyre_stints_end_lap: Vec<u8>,
 }
 
@@ -46,16 +43,12 @@ pub struct FinalClassification {
 /// is not always possible to send lap times on the final frame because of network delay.
 ///
 /// Frequency: Once at the end of a race
-///
-/// ## Specification
-/// ```text
-/// header:                Header
-/// num_cars:              Number of cars in the final classification
-/// final_classifications: List of final classifications.
-/// ```
 #[derive(Debug, Clone, Eq, PartialEq, Serialize)]
 pub struct PacketFinalClassificationData {
+    /// Packet header
     pub header: PacketHeader,
+    /// Number of cars in the final classification
     pub num_cars: u8,
+    /// List of final classifications.
     pub final_classifications: Vec<FinalClassification>,
 }

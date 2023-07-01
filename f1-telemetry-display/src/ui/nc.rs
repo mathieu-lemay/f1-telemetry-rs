@@ -7,8 +7,8 @@ use tokio::sync::mpsc::error::SendError;
 use tokio::sync::mpsc::UnboundedSender;
 use tokio::time::sleep;
 
-use f1_telemetry::packet::generic::{ResultStatus, TyreCompoundVisual};
-use f1_telemetry::packet::session::{SafetyCar, SessionType};
+use f1_telemetry::packet::generic::{ResultStatus, SessionType, TyreCompoundVisual};
+use f1_telemetry::packet::session::SafetyCar;
 use f1_telemetry::packet::Packet;
 
 use crate::fmt as cfmt;
@@ -63,7 +63,7 @@ pub struct NcursesUi {
 }
 
 enum Event {
-    UpdateGame(Packet),
+    UpdateGame(Box<Packet>),
     SwitchView(View),
     EnableRotation,
     Quit,
@@ -156,7 +156,7 @@ impl Ui for NcursesUi {
         let sender = tx.clone();
         let stream_thread = tokio::spawn(async move {
             while let Some(p) = crate::CHANNEL.rx.write().await.recv().await {
-                let _ = sender.send(Event::UpdateGame(p));
+                let _ = sender.send(Event::UpdateGame(Box::new(p)));
             }
         });
 

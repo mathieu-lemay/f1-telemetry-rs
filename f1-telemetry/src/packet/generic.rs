@@ -232,6 +232,29 @@ pub enum Team {
     MercedesAMGGTRPro,
     F1CustomTeam,
     MercedesAMGGTBlackSeries,
+    Mercedes2022,
+    Ferrari2022,
+    RedBullRacing2022,
+    Williams2022,
+    AstonMartin2022,
+    Alpine2022,
+    AlphaTauri2022,
+    Haas2022,
+    McLaren2022,
+    AlfaRomeo2022,
+    Konnersport2022,
+    Konnersport,
+    Prema2022,
+    Virtuosi2022,
+    Carlin2022,
+    MPMotorsport2022,
+    Charouz2022,
+    Dams2022,
+    Campos2022,
+    VanAmersfoortRacing2022,
+    Trident2022,
+    Hitech2022,
+    ArtGP2022,
     MyTeam,
     #[default]
     Unknown,
@@ -258,12 +281,23 @@ impl Team {
 }
 
 #[derive(Debug, Copy, Clone, Default, Eq, PartialEq, Serialize)]
+pub enum Platform {
+    Steam,
+    PlayStation,
+    Xbox,
+    Origin,
+    #[default]
+    Unknown,
+}
+
+#[derive(Debug, Copy, Clone, Default, Eq, PartialEq, Serialize)]
 pub enum TyreCompound {
-    C5,
-    C4,
-    C3,
-    C2,
+    C0,
     C1,
+    C2,
+    C3,
+    C4,
+    C5,
     Inter,
     Wet,
     ClassicDry,
@@ -311,6 +345,46 @@ impl TyreCompoundVisual {
             TyreCompoundVisual::F2Hard => "Hard (F2)",
             TyreCompoundVisual::F2Wet => "Wet (F2)",
             TyreCompoundVisual::Invalid => "Invalid",
+        }
+    }
+}
+
+#[derive(Debug, Copy, Clone, Default, Eq, PartialEq, Serialize)]
+pub enum SessionType {
+    #[default]
+    Unknown,
+    Practice1,
+    Practice2,
+    Practice3,
+    PracticeShort,
+    Qualifying1,
+    Qualifying2,
+    Qualifying3,
+    QualifyingShort,
+    OneShotQualifying,
+    Race,
+    Race2,
+    Race3,
+    TimeTrial,
+}
+
+impl SessionType {
+    pub fn name<'a>(self) -> &'a str {
+        match self {
+            SessionType::Unknown => "Unknown",
+            SessionType::Practice1 => "Free Practice 1",
+            SessionType::Practice2 => "Free Practice 2",
+            SessionType::Practice3 => "Free Practice 3",
+            SessionType::PracticeShort => "Free Practice (Short)",
+            SessionType::Qualifying1 => "Qualifying 1",
+            SessionType::Qualifying2 => "Qualifying 2",
+            SessionType::Qualifying3 => "Qualifying 3",
+            SessionType::QualifyingShort => "Qualifying (Short)",
+            SessionType::OneShotQualifying => "One-Shot Qualifying",
+            SessionType::Race => "Race",
+            SessionType::Race2 => "Race 2",
+            SessionType::Race3 => "Race 3",
+            SessionType::TimeTrial => "Time Trial",
         }
     }
 }

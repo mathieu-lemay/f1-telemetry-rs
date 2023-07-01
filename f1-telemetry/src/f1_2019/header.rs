@@ -59,6 +59,7 @@ impl TryFrom<Header> for PacketHeader {
 
         Ok(PacketHeader {
             packet_format: header.packet_format,
+            game_year: 19,
             game_major_version: header.game_major_version,
             game_minor_version: header.game_minor_version,
             packet_version: header.packet_version,
@@ -66,6 +67,7 @@ impl TryFrom<Header> for PacketHeader {
             session_uid: header.session_uid,
             session_time,
             frame_identifier: header.frame_identifier,
+            overall_frame_identifier: None,
             player_car_index: header.player_car_index,
             secondary_player_car_index: None,
         })
