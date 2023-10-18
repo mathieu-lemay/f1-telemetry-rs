@@ -105,7 +105,7 @@ fn init_base_color_pairs() {
 }
 
 fn init_team_colors() {
-    for (t, c) in vec![
+    for (t, c) in [
         (Color::Mercedes, (0, 210, 190)),
         (Color::Ferrari, (220, 0, 0)),
         (Color::RedBullRacing, (60, 0, 255)),
@@ -140,7 +140,7 @@ fn rgb_to_curses(c: (i16, i16, i16)) -> (i16, i16, i16) {
 fn init_status_colors() {
     init_color(Color::StatusWarning as i16, 1000, 812, 686);
 
-    for (status, c) in vec![
+    for (status, c) in [
         (Color::StatusOk, Color::Green),
         (Color::StatusCaution, Color::Yellow),
         (Color::StatusWarning, Color::StatusWarning),
@@ -151,7 +151,7 @@ fn init_status_colors() {
 }
 
 fn init_tyre_colors() {
-    for (t, c) in vec![
+    for (t, c) in [
         (Color::TyreHard, (1000, 1000, 1000)),
         (Color::TyreMedium, (863, 804, 196)),
         (Color::TyreSoft, (953, 290, 200)),
