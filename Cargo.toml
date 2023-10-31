@@ -5,3 +5,4 @@ members = [
     "f1-telemetry-display",
     "f1-ws-server",
 ]
+resolver = "2"
