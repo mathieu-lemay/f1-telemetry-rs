@@ -5,6 +5,7 @@ use std::rc::Rc;
 
 use async_trait::async_trait;
 use gio::prelude::*;
+use glib::ControlFlow;
 use gtk::prelude::*;
 
 use f1_telemetry::packet::Packet;
@@ -73,7 +74,7 @@ impl Ui for GtkUi {
             let game_state = RefCell::new(GameState::default());
             let widgets = Rc::new(Widgets::new(app));
 
-            let (tx, rx) = glib::MainContext::channel(glib::PRIORITY_DEFAULT);
+            let (tx, rx) = glib::MainContext::channel(glib::Priority::DEFAULT);
 
             tokio::spawn(async move {
                 while let Some(p) = crate::CHANNEL.rx.write().await.recv().await {
@@ -84,7 +85,7 @@ impl Ui for GtkUi {
             rx.attach(None, move |packet| {
                 process_packet(&game_state, &widgets, &packet);
 
-                Continue(true)
+                ControlFlow::Continue
             });
         });
 
