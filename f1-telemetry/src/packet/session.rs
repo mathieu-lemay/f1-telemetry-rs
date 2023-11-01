@@ -112,7 +112,7 @@ pub enum Formula {
     Beta,
     Supercars,
     Esports,
-    F221,
+    F2_21,
     F1WorldCar,
 }
 
