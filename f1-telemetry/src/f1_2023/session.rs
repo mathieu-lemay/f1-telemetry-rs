@@ -69,6 +69,11 @@ fn unpack_formula(value: u8) -> Result<Formula, UnpackError> {
         1 => Ok(Formula::F1Classic),
         2 => Ok(Formula::F2),
         3 => Ok(Formula::F1Generic),
+        4 => Ok(Formula::Beta),
+        5 => Ok(Formula::Supercars),
+        6 => Ok(Formula::Esports),
+        7 => Ok(Formula::F2_21),
+        8 => Ok(Formula::F1WorldCar),
         _ => Err(UnpackError(format!("Invalid Formula value: {}", value))),
     }
 }

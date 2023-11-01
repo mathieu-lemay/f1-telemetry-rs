@@ -109,6 +109,11 @@ pub enum Formula {
     F1Classic,
     F2,
     F1Generic,
+    Beta,
+    Supercars,
+    Esports,
+    F2_21,
+    F1WorldCar,
 }
 
 #[derive(Debug, Copy, Clone, Default, Eq, PartialEq, Serialize)]
