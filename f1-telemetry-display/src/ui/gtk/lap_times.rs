@@ -1,4 +1,3 @@
-use gio::prelude::*;
 use gtk::cairo::glib::Type;
 use gtk::prelude::*;
 use gtk::{SortColumn, SortType, Widget};

@@ -384,7 +384,7 @@ dependencies = [
  "f1-telemetry",
  "f1-telemetry-common",
  "gdk",
- "gio",
+ "gio 0.19.2",
  "glib 0.19.2",
  "gtk",
  "lazy_static",
@@ -515,7 +515,7 @@ dependencies = [
  "cairo-rs",
  "gdk-pixbuf",
  "gdk-sys",
- "gio",
+ "gio 0.18.4",
  "glib 0.18.5",
  "libc",
  "pango",
@@ -528,7 +528,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "50e1f5f1b0bfb830d6ccc8066d18db35c487b1b2b1e8589b5dfe9f07e8defaec"
 dependencies = [
  "gdk-pixbuf-sys",
- "gio",
+ "gio 0.18.4",
  "glib 0.18.5",
  "libc",
  "once_cell",
@@ -605,6 +605,24 @@ dependencies = [
  "glib 0.18.5",
  "libc",
  "once_cell",
+ "pin-project-lite",
+ "smallvec",
+ "thiserror",
+]
+
+[[package]]
+name = "gio"
+version = "0.19.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "2eae10b27b6dd27e22ed0d812c6387deba295e6fc004a8b379e459b663b05a02"
+dependencies = [
+ "futures-channel",
+ "futures-core",
+ "futures-io",
+ "futures-util",
+ "gio-sys 0.19.0",
+ "glib 0.19.2",
+ "libc",
  "pin-project-lite",
  "smallvec",
  "thiserror",
@@ -762,7 +780,7 @@ dependencies = [
  "futures-channel",
  "gdk",
  "gdk-pixbuf",
- "gio",
+ "gio 0.18.4",
  "glib 0.18.5",
  "gtk-sys",
  "gtk3-macros",
@@ -989,7 +1007,7 @@ version = "0.18.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7ca27ec1eb0457ab26f3036ea52229edbdb74dee1edd29063f5b9b010e7ebee4"
 dependencies = [
- "gio",
+ "gio 0.18.4",
  "glib 0.18.5",
  "libc",
  "once_cell",

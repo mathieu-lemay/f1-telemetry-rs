@@ -4,7 +4,6 @@ use std::cell::RefCell;
 use std::rc::Rc;
 
 use async_trait::async_trait;
-use gio::prelude::*;
 use glib::MainContext;
 use gtk::prelude::*;
 
@@ -84,7 +83,6 @@ impl Ui for GtkUi {
 
             let main_context = MainContext::default();
             main_context.spawn_local(async move {
-                println!("IN SPAWN");
                 while let Ok(packet) = rx.recv().await {
                     process_packet(&game_state, &widgets, &packet);
                 }
