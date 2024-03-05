@@ -1,4 +1,4 @@
-use gio::prelude::*;
+use gtk::cairo::glib::Type;
 use gtk::prelude::*;
 use gtk::{SortColumn, SortType, Widget};
 
@@ -183,15 +183,15 @@ fn get_team_color(team: &Team) -> String {
 
 fn create_model() -> gtk::TreeStore {
     let col_types = [
-        glib::Type::STRING,
-        glib::Type::STRING,
-        glib::Type::STRING,
-        glib::Type::STRING,
-        glib::Type::STRING,
-        glib::Type::STRING,
-        glib::Type::STRING,
-        glib::Type::STRING,
-        glib::Type::I8,
+        Type::STRING,
+        Type::STRING,
+        Type::STRING,
+        Type::STRING,
+        Type::STRING,
+        Type::STRING,
+        Type::STRING,
+        Type::STRING,
+        Type::I8,
     ];
 
     let model = gtk::TreeStore::new(&col_types);
