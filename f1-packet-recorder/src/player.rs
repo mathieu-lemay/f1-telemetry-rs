@@ -1,8 +1,9 @@
 use std::net::UdpSocket;
+use std::sync::mpsc::{channel, Receiver};
 use std::thread::sleep;
 use std::time::Duration;
 
-use anyhow::Result;
+use anyhow::{Error, Result};
 use log::info;
 use rusqlite::Connection;
 use time::Instant;
@@ -23,8 +24,10 @@ pub(crate) fn play(args: &PlayArgs) -> Result<()> {
     );
 
     let player = Player::new(args)?;
+    let ctrl_receiver = ctrl_channel()?;
+
     loop {
-        player.play()?;
+        player.play(&ctrl_receiver)?;
 
         if !args.loop_play {
             break;
@@ -32,6 +35,16 @@ pub(crate) fn play(args: &PlayArgs) -> Result<()> {
     }
 
     Ok(())
+}
+
+fn ctrl_channel() -> Result<Receiver<()>, ctrlc::Error> {
+    let (sender, receiver) = channel();
+    ctrlc::set_handler(move || {
+        info!("Stopping playback");
+        let _ = sender.send(());
+    })?;
+
+    Ok(receiver)
 }
 
 fn get_socket(destination: &Option<String>, port: u16) -> Result<UdpSocket> {
@@ -82,7 +95,7 @@ impl Player {
         })
     }
 
-    fn play(&self) -> Result<()> {
+    fn play(&self, ctrl_receiver: &Receiver<()>) -> Result<()> {
         let playback_start = Instant::now();
         let first_timestamp = self.get_first_timestamp()?;
 
@@ -98,6 +111,10 @@ impl Player {
         })?;
 
         for (idx, packet) in packets.enumerate() {
+            if ctrl_receiver.try_recv().is_ok() {
+                return Err(Error::msg("ctrl-c received"));
+            }
+
             let packet = packet?;
 
             self.delay_next_packet(playback_start, first_timestamp, packet.timestamp);
