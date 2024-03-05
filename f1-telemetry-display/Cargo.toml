@@ -19,7 +19,7 @@ time = "0.3.11"
 ncurses = { version = "5.101", features = ["wide"] }
 gtk = "0.18.1"
 gio = "0.18.2"
-glib = "0.18.2"
+glib = "0.19.2"
 gdk = "0.18.0"
 cairo-rs = { version = "0.18.2", features = ["png"] }
 async-channel = "2.2.0"
