@@ -7,6 +7,7 @@ use f1_telemetry_common::logging::LogBuilder;
 
 mod player;
 mod recorder;
+mod utils;
 
 #[derive(Parser)]
 #[command(author, version, about, long_about = None, propagate_version = true)]

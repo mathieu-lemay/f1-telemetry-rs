@@ -1,5 +1,5 @@
 use std::net::UdpSocket;
-use std::sync::mpsc::{channel, Receiver};
+use std::sync::mpsc::Receiver;
 use std::thread::sleep;
 use std::time::Duration;
 
@@ -7,6 +7,8 @@ use anyhow::{Error, Result};
 use log::info;
 use rusqlite::Connection;
 use time::Instant;
+
+use crate::utils::{ctrl_c_channel, get_database_connection};
 
 use super::PlayArgs;
 
@@ -24,7 +26,7 @@ pub(crate) fn play(args: &PlayArgs) -> Result<()> {
     );
 
     let player = Player::new(args)?;
-    let ctrl_receiver = ctrl_channel()?;
+    let ctrl_receiver = ctrl_c_channel()?;
 
     loop {
         player.play(&ctrl_receiver)?;
@@ -35,16 +37,6 @@ pub(crate) fn play(args: &PlayArgs) -> Result<()> {
     }
 
     Ok(())
-}
-
-fn ctrl_channel() -> Result<Receiver<()>, ctrlc::Error> {
-    let (sender, receiver) = channel();
-    ctrlc::set_handler(move || {
-        info!("Stopping playback");
-        let _ = sender.send(());
-    })?;
-
-    Ok(receiver)
 }
 
 fn get_socket(destination: &Option<String>, port: u16) -> Result<UdpSocket> {
@@ -59,12 +51,6 @@ fn get_socket(destination: &Option<String>, port: u16) -> Result<UdpSocket> {
     };
 
     Ok(socket)
-}
-
-fn get_database_connection(file: &str) -> Result<Connection> {
-    let conn = Connection::open(file)?;
-
-    Ok(conn)
 }
 
 struct TimestampedPacket {
@@ -112,6 +98,7 @@ impl Player {
 
         for (idx, packet) in packets.enumerate() {
             if ctrl_receiver.try_recv().is_ok() {
+                info!("Stopping playback");
                 return Err(Error::msg("ctrl-c received"));
             }
 

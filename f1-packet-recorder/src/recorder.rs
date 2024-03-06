@@ -8,6 +8,7 @@ use log::{info, warn};
 use rusqlite::Connection;
 use time::Instant;
 
+use crate::utils::{ctrl_c_channel, get_database_connection};
 use f1_telemetry::packet::{parse_packet, Packet};
 
 use super::RecordArgs;
@@ -16,26 +17,11 @@ pub(crate) fn record(args: &RecordArgs) -> Result<()> {
     info!("Recording {}:{} to {}", args.host, args.port, args.file);
 
     let recorder = Recorder::new(args)?;
-    let ctrl_receiver = ctrl_channel()?;
+    let ctrl_receiver = ctrl_c_channel()?;
 
     recorder.record(&ctrl_receiver)?;
 
     Ok(())
-}
-
-fn ctrl_channel() -> Result<Receiver<()>, ctrlc::Error> {
-    let (sender, receiver) = channel();
-    ctrlc::set_handler(move || {
-        let _ = sender.send(());
-    })?;
-
-    Ok(receiver)
-}
-
-fn get_database_connection(file: &str) -> Result<Connection> {
-    let conn = Connection::open(file)?;
-
-    Ok(conn)
 }
 
 struct TimestampedPacket {
@@ -93,14 +79,7 @@ impl Recorder {
                 continue;
             }
 
-            // let timestamp = SystemTime::now().duration_since(UNIX_EPOCH).expect("Somehow we went back in time").as_secs_f64();
-            let packet = packet.unwrap();
-            // let timestamped_packet = TimestampedPacket {
-            //     timestamp,
-            //     packet
-            // };
-
-            packets.push(packet);
+            packets.push(packet.unwrap());
             if packets.len() >= 256 {
                 info!("Saving packets to database.");
                 self.save_packets(&mut packets)?;
