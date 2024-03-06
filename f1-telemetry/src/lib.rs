@@ -63,6 +63,7 @@ impl SyncStream {
     pub fn next(&self) -> Result<Packet, UnpackError> {
         self.rt.block_on(self.stream.next())
     }
+
     pub fn next_from(&self) -> Result<(Packet, SocketAddr), UnpackError> {
         self.rt.block_on(self.stream.next_from())
     }

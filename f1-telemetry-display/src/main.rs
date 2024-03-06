@@ -69,7 +69,7 @@ async fn main() {
             log_builder.with_term_logger(LevelFilter::Info, TerminalMode::Mixed, ColorChoice::Auto);
     }
 
-    log_builder.build().expect("Error initializing loggger.");
+    log_builder.build().expect("Error initializing logger.");
 
     start_stream(args.host, args.port).await;
     run(&args.ui).await;

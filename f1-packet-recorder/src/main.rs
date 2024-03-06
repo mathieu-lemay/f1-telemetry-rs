@@ -6,6 +6,7 @@ use simplelog::{ColorChoice, TerminalMode};
 use f1_telemetry_common::logging::LogBuilder;
 
 mod player;
+mod recorder;
 
 #[derive(Parser)]
 #[command(author, version, about, long_about = None, propagate_version = true)]
@@ -57,7 +58,7 @@ struct PlayArgs {
 #[derive(Debug, Args)]
 struct RecordArgs {
     /// Database file to record to
-    #[clap(long, default_value = None)]
+    #[clap(short, long, default_value = None)]
     file: String,
 
     /// Host to bind on for the UDP packet listener
@@ -75,10 +76,10 @@ fn main() -> Result<()> {
     LogBuilder::new()
         .with_term_logger(LevelFilter::Info, TerminalMode::Mixed, ColorChoice::Auto)
         .build()
-        .expect("Error initializing loggger.");
+        .expect("Error initializing logger.");
 
     match &cli.command {
         Commands::Play(args) => player::play(args),
-        Commands::Record(_) => unimplemented!("Recording is not implemented yet."),
+        Commands::Record(args) => recorder::record(args),
     }
 }
