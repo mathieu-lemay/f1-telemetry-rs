@@ -41,7 +41,7 @@ async fn main() {
     LogBuilder::new()
         .with_term_logger(LevelFilter::Info, TerminalMode::Mixed, ColorChoice::Auto)
         .build()
-        .expect("Error initializing loggger.");
+        .expect("Error initializing logger.");
 
     let addr = format!("{}:{}", args.listener_host, args.listener_port);
     let packet_stream = Stream::new(&addr)

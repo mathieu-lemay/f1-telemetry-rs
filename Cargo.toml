@@ -1,5 +1,6 @@
 [workspace]
 members = [
+    "f1-packet-recorder",
     "f1-telemetry",
     "f1-telemetry-common",
     "f1-telemetry-display",

@@ -1,4 +1,6 @@
 use serde::Serialize;
+use std::error::Error;
+use std::fmt::{Display, Formatter};
 
 use car_damage::PacketCarDamageData;
 use car_setup::PacketCarSetupData;
@@ -43,6 +45,14 @@ impl From<Box<bincode::ErrorKind>> for UnpackError {
         UnpackError(e.to_string())
     }
 }
+
+impl Display for UnpackError {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        Display::fmt(&format!("Unpack error: {}", &self.0), f)
+    }
+}
+
+impl Error for UnpackError {}
 
 #[derive(Debug, Clone, Serialize)]
 #[serde(tag = "packet_type")]
@@ -102,7 +112,28 @@ pub enum PacketType {
     MotionEx,
 }
 
-pub(crate) fn parse_packet(size: usize, packet: &[u8]) -> Result<Packet, UnpackError> {
+impl From<PacketType> for u8 {
+    fn from(val: PacketType) -> u8 {
+        match val {
+            PacketType::Motion => 0,
+            PacketType::Session => 1,
+            PacketType::LapData => 2,
+            PacketType::Event => 3,
+            PacketType::Participants => 4,
+            PacketType::CarSetups => 5,
+            PacketType::CarTelemetry => 6,
+            PacketType::CarStatus => 7,
+            PacketType::FinalClassification => 8,
+            PacketType::LobbyInfo => 9,
+            PacketType::CarDamage => 10,
+            PacketType::SessionHistory => 11,
+            PacketType::TyreSets => 12,
+            PacketType::MotionEx => 13,
+        }
+    }
+}
+
+pub fn parse_packet(size: usize, packet: &[u8]) -> Result<Packet, UnpackError> {
     let packet_format = parse_version(packet);
 
     match packet_format {
