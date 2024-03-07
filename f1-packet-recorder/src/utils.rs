@@ -1,11 +1,9 @@
-use log::info;
 use rusqlite::Connection;
 use std::sync::mpsc::{channel, Receiver};
 
 pub(crate) fn ctrl_c_channel() -> anyhow::Result<Receiver<()>, ctrlc::Error> {
     let (sender, receiver) = channel();
     ctrlc::set_handler(move || {
-        info!("Stopping playback");
         let _ = sender.send(());
     })?;
 
