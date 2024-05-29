@@ -286,6 +286,8 @@ impl Team {
             Team::McLaren => "McLaren",
             Team::AlfaRomeo => "Alfa Romeo",
             Team::AlphaTauri => "Alpha Tauri",
+            Team::Alpine => "Alpine",
+            Team::AstonMartin => "Aston Martin",
             Team::MyTeam => "My Team",
             _ => "[N/A]",
         }
